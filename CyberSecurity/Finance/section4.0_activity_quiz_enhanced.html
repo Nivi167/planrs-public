@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 4 – Needs vs Wants Final Quiz! 🏆</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --pink: #FF6BB5;
+    --purple: #9B5EE5;
+    --yellow: #FFD93D;
+    --green: #6BCB77;
+    --blue: #4ECDC4;
+    --orange: #FF9A3C;
+    --red: #FF6B6B;
+    --bg: #FFF5FB;
+    --card: #ffffff;
+    --text: #2D1B4E;
+  }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    padding: 16px;
+    background-image: radial-gradient(circle at 10% 20%, #FFE4F3 0%, transparent 50%),
+                      radial-gradient(circle at 90% 80%, #E8F4FF 0%, transparent 50%),
+                      radial-gradient(circle at 50% 50%, #FFF9E6 0%, transparent 70%);
+  }
+
+  /* Floating decorations */
+  .deco { position: fixed; pointer-events: none; font-size: 28px; opacity: 0.15; animation: floatDeco 6s ease-in-out infinite; z-index: 0; }
+  .deco:nth-child(1) { top: 5%; left: 3%; animation-delay: 0s; }
+  .deco:nth-child(2) { top: 15%; right: 5%; animation-delay: 1s; }
+  .deco:nth-child(3) { bottom: 20%; left: 5%; animation-delay: 2s; }
+  .deco:nth-child(4) { bottom: 10%; right: 8%; animation-delay: 0.5s; }
+  .deco:nth-child(5) { top: 45%; left: 1%; animation-delay: 3s; }
+  .deco:nth-child(6) { top: 55%; right: 2%; animation-delay: 1.5s; }
+  @keyframes floatDeco { 0%,100%{transform:translateY(0) rotate(0deg)} 50%{transform:translateY(-20px) rotate(10deg)} }
+
+  .planrs-logo {
+    position: fixed; top: 12px; right: 16px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 16px; font-weight: 400; color: white;
+    background: linear-gradient(135deg, #FF6BB5, #9B5EE5);
+    padding: 8px 16px; border-radius: 24px;
+    box-shadow: 0 4px 15px rgba(155,94,229,0.4);
+    z-index: 100;
+    animation: pulse 3s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
+
+  h1 {
+    text-align: center;
+    font-family: 'Fredoka One', cursive;
+    color: var(--purple);
+    font-size: clamp(22px, 6vw, 36px);
+    margin: 52px 0 4px;
+    text-shadow: 3px 3px 0 rgba(155,94,229,0.2);
+    position: relative; z-index: 1;
+  }
+  .subtitle {
+    text-align: center; color: #888;
+    font-size: 15px; margin-bottom: 20px;
+    font-weight: 600; position: relative; z-index: 1;
+  }
+
+  /* Tab switcher */
+  .mode-tabs {
+    display: flex; justify-content: center; gap: 12px;
+    margin-bottom: 24px; position: relative; z-index: 1;
+  }
+  .mode-tab {
+    padding: 10px 22px; border: 3px solid transparent;
+    border-radius: 50px; font-family: 'Fredoka One', cursive;
+    font-size: 16px; cursor: pointer; transition: all 0.25s;
+    background: white; color: #aaa; border-color: #eee;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .mode-tab.active {
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    color: white; border-color: transparent;
+    box-shadow: 0 6px 20px rgba(155,94,229,0.35);
+    transform: translateY(-2px);
+  }
+
+  /* Progress */
+  .progress-header { max-width: 600px; margin: 0 auto 16px; position: relative; z-index: 1; }
+  .progress-header .meta { display: flex; justify-content: space-between; font-size: 14px; color: #999; margin-bottom: 6px; font-weight: 700; }
+  .progress-bar { height: 14px; background: #F0E6FF; border-radius: 10px; overflow: hidden; border: 2px solid #E0CCFF; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--pink), var(--purple), var(--blue)); border-radius: 10px; transition: width 0.5s cubic-bezier(.34,1.56,.64,1); }
+
+  .score-badge {
+    background: white; border: 3px solid var(--yellow);
+    border-radius: 24px; padding: 8px 22px;
+    display: block; font-family: 'Fredoka One', cursive;
+    font-size: 18px; color: var(--text);
+    max-width: 200px; margin: 0 auto 20px;
+    box-shadow: 0 4px 12px rgba(255,217,61,0.3);
+    text-align: center; position: relative; z-index: 1;
+  }
+
+  /* Quiz card */
+  .quiz-card {
+    background: white; border-radius: 28px;
+    padding: 28px 24px; max-width: 600px;
+    margin: 0 auto 20px; position: relative; z-index: 1;
+    box-shadow: 0 8px 32px rgba(155,94,229,0.12);
+    border-top: 6px solid var(--purple);
+    animation: cardIn 0.4s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes cardIn { from{opacity:0;transform:translateY(24px) scale(0.97)} to{opacity:1;transform:none} }
+
+  .q-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .q-num-badge {
+    background: linear-gradient(135deg, var(--purple), var(--pink));
+    color: white; font-family: 'Fredoka One', cursive;
+    font-size: 15px; padding: 5px 14px; border-radius: 20px;
+    box-shadow: 0 3px 10px rgba(155,94,229,0.4);
+  }
+  .q-text { font-size: 19px; color: var(--text); font-weight: 800; line-height: 1.5; }
+
+  .options { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+  .opt-btn {
+    background: #FAF5FF; border: 3px solid #E8D5FF;
+    border-radius: 16px; padding: 14px 18px;
+    font-size: 16px; color: var(--text); cursor: pointer;
+    transition: all 0.2s; text-align: left;
+    font-family: 'Nunito', sans-serif; font-weight: 700;
+  }
+  .opt-btn:hover:not(:disabled) {
+    background: #F0E6FF; border-color: var(--purple);
+    transform: translateX(6px) scale(1.01);
+    box-shadow: 0 4px 15px rgba(155,94,229,0.2);
+  }
+  .opt-btn.correct { background: #E8FFF0; border-color: var(--green); color: #1A6B35; animation: correctPop 0.5s; }
+  .opt-btn.wrong { background: #FFF0F0; border-color: var(--red); color: #8B1A1A; animation: wrongShake 0.5s; }
+  .opt-btn.reveal-correct { background: #E8FFF0; border-color: var(--green); color: #1A6B35; }
+  @keyframes correctPop { 0%{transform:scale(1)} 40%{transform:scale(1.05)} 100%{transform:scale(1)} }
+  @keyframes wrongShake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+
+  .feedback-msg {
+    margin-top: 14px; padding: 12px 16px; border-radius: 16px;
+    font-size: 15px; font-weight: 700; display: none; line-height: 1.6;
+  }
+  .feedback-msg.correct { background: #E8FFF0; color: #1A6B35; border: 2px solid var(--green); display: block; }
+  .feedback-msg.wrong { background: #FFF0F0; color: #8B1A1A; border: 2px solid var(--red); display: block; }
+
+  .nav-row { display: flex; justify-content: center; gap: 12px; margin-top: 20px; position: relative; z-index: 1; }
+  .btn {
+    padding: 12px 26px; border: none; border-radius: 16px;
+    font-size: 16px; font-family: 'Fredoka One', cursive;
+    cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+    letter-spacing: 0.5px;
+  }
+  .btn:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+  .btn:active { transform: translateY(0); }
+  .btn-next { background: linear-gradient(135deg, var(--pink), var(--purple)); color: white; box-shadow: 0 4px 15px rgba(155,94,229,0.35); }
+  .btn-prev { background: linear-gradient(135deg, var(--blue), #3B9EE0); color: white; box-shadow: 0 4px 15px rgba(78,205,196,0.35); }
+  .btn-submit { background: linear-gradient(135deg, var(--orange), var(--red)); color: white; font-size: 18px; padding: 16px 36px; box-shadow: 0 6px 20px rgba(255,154,60,0.4); }
+
+  /* ======================== DRAG & DROP ACTIVITY ======================== */
+  #drag-activity { display: none; position: relative; z-index: 1; }
+  .activity-card {
+    background: white; border-radius: 28px;
+    padding: 28px 24px; max-width: 640px;
+    margin: 0 auto 20px;
+    box-shadow: 0 8px 32px rgba(155,94,229,0.12);
+    border-top: 6px solid var(--yellow);
+    animation: cardIn 0.4s cubic-bezier(.34,1.56,.64,1);
+    position: relative;
+  }
+  .activity-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 22px; color: var(--text);
+    margin-bottom: 6px; text-align: center;
+  }
+  .activity-subtitle { text-align: center; color: #999; font-size: 14px; font-weight: 700; margin-bottom: 20px; }
+
+  /* Close button */
+  .close-btn {
+    position: absolute; top: 16px; right: 16px;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, #FFB3D1, #FF6BB5);
+    border: none; cursor: pointer; font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 3px 10px rgba(255,107,181,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+    z-index: 10; color: white; font-weight: 900;
+    line-height: 1;
+  }
+  .close-btn:hover { transform: scale(1.15) rotate(90deg); box-shadow: 0 6px 16px rgba(255,107,181,0.5); }
+
+  /* Draggable items pool */
+  .drag-pool {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    justify-content: center; min-height: 80px;
+    background: #F9F5FF; border-radius: 20px;
+    padding: 16px; border: 3px dashed #D8B4FF;
+    margin-bottom: 20px; transition: background 0.2s;
+  }
+  .drag-pool.drag-over { background: #EEE0FF; border-color: var(--purple); }
+  .drag-item {
+    padding: 10px 18px; border-radius: 50px;
+    font-size: 15px; font-weight: 800;
+    cursor: grab; user-select: none;
+    transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    animation: itemPop 0.4s cubic-bezier(.34,1.56,.64,1) backwards;
+    display: flex; align-items: center; gap: 6px;
+    border: 3px solid transparent;
+  }
+  .drag-item:hover { transform: scale(1.08) rotate(-2deg); box-shadow: 0 8px 20px rgba(0,0,0,0.18); }
+  .drag-item:active, .drag-item.dragging { opacity: 0.5; transform: scale(0.95); cursor: grabbing; }
+  @keyframes itemPop { from{opacity:0;transform:scale(0.5) rotate(-10deg)} to{opacity:1;transform:scale(1) rotate(0)} }
+
+  /* Drop zones */
+  .drop-zones { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media(max-width: 480px) { .drop-zones { grid-template-columns: 1fr; } }
+  .drop-zone {
+    min-height: 140px; border-radius: 20px;
+    padding: 14px; border: 4px dashed #ccc;
+    transition: all 0.25s; display: flex;
+    flex-direction: column; align-items: center;
+  }
+  .drop-zone-label {
+    font-family: 'Fredoka One', cursive;
+    font-size: 18px; margin-bottom: 10px;
+    text-align: center; display: flex; align-items: center; gap: 6px;
+  }
+  .drop-zone-items { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .drop-zone.needs { border-color: #6BCB77; background: #F0FFF4; }
+  .drop-zone.needs.drag-over { background: #D4EDDA; border-color: #28A745; transform: scale(1.02); }
+  .drop-zone.wants { border-color: #FF9A3C; background: #FFF8F0; }
+  .drop-zone.wants.drag-over { background: #FDEBD0; border-color: #E67E22; transform: scale(1.02); }
+
+  .activity-actions { display: flex; justify-content: center; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+  .btn-check { background: linear-gradient(135deg, var(--green), #3DAA55); color: white; box-shadow: 0 4px 15px rgba(107,203,119,0.4); padding: 12px 26px; border: none; border-radius: 16px; font-size: 16px; font-family: 'Fredoka One', cursive; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
+  .btn-check:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(107,203,119,0.4); }
+  .btn-reset { background: linear-gradient(135deg, #aaa, #888); color: white; padding: 12px 22px; border: none; border-radius: 16px; font-size: 16px; font-family: 'Fredoka One', cursive; cursor: pointer; }
+
+  .activity-feedback {
+    margin-top: 16px; padding: 16px; border-radius: 20px;
+    font-size: 15px; font-weight: 700; text-align: center;
+    display: none; animation: cardIn 0.3s ease;
+  }
+
+  /* Color palette for drag items */
+  .color-0 { background: linear-gradient(135deg, #FFD3E8, #FFADD2); color: #7B0040; border-color: #FF80C0; }
+  .color-1 { background: linear-gradient(135deg, #D3F0FF, #A8DCFF); color: #003D6B; border-color: #70BBFF; }
+  .color-2 { background: linear-gradient(135deg, #FFFBD3, #FFF280); color: #5C4500; border-color: #FFD700; }
+  .color-3 { background: linear-gradient(135deg, #D3FFE0, #A8FFB8); color: #004D1A; border-color: #60E880; }
+  .color-4 { background: linear-gradient(135deg, #F0D3FF, #DAA8FF); color: #3D0070; border-color: #C070FF; }
+  .color-5 { background: linear-gradient(135deg, #FFE5D3, #FFD0A8); color: #5C2000; border-color: #FF9060; }
+  .color-6 { background: linear-gradient(135deg, #D3FFFC, #A8FFF5); color: #004D48; border-color: #60EFE8; }
+  .color-7 { background: linear-gradient(135deg, #FFD3D3, #FFA8A8); color: #5C0000; border-color: #FF8080; }
+
+  /* Result screen */
+  .result-screen {
+    display: none; background: white; border-radius: 28px;
+    padding: 40px 28px; max-width: 580px;
+    margin: 0 auto 30px; text-align: center;
+    box-shadow: 0 12px 50px rgba(155,94,229,0.2);
+    position: relative; z-index: 1;
+    animation: cardIn 0.5s cubic-bezier(.34,1.56,.64,1);
+    border-top: 6px solid var(--yellow);
+  }
+  .result-screen .trophy { font-size: 72px; margin-bottom: 8px; animation: trophyBounce 0.6s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes trophyBounce { from{transform:scale(0) rotate(-20deg)} to{transform:scale(1) rotate(0)} }
+  .result-screen h2 { font-family: 'Fredoka One', cursive; font-size: 28px; color: var(--text); margin-bottom: 6px; }
+  .result-screen .big-score { font-family: 'Fredoka One', cursive; font-size: 72px; color: var(--purple); line-height: 1; }
+  .result-screen .out-of { font-size: 20px; color: #aaa; margin-bottom: 12px; font-weight: 700; }
+  .result-summary { background: #FAF5FF; border-radius: 20px; padding: 16px; margin: 16px 0; text-align: left; border: 2px solid #E8D5FF; }
+  .result-summary .row { display: flex; justify-content: space-between; padding: 6px 2px; font-size: 15px; color: var(--text); border-bottom: 2px dashed #E8D5FF; font-weight: 700; }
+  .result-summary .row:last-child { border: none; font-size: 16px; }
+  .congrats-msg { font-size: 16px; color: #666; line-height: 1.6; margin-bottom: 16px; font-weight: 700; }
+  .certificate-badge { background: linear-gradient(135deg, #FFE4F3, #EDE0FF); border: 3px solid var(--purple); border-radius: 20px; padding: 16px; margin: 12px 0; }
+  .certificate-badge p { font-size: 14px; color: var(--purple); font-weight: 800; line-height: 1.8; }
+
+  /* Stars animation on result */
+  .stars-anim { font-size: 30px; letter-spacing: 8px; animation: starSpin 2s linear infinite; display: inline-block; }
+  @keyframes starSpin { 0%{transform:rotate(0)} 100%{transform:rotate(360deg)} }
+
+  /* Confetti particles */
+  .confetti-piece { position: fixed; width: 10px; height: 10px; top: -10px; pointer-events: none; z-index: 999; border-radius: 2px; animation: confettiFall linear forwards; }
+  @keyframes confettiFall { to { transform: translateY(110vh) rotate(720deg); } }
+
+  /* Quiz card close button */
+  .quiz-card { position: relative; }
+  .quiz-close-btn {
+    position: absolute; top: 14px; right: 14px;
+    width: 34px; height: 34px; border-radius: 50%;
+    background: linear-gradient(135deg, #FFB3D1, #FF6BB5);
+    border: none; cursor: pointer; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 3px 10px rgba(255,107,181,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+    z-index: 10; color: white; font-weight: 900; line-height: 1;
+  }
+  .quiz-close-btn:hover { transform: scale(1.18) rotate(90deg); box-shadow: 0 6px 18px rgba(255,107,181,0.55); }
+
+  /* Dismissed overlay */
+  .dismissed-overlay {
+    background: white; border-radius: 28px; padding: 36px 24px;
+    max-width: 600px; margin: 0 auto 20px;
+    box-shadow: 0 8px 32px rgba(155,94,229,0.12);
+    border-top: 6px solid #ddd; text-align: center;
+    animation: cardIn 0.35s cubic-bezier(.34,1.56,.64,1);
+    position: relative; z-index: 1;
+  }
+  .dismissed-overlay .dismiss-emoji { font-size: 52px; margin-bottom: 10px; }
+  .dismissed-overlay h3 { font-family: 'Fredoka One', cursive; color: #bbb; font-size: 20px; margin-bottom: 8px; }
+  .dismissed-overlay p { color: #ccc; font-size: 14px; font-weight: 700; margin-bottom: 16px; }
+  .btn-reopen {
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    color: white; border: none; border-radius: 50px;
+    padding: 10px 24px; font-family: 'Fredoka One', cursive;
+    font-size: 16px; cursor: pointer;
+    box-shadow: 0 4px 14px rgba(155,94,229,0.35);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn-reopen:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 8px 20px rgba(155,94,229,0.4); }
+
+  /* Card slide-out animation */
+  @keyframes slideOut {
+    from { opacity: 1; transform: scale(1) translateY(0); }
+    to   { opacity: 0; transform: scale(0.88) translateY(-18px); }
+  }
+  .card-closing { animation: slideOut 0.28s ease forwards; pointer-events: none; }
+
+  /* Result screen close btn */
+  .result-screen { position: relative; }
+  .result-close-btn {
+    position: absolute; top: 16px; right: 16px;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, #FFB3D1, #FF6BB5);
+    border: none; cursor: pointer; font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 3px 10px rgba(255,107,181,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+    z-index: 10; color: white; font-weight: 900; line-height: 1;
+  }
+  .result-close-btn:hover { transform: scale(1.18) rotate(90deg); box-shadow: 0 6px 18px rgba(255,107,181,0.55); }
+
+  /* Touch dragging support */
+  .touch-ghost {
+    position: fixed; pointer-events: none; z-index: 9999;
+    opacity: 0.85; transform: scale(1.1); transition: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- Floating decorations -->
+<div class="deco">⭐</div>
+<div class="deco">🎈</div>
+<div class="deco">💰</div>
+<div class="deco">🎉</div>
+<div class="deco">🌟</div>
+<div class="deco">🎊</div>
+
+<div class="planrs-logo">⭐ Planrs</div>
+
+<h1>🏆 The Ultimate Needs vs Wants Quiz!</h1>
+<p class="subtitle">Test everything you've learned — 8 questions, let's go!</p>
+
+<!-- Mode Tabs -->
+<div class="mode-tabs">
+  <button class="mode-tab active" id="tab-quiz" onclick="switchMode('quiz')">🎯 Quiz Mode</button>
+  <button class="mode-tab" id="tab-drag" onclick="switchMode('drag')">🤸 Drag & Sort</button>
+</div>
+
+<!-- QUIZ SECTION -->
+<div id="quiz-section">
+  <div class="progress-header">
+    <div class="meta"><span id="q-progress">Question 1 of 8</span><span id="q-score-top">Score: 0</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:12.5%"></div></div>
+  </div>
+  <div class="score-badge">⭐ Score: <span id="score-display">0</span> / 8</div>
+  <div id="quiz-container"></div>
+  <div class="nav-row" id="nav-row"></div>
+  <div class="result-screen" id="result-screen">
+    <button class="result-close-btn" onclick="closeResult()" title="Close Results">✕</button>
+    <div class="trophy" id="r-trophy">🏆</div>
+    <h2 id="r-title">Quiz Complete!</h2>
+    <div class="big-score" id="r-score">0</div>
+    <div class="out-of">out of 8</div>
+    <p class="congrats-msg" id="r-msg">Well done!</p>
+    <div class="result-summary" id="r-summary"></div>
+    <div class="certificate-badge">
+      <p>🌟 Planrs Finance Explorer Certificate 🌟</p>
+      <p>Awarded for completing the Needs vs Wants module!</p>
+    </div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px;">
+      <button class="btn btn-prev" onclick="restartQuiz()">🔄 Try Again</button>
+      <button class="btn btn-next" onclick="alert('Congratulations! You have completed the full Needs vs Wants lesson on Planrs! 🌟')">🎓 Finish Lesson</button>
+    </div>
+  </div>
+</div>
+
+<!-- DRAG & DROP SECTION -->
+<div id="drag-activity">
+  <div class="activity-card" id="drag-card">
+    <button class="close-btn" onclick="closeDragActivity()" title="Close Activity">✕</button>
+    <h2 class="activity-title">🤸 Sort the Items!</h2>
+    <p class="activity-subtitle">Drag each item into the correct box below 👇</p>
+
+    <!-- Item Pool -->
+    <div class="drag-pool" id="drag-pool" ondragover="onDragOver(event, 'pool')" ondrop="onDrop(event, 'pool')" ondragleave="onDragLeave(event)">
+    </div>
+
+    <!-- Drop Zones -->
+    <div class="drop-zones">
+      <div class="drop-zone needs" id="zone-needs" ondragover="onDragOver(event, 'needs')" ondrop="onDrop(event, 'needs')" ondragleave="onDragLeave(event)">
+        <div class="drop-zone-label" style="color:#1A6B35">💚 NEEDS</div>
+        <div class="drop-zone-items" id="zone-needs-items"></div>
+      </div>
+      <div class="drop-zone wants" id="zone-wants" ondragover="onDragOver(event, 'wants')" ondrop="onDrop(event, 'wants')" ondragleave="onDragLeave(event)">
+        <div class="drop-zone-label" style="color:#7B3500">🧡 WANTS</div>
+        <div class="drop-zone-items" id="zone-wants-items"></div>
+      </div>
+    </div>
+
+    <div class="activity-feedback" id="activity-feedback"></div>
+
+    <div class="activity-actions">
+      <button class="btn-reset" onclick="resetDragActivity()">🔄 Reset</button>
+      <button class="btn-check" onclick="checkDragActivity()">✅ Check Answers!</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ======================== QUIZ LOGIC ========================
+const questions = [
+  { q: "Which of these is a NEED?", opts: ["🎮 Video Game Console", "💧 Drinking Water", "🍕 Pizza", "🎒 Designer Backpack"], ans: 1, explain: "Water is essential for survival! Without it, we cannot live. A video game and pizza are wants.", fun: "💡 Fun fact: Our body is 70% water — we truly NEED it!" },
+  { q: "Rohan's family has ₹3,000 this month. What should they buy FIRST?", opts: ["🏏 Cricket bat", "🍱 Rice, dal, and vegetables", "📱 New phone cover", "🎬 Cinema tickets"], ans: 1, explain: "Food is a basic Need — it comes first before any entertainment or extras!", fun: "💡 A good rule: Needs before Wants, always!" },
+  { q: "What is SCARCITY?", opts: ["Having too much money", "When money is unlimited", "Having limited resources but unlimited wants", "When we save too much"], ans: 2, explain: "Scarcity means we can't have everything because our money and resources are limited but our desires are unlimited.", fun: "💡 Scarcity is why we must make CHOICES about how to spend!" },
+  { q: "Sunita gets ₹200 pocket money. She needs a notebook (₹60) and wants ice cream (₹30). She should:", opts: ["Buy ice cream first because it's yummy", "Buy notebook first, then ice cream with what's left", "Save all the money", "Buy two ice creams"], ans: 1, explain: "Always buy Needs first! The notebook is for school (a Need). Ice cream is a Want — enjoy it after!", fun: "💡 Smart spenders say: Need it first, Want it next!" },
+  { q: "Which of these is a WANT?", opts: ["🏠 Shelter from rain", "👕 Basic clothing", "🎮 Gaming console", "💊 Medicine when sick"], ans: 2, explain: "A gaming console is something we enjoy but don't need to survive. Shelter, clothing, and medicine are essential Needs.", fun: "💡 You could live happily without a gaming console — but not without shelter or medicine!" },
+  { q: "What is a BUDGET?", opts: ["A type of savings account", "A plan for how to spend and save money", "Extra money given by parents", "A shopping list"], ans: 1, explain: "A budget is a smart money plan! It tells you how much to spend on Needs, Wants, and how much to save.", fun: "💡 Even the government of India makes a Budget every year — you saw it on the news!" },
+  { q: "Amir's family earns ₹15,000 per month. ₹12,000 goes on rent, food, school fees (Needs). How much is left for Wants?", opts: ["₹15,000", "₹12,000", "₹3,000", "₹27,000"], ans: 2, explain: "₹15,000 minus ₹12,000 equals ₹3,000. This leftover can be used for Wants or saved for later!", fun: "💡 Maths + Finance = Super Power! 🧠💰" },
+  { q: "Which statement about Needs vs Wants is CORRECT?", opts: ["Wants are always more important than Needs", "We should spend all money on Wants to be happy", "Needs are things we must have; Wants make life more enjoyable", "Everyone has the same Needs and Wants"], ans: 2, explain: "Needs are essentials for survival. Wants add enjoyment and comfort to life — but we can live without them. Needs always come first!", fun: "💡 Great finance wisdom! You are ready to manage money like a pro." }
+];
+
+let currentQ = 0, score = 0, answered = new Array(questions.length).fill(null);
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  const isAnswered = answered[currentQ] !== null;
+  document.getElementById('q-progress').textContent = `Question ${currentQ + 1} of ${questions.length}`;
+  document.getElementById('q-score-top').textContent = `Score: ${score}`;
+  document.getElementById('progress-fill').style.width = ((currentQ + 1) / questions.length * 100) + '%';
+
+  let optHTML = q.opts.map((opt, i) => {
+    let cls = 'opt-btn';
+    if (isAnswered) {
+      if (i === q.ans) cls += ' reveal-correct';
+      if (answered[currentQ] === i && i !== q.ans) cls += ' wrong';
+      if (answered[currentQ] === i && i === q.ans) cls = 'opt-btn correct';
+    }
+    return `<button class="${cls}" onclick="selectAnswer(${i})" ${isAnswered ? 'disabled' : ''}>${opt}</button>`;
+  }).join('');
+
+  let feedbackHTML = '';
+  if (isAnswered) {
+    const correct = answered[currentQ] === q.ans;
+    feedbackHTML = `<div class="feedback-msg ${correct ? 'correct' : 'wrong'}">${correct ? '✅ Correct! ' : '❌ Not quite! '}${q.explain}<br><em style="opacity:0.8">${q.fun}</em></div>`;
+  }
+
+  document.getElementById('quiz-container').innerHTML = `
+    <div class="quiz-card" id="active-quiz-card">
+      <button class="quiz-close-btn" onclick="closeQuizCard(${currentQ})" title="Dismiss this question">✕</button>
+      <div class="q-header"><span class="q-num-badge">Q${currentQ + 1}</span></div>
+      <div class="q-text">${q.q}</div>
+      <div class="options">${optHTML}</div>
+      ${feedbackHTML}
+    </div>`;
+
+  const navRow = document.getElementById('nav-row');
+  let navHTML = '';
+  if (currentQ > 0) navHTML += `<button class="btn btn-prev" onclick="navigate(-1)">← Previous</button>`;
+  if (currentQ < questions.length - 1) navHTML += `<button class="btn btn-next" onclick="navigate(1)">Next →</button>`;
+  else navHTML += `<button class="btn btn-submit" onclick="showResults()">🏆 See Results!</button>`;
+  navRow.innerHTML = navHTML;
+}
+
+function selectAnswer(optIndex) {
+  if (answered[currentQ] !== null) return;
+  answered[currentQ] = optIndex;
+  if (optIndex === questions[currentQ].ans) score++;
+  document.getElementById('score-display').textContent = score;
+  renderQuestion();
+  if (optIndex === questions[currentQ - 0].ans) spawnConfetti(5);
+}
+
+function navigate(dir) {
+  currentQ = Math.max(0, Math.min(questions.length - 1, currentQ + dir));
+  renderQuestion();
+}
+
+function showResults() {
+  const unanswered = answered.filter(a => a === null).length;
+  if (unanswered > 0) {
+    alert(`Please answer all questions first! ${unanswered} question(s) remain.`);
+    currentQ = answered.findIndex(a => a === null);
+    renderQuestion(); return;
+  }
+  document.getElementById('quiz-container').style.display = 'none';
+  document.getElementById('nav-row').style.display = 'none';
+  const pct = (score / questions.length) * 100;
+  let trophy, title, msg;
+  if (pct === 100) { trophy='🏆🌟'; title='PERFECT SCORE!'; msg='Outstanding! You have mastered Needs vs Wants completely. You are a true Finance Explorer on Planrs!'; spawnConfetti(40); }
+  else if (pct >= 75) { trophy='🥇🎉'; title='Excellent Work!'; msg='You have a strong understanding of Needs vs Wants! Review the questions you missed and you will get 100% next time.'; spawnConfetti(20); }
+  else if (pct >= 50) { trophy='🥈💪'; title='Good Effort!'; msg='You are on the right track! Go back to the lesson slides and activities, then try again. You can do it!'; }
+  else { trophy='🌱📚'; title='Keep Learning!'; msg='Finance takes practice! Go through the lesson from Section 1 again, and come back for this quiz. You will definitely improve!'; }
+  const summary = questions.map((q, i) => `<div class="row"><span>Q${i+1}: ${q.q.substring(0, 35)}…</span><span>${answered[i] === q.ans ? '✅' : '❌'}</span></div>`).join('') + `<div class="row"><span>Final Score</span><span>${score}/8</span></div>`;
+  document.getElementById('r-trophy').textContent = trophy;
+  document.getElementById('r-title').textContent = title;
+  document.getElementById('r-score').textContent = score;
+  document.getElementById('r-msg').textContent = msg;
+  document.getElementById('r-summary').innerHTML = summary;
+  document.getElementById('result-screen').style.display = 'block';
+  document.getElementById('result-screen').scrollIntoView({ behavior: 'smooth' });
+}
+
+function restartQuiz() {
+  currentQ = 0; score = 0;
+  answered = new Array(questions.length).fill(null);
+  document.getElementById('score-display').textContent = 0;
+  document.getElementById('quiz-container').style.display = 'block';
+  document.getElementById('nav-row').style.display = 'flex';
+  document.getElementById('result-screen').style.display = 'none';
+  renderQuestion();
+}
+
+// ======================== DRAG & DROP LOGIC ========================
+const dragItems = [
+  { id: 'item-food',    emoji: '🍚', label: 'Food',          category: 'needs' },
+  { id: 'item-water',   emoji: '💧', label: 'Water',         category: 'needs' },
+  { id: 'item-house',   emoji: '🏠', label: 'Shelter',       category: 'needs' },
+  { id: 'item-medicine',emoji: '💊', label: 'Medicine',      category: 'needs' },
+  { id: 'item-clothes', emoji: '👕', label: 'Clothes',       category: 'needs' },
+  { id: 'item-school',  emoji: '📚', label: 'Education',     category: 'needs' },
+  { id: 'item-game',    emoji: '🎮', label: 'Gaming Console',category: 'wants' },
+  { id: 'item-candy',   emoji: '🍭', label: 'Candy',         category: 'wants' },
+  { id: 'item-toy',     emoji: '🪆', label: 'Fancy Toy',     category: 'wants' },
+  { id: 'item-bike',    emoji: '🛵', label: 'Sports Bike',   category: 'wants' },
+  { id: 'item-movie',   emoji: '🎬', label: 'Cinema Trip',   category: 'wants' },
+  { id: 'item-jewelry', emoji: '💎', label: 'Jewelry',       category: 'wants' },
+];
+
+let dragItemLocations = {}; // id -> 'pool' | 'needs' | 'wants'
+let draggedItemId = null;
+
+function initDragActivity() {
+  dragItemLocations = {};
+  dragItems.forEach(item => { dragItemLocations[item.id] = 'pool'; });
+  renderDragActivity();
+}
+
+function renderDragActivity() {
+  const pool = document.getElementById('drag-pool');
+  const needsZone = document.getElementById('zone-needs-items');
+  const wantsZone = document.getElementById('zone-wants-items');
+  pool.innerHTML = ''; needsZone.innerHTML = ''; wantsZone.innerHTML = '';
+  document.getElementById('activity-feedback').style.display = 'none';
+
+  dragItems.forEach((item, idx) => {
+    const loc = dragItemLocations[item.id];
+    const el = document.createElement('div');
+    el.className = `drag-item color-${idx % 8}`;
+    el.id = `drag-${item.id}`;
+    el.draggable = true;
+    el.style.animationDelay = `${idx * 0.05}s`;
+    el.innerHTML = `${item.emoji} ${item.label}`;
+    el.addEventListener('dragstart', (e) => onDragStart(e, item.id));
+    el.addEventListener('dragend', onDragEnd);
+    // Touch events
+    el.addEventListener('touchstart', onTouchStart, { passive: false });
+    el.addEventListener('touchmove', onTouchMove, { passive: false });
+    el.addEventListener('touchend', onTouchEnd);
+
+    if (loc === 'pool') pool.appendChild(el);
+    else if (loc === 'needs') needsZone.appendChild(el);
+    else if (loc === 'wants') wantsZone.appendChild(el);
+  });
+}
+
+function onDragStart(e, itemId) {
+  draggedItemId = itemId;
+  e.dataTransfer.effectAllowed = 'move';
+  setTimeout(() => { const el = document.getElementById(`drag-${itemId}`); if(el) el.classList.add('dragging'); }, 0);
+}
+function onDragEnd() {
+  if (draggedItemId) { const el = document.getElementById(`drag-${draggedItemId}`); if(el) el.classList.remove('dragging'); }
+}
+function onDragOver(e, zone) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  if (zone === 'pool') document.getElementById('drag-pool').classList.add('drag-over');
+  else if (zone === 'needs') document.getElementById('zone-needs').classList.add('drag-over');
+  else if (zone === 'wants') document.getElementById('zone-wants').classList.add('drag-over');
+}
+function onDragLeave(e) {
+  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+}
+function onDrop(e, zone) {
+  e.preventDefault();
+  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+  if (draggedItemId) {
+    dragItemLocations[draggedItemId] = zone;
+    renderDragActivity();
+    draggedItemId = null;
+  }
+}
+
+// Touch drag support
+let touchGhost = null, touchItemId = null;
+function onTouchStart(e) {
+  e.preventDefault();
+  const el = e.currentTarget;
+  touchItemId = el.id.replace('drag-', '');
+  touchGhost = el.cloneNode(true);
+  touchGhost.classList.add('touch-ghost');
+  touchGhost.style.width = el.offsetWidth + 'px';
+  document.body.appendChild(touchGhost);
+  const t = e.touches[0];
+  touchGhost.style.left = (t.clientX - el.offsetWidth/2) + 'px';
+  touchGhost.style.top = (t.clientY - el.offsetHeight/2) + 'px';
+}
+function onTouchMove(e) {
+  e.preventDefault();
+  if (!touchGhost) return;
+  const t = e.touches[0];
+  touchGhost.style.left = (t.clientX - touchGhost.offsetWidth/2) + 'px';
+  touchGhost.style.top = (t.clientY - touchGhost.offsetHeight/2) + 'px';
+  // highlight
+  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+  const target = document.elementFromPoint(t.clientX, t.clientY);
+  if (target) {
+    const zone = target.closest('.drop-zone, .drag-pool');
+    if (zone) zone.classList.add('drag-over');
+  }
+}
+function onTouchEnd(e) {
+  if (!touchGhost || !touchItemId) return;
+  const t = e.changedTouches[0];
+  const target = document.elementFromPoint(t.clientX, t.clientY);
+  let zone = null;
+  if (target) {
+    const z = target.closest('.drop-zone, .drag-pool');
+    if (z) {
+      if (z.id === 'zone-needs' || z.closest('#zone-needs')) zone = 'needs';
+      else if (z.id === 'zone-wants' || z.closest('#zone-wants')) zone = 'wants';
+      else zone = 'pool';
+    }
+  }
+  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+  if (zone) { dragItemLocations[touchItemId] = zone; renderDragActivity(); }
+  touchGhost.remove(); touchGhost = null; touchItemId = null;
+}
+
+function checkDragActivity() {
+  const poolCount = Object.values(dragItemLocations).filter(v => v === 'pool').length;
+  if (poolCount > 0) {
+    showActivityFeedback(`⚠️ Please sort all ${poolCount} remaining item(s) before checking!`, '#FFF3CD', '#856404', '#FFD700');
+    return;
+  }
+  let correct = 0, wrong = [];
+  dragItems.forEach(item => {
+    if (dragItemLocations[item.id] === item.category) correct++;
+    else wrong.push(`${item.emoji} ${item.label}`);
+  });
+  if (correct === dragItems.length) {
+    showActivityFeedback(`🎉 PERFECT! You sorted all ${dragItems.length} items correctly! You're a Needs vs Wants CHAMPION! 🏆`, '#E8FFF0', '#1A6B35', '#6BCB77');
+    spawnConfetti(30);
+  } else {
+    showActivityFeedback(`✅ ${correct}/${dragItems.length} correct! Review: ${wrong.join(', ')} — try again!`, '#FFF0F0', '#7B1A1A', '#FF6B6B');
+  }
+}
+
+function showActivityFeedback(msg, bg, color, border) {
+  const fb = document.getElementById('activity-feedback');
+  fb.style.background = bg; fb.style.color = color;
+  fb.style.border = `3px solid ${border}`;
+  fb.textContent = msg; fb.style.display = 'block';
+  fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function resetDragActivity() { initDragActivity(); }
+
+function closeDragActivity() {
+  switchMode('quiz');
+}
+
+// ======================== MODE SWITCHER ========================
+function switchMode(mode) {
+  document.getElementById('tab-quiz').classList.toggle('active', mode === 'quiz');
+  document.getElementById('tab-drag').classList.toggle('active', mode === 'drag');
+  document.getElementById('quiz-section').style.display = mode === 'quiz' ? 'block' : 'none';
+  document.getElementById('drag-activity').style.display = mode === 'drag' ? 'block' : 'none';
+  if (mode === 'drag') initDragActivity();
+}
+
+// ======================== CONFETTI ========================
+const confettiColors = ['#FF6BB5','#9B5EE5','#FFD93D','#6BCB77','#4ECDC4','#FF9A3C','#FF6B6B','#74B9FF'];
+function spawnConfetti(count) {
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const c = document.createElement('div');
+      c.className = 'confetti-piece';
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.background = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+      c.style.width = (8 + Math.random() * 8) + 'px';
+      c.style.height = (8 + Math.random() * 8) + 'px';
+      c.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+      c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 4000);
+    }, i * 60);
+  }
+}
+
+// ======================== CLOSE BUTTON LOGIC ========================
+let dismissedCards = new Set();
+
+function closeQuizCard(qIndex) {
+  const card = document.getElementById('active-quiz-card');
+  if (!card) return;
+  card.classList.add('card-closing');
+  setTimeout(() => {
+    dismissedCards.add(qIndex);
+    const q = questions[qIndex];
+    document.getElementById('quiz-container').innerHTML = `
+      <div class="dismissed-overlay" id="dismissed-${qIndex}">
+        <div class="dismiss-emoji">🙈</div>
+        <h3>Question ${qIndex + 1} Hidden!</h3>
+        <p>You can come back to it anytime.</p>
+        <button class="btn-reopen" onclick="reopenCard(${qIndex})">👀 Show Question Again</button>
+      </div>`;
+    document.getElementById('nav-row').style.display = 'flex';
+  }, 280);
+}
+
+function reopenCard(qIndex) {
+  dismissedCards.delete(qIndex);
+  renderQuestion();
+}
+
+function closeResult() {
+  const rs = document.getElementById('result-screen');
+  rs.classList.add('card-closing');
+  setTimeout(() => {
+    rs.style.display = 'none';
+    rs.classList.remove('card-closing');
+    // Show a friendly "closed" banner
+    const banner = document.createElement('div');
+    banner.className = 'dismissed-overlay';
+    banner.id = 'result-closed-banner';
+    banner.innerHTML = `
+      <div class="dismiss-emoji">🎉</div>
+      <h3>Results Closed!</h3>
+      <p>Great job completing the quiz!</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn-reopen" onclick="reopenResult()">📊 Show Results Again</button>
+        <button class="btn-reopen" style="background:linear-gradient(135deg,var(--blue),#3B9EE0)" onclick="restartQuiz()">🔄 Try Again</button>
+      </div>`;
+    document.getElementById('quiz-section').appendChild(banner);
+  }, 280);
+}
+
+function reopenResult() {
+  const banner = document.getElementById('result-closed-banner');
+  if (banner) banner.remove();
+  const rs = document.getElementById('result-screen');
+  rs.style.display = 'block';
+  rs.classList.remove('card-closing');
+  rs.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Init
+renderQuestion();
+</script>
+</body>
+</html>

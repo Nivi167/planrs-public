@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 2 – Why Do Needs Come First? Sort & Decide! 🏦</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #00C897;
+    --green-dark: #009973;
+    --yellow: #FFD93D;
+    --pink: #FF6B9D;
+    --blue: #4FC3F7;
+    --purple: #B39DDB;
+    --orange: #FFB347;
+    --red: #FF6B6B;
+    --bg: #FFF8F0;
+    --white: #FFFFFF;
+    --text: #2C2C54;
+    --shadow: 0 8px 24px rgba(0,0,0,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    background-image: radial-gradient(circle at 15% 20%, #FFE8F7 0%, transparent 40%),
+                      radial-gradient(circle at 85% 80%, #E0F7FF 0%, transparent 40%),
+                      radial-gradient(circle at 50% 50%, #FFFDE7 0%, transparent 60%);
+    min-height: 100vh;
+    padding: 16px;
+  }
+
+  /* ===== CLOSE BUTTON ===== */
+  .close-btn {
+    position: fixed;
+    top: 14px;
+    left: 16px;
+    width: 44px; height: 44px;
+    background: white;
+    border: 3px solid #FF6B6B;
+    border-radius: 50%;
+    font-size: 20px;
+    color: #FF6B6B;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 14px rgba(255,107,107,0.3);
+    z-index: 200;
+    transition: all 0.2s;
+    line-height: 1;
+  }
+  .close-btn:hover { background: #FF6B6B; color: white; transform: rotate(90deg) scale(1.1); }
+
+  /* ===== LOGO ===== */
+  .planrs-logo {
+    position: fixed; top: 12px; right: 16px;
+    font-family: 'Baloo 2', cursive;
+    font-size: 15px; font-weight: 800; color: var(--green-dark);
+    background: white; padding: 7px 14px; border-radius: 20px;
+    box-shadow: 0 4px 14px rgba(0,200,150,0.2);
+    z-index: 100; border: 2px solid rgba(0,200,150,0.3);
+  }
+
+  /* ===== HEADER ===== */
+  h1 {
+    text-align: center; color: var(--text);
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(22px,5vw,34px);
+    font-weight: 800;
+    margin: 60px 0 4px;
+    text-shadow: 3px 3px 0 rgba(0,200,150,0.2);
+  }
+  .subtitle { text-align:center; color:#888; font-size:15px; margin-bottom:20px; }
+
+  /* ===== SCENARIO BOX ===== */
+  .scenario-box {
+    background: white; border-radius: 24px; padding: 20px 24px;
+    max-width: 660px; margin: 0 auto 20px;
+    box-shadow: var(--shadow); border: 3px solid var(--yellow);
+    position: relative; overflow: hidden;
+  }
+  .scenario-box::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
+    background: linear-gradient(90deg, var(--yellow), var(--orange), var(--pink));
+  }
+  .scenario-box h3 {
+    font-family: 'Baloo 2', cursive; color: var(--text);
+    font-size: 18px; margin-bottom: 8px;
+  }
+  .scenario-box p { color: #555; font-size: 14px; line-height: 1.6; }
+
+  /* ===== BUDGET BAR ===== */
+  .budget-bar {
+    background: linear-gradient(135deg, #E8FFF5, #F0FFFC);
+    border: 3px solid var(--green); border-radius: 20px;
+    padding: 16px 22px; max-width: 480px; margin: 0 auto 20px;
+    box-shadow: 0 6px 20px rgba(0,200,150,0.15);
+  }
+  .budget-bar h3 {
+    text-align: center; font-family: 'Baloo 2', cursive;
+    color: var(--green-dark); font-size: 17px; margin-bottom: 10px;
+  }
+  .budget-row { display:flex; justify-content:space-between; font-size:15px; font-weight: 700; color:#444; padding:3px 0; }
+  .budget-row.total {
+    font-weight: 900; font-size: 18px;
+    border-top: 3px dashed var(--green); padding-top: 8px; margin-top: 6px;
+  }
+  .money-left { color: var(--green-dark); }
+  .money-over { color: var(--red); }
+
+  /* ===== PROGRESS ===== */
+  .progress-bar-wrap { max-width: 660px; margin: 0 auto 20px; }
+  .progress-bar-wrap label {
+    font-size: 14px; font-weight: 700; color: #666;
+    display: flex; justify-content: space-between; margin-bottom: 6px;
+  }
+  .progress-bar { height: 18px; background: #E8E8E8; border-radius: 12px; overflow: hidden; border: 2px solid white; box-shadow: inset 0 2px 4px rgba(0,0,0,0.08); }
+  .progress-fill {
+    height: 100%; border-radius: 12px;
+    background: linear-gradient(90deg, var(--green), var(--yellow));
+    transition: width 0.5s cubic-bezier(.34,1.56,.64,1);
+  }
+  .progress-fill.over { background: linear-gradient(90deg, var(--yellow), var(--red)); }
+
+  /* ===== DRAG-DROP ZONES ===== */
+  .drag-drop-section {
+    max-width: 700px; margin: 0 auto 22px;
+  }
+  .drag-zone-label {
+    font-family: 'Baloo 2', cursive; font-size: 16px; font-weight: 800;
+    text-align: center; margin-bottom: 10px; padding: 8px 16px;
+    border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .dd-areas { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  @media(max-width:500px) { .dd-areas { grid-template-columns: 1fr; } }
+
+  .drop-zone {
+    min-height: 100px; border-radius: 20px; padding: 14px;
+    border: 3px dashed; transition: all 0.2s;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .drop-zone-title {
+    font-family: 'Baloo 2', cursive; font-size: 14px; font-weight: 800;
+    text-align: center; margin-bottom: 4px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .drop-zone.basket {
+    background: linear-gradient(135deg, #E8FFF0, #F0FFF8);
+    border-color: var(--green);
+  }
+  .drop-zone.basket .drop-zone-title { color: var(--green-dark); }
+  .drop-zone.skip-zone {
+    background: linear-gradient(135deg, #FFF0F0, #FFF5F5);
+    border-color: var(--red);
+  }
+  .drop-zone.skip-zone .drop-zone-title { color: var(--red); }
+  .drop-zone.drag-over-valid { transform: scale(1.02); box-shadow: 0 8px 24px rgba(0,200,150,0.25); }
+  .drop-zone.drag-over-skip { transform: scale(1.02); box-shadow: 0 8px 24px rgba(255,107,107,0.25); }
+  .empty-hint { text-align: center; color: #bbb; font-size: 13px; font-weight: 700; padding: 16px 0; }
+
+  /* ===== CARDS ===== */
+  .items-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+    gap: 12px; max-width: 660px; margin: 0 auto 10px;
+  }
+  .spend-card {
+    background: white; border: 3px solid #ddd; border-radius: 18px;
+    padding: 14px 12px; text-align: center;
+    cursor: grab; transition: all 0.2s;
+    user-select: none; position: relative;
+    animation: cardPop 0.4s cubic-bezier(.34,1.56,.64,1) backwards;
+  }
+  .spend-card:active { cursor: grabbing; }
+  .spend-card:hover { transform: translateY(-5px) rotate(-1deg); box-shadow: 0 12px 28px rgba(0,0,0,0.14); }
+  .spend-card.dragging { opacity: 0.4; transform: scale(0.95); }
+  .spend-card.need-card { border-color: #6DBE83; background: linear-gradient(135deg, #fff, #F0FFF6); }
+  .spend-card.want-card { border-color: #FFB3C6; background: linear-gradient(135deg, #fff, #FFF0F5); }
+  .spend-card.selected-spend {
+    background: linear-gradient(135deg, #C8FFE8, #A8F0D8) !important;
+    border-color: var(--green) !important; cursor: default;
+    transform: scale(0.96);
+  }
+  .spend-card.selected-skip {
+    background: linear-gradient(135deg, #FFE0E0, #FFD0D0) !important;
+    border-color: var(--red) !important; cursor: default; opacity: 0.75;
+    transform: scale(0.96);
+  }
+  .spend-card .emoji { font-size: 32px; display: block; margin-bottom: 6px; }
+  .spend-card .name { font-size: 12px; font-weight: 800; color: #333; display: block; margin-bottom: 3px; }
+  .spend-card .price { font-size: 15px; font-weight: 900; color: var(--green-dark); }
+  .card-label {
+    font-size: 10px; font-weight: 900; padding: 2px 8px; border-radius: 10px;
+    margin-top: 5px; display: inline-block; letter-spacing: 0.5px;
+  }
+  .need-label { background: #D4EDDA; color: var(--green-dark); }
+  .want-label { background: #FFE0EB; color: #C0135A; }
+  .action-row { display: flex; gap: 8px; justify-content: center; align-items: center; margin-top: 8px; }
+  .btn-spend {
+    background: linear-gradient(135deg, var(--green), var(--green-dark));
+    color: white; border: none; padding: 5px 12px;
+    border-radius: 10px; font-weight: 800; font-size: 12px;
+    cursor: pointer; transition: all 0.15s; font-family: 'Nunito', sans-serif;
+    box-shadow: 0 3px 8px rgba(0,200,150,0.3);
+  }
+  .btn-skip {
+    background: linear-gradient(135deg, var(--red), #E53935);
+    color: white; border: none; padding: 5px 12px;
+    border-radius: 10px; font-weight: 800; font-size: 12px;
+    cursor: pointer; transition: all 0.15s; font-family: 'Nunito', sans-serif;
+    box-shadow: 0 3px 8px rgba(255,107,107,0.3);
+  }
+  .btn-spend:hover { transform: translateY(-2px); filter: brightness(1.1); }
+  .btn-skip:hover { transform: translateY(-2px); filter: brightness(1.1); }
+  .btn-spend:disabled, .btn-skip:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* Card color variants */
+  .spend-card[data-item="notebook"] .emoji { filter: drop-shadow(2px 3px 0 #A8E6CF); }
+  .spend-card[data-item="chips"] .emoji { filter: drop-shadow(2px 3px 0 #FFD93D); }
+  .spend-card[data-item="lunch"] .emoji { filter: drop-shadow(2px 3px 0 #FFB347); }
+  .spend-card[data-item="comic"] .emoji { filter: drop-shadow(2px 3px 0 #B39DDB); }
+  .spend-card[data-item="bus"] .emoji { filter: drop-shadow(2px 3px 0 #4FC3F7); }
+  .spend-card[data-item="icecream"] .emoji { filter: drop-shadow(2px 3px 0 #FF6B9D); }
+
+  /* ===== INSTRUCTION ===== */
+  .instruction {
+    background: linear-gradient(135deg, #FFFDE7, #FFF9C4);
+    border-left: 5px solid var(--yellow); border-radius: 14px;
+    padding: 12px 18px; max-width: 660px; margin: 0 auto 18px;
+    font-size: 14px; color: #555; text-align: center;
+    box-shadow: 0 3px 10px rgba(255,217,61,0.2);
+    font-weight: 600;
+  }
+
+  /* ===== CONTROLS ===== */
+  .controls {
+    text-align: center; display: flex; gap: 12px;
+    justify-content: center; flex-wrap: wrap; margin-bottom: 30px;
+  }
+  .btn {
+    padding: 13px 26px; border: none; border-radius: 16px;
+    font-size: 15px; font-weight: 800; cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    font-family: 'Baloo 2', cursive; letter-spacing: 0.3px;
+  }
+  .btn:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.18); }
+  .btn:active { transform: translateY(0); }
+  .btn-check { background: linear-gradient(135deg, var(--yellow), var(--orange)); color: white; box-shadow: 0 4px 14px rgba(255,179,71,0.4); }
+  .btn-reset { background: linear-gradient(135deg, var(--blue), #0288D1); color: white; box-shadow: 0 4px 14px rgba(79,195,247,0.4); }
+  .btn-next { background: linear-gradient(135deg, var(--pink), #E91E8C); color: white; box-shadow: 0 4px 14px rgba(255,107,157,0.4); }
+
+  /* ===== RESULT SCREEN ===== */
+  .result-screen {
+    display: none; text-align: center; background: white;
+    border-radius: 28px; padding: 36px;
+    max-width: 500px; margin: 0 auto 30px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+    border: 4px solid var(--yellow);
+    position: relative; overflow: hidden;
+  }
+  .result-screen::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 6px;
+    background: linear-gradient(90deg, var(--green), var(--yellow), var(--pink), var(--blue), var(--purple));
+  }
+  .result-screen .big-emoji { font-size: 64px; margin-bottom: 8px; }
+  .result-screen h2 { font-family: 'Baloo 2', cursive; font-size: 28px; color: var(--text); margin-bottom: 12px; }
+  .result-screen .analysis {
+    background: linear-gradient(135deg, #F0FFF8, #F0F8FF);
+    border-radius: 16px; padding: 16px; margin: 14px 0;
+    text-align: left; font-size: 14px; color: #444;
+    line-height: 1.7; font-weight: 600; border: 2px solid #E0F7FA;
+  }
+
+  /* ===== TOAST ===== */
+  .toast {
+    position: fixed; bottom: 30px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--text); color: white; padding: 12px 24px;
+    border-radius: 16px; font-size: 15px; font-weight: 700;
+    transition: transform 0.35s cubic-bezier(.34,1.56,.64,1);
+    pointer-events: none; z-index: 300;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    font-family: 'Nunito', sans-serif;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ===== CONFETTI BURST ===== */
+  .confetti { position: fixed; pointer-events: none; z-index: 400; }
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes cardPop {
+    from { opacity: 0; transform: scale(0.6) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .drop-zone-placeholder {
+    font-size: 24px; text-align: center; padding: 12px 0;
+    color: #ccc; font-weight: 800; font-family: 'Baloo 2', cursive;
+    animation: bounce 2s ease-in-out infinite;
+  }
+  .dropped-badge {
+    display: flex; align-items: center; gap: 6px;
+    background: white; border-radius: 12px; padding: 6px 10px;
+    font-size: 12px; font-weight: 800; color: #333;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 2px solid #eee;
+    animation: cardPop 0.3s cubic-bezier(.34,1.56,.64,1) backwards;
+  }
+  .dropped-badge.need-badge { border-color: var(--green); }
+  .dropped-badge.want-badge { border-color: var(--pink); }
+
+  .rainbow-text {
+    background: linear-gradient(90deg, var(--green), var(--blue), var(--purple), var(--pink), var(--orange));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+
+  .section-label {
+    font-family: 'Baloo 2', cursive; font-size: 14px; font-weight: 800;
+    text-align: center; color: #888; max-width: 660px; margin: 0 auto 8px;
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<div id="close-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+  <div style="background:white;border-radius:28px;padding:36px 32px;max-width:360px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.25);border:4px solid #FFD93D;animation:cardPop 0.3s cubic-bezier(.34,1.56,.64,1)">
+    <div style="font-size:52px;margin-bottom:10px">🚪</div>
+    <h2 style="font-family:'Baloo 2',cursive;color:#2C2C54;font-size:22px;margin-bottom:8px">Close Activity?</h2>
+    <p style="color:#888;font-size:14px;font-weight:600;margin-bottom:22px">Your progress will be lost. Are you sure?</p>
+    <div style="display:flex;gap:12px;justify-content:center;">
+      <button onclick="cancelClose()" style="padding:11px 22px;background:linear-gradient(135deg,#4FC3F7,#0288D1);color:white;border:none;border-radius:14px;font-size:15px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;box-shadow:0 4px 12px rgba(79,195,247,0.4)">👈 Stay</button>
+      <button onclick="confirmClose()" style="padding:11px 22px;background:linear-gradient(135deg,#FF6B6B,#E53935);color:white;border:none;border-radius:14px;font-size:15px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;box-shadow:0 4px 12px rgba(255,107,107,0.4)">✕ Close</button>
+    </div>
+  </div>
+</div>
+<button class="close-btn" onclick="closeActivity()" title="Close activity">✕</button>
+<div class="planrs-logo">⭐ Planrs</div>
+
+<h1>💰 <span class="rainbow-text">Priya's Pocket Money Challenge!</span></h1>
+<p class="subtitle">Help Priya decide what to spend her pocket money on</p>
+
+<div class="scenario-box">
+  <h3>📖 The Story</h3>
+  <p>Priya gets <strong>₹500 pocket money</strong> this month. She has a list of things she wants to buy. But she can't buy everything! Help her choose <strong>Needs first</strong>, then use leftover money for Wants. <strong>Drag cards into the baskets below, or click BUY / SKIP!</strong></p>
+</div>
+
+<div class="budget-bar">
+  <h3>Priya's Wallet 👜</h3>
+  <div class="budget-row"><span>Total Budget</span><span>₹500</span></div>
+  <div class="budget-row"><span>Amount Spent</span><span id="spent">₹0</span></div>
+  <div class="budget-row total"><span>Money Left</span><span id="remaining" class="money-left">₹500</span></div>
+</div>
+
+<div class="progress-bar-wrap">
+  <label><span>💸 Budget Used</span><span id="pct-label">0%</span></label>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+</div>
+
+<div class="instruction">
+  🎮 <strong>Drag</strong> cards into the baskets below — or click <strong>BUY 🛒</strong> to spend or <strong>SKIP ❌</strong> to save! Try buying all NEEDs first!
+</div>
+
+<!-- ===== CARDS SOURCE ===== -->
+<p class="section-label">🃏 All Items — Drag or Click!</p>
+<div class="items-grid" id="items-grid">
+  <div class="spend-card need-card" draggable="true" data-item="notebook" data-cost="60" data-type="need" style="animation-delay:0.05s">
+    <span class="emoji">📓</span>
+    <span class="name">School Notebook</span>
+    <span class="price">₹60</span>
+    <span class="card-label need-label">NEED</span>
+    <div class="action-row">
+      <button class="btn-spend" onclick="buyItem(this,'notebook',60,'need')">BUY 🛒</button>
+      <button class="btn-skip" onclick="skipItem(this,'notebook')">SKIP ❌</button>
+    </div>
+  </div>
+  <div class="spend-card want-card" draggable="true" data-item="chips" data-cost="40" data-type="want" style="animation-delay:0.1s">
+    <span class="emoji">🍟</span>
+    <span class="name">Chips & Snacks</span>
+    <span class="price">₹40</span>
+    <span class="card-label want-label">WANT</span>
+    <div class="action-row">
+      <button class="btn-spend" onclick="buyItem(this,'chips',40,'want')">BUY 🛒</button>
+      <button class="btn-skip" onclick="skipItem(this,'chips')">SKIP ❌</button>
+    </div>
+  </div>
+  <div class="spend-card need-card" draggable="true" data-item="pencils" data-cost="30" data-type="need" style="animation-delay:0.15s">
+    <span class="emoji">✏️</span>
+    <span class="name">Pencils & Eraser</span>
+    <span class="price">₹30</span>
+    <span class="card-label need-label">NEED</span>
+    <div class="action-row">
+      <button class="btn-spend" onclick="buyItem(this,'pencils',30,'need')">BUY 🛒</button>
+      <button class="btn-skip" onclick="skipItem(this,'pencils')">SKIP ❌</button>
+    </div>
+  </div>
+  <div class="spend-card want-card" draggable="true" data-item="stickers" data-cost="80" data-type="want" style="animation-delay:0.2s">
+    <span class="emoji">🌈</span>
+    <span class="name">Fancy Sticker Set</span>
+    <span class="price">₹80</span>
+    <span class="card-label want-label">WANT</span>
+    <div class="action-row">
+      <button class="btn-spend" onclick="buyItem(this,'stickers',80,'want')">BUY 🛒</button>
+      <button class="btn-skip" onclick="skipItem(this,'stickers')">SKIP ❌</button>
+    </div>
+  </div>
+  <div class="spend-card need-card" draggable="true" data-item="lunch" data-cost="100" data-type="need" style="animation-delay:0.25s">
+    <span class="emoji">🍱</span>
+    <span class="name">School Lunch</span>
+    <span class="price">₹100</span>
+    <span class="card-label need-label">NEED</span>
+    <div class="action-row">
+      <button class="btn-spend" onclick="buyItem(this,'lunch',100,'need')">BUY 🛒</button>
+      <button class="btn-skip" onclick="skipItem(this,'lunch')">SKIP ❌</button>
+    </div>
+  </div>
+  <div class="spend-card want-card" draggable="true" data-item="comic" data-cost="120" data-type="want" style="animation-delay:0.3s">
+    <span class="emoji">📚</span>
+    <span class="name">Doraemon Comic</span>
+    <span class="price">₹120</span>
+    <span class="card-label want-label">WANT</span>
+    <div class="action-row">
+      <button class="btn-spend" onclick="buyItem(this,'comic',120,'want')">BUY 🛒</button>
+      <button class="btn-skip" onclick="skipItem(this,'comic')">SKIP ❌</button>
+    </div>
+  </div>
+  <div class="spend-card need-card" draggable="true" data-item="bus" data-cost="90" data-type="need" style="animation-delay:0.35s">
+    <span class="emoji">🚌</span>
+    <span class="name">Bus Pass</span>
+    <span class="price">₹90</span>
+    <span class="card-label need-label">NEED</span>
+    <div class="action-row">
+      <button class="btn-spend" onclick="buyItem(this,'bus',90,'need')">BUY 🛒</button>
+      <button class="btn-skip" onclick="skipItem(this,'bus')">SKIP ❌</button>
+    </div>
+  </div>
+  <div class="spend-card want-card" draggable="true" data-item="icecream" data-cost="50" data-type="want" style="animation-delay:0.4s">
+    <span class="emoji">🍦</span>
+    <span class="name">Ice Cream Treat</span>
+    <span class="price">₹50</span>
+    <span class="card-label want-label">WANT</span>
+    <div class="action-row">
+      <button class="btn-spend" onclick="buyItem(this,'icecream',50,'want')">BUY 🛒</button>
+      <button class="btn-skip" onclick="skipItem(this,'icecream')">SKIP ❌</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DRAG DROP ZONES ===== -->
+<div class="drag-drop-section">
+  <p class="section-label" style="margin-top:20px">🎯 Drop Zone — Basket or Skip Pile!</p>
+  <div class="dd-areas">
+    <div class="drop-zone basket" id="zone-basket" ondragover="onDragOver(event,'basket')" ondragleave="onDragLeave(event)" ondrop="onDrop(event,'basket')">
+      <div class="drop-zone-title">🛒 Bought Basket</div>
+      <div class="drop-zone-placeholder" id="basket-placeholder">Drop items here!</div>
+      <div id="basket-items"></div>
+    </div>
+    <div class="drop-zone skip-zone" id="zone-skip" ondragover="onDragOver(event,'skip')" ondragleave="onDragLeave(event)" ondrop="onDrop(event,'skip')">
+      <div class="drop-zone-title">❌ Skipped Pile</div>
+      <div class="drop-zone-placeholder" id="skip-placeholder">Drag unwanted items!</div>
+      <div id="skip-items"></div>
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="btn btn-check" onclick="analyzeChoices()">📊 Analyse My Choices</button>
+  <button class="btn btn-reset" onclick="resetAll()">🔄 Try Again</button>
+</div>
+
+<div class="result-screen" id="result-screen">
+  <div class="big-emoji" id="result-emoji">🌟</div>
+  <h2 id="result-title">Great thinking!</h2>
+  <div class="analysis" id="result-analysis"></div>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:18px;">
+    <button class="btn btn-reset" onclick="resetAll()">🔄 Try Again</button>
+    <button class="btn btn-next" onclick="alert('Fantastic! Move to Section 3 to learn about saving!')">➡️ Next Section</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let budget = 500;
+let spent = 0;
+let decisions = {};
+let draggedItem = null;
+
+// ===== TOAST =====
+function showToast(msg, duration=2200) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+// ===== BUDGET UPDATE =====
+function updateBudget() {
+  const remaining = budget - spent;
+  document.getElementById('spent').textContent = '₹' + spent;
+  const remEl = document.getElementById('remaining');
+  remEl.textContent = '₹' + remaining;
+  remEl.className = remaining < 0 ? 'money-over' : 'money-left';
+  const pct = Math.min((spent / budget) * 100, 100);
+  const fill = document.getElementById('progress-fill');
+  fill.style.width = pct + '%';
+  fill.className = 'progress-fill' + (spent > budget ? ' over' : '');
+  document.getElementById('pct-label').textContent = Math.round(pct) + '%';
+}
+
+// ===== CARD ACTION HELPERS =====
+function markCardBought(card) {
+  card.classList.add('selected-spend');
+  card.querySelectorAll('button').forEach(b => b.disabled = true);
+  card.setAttribute('draggable', 'false');
+}
+function markCardSkipped(card) {
+  card.classList.add('selected-skip');
+  card.querySelectorAll('button').forEach(b => b.disabled = true);
+  card.setAttribute('draggable', 'false');
+}
+
+// ===== DROP ZONE BADGES =====
+function addBadge(zoneId, phId, emoji, name, type, isBuy) {
+  document.getElementById(phId).style.display = 'none';
+  const wrap = document.getElementById(zoneId);
+  const badge = document.createElement('div');
+  badge.className = 'dropped-badge ' + (type === 'need' ? 'need-badge' : 'want-badge');
+  badge.innerHTML = `<span>${emoji}</span><span>${name}</span><span style="margin-left:auto;font-size:10px;background:${isBuy ? '#D4EDDA' : '#FFDDDD'};color:${isBuy ? '#2D7D4F' : '#E53935'};border-radius:8px;padding:2px 6px;font-weight:900">${isBuy ? 'BOUGHT' : 'SKIPPED'}</span>`;
+  wrap.appendChild(badge);
+}
+
+// ===== BUY / SKIP BUTTONS =====
+function buyItem(btn, item, cost, type) {
+  if (decisions[item]) { showToast('Already decided!'); return; }
+  if (spent + cost > budget) { showToast('⚠️ Not enough money! Skip something.', 2500); return; }
+  spent += cost;
+  decisions[item] = { action: 'buy', cost, type };
+  const card = btn.closest('.spend-card');
+  markCardBought(card);
+  updateBudget();
+  const emoji = card.querySelector('.emoji').textContent;
+  const name = card.querySelector('.name').textContent;
+  addBadge('basket-items', 'basket-placeholder', emoji, name, type, true);
+  showToast(type === 'need' ? '✅ Smart! Needs first!' : '😊 Enjoy your treat!');
+}
+
+function skipItem(btn, item) {
+  if (decisions[item]) { showToast('Already decided!'); return; }
+  const card = btn.closest('.spend-card');
+  const cost = parseInt(card.dataset.cost);
+  const type = card.dataset.type;
+  decisions[item] = { action: 'skip', cost, type };
+  markCardSkipped(card);
+  const emoji = card.querySelector('.emoji').textContent;
+  const name = card.querySelector('.name').textContent;
+  addBadge('skip-items', 'skip-placeholder', emoji, name, type, false);
+  showToast(type === 'need' ? '⚠️ Are you sure? This is a Need!' : '💡 Good saving mindset!');
+}
+
+// ===== DRAG & DROP =====
+document.querySelectorAll('.spend-card').forEach(card => {
+  card.addEventListener('dragstart', e => {
+    draggedItem = card;
+    card.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', card.dataset.item);
+  });
+  card.addEventListener('dragend', () => {
+    card.classList.remove('dragging');
+    draggedItem = null;
+  });
+});
+
+function onDragOver(e, zone) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  document.getElementById('zone-basket').classList.remove('drag-over-valid', 'drag-over-skip');
+  document.getElementById('zone-skip').classList.remove('drag-over-valid', 'drag-over-skip');
+  const zoneEl = document.getElementById(zone === 'basket' ? 'zone-basket' : 'zone-skip');
+  zoneEl.classList.add(zone === 'basket' ? 'drag-over-valid' : 'drag-over-skip');
+}
+
+function onDragLeave(e) {
+  document.getElementById('zone-basket').classList.remove('drag-over-valid', 'drag-over-skip');
+  document.getElementById('zone-skip').classList.remove('drag-over-valid', 'drag-over-skip');
+}
+
+function onDrop(e, zone) {
+  e.preventDefault();
+  onDragLeave();
+  if (!draggedItem) return;
+  const card = draggedItem;
+  const item = card.dataset.item;
+  const cost = parseInt(card.dataset.cost);
+  const type = card.dataset.type;
+  if (decisions[item]) { showToast('Already decided!'); return; }
+
+  if (zone === 'basket') {
+    if (spent + cost > budget) { showToast('⚠️ Not enough money! Skip something first.', 2500); return; }
+    spent += cost;
+    decisions[item] = { action: 'buy', cost, type };
+    markCardBought(card);
+    updateBudget();
+    const emoji = card.querySelector('.emoji').textContent;
+    const name = card.querySelector('.name').textContent;
+    addBadge('basket-items', 'basket-placeholder', emoji, name, type, true);
+    showToast(type === 'need' ? '✅ Smart! Needs first!' : '😊 Enjoy your treat!');
+    spawnConfetti(e.clientX, e.clientY, ['#00C897','#FFD93D','#6DBE83']);
+  } else {
+    decisions[item] = { action: 'skip', cost, type };
+    markCardSkipped(card);
+    const emoji = card.querySelector('.emoji').textContent;
+    const name = card.querySelector('.name').textContent;
+    addBadge('skip-items', 'skip-placeholder', emoji, name, type, false);
+    showToast(type === 'need' ? '⚠️ Are you sure? This is a Need!' : '💡 Good saving mindset!');
+  }
+}
+
+// ===== CONFETTI =====
+function spawnConfetti(x, y, colors) {
+  for (let i = 0; i < 18; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti';
+    el.style.cssText = `
+      left:${x}px; top:${y}px; width:${6+Math.random()*8}px; height:${6+Math.random()*8}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      border-radius:${Math.random()>0.5?'50%':'3px'};
+      opacity:1; position:fixed; pointer-events:none; z-index:400;
+    `;
+    document.body.appendChild(el);
+    const angle = (Math.random() * 360) * Math.PI / 180;
+    const dist = 60 + Math.random() * 100;
+    el.animate([
+      { transform: `translate(0,0) rotate(0deg)`, opacity: 1 },
+      { transform: `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist - 80}px) rotate(${Math.random()*720}deg)`, opacity: 0 }
+    ], { duration: 700 + Math.random()*400, easing: 'cubic-bezier(.17,.67,.83,.67)' })
+    .onfinish = () => el.remove();
+  }
+}
+
+// ===== ANALYSE =====
+function analyzeChoices() {
+  const decided = Object.keys(decisions).length;
+  if (decided < 8) { showToast(`Make decisions for all 8 items! (${8 - decided} left)`, 2500); return; }
+  let bN=0, sN=0, bW=0, sW=0;
+  for (const d of Object.values(decisions)) {
+    if (d.type==='need' && d.action==='buy') bN++;
+    if (d.type==='need' && d.action==='skip') sN++;
+    if (d.type==='want' && d.action==='buy') bW++;
+    if (d.type==='want' && d.action==='skip') sW++;
+  }
+  const rem = budget - spent;
+  let emoji, title, analysis;
+  if (sN === 0 && rem >= 0) {
+    emoji = '🌟🎉'; title = 'Excellent Budget Manager!';
+    analysis = `You bought ALL 4 Needs first — that's exactly what smart spenders do! You spent ₹${spent} and have ₹${rem} left. ${bW>0 ? `You also treated yourself to ${bW} want(s) — great balance!` : 'You saved the rest — very wise!'}`;
+    spawnConfetti(window.innerWidth/2, window.innerHeight/2, ['#FFD93D','#00C897','#FF6B9D','#4FC3F7']);
+  } else if (sN > 0 && sN < 3) {
+    emoji = '🤔💡'; title = 'Good effort, but...';
+    analysis = `You skipped ${sN} Need(s)! Remember — Needs are things we must have. If Priya skips her bus pass or lunch money, she'll be in trouble! Always buy Needs before Wants.`;
+  } else {
+    emoji = '😬📚'; title = 'Time to Rethink!';
+    analysis = `You skipped ${sN} essential Needs! A good rule: always pay for Needs first, then use leftover money for Wants. Try again!`;
+  }
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-analysis').textContent = analysis;
+  const rs = document.getElementById('result-screen');
+  rs.style.display = 'block';
+  rs.scrollIntoView({ behavior: 'smooth' });
+}
+
+// ===== RESET =====
+function resetAll() {
+  spent = 0; decisions = {};
+  document.getElementById('result-screen').style.display = 'none';
+  updateBudget();
+  document.querySelectorAll('.spend-card').forEach(card => {
+    card.classList.remove('selected-spend', 'selected-skip');
+    card.querySelectorAll('button').forEach(b => b.disabled = false);
+    card.setAttribute('draggable', 'true');
+  });
+  document.getElementById('basket-items').innerHTML = '';
+  document.getElementById('skip-items').innerHTML = '';
+  document.getElementById('basket-placeholder').style.display = '';
+  document.getElementById('skip-placeholder').style.display = '';
+}
+
+// ===== CLOSE =====
+function closeActivity() {
+  document.getElementById('close-overlay').style.display = 'flex';
+}
+function confirmClose() {
+  document.body.style.transition = 'opacity 0.5s';
+  document.body.style.opacity = '0';
+  setTimeout(() => {
+    document.body.innerHTML = `
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:'Nunito',sans-serif;background:#FFF8F0;gap:16px;">
+        <div style="font-size:64px">👋</div>
+        <h2 style="font-family:'Baloo 2',cursive;color:#2C2C54;font-size:28px">See you next time!</h2>
+        <p style="color:#888;font-size:16px">Activity closed.</p>
+        <button onclick="location.reload()" style="margin-top:12px;padding:12px 28px;background:linear-gradient(135deg,#00C897,#009973);color:white;border:none;border-radius:16px;font-size:16px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;box-shadow:0 4px 14px rgba(0,200,150,0.35)">🔄 Restart Activity</button>
+      </div>`;
+    document.body.style.opacity = '1';
+  }, 500);
+}
+function cancelClose() {
+  document.getElementById('close-overlay').style.display = 'none';
+}
+
+updateBudget();
+</script>
+</body>
+</html>

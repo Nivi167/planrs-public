@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 4 – My Mini Business Plan | Planrs</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #FFF0F5; min-height: 100vh; padding: 16px; font-size: 16px;
+  }
+
+  /* ── Close Button ── */
+  .close-btn {
+    position: fixed; top: 12px; left: 16px; z-index: 200;
+    width: 38px; height: 38px; border-radius: 50%;
+    background: white; border: 2px solid #F8BBD9;
+    box-shadow: 0 2px 10px rgba(233,30,99,0.2);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; transition: all 0.2s; color: #E91E63;
+  }
+  .close-btn:hover { background: #FCE4EC; transform: rotate(90deg) scale(1.1); }
+
+  /* Close overlay */
+  .close-overlay {
+    display: none; position: fixed; inset: 0; z-index: 999;
+    background: rgba(136,14,79,0.55); backdrop-filter: blur(6px);
+    align-items: center; justify-content: center;
+  }
+  .close-overlay.show { display: flex; animation: fadeIn 0.2s ease; }
+  .close-modal {
+    background: white; border-radius: 24px; padding: 32px 28px;
+    text-align: center; box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+    border: 3px solid #F48FB1; max-width: 320px; width: 90%;
+    animation: popIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes popIn { from{transform:scale(0.7);opacity:0} to{transform:scale(1);opacity:1} }
+  .close-modal h3 { font-family: 'Fredoka One', sans-serif; color: #880E4F; font-size: 1.5rem; margin-bottom: 8px; }
+  .close-modal p { color: #777; font-size: 0.9rem; margin-bottom: 22px; }
+  .modal-btns { display: flex; gap: 10px; justify-content: center; }
+  .modal-btn {
+    padding: 11px 22px; border-radius: 30px; font-weight: 700;
+    font-family: 'Nunito', sans-serif; font-size: 0.95rem; border: none; cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .modal-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,0.2); }
+  .modal-stay { background: #FCE4EC; color: #880E4F; }
+  .modal-leave { background: linear-gradient(135deg,#E91E63,#F06292); color: white; }
+
+  .planrs-logo {
+    position: fixed; top: 12px; right: 16px;
+    background: #E91E63; color: white;
+    border-radius: 20px; padding: 4px 12px;
+    font-weight: 700; font-size: 13px; z-index: 100;
+    font-family: 'Fredoka One', sans-serif; letter-spacing: 0.5px;
+  }
+  .header {
+    background: linear-gradient(135deg, #F8BBD9, #F48FB1);
+    border-radius: 20px; padding: 20px 24px; margin-bottom: 20px;
+    text-align: center; box-shadow: 0 4px 16px rgba(244,143,177,0.35);
+  }
+  .header h1 { font-family: 'Fredoka One', sans-serif; font-size: 1.5rem; color: #880E4F; margin-bottom: 6px; font-weight: 400; }
+  .header p { color: #AD1457; font-size: 0.9rem; }
+  .score-bar {
+    background: white; border-radius: 16px; padding: 12px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 2px solid #FCE4EC;
+  }
+  .score-value { font-size: 1.4rem; font-weight: 800; color: #E91E63; font-family: 'Fredoka One', sans-serif; }
+  .progress-bar-outer {
+    background: #FCE4EC; border-radius: 20px; height: 10px; margin-bottom: 20px; overflow: hidden;
+  }
+  .progress-bar-inner {
+    height: 100%; background: linear-gradient(90deg, #F06292, #E91E63);
+    border-radius: 20px; transition: width 0.5s ease;
+  }
+  .question-container { min-height: 280px; }
+  .question-card {
+    background: white; border-radius: 20px; padding: 22px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.09); border: 2px solid #F8BBD9;
+    margin-bottom: 16px; animation: slideIn 0.35s ease;
+  }
+  @keyframes slideIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+  .q-num { font-size: 0.8rem; font-weight: 800; color: #E91E63; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
+  .q-text { font-size: 1.05rem; color: #333; line-height: 1.55; margin-bottom: 18px; font-weight: 700; }
+  .options-grid { display: flex; flex-direction: column; gap: 10px; }
+  .option-btn {
+    background: #FFF5F8; border: 2px solid #F8BBD9;
+    border-radius: 14px; padding: 14px 18px;
+    text-align: left; font-size: 0.95rem; color: #444;
+    cursor: pointer; transition: all 0.2s; font-family: 'Nunito', sans-serif;
+    display: flex; align-items: center; gap: 12px; font-weight: 600;
+  }
+  .option-btn:hover:not(:disabled) { border-color: #E91E63; background: #FCE4EC; transform: translateX(4px); }
+  .option-btn.selected-correct { background: #E8F5E9; border-color: #66BB6A; color: #1B5E20; }
+  .option-btn.selected-wrong { background: #FFEBEE; border-color: #EF5350; color: #C62828; }
+  .option-btn.reveal-correct { background: #E8F5E9; border-color: #66BB6A; color: #1B5E20; }
+  .option-btn:disabled { cursor: default; }
+  .option-letter {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #F8BBD9; color: #880E4F;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 0.85rem; flex-shrink: 0; transition: background 0.2s;
+  }
+  .selected-correct .option-letter { background: #A5D6A7; color: #1B5E20; }
+  .selected-wrong .option-letter { background: #FFCDD2; color: #C62828; }
+  .reveal-correct .option-letter { background: #A5D6A7; color: #1B5E20; }
+  .explanation {
+    display: none; margin-top: 14px;
+    background: #F3E5F5; border-left: 4px solid #AB47BC;
+    border-radius: 10px; padding: 12px 16px;
+    font-size: 0.9rem; color: #4A148C; line-height: 1.5; font-weight: 600;
+  }
+  .explanation.show { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+  .next-btn {
+    display: none; margin-top: 16px;
+    padding: 14px 30px; border: none; border-radius: 30px;
+    background: linear-gradient(135deg, #E91E63, #F06292);
+    color: white; font-weight: 800; font-size: 1rem;
+    cursor: pointer; box-shadow: 0 4px 14px rgba(233,30,99,0.35);
+    transition: transform 0.15s; width: 100%; font-family: 'Nunito', sans-serif;
+  }
+  .next-btn.show { display: block; animation: fadeIn 0.3s ease; }
+  .next-btn:hover { transform: translateY(-2px); }
+
+  /* ── Tab switcher ── */
+  .tab-bar {
+    display: flex; gap: 8px; margin-bottom: 16px;
+  }
+  .tab-btn {
+    flex: 1; padding: 10px 8px; border: 2px solid #F8BBD9;
+    border-radius: 14px; background: white; font-family: 'Nunito', sans-serif;
+    font-weight: 700; font-size: 0.85rem; cursor: pointer; color: #AD1457;
+    transition: all 0.2s;
+  }
+  .tab-btn.active { background: linear-gradient(135deg,#E91E63,#F06292); color: white; border-color: #E91E63; box-shadow: 0 3px 10px rgba(233,30,99,0.3); }
+  .tab-btn:hover:not(.active) { background: #FCE4EC; }
+
+  /* ── Drag-Drop section ── */
+  #dragPanel { display: none; animation: slideIn 0.35s ease; }
+  .drag-intro {
+    background: white; border-radius: 20px; padding: 18px 20px;
+    border: 2px solid #F8BBD9; margin-bottom: 14px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+  }
+  .drag-intro h3 { font-family: 'Fredoka One', sans-serif; color: #880E4F; font-size: 1.2rem; margin-bottom: 6px; font-weight: 400; }
+  .drag-intro p { font-size: 0.88rem; color: #777; }
+
+  .drag-game-card {
+    background: white; border-radius: 20px; padding: 20px;
+    border: 2px solid #F8BBD9; box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+    margin-bottom: 14px; animation: slideIn 0.3s ease;
+  }
+  .drag-game-card h4 { font-family: 'Fredoka One', sans-serif; color: #880E4F; font-size: 1rem; margin-bottom: 14px; font-weight: 400; }
+
+  /* Draggable chips */
+  .chips-pool {
+    display: flex; flex-wrap: wrap; gap: 8px; min-height: 44px;
+    padding: 10px; background: #FFF5F8; border-radius: 14px;
+    border: 2px dashed #F48FB1; margin-bottom: 16px;
+    transition: background 0.2s;
+  }
+  .chips-pool.drag-over { background: #FCE4EC; border-color: #E91E63; }
+  .chip {
+    padding: 8px 14px; background: linear-gradient(135deg,#F8BBD9,#F06292);
+    color: white; border-radius: 30px; font-size: 0.85rem; font-weight: 700;
+    cursor: grab; user-select: none; transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 2px 8px rgba(233,30,99,0.25);
+    font-family: 'Nunito', sans-serif;
+    touch-action: none;
+  }
+  .chip:hover { transform: translateY(-2px) scale(1.05); box-shadow: 0 4px 14px rgba(233,30,99,0.35); }
+  .chip.dragging { opacity: 0.5; transform: scale(1.1); cursor: grabbing; }
+  .chip.correct-chip { background: linear-gradient(135deg,#66BB6A,#43A047); cursor: default; }
+  .chip.wrong-chip { background: linear-gradient(135deg,#EF5350,#C62828); animation: shake 0.4s ease; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+  /* Drop zones */
+  .drop-zones { display: flex; flex-direction: column; gap: 10px; }
+  .drop-zone-row { display: flex; align-items: center; gap: 10px; }
+  .drop-label { font-size: 0.85rem; font-weight: 700; color: #444; min-width: 120px; flex: 1; line-height: 1.4; }
+  .drop-zone {
+    min-width: 120px; min-height: 42px; border-radius: 14px;
+    border: 2.5px dashed #F48FB1; background: #FFF5F8;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; color: #ccc; padding: 4px 8px;
+    transition: all 0.2s; flex-shrink: 0;
+  }
+  .drop-zone.drag-over { background: #FCE4EC; border-color: #E91E63; transform: scale(1.03); }
+  .drop-zone.filled { border-style: solid; border-color: #F48FB1; color: #444; }
+  .drop-zone.zone-correct { border-color: #66BB6A; background: #E8F5E9; }
+  .drop-zone.zone-wrong { border-color: #EF5350; background: #FFEBEE; }
+
+  .check-drag-btn {
+    padding: 13px 24px; border: none; border-radius: 30px;
+    background: linear-gradient(135deg,#AB47BC,#7B1FA2);
+    color: white; font-weight: 800; font-size: 0.95rem; cursor: pointer;
+    box-shadow: 0 4px 14px rgba(171,71,188,0.35); transition: transform 0.15s;
+    width: 100%; margin-top: 4px; font-family: 'Nunito', sans-serif;
+  }
+  .check-drag-btn:hover { transform: translateY(-2px); }
+  .check-drag-btn:disabled { opacity: 0.6; cursor: default; }
+
+  .drag-result {
+    display: none; border-radius: 14px; padding: 12px 16px;
+    font-size: 0.9rem; font-weight: 700; margin-top: 12px;
+    animation: fadeIn 0.3s ease;
+  }
+  .drag-result.show { display: block; }
+  .drag-result.pass { background: #E8F5E9; color: #1B5E20; border-left: 4px solid #66BB6A; }
+  .drag-result.fail { background: #FFEBEE; color: #C62828; border-left: 4px solid #EF5350; }
+
+  .drag-score-bar {
+    background: white; border-radius: 16px; padding: 12px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: 2px solid #FCE4EC;
+  }
+
+  /* End panel */
+  .btn { padding: 14px 28px; border: none; border-radius: 30px; font-size: 1rem; font-weight: 800; cursor: pointer; margin: 6px; box-shadow: 0 4px 14px rgba(0,0,0,0.15); font-family: 'Nunito', sans-serif; }
+  .btn-coral { background: #FF7043; color: white; }
+  .btn-mint { background: #26A69A; color: white; }
+  .btn:hover { transform: translateY(-2px); }
+  .end-panel {
+    display: none; background: white; border-radius: 20px;
+    padding: 30px 24px; text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1); border: 2px solid #F8BBD9;
+    animation: slideIn 0.35s ease;
+  }
+  .big-score { font-family: 'Fredoka One', sans-serif; font-size: 3.5rem; font-weight: 400; color: #E91E63; }
+  .stars-row { font-size: 2rem; margin: 10px 0; }
+  .review-section { margin-top: 20px; text-align: left; }
+  .review-item {
+    background: #FFF5F8; border-radius: 12px; padding: 12px 16px;
+    margin-bottom: 10px; font-size: 0.88rem; border-left: 4px solid #ccc; font-weight: 600;
+  }
+  .review-item.review-correct { border-color: #66BB6A; }
+  .review-item.review-wrong { border-color: #EF5350; }
+  .confetti-emoji { font-size: 2rem; animation: bounce 0.6s ease infinite alternate; display: inline-block; }
+  @keyframes bounce { from{transform:translateY(0)} to{transform:translateY(-8px)} }
+
+  /* Floating confetti particles */
+  .particle {
+    position: fixed; pointer-events: none; z-index: 999;
+    font-size: 1.4rem; animation: fall linear forwards;
+  }
+  @keyframes fall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Close Button -->
+<button class="close-btn" onclick="openCloseModal()" title="Close lesson">✕</button>
+
+<!-- Close confirmation overlay -->
+<div class="close-overlay" id="closeOverlay">
+  <div class="close-modal">
+    <div style="font-size:2.5rem;margin-bottom:8px">🤔</div>
+    <h3>Leave the lesson?</h3>
+    <p>Your progress won't be saved.<br>Are you sure you want to exit?</p>
+    <div class="modal-btns">
+      <button class="modal-btn modal-stay" onclick="closeModal()">Stay 📚</button>
+      <button class="modal-btn modal-leave" onclick="leaveLesson()">Leave 👋</button>
+    </div>
+  </div>
+</div>
+
+<div class="planrs-logo">⭐ Planrs</div>
+
+<div class="header">
+  <h1>🚀 Section 4 – My Mini Business Plan</h1>
+  <p>Answer questions &amp; match terms to become a junior entrepreneur!</p>
+</div>
+
+<!-- Tab bar -->
+<div class="tab-bar">
+  <button class="tab-btn active" id="tab-quiz" onclick="switchTab('quiz')">❓ Quiz</button>
+  <button class="tab-btn" id="tab-drag" onclick="switchTab('drag')">🎯 Match It!</button>
+</div>
+
+<!-- QUIZ TAB -->
+<div id="quizPanel">
+  <div class="score-bar">
+    <span style="color:#666;font-size:0.9rem">⭐ Score</span>
+    <span class="score-value" id="scoreDisplay">0 / 8</span>
+    <span id="qCounter" style="color:#AD1457;font-size:0.9rem;font-weight:700">Question 1/8</span>
+  </div>
+  <div class="progress-bar-outer">
+    <div class="progress-bar-inner" id="progressBar" style="width:0%"></div>
+  </div>
+  <div class="question-container" id="questionContainer"></div>
+  <div class="end-panel" id="endPanel">
+    <div class="confetti-emoji">🎉</div>
+    <h2 style="color:#880E4F;font-family:'Fredoka One',sans-serif;font-size:1.5rem;margin:10px 0;font-weight:400">Quiz Complete!</h2>
+    <div class="big-score" id="finalScore"></div>
+    <div class="stars-row" id="starsRow"></div>
+    <p id="endMsg" style="color:#666;font-size:0.95rem;margin-bottom:20px"></p>
+    <button class="btn btn-coral" onclick="resetGame()">🔄 Try Again</button>
+    <button class="btn btn-mint" onclick="finishLesson()">🏁 Finish Lesson!</button>
+    <div class="review-section" id="reviewSection">
+      <h3 style="color:#880E4F;margin-bottom:12px;font-size:1rem;font-family:'Fredoka One',sans-serif;font-weight:400">📋 Quick Review</h3>
+    </div>
+  </div>
+</div>
+
+<!-- DRAG-DROP TAB -->
+<div id="dragPanel">
+  <div class="drag-intro">
+    <h3>🎯 Match It! Business Terms</h3>
+    <p>Drag each 💡 term chip and drop it onto the correct definition. Get them all right to win!</p>
+  </div>
+
+  <!-- Game 1: Sort into categories -->
+  <div class="drag-game-card" id="sortGame">
+    <h4>💼 Game 1 – Sort into Income or Expense?</h4>
+    <div class="drag-score-bar">
+      <span style="color:#666;font-size:0.85rem">Your matches</span>
+      <span style="font-family:'Fredoka One',sans-serif;font-size:1.2rem;color:#AB47BC" id="sortScore">0 / 5</span>
+    </div>
+    <p style="font-size:0.82rem;color:#888;margin-bottom:10px">Drag the chips below into the correct category bucket 👇</p>
+    <div class="chips-pool" id="sortPool" 
+      ondragover="poolDragOver(event)" ondrop="poolDrop(event,'sort')" ondragleave="poolDragLeave(event)">
+      <!-- chips injected by JS -->
+    </div>
+    <div class="drop-zones" id="sortZones"></div>
+    <button class="check-drag-btn" id="checkSortBtn" onclick="checkSort()">✅ Check Answers</button>
+    <div class="drag-result" id="sortResult"></div>
+  </div>
+
+  <!-- Game 2: Match definition -->
+  <div class="drag-game-card" id="matchGame">
+    <h4>📖 Game 2 – Match the Definition!</h4>
+    <div class="drag-score-bar">
+      <span style="color:#666;font-size:0.85rem">Matched</span>
+      <span style="font-family:'Fredoka One',sans-serif;font-size:1.2rem;color:#AB47BC" id="matchScore">0 / 4</span>
+    </div>
+    <p style="font-size:0.82rem;color:#888;margin-bottom:10px">Drag the term to match the definition 👇</p>
+    <div class="chips-pool" id="matchPool"
+      ondragover="poolDragOver(event)" ondrop="poolDrop(event,'match')" ondragleave="poolDragLeave(event)">
+    </div>
+    <div class="drop-zones" id="matchZones"></div>
+    <button class="check-drag-btn" id="checkMatchBtn" onclick="checkMatch()">✅ Check Answers</button>
+    <div class="drag-result" id="matchResult"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════
+//  CLOSE MODAL
+// ═══════════════════════════════
+function openCloseModal() {
+  document.getElementById('closeOverlay').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('closeOverlay').classList.remove('show');
+}
+function leaveLesson() {
+  // In a real app, redirect to course page
+  document.getElementById('closeOverlay').classList.remove('show');
+  // Animate out
+  document.body.style.transition = 'opacity 0.4s';
+  document.body.style.opacity = '0';
+  setTimeout(() => {
+    alert('👋 See you next time! You can always come back and finish the lesson.\n\n⭐ Planrs');
+    document.body.style.opacity = '1';
+  }, 400);
+}
+
+// ═══════════════════════════════
+//  TAB SWITCHING
+// ═══════════════════════════════
+function switchTab(tab) {
+  document.getElementById('quizPanel').style.display = tab === 'quiz' ? 'block' : 'none';
+  document.getElementById('dragPanel').style.display  = tab === 'drag' ? 'block' : 'none';
+  document.getElementById('tab-quiz').classList.toggle('active', tab === 'quiz');
+  document.getElementById('tab-drag').classList.toggle('active', tab === 'drag');
+}
+
+// ═══════════════════════════════
+//  QUIZ
+// ═══════════════════════════════
+const questions = [
+  { q:"Anjali wants to start a sticker-making business. Before she begins, what should she make FIRST?", options:["Start selling immediately","Make a business plan","Buy lots of stickers","Tell everyone on WhatsApp"], correct:1, explain:"A business plan helps you think through your idea — who will buy it, how much it costs, and how you'll earn money. Always plan before you act!" },
+  { q:"Rohan's chai stall earns ₹500 per day but costs ₹350 to run. What is his daily profit?", options:["₹850","₹350","₹150","₹500"], correct:2, explain:"Profit = Revenue – Cost = ₹500 – ₹350 = ₹150. Rohan takes home ₹150 profit every day from his chai stall! ☕" },
+  { q:"Which of the following is an EXPENSE for a home-made pickle business?", options:["Money received from customers","Cost of jars and spices","Total pickle jars sold","Number of customers"], correct:1, explain:"Expenses are costs you PAY — jars, ingredients, packaging. Money from customers is income, not expense." },
+  { q:"Meena saves ₹50 every week from her pocket money. After 10 weeks, how much has she saved?", options:["₹50","₹100","₹500","₹5000"], correct:2, explain:"₹50 × 10 weeks = ₹500. Regular savings, even small amounts, add up quickly — this is how every big goal starts! 🐷" },
+  { q:"What does 'revenue' mean in a mini business context?", options:["Money spent on raw materials","Total money earned from selling","Profit after expenses","Money borrowed from parents"], correct:1, explain:"Revenue is all the money that COMES IN from selling your products or services — before subtracting any costs." },
+  { q:"Kiran spends ₹200 making bookmarks and sells them for ₹180. She has made a...", options:["Profit of ₹20","Loss of ₹20","Profit of ₹380","Loss of ₹200"], correct:1, explain:"Cost (₹200) > Revenue (₹180), so it's a LOSS of ₹20. Kiran needs to either lower her costs or charge more per bookmark!" },
+  { q:"Which of these is a good way to REDUCE expenses in your mini business?", options:["Buy the most expensive materials","Waste leftover materials","Buy raw materials in bulk at discount","Hire lots of helpers"], correct:2, explain:"Buying in bulk often gives a discount. Smart business owners look for ways to reduce costs without reducing quality!" },
+  { q:"At the end of the school year, Priya wants to use her business profits. What would be the WISEST use?", options:["Spend it all on a new phone game","Save some, reinvest some in the business, spend some","Give it all to charity","Keep it hidden under her mattress"], correct:1, explain:"The golden rule: Save a portion, reinvest in your business to grow it, and enjoy a small part as reward. This is how real entrepreneurs think! 💡" }
+];
+
+let current=0, score=0, answers=[];
+
+function renderQuestion() {
+  const q=questions[current];
+  const letters=['A','B','C','D'];
+  document.getElementById('qCounter').textContent=`Question ${current+1}/8`;
+  document.getElementById('progressBar').style.width=(current/8*100)+'%';
+  document.getElementById('questionContainer').innerHTML=`
+    <div class="question-card">
+      <div class="q-num">Question ${current+1} of 8</div>
+      <div class="q-text">${q.q}</div>
+      <div class="options-grid">
+        ${q.options.map((opt,i)=>`
+          <button class="option-btn" onclick="selectAnswer(${i})" id="opt${i}">
+            <span class="option-letter">${letters[i]}</span>${opt}
+          </button>`).join('')}
+      </div>
+      <div class="explanation" id="explanation">${q.explain}</div>
+      <button class="next-btn" id="nextBtn" onclick="nextQuestion()">
+        ${current<7?'➡️ Next Question':'🏁 See My Results!'}
+      </button>
+    </div>`;
+}
+
+function selectAnswer(idx) {
+  const q=questions[current];
+  const opts=document.querySelectorAll('.option-btn');
+  opts.forEach(o=>o.disabled=true);
+  const isCorrect=idx===q.correct;
+  opts[idx].classList.add(isCorrect?'selected-correct':'selected-wrong');
+  if(!isCorrect) opts[q.correct].classList.add('reveal-correct');
+  if(isCorrect) score++;
+  answers.push({q:q.q,chosen:q.options[idx],correct:q.options[q.correct],right:isCorrect});
+  document.getElementById('explanation').classList.add('show');
+  document.getElementById('nextBtn').classList.add('show');
+  updateScore();
+}
+
+function nextQuestion() { current++; if(current>=8){showEnd();return;} renderQuestion(); }
+function updateScore() { document.getElementById('scoreDisplay').textContent=score+' / 8'; }
+
+function showEnd() {
+  document.getElementById('questionContainer').innerHTML='';
+  document.getElementById('progressBar').style.width='100%';
+  document.getElementById('endPanel').style.display='block';
+  document.getElementById('finalScore').textContent=score+'/8';
+  const pct=score/8;
+  document.getElementById('starsRow').textContent=pct>=0.9?'⭐⭐⭐':pct>=0.6?'⭐⭐':'⭐';
+  document.getElementById('endMsg').textContent=
+    pct>=0.9?"Outstanding! You're a Junior Entrepreneur! 🏆":
+    pct>=0.6?"Well done! A few more lessons and your business will be booming! 🌟":
+    "Great effort! Every entrepreneur starts somewhere. Review and try again! 💪";
+  const rev=document.getElementById('reviewSection');
+  answers.forEach((a,i)=>{
+    const div=document.createElement('div');
+    div.className='review-item '+(a.right?'review-correct':'review-wrong');
+    div.innerHTML=`<strong>Q${i+1}:</strong> ${a.right?'✅':'❌'} You chose: <em>${a.chosen}</em>${!a.right?` | Correct: <em>${a.correct}</em>`:''}`;
+    rev.appendChild(div);
+  });
+  if(pct>=0.75) launchConfetti();
+}
+
+function resetGame() {
+  current=0;score=0;answers=[];
+  document.getElementById('endPanel').style.display='none';
+  document.getElementById('reviewSection').innerHTML='<h3 style="color:#880E4F;margin-bottom:12px;font-size:1rem;font-family:\'Fredoka One\',sans-serif;font-weight:400">📋 Quick Review</h3>';
+  updateScore();
+  renderQuestion();
+}
+
+function finishLesson() {
+  alert("🎓 Congratulations! You've completed the full My Mini Business — Finance lesson!\n\n🌟 Remember:\n• Every big business started small\n• Profit = Revenue – Cost\n• Always plan before you spend\n\nYou're a future entrepreneur! ⭐ Planrs");
+}
+
+// ═══════════════════════════════
+//  CONFETTI
+// ═══════════════════════════════
+function launchConfetti() {
+  const emojis=['🎉','⭐','🌟','💰','🚀','💡','🏆','✨'];
+  for(let i=0;i<20;i++) {
+    setTimeout(()=>{
+      const p=document.createElement('div');
+      p.className='particle';
+      p.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+      p.style.left=Math.random()*100+'vw';
+      p.style.animationDuration=(1.5+Math.random()*2)+'s';
+      p.style.animationDelay=Math.random()*0.5+'s';
+      document.body.appendChild(p);
+      setTimeout(()=>p.remove(),3500);
+    },i*80);
+  }
+}
+
+// ═══════════════════════════════
+//  DRAG-DROP – GAME 1: SORT
+// ═══════════════════════════════
+const sortItems = [
+  {label:'Sales from cookies 🍪', cat:'income'},
+  {label:'Cost of flour 🌾', cat:'expense'},
+  {label:'Customer payment 💵', cat:'income'},
+  {label:'Packaging cost 📦', cat:'expense'},
+  {label:'Stall rental fee 🏪', cat:'expense'},
+];
+const sortCategories = [
+  {key:'income', label:'💚 Income', color:'#66BB6A'},
+  {key:'expense', label:'🔴 Expense', color:'#EF5350'},
+];
+
+let sortChipInZone = {}; // zoneId -> chipLabel
+let matchChipInZone = {};
+
+let draggedChip = null;
+let dragSource = null; // 'sort' or 'match'
+
+function buildSortGame() {
+  const pool = document.getElementById('sortPool');
+  pool.innerHTML = '';
+  sortItems.forEach(item => {
+    pool.appendChild(makeChip(item.label, 'sort'));
+  });
+  sortChipInZone = {};
+
+  const zonesDiv = document.getElementById('sortZones');
+  zonesDiv.innerHTML = '';
+  sortCategories.forEach(cat => {
+    const row = document.createElement('div');
+    row.className = 'drop-zone-row';
+    row.style.flexDirection = 'column';
+    row.style.alignItems = 'flex-start';
+    row.style.gap = '6px';
+
+    const label = document.createElement('div');
+    label.style.fontWeight = '800';
+    label.style.color = cat.color;
+    label.style.fontSize = '0.9rem';
+    label.textContent = cat.label;
+
+    const zoneWrap = document.createElement('div');
+    zoneWrap.style.display = 'flex';
+    zoneWrap.style.flexWrap = 'wrap';
+    zoneWrap.style.gap = '6px';
+    zoneWrap.style.width = '100%';
+    zoneWrap.style.minHeight = '44px';
+    zoneWrap.style.padding = '8px';
+    zoneWrap.style.background = '#FFF5F8';
+    zoneWrap.style.borderRadius = '14px';
+    zoneWrap.style.border = `2.5px dashed ${cat.color}`;
+    zoneWrap.dataset.cat = cat.key;
+    zoneWrap.dataset.game = 'sort';
+    zoneWrap.addEventListener('dragover', e => { e.preventDefault(); zoneWrap.style.background = '#FCE4EC'; });
+    zoneWrap.addEventListener('dragleave', () => { zoneWrap.style.background = '#FFF5F8'; });
+    zoneWrap.addEventListener('drop', e => { e.preventDefault(); zoneWrap.style.background='#FFF5F8'; dropOnSortZone(zoneWrap, cat.key); });
+
+    row.appendChild(label);
+    row.appendChild(zoneWrap);
+    zonesDiv.appendChild(row);
+  });
+  document.getElementById('sortResult').classList.remove('show');
+  document.getElementById('checkSortBtn').disabled = false;
+  document.getElementById('sortScore').textContent = '0 / 5';
+}
+
+function dropOnSortZone(zoneEl, catKey) {
+  if(!draggedChip || dragSource !== 'sort') return;
+  const chipLabel = draggedChip.dataset.label;
+  // Remove from wherever it was
+  draggedChip.remove();
+  // Clone into zone
+  const c = makeChip(chipLabel, 'sort');
+  c.style.cursor = 'grab';
+  // Allow dragging back
+  zoneEl.appendChild(c);
+  draggedChip.classList.remove('dragging');
+}
+
+function checkSort() {
+  // Gather placements
+  let correct = 0;
+  const zoneDivs = document.querySelectorAll('#sortZones [data-cat]');
+  let placed = {};
+  zoneDivs.forEach(zone => {
+    const cat = zone.dataset.cat;
+    zone.querySelectorAll('.chip').forEach(chip => {
+      const label = chip.dataset.label;
+      const item = sortItems.find(s => s.label === label);
+      if(item) {
+        placed[label] = cat;
+        if(item.cat === cat) {
+          chip.classList.add('correct-chip');
+          correct++;
+        } else {
+          chip.classList.add('wrong-chip');
+          setTimeout(()=>chip.classList.remove('wrong-chip'),500);
+        }
+      }
+    });
+  });
+  document.getElementById('sortScore').textContent = correct + ' / 5';
+  const res = document.getElementById('sortResult');
+  res.classList.add('show');
+  if(correct === 5) {
+    res.className = 'drag-result show pass';
+    res.textContent = '🎉 Perfect! You sorted all 5 items correctly! You really know your income vs expenses!';
+    document.getElementById('checkSortBtn').disabled = true;
+    launchConfetti();
+  } else {
+    res.className = 'drag-result show fail';
+    res.textContent = `Almost! ${correct}/5 correct. Wrong chips are highlighted — try moving them to the right bucket!`;
+  }
+}
+
+// ═══════════════════════════════
+//  DRAG-DROP – GAME 2: MATCH
+// ═══════════════════════════════
+const matchPairs = [
+  {term:'Revenue 💵', def:'Total money earned from selling products or services'},
+  {term:'Profit 📈',  def:'Money left after subtracting all expenses from revenue'},
+  {term:'Expense 💸', def:'Money you spend to run your business (e.g. materials)'},
+  {term:'Loss 📉',    def:'When costs are MORE than revenue — you spend more than you earn'},
+];
+
+function buildMatchGame() {
+  const pool = document.getElementById('matchPool');
+  pool.innerHTML = '';
+  // Shuffle terms
+  const shuffled = [...matchPairs].sort(()=>Math.random()-0.5);
+  shuffled.forEach(p => pool.appendChild(makeChip(p.term,'match')));
+  matchChipInZone = {};
+
+  const zonesDiv = document.getElementById('matchZones');
+  zonesDiv.innerHTML = '';
+  matchPairs.forEach((p, i) => {
+    const row = document.createElement('div');
+    row.className = 'drop-zone-row';
+
+    const defLabel = document.createElement('div');
+    defLabel.className = 'drop-label';
+    defLabel.textContent = p.def;
+
+    const zone = document.createElement('div');
+    zone.className = 'drop-zone';
+    zone.dataset.term = p.term;
+    zone.dataset.game = 'match';
+    zone.textContent = 'Drop here';
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault(); zone.classList.remove('drag-over');
+      if(!draggedChip || dragSource !== 'match') return;
+      const chipLabel = draggedChip.dataset.label;
+      // If zone already has a chip, send it back to pool
+      if(zone.dataset.filled) {
+        const existing = zone.querySelector('.chip');
+        if(existing) {
+          document.getElementById('matchPool').appendChild(existing);
+        }
+      }
+      draggedChip.remove();
+      const c = makeChip(chipLabel,'match');
+      zone.innerHTML=''; zone.appendChild(c);
+      zone.dataset.filled='1'; zone.classList.add('filled');
+    });
+
+    row.appendChild(defLabel);
+    row.appendChild(zone);
+    zonesDiv.appendChild(row);
+  });
+  document.getElementById('matchResult').classList.remove('show');
+  document.getElementById('checkMatchBtn').disabled = false;
+  document.getElementById('matchScore').textContent = '0 / 4';
+}
+
+function checkMatch() {
+  let correct = 0;
+  const zones = document.querySelectorAll('#matchZones .drop-zone');
+  zones.forEach(zone => {
+    const expected = zone.dataset.term;
+    const chip = zone.querySelector('.chip');
+    if(chip) {
+      const given = chip.dataset.label;
+      if(given === expected) { chip.classList.add('correct-chip'); zone.classList.add('zone-correct'); correct++; }
+      else { chip.classList.add('wrong-chip'); zone.classList.add('zone-wrong'); setTimeout(()=>{ chip.classList.remove('wrong-chip'); zone.classList.remove('zone-wrong'); },600); }
+    }
+  });
+  document.getElementById('matchScore').textContent = correct + ' / 4';
+  const res = document.getElementById('matchResult');
+  res.classList.add('show');
+  if(correct === 4) {
+    res.className='drag-result show pass';
+    res.textContent='🏆 Brilliant! All 4 terms matched correctly! You\'re a business vocabulary master!';
+    document.getElementById('checkMatchBtn').disabled=true;
+    launchConfetti();
+  } else {
+    res.className='drag-result show fail';
+    res.textContent=`${correct}/4 correct. Keep trying — drag the highlighted chips to the right definitions!`;
+  }
+}
+
+// ═══════════════════════════════
+//  SHARED DRAG HELPERS
+// ═══════════════════════════════
+function makeChip(label, game) {
+  const c = document.createElement('div');
+  c.className = 'chip';
+  c.textContent = label;
+  c.dataset.label = label;
+  c.dataset.game = game;
+  c.draggable = true;
+  c.addEventListener('dragstart', e => {
+    draggedChip = c;
+    dragSource = game;
+    c.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  c.addEventListener('dragend', () => { c.classList.remove('dragging'); draggedChip=null; });
+
+  // Touch support
+  c.addEventListener('touchstart', touchStart, {passive:true});
+  c.addEventListener('touchmove', touchMove, {passive:false});
+  c.addEventListener('touchend', touchEnd);
+  return c;
+}
+
+function poolDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function poolDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+function poolDrop(e, game) {
+  e.preventDefault(); e.currentTarget.classList.remove('drag-over');
+  if(!draggedChip || dragSource !== game) return;
+  draggedChip.remove();
+  const c = makeChip(draggedChip.dataset.label, game);
+  e.currentTarget.appendChild(c);
+}
+
+// ── Touch drag ──
+let touchClone = null, touchChip = null, touchGame = null;
+function touchStart(e) {
+  touchChip = e.currentTarget;
+  touchGame = touchChip.dataset.game;
+  const rect = touchChip.getBoundingClientRect();
+  touchClone = touchChip.cloneNode(true);
+  touchClone.style.cssText = `position:fixed;opacity:0.85;pointer-events:none;z-index:9999;width:${rect.width}px;top:${rect.top}px;left:${rect.left}px;transform:scale(1.1);`;
+  document.body.appendChild(touchClone);
+}
+function touchMove(e) {
+  e.preventDefault();
+  const t = e.touches[0];
+  if(touchClone) { touchClone.style.top=(t.clientY-22)+'px'; touchClone.style.left=(t.clientX-40)+'px'; }
+}
+function touchEnd(e) {
+  if(touchClone) { touchClone.remove(); touchClone=null; }
+  if(!touchChip) return;
+  const t = e.changedTouches[0];
+  const el = document.elementFromPoint(t.clientX, t.clientY);
+  if(!el) { touchChip=null; return; }
+
+  if(touchGame==='sort') {
+    const zone = el.closest('[data-cat]');
+    if(zone) { zone.appendChild(makeChip(touchChip.dataset.label,'sort')); touchChip.remove(); }
+    else {
+      const pool = el.closest('#sortPool');
+      if(pool) { pool.appendChild(makeChip(touchChip.dataset.label,'sort')); touchChip.remove(); }
+    }
+  } else if(touchGame==='match') {
+    const zone = el.closest('.drop-zone[data-term]');
+    if(zone) {
+      if(zone.dataset.filled){ const ex=zone.querySelector('.chip'); if(ex){document.getElementById('matchPool').appendChild(makeChip(ex.dataset.label,'match'));ex.remove();} }
+      zone.innerHTML=''; zone.appendChild(makeChip(touchChip.dataset.label,'match')); zone.dataset.filled='1'; zone.classList.add('filled');
+      touchChip.remove();
+    } else {
+      const pool = el.closest('#matchPool');
+      if(pool){ pool.appendChild(makeChip(touchChip.dataset.label,'match')); touchChip.remove(); }
+    }
+  }
+  touchChip=null;
+}
+
+// ═══════════════════════════════
+//  INIT
+// ═══════════════════════════════
+renderQuestion();
+buildSortGame();
+buildMatchGame();
+</script>
+</body>
+</html>

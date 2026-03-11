@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 3 – Profit & Loss Calculation | Planrs</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --sky: #0288D1;
+    --sky-light: #B3E5FC;
+    --sky-pale: #E1F5FE;
+    --mint: #26C6DA;
+    --green: #43A047;
+    --red: #E53935;
+    --yellow: #FFB300;
+    --purple: #AB47BC;
+    --orange: #FF7043;
+    --bg: #EAF6FF;
+  }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    background-image: radial-gradient(circle at 20% 20%, rgba(41,182,246,0.12) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 80%, rgba(38,198,218,0.10) 0%, transparent 50%);
+    min-height: 100vh;
+    padding: 16px 16px 40px;
+    font-size: 16px;
+  }
+
+  /* ── CLOSE BUTTON ── */
+  .close-btn {
+    position: fixed; top: 14px; left: 14px; z-index: 200;
+    width: 38px; height: 38px; border-radius: 50%;
+    background: white; border: 2px solid #E0E0E0;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 18px; color: #666;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+    transition: all 0.2s; text-decoration: none;
+  }
+  .close-btn:hover { background: #FFEBEE; border-color: var(--red); color: var(--red); transform: scale(1.1); }
+
+  /* ── LOGO ── */
+  .planrs-logo {
+    position: fixed; top: 14px; right: 16px;
+    background: var(--sky); color: white;
+    border-radius: 20px; padding: 5px 14px;
+    font-family: 'Fredoka One', cursive; font-size: 15px; z-index: 100;
+    box-shadow: 0 3px 10px rgba(2,136,209,0.3);
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, #81D4FA, #29B6F6);
+    border-radius: 24px; padding: 22px 24px 18px;
+    margin-bottom: 18px; text-align: center;
+    box-shadow: 0 6px 20px rgba(41,182,246,0.3);
+    position: relative; overflow: hidden;
+  }
+  .header::before {
+    content: ''; position: absolute; top: -30px; right: -30px;
+    width: 120px; height: 120px; border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+  }
+  .header h1 { font-family: 'Fredoka One', cursive; font-size: 1.55rem; color: #01579B; margin-bottom: 4px; }
+  .header p { color: #0277BD; font-size: 0.88rem; font-weight: 600; }
+
+  /* ── SCORE BAR ── */
+  .score-bar {
+    background: white; border-radius: 16px; padding: 12px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    border: 2px solid var(--sky-light);
+  }
+  .score-value { font-size: 1.4rem; font-weight: 800; color: var(--sky); font-family: 'Fredoka One', cursive; }
+
+  /* ── INSTRUCTIONS ── */
+  .instruction {
+    background: #F3E5F5; border-left: 4px solid var(--purple);
+    border-radius: 14px; padding: 13px 16px; margin-bottom: 20px;
+    color: #4A148C; font-size: 0.92rem; line-height: 1.55; font-weight: 600;
+  }
+
+  /* ── SCENARIO ── */
+  .scenario-card {
+    background: linear-gradient(135deg, #E8F5E9, #F1F8E9);
+    border-radius: 18px; padding: 16px 20px; margin-bottom: 18px;
+    border: 2px solid #A5D6A7;
+  }
+  .scenario-card h3 { color: #1B5E20; margin-bottom: 6px; font-size: 1.05rem; font-family: 'Fredoka One', cursive; }
+  .scenario-card p { color: #388E3C; font-size: 0.9rem; line-height: 1.5; font-weight: 600; }
+
+  /* ── FORMULA BOX ── */
+  .formula-box {
+    background: #FFF8E1; border: 2.5px solid #FFD54F; border-radius: 14px;
+    padding: 13px 18px; margin-bottom: 22px; font-size: 0.92rem;
+    color: #F57F17; font-weight: 800; text-align: center;
+    box-shadow: 0 3px 10px rgba(255,179,0,0.2);
+  }
+
+  /* ══════════════════════════════════
+     DRAG & DROP SECTION
+  ══════════════════════════════════ */
+  .dnd-section {
+    background: white; border-radius: 22px; padding: 20px;
+    margin-bottom: 24px; box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    border: 2.5px solid #B3E5FC;
+    position: relative;
+  }
+  .dnd-section-label {
+    font-family: 'Fredoka One', cursive; font-size: 1.1rem; color: var(--sky);
+    margin-bottom: 6px;
+  }
+  .dnd-section-sub {
+    font-size: 0.83rem; color: #78909C; font-weight: 600; margin-bottom: 16px;
+  }
+
+  /* answer bank */
+  .answer-bank {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    background: #F5F5F5; border-radius: 14px; padding: 14px;
+    margin-bottom: 18px; min-height: 60px;
+    border: 2.5px dashed #B0BEC5;
+  }
+  .answer-bank.drag-over { border-color: var(--sky); background: var(--sky-pale); }
+
+  .drag-chip {
+    background: linear-gradient(135deg, #29B6F6, #0288D1);
+    color: white; font-weight: 800; font-family: 'Fredoka One', cursive;
+    padding: 8px 18px; border-radius: 30px; font-size: 1rem;
+    cursor: grab; user-select: none;
+    box-shadow: 0 4px 12px rgba(2,136,209,0.4);
+    transition: transform 0.15s, box-shadow 0.15s, opacity 0.2s;
+    touch-action: none;
+    position: relative;
+  }
+  .drag-chip:active { cursor: grabbing; transform: scale(1.08) rotate(-2deg); box-shadow: 0 8px 20px rgba(2,136,209,0.55); }
+  .drag-chip.dragging { opacity: 0.4; transform: scale(0.95); }
+  .drag-chip.placed { background: linear-gradient(135deg, #81C784, #43A047); box-shadow: 0 4px 12px rgba(67,160,71,0.4); }
+  .drag-chip.wrong-placed { background: linear-gradient(135deg, #EF9A9A, #E53935); box-shadow: 0 4px 12px rgba(229,57,53,0.4); animation: wiggle 0.4s ease; }
+
+  /* match rows */
+  .match-row {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .match-label {
+    font-weight: 800; color: #333; font-size: 0.95rem; min-width: 90px;
+  }
+  .match-arrow { color: #B0BEC5; font-size: 1.1rem; }
+
+  .drop-zone {
+    min-width: 120px; min-height: 42px;
+    border: 3px dashed #B3E5FC; border-radius: 30px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 4px 10px; transition: all 0.2s;
+    background: var(--sky-pale); position: relative;
+    font-size: 0.85rem; color: #90CAF9; font-weight: 700;
+  }
+  .drop-zone.drag-over {
+    border-color: var(--sky); background: #E1F5FE;
+    transform: scale(1.04);
+    box-shadow: 0 0 0 4px rgba(41,182,246,0.2);
+  }
+  .drop-zone.correct { border-color: var(--green); background: #E8F5E9; }
+  .drop-zone.incorrect { border-color: var(--red); background: #FFEBEE; }
+  .drop-zone.has-chip { border-style: solid; }
+
+  .drop-chip-inside {
+    font-weight: 800; font-family: 'Fredoka One', cursive;
+    font-size: 0.95rem; color: white;
+    background: linear-gradient(135deg, #29B6F6, #0288D1);
+    padding: 5px 14px; border-radius: 30px;
+    cursor: pointer;
+  }
+  .drop-chip-inside.correct-chip { background: linear-gradient(135deg, #81C784, #43A047); }
+  .drop-chip-inside.wrong-chip { background: linear-gradient(135deg, #EF9A9A, #E53935); }
+
+  .dnd-check-btn {
+    display: block; margin: 16px auto 0;
+    padding: 11px 30px; background: linear-gradient(135deg, #29B6F6, #0288D1);
+    color: white; border: none; border-radius: 30px; font-weight: 800;
+    font-family: 'Fredoka One', cursive; font-size: 1rem;
+    cursor: pointer; box-shadow: 0 4px 14px rgba(2,136,209,0.4);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .dnd-check-btn:hover { transform: translateY(-2px); box-shadow: 0 7px 18px rgba(2,136,209,0.45); }
+
+  .dnd-feedback {
+    text-align: center; font-weight: 800; margin-top: 12px;
+    font-size: 0.95rem; min-height: 24px;
+  }
+
+  /* ── FILL IN THE BLANKS ── */
+  .questions-list { display: flex; flex-direction: column; gap: 18px; margin-bottom: 24px; }
+  .question-card {
+    background: white; border-radius: 18px; padding: 18px 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07); border: 2px solid var(--sky-pale);
+    transition: border-color 0.2s;
+  }
+  .question-card:hover { border-color: var(--sky-light); }
+  .q-label {
+    font-size: 0.75rem; font-weight: 800; color: var(--sky);
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+  }
+  .q-text { font-size: 0.97rem; color: #333; line-height: 1.7; margin-bottom: 10px; font-weight: 600; }
+
+  .blank-input {
+    display: inline-block; border: none; border-bottom: 3px solid #29B6F6;
+    background: var(--sky-pale); border-radius: 8px 8px 0 0;
+    padding: 6px 12px; font-size: 1rem; font-weight: 700; font-family: 'Fredoka One', cursive;
+    color: #01579B; min-width: 80px; text-align: center;
+    outline: none; transition: border-color 0.2s, background 0.2s;
+  }
+  .blank-input:focus { border-color: var(--sky); background: var(--sky-light); }
+  .blank-input.correct-input { border-color: var(--green); background: #E8F5E9; color: #1B5E20; }
+  .blank-input.wrong-input { border-color: var(--red); background: #FFEBEE; color: #C62828; }
+
+  .check-btn {
+    padding: 8px 20px; border: none; border-radius: 20px;
+    background: linear-gradient(135deg, #29B6F6, #0288D1);
+    color: white; font-weight: 800; font-family: 'Fredoka One', cursive;
+    font-size: 0.9rem; cursor: pointer; transition: transform 0.15s;
+    box-shadow: 0 3px 10px rgba(41,182,246,0.35); margin-left: 6px;
+  }
+  .check-btn:hover { transform: translateY(-2px); }
+
+  .hint-text {
+    font-size: 0.82rem; color: #78909C; font-style: italic; margin-top: 8px;
+    display: none; font-weight: 600;
+  }
+  .hint-text.show { display: block; }
+
+  .feedback-badge {
+    display: inline-block; padding: 4px 12px; border-radius: 20px;
+    font-size: 0.82rem; font-weight: 800; margin-left: 8px; opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .feedback-badge.show { opacity: 1; }
+  .badge-correct { background: #E8F5E9; color: #2E7D32; }
+  .badge-wrong { background: #FFEBEE; color: #C62828; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    padding: 13px 28px; border: none; border-radius: 30px;
+    font-size: 1rem; font-weight: 800; font-family: 'Fredoka One', cursive;
+    cursor: pointer; margin: 6px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15); transition: transform 0.15s;
+  }
+  .btn-coral { background: linear-gradient(135deg, #FF7043, #F4511E); color: white; }
+  .btn-mint { background: linear-gradient(135deg, #26C6DA, #00ACC1); color: white; }
+  .btn:hover { transform: translateY(-2px); }
+
+  /* ── END PANEL ── */
+  .end-panel {
+    display: none; background: white; border-radius: 24px;
+    padding: 28px; text-align: center;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.1); border: 2.5px solid var(--sky-light);
+    animation: popIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+  }
+  .big-score { font-size: 3.2rem; font-weight: 900; color: var(--sky); font-family: 'Fredoka One', cursive; }
+  .summary-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 0.88rem; }
+  .summary-table th { background: var(--sky-pale); color: #01579B; padding: 8px 12px; text-align: left; font-weight: 800; }
+  .summary-table td { padding: 8px 12px; border-bottom: 1px solid #E0E0E0; color: #444; font-weight: 600; }
+  .summary-table tr:last-child td { border-bottom: none; }
+
+  /* ── CONFETTI ── */
+  .confetti-piece {
+    position: fixed; width: 10px; height: 10px; border-radius: 2px;
+    pointer-events: none; z-index: 999;
+    animation: confettiFall 2.5s ease-in forwards;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes wiggle {
+    0%,100% { transform: rotate(0deg); }
+    25% { transform: rotate(-6deg); }
+    75% { transform: rotate(6deg); }
+  }
+  @keyframes popIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  .score-value.bump { animation: bounce 0.4s ease; }
+</style>
+</head>
+<body>
+
+<!-- CLOSE BUTTON -->
+<button class="close-btn" onclick="closeActivity()" title="Close activity">✕</button>
+
+<div class="planrs-logo">⭐ Planrs</div>
+
+<div class="header">
+  <h1>📊 Section 3 – How Do We Calculate Profit?</h1>
+  <p>Drag, drop & fill in the blanks to solve Rohan's mini business math!</p>
+</div>
+
+<div class="score-bar">
+  <span style="color:#666;font-size:0.88rem;font-weight:700">⭐ Score</span>
+  <span class="score-value" id="scoreDisplay">0 / 12</span>
+  <span id="progressMsg">📝 Let's get started!</span>
+</div>
+
+<div class="instruction">
+  💡 <strong>How to play:</strong> First, <strong>drag the answer chips</strong> to match each term with the right formula. Then <strong>fill in the blanks</strong> with numbers. Click <strong>Check</strong> after each answer. A hint appears if you get stuck!
+</div>
+
+<div class="scenario-card">
+  <h3>🏪 Meet Rohan's Lemonade Cart!</h3>
+  <p>Rohan sets up a lemonade stall at his school's annual Sports Day. He buys lemons, sugar, cups, and ice. Let's help him figure out if he made a profit or a loss!</p>
+</div>
+
+<div class="formula-box">
+  📐 Key Formulas: &nbsp; <strong>Profit = Revenue – Cost</strong> &nbsp;|&nbsp; <strong>Revenue = Price × Quantity Sold</strong> &nbsp;|&nbsp; <strong>Loss = Cost – Revenue</strong>
+</div>
+
+<!-- ════════════════════════════
+     DRAG & DROP SECTION
+════════════════════════════ -->
+<div class="dnd-section">
+  <div class="dnd-section-label">🎯 Part 1 — Match the Formula!</div>
+  <div class="dnd-section-sub">Drag each answer chip to the correct drop zone 👇</div>
+
+  <!-- Answer Bank -->
+  <div class="answer-bank" id="answerBank"
+    ondragover="bankDragOver(event)" ondragleave="bankDragLeave(event)" ondrop="bankDrop(event)">
+    <div class="drag-chip" id="chip-rev" draggable="true"
+      ondragstart="dragStart(event)" ondragend="dragEnd(event)"
+      data-value="Price × Quantity Sold">Price × Qty Sold</div>
+
+    <div class="drag-chip" id="chip-profit" draggable="true"
+      ondragstart="dragStart(event)" ondragend="dragEnd(event)"
+      data-value="Revenue − Cost">Revenue − Cost</div>
+
+    <div class="drag-chip" id="chip-loss" draggable="true"
+      ondragstart="dragStart(event)" ondragend="dragEnd(event)"
+      data-value="Cost − Revenue">Cost − Revenue</div>
+
+    <div class="drag-chip" id="chip-break" draggable="true"
+      ondragstart="dragStart(event)" ondragend="dragEnd(event)"
+      data-value="Revenue = Cost">Revenue = Cost</div>
+  </div>
+
+  <!-- Match Rows -->
+  <div class="match-row">
+    <div class="match-label">💰 Revenue</div>
+    <div class="match-arrow">→</div>
+    <div class="drop-zone" id="dz-rev" data-answer="Price × Quantity Sold"
+      ondragover="dzDragOver(event)" ondragleave="dzDragLeave(event)" ondrop="dzDrop(event)">
+      Drop here
+    </div>
+  </div>
+
+  <div class="match-row">
+    <div class="match-label">📈 Profit</div>
+    <div class="match-arrow">→</div>
+    <div class="drop-zone" id="dz-profit" data-answer="Revenue − Cost"
+      ondragover="dzDragOver(event)" ondragleave="dzDragLeave(event)" ondrop="dzDrop(event)">
+      Drop here
+    </div>
+  </div>
+
+  <div class="match-row">
+    <div class="match-label">📉 Loss</div>
+    <div class="match-arrow">→</div>
+    <div class="drop-zone" id="dz-loss" data-answer="Cost − Revenue"
+      ondragover="dzDragOver(event)" ondragleave="dzDragLeave(event)" ondrop="dzDrop(event)">
+      Drop here
+    </div>
+  </div>
+
+  <div class="match-row">
+    <div class="match-label">⚖️ Break Even</div>
+    <div class="match-arrow">→</div>
+    <div class="drop-zone" id="dz-break" data-answer="Revenue = Cost"
+      ondragover="dzDragOver(event)" ondragleave="dzDragLeave(event)" ondrop="dzDrop(event)">
+      Drop here
+    </div>
+  </div>
+
+  <button class="dnd-check-btn" onclick="checkDnD()">✅ Check Matches</button>
+  <div class="dnd-feedback" id="dndFeedback"></div>
+</div>
+
+<!-- ════════════════════════════
+     FILL IN THE BLANKS
+════════════════════════════ -->
+<div class="questions-list">
+
+  <div class="question-card" id="q1">
+    <div class="q-label">Question 1 of 8</div>
+    <div class="q-text">
+      Rohan bought supplies for ₹120. He sold 30 cups at ₹10 each.
+      His total revenue = ₹10 × 30 = ₹<input class="blank-input" id="a1" placeholder="?" type="number">
+      <button class="check-btn" onclick="checkAnswer('a1', 300, 'q1')">Check</button>
+      <span class="feedback-badge" id="fb1"></span>
+    </div>
+    <div class="hint-text" id="hint1">💡 Hint: Multiply the price (₹10) by the number sold (30)</div>
+  </div>
+
+  <div class="question-card" id="q2">
+    <div class="q-label">Question 2 of 8</div>
+    <div class="q-text">
+      Rohan's Cost = ₹120, Revenue = ₹300.
+      His Profit = ₹300 – ₹120 = ₹<input class="blank-input" id="a2" placeholder="?" type="number">
+      <button class="check-btn" onclick="checkAnswer('a2', 180, 'q2')">Check</button>
+      <span class="feedback-badge" id="fb2"></span>
+    </div>
+    <div class="hint-text" id="hint2">💡 Hint: Subtract the cost from the revenue</div>
+  </div>
+
+  <div class="question-card" id="q3">
+    <div class="q-label">Question 3 of 8</div>
+    <div class="q-text">
+      Priya makes friendship bands. Each band costs ₹15 to make, sells for ₹25.
+      Profit per band = ₹25 – ₹15 = ₹<input class="blank-input" id="a3" placeholder="?" type="number">
+      <button class="check-btn" onclick="checkAnswer('a3', 10, 'q3')">Check</button>
+      <span class="feedback-badge" id="fb3"></span>
+    </div>
+    <div class="hint-text" id="hint3">💡 Hint: Selling price minus cost price</div>
+  </div>
+
+  <div class="question-card" id="q4">
+    <div class="q-label">Question 4 of 8</div>
+    <div class="q-text">
+      If Priya sells 20 bands, total revenue = ₹25 × 20 = ₹<input class="blank-input" id="a4" placeholder="?" type="number">
+      <button class="check-btn" onclick="checkAnswer('a4', 500, 'q4')">Check</button>
+      <span class="feedback-badge" id="fb4"></span>
+    </div>
+    <div class="hint-text" id="hint4">💡 Hint: ₹25 times 20 bands</div>
+  </div>
+
+  <div class="question-card" id="q5">
+    <div class="q-label">Question 5 of 8</div>
+    <div class="q-text">
+      Total cost to make 20 bands = ₹15 × 20 = ₹<input class="blank-input" id="a5" placeholder="?" type="number">
+      <button class="check-btn" onclick="checkAnswer('a5', 300, 'q5')">Check</button>
+      <span class="feedback-badge" id="fb5"></span>
+    </div>
+    <div class="hint-text" id="hint5">💡 Hint: ₹15 times 20 bands</div>
+  </div>
+
+  <div class="question-card" id="q6">
+    <div class="q-label">Question 6 of 8</div>
+    <div class="q-text">
+      Priya's total profit from 20 bands = ₹500 – ₹300 = ₹<input class="blank-input" id="a6" placeholder="?" type="number">
+      <button class="check-btn" onclick="checkAnswer('a6', 200, 'q6')">Check</button>
+      <span class="feedback-badge" id="fb6"></span>
+    </div>
+    <div class="hint-text" id="hint6">💡 Hint: Subtract total cost from total revenue</div>
+  </div>
+
+  <div class="question-card" id="q7">
+    <div class="q-label">Question 7 of 8</div>
+    <div class="q-text">
+      Arjun spends ₹200 on clay. He sells his pots for only ₹150.
+      He made a <input class="blank-input" id="a7" placeholder="?" type="text" style="min-width:90px"> (Profit / Loss)?
+      <button class="check-btn" onclick="checkTextAnswer('a7', 'loss', 'q7')">Check</button>
+      <span class="feedback-badge" id="fb7"></span>
+    </div>
+    <div class="hint-text" id="hint7">💡 Hint: He spent MORE than he earned!</div>
+  </div>
+
+  <div class="question-card" id="q8">
+    <div class="q-label">Question 8 of 8</div>
+    <div class="q-text">
+      Arjun's loss amount = ₹200 – ₹150 = ₹<input class="blank-input" id="a8" placeholder="?" type="number">
+      <button class="check-btn" onclick="checkAnswer('a8', 50, 'q8')">Check</button>
+      <span class="feedback-badge" id="fb8"></span>
+    </div>
+    <div class="hint-text" id="hint8">💡 Hint: Subtract ₹150 from ₹200</div>
+  </div>
+
+</div>
+
+<!-- END PANEL -->
+<div class="end-panel" id="endPanel">
+  <h2 id="endTitle" style="color:#01579B;font-size:1.5rem;margin-bottom:10px;font-family:'Fredoka One',cursive">📊 All Done!</h2>
+  <div class="big-score" id="finalScore">0/12</div>
+  <p id="endMsg" style="color:#666;margin:10px 0 20px;font-weight:700"></p>
+  <table class="summary-table">
+    <tr><th>Concept</th><th>Formula</th></tr>
+    <tr><td>Revenue</td><td>Price × Quantity Sold</td></tr>
+    <tr><td>Profit</td><td>Revenue − Cost</td></tr>
+    <tr><td>Loss</td><td>Cost − Revenue (when cost &gt; revenue)</td></tr>
+    <tr><td>Break Even</td><td>Revenue = Cost</td></tr>
+  </table>
+  <br>
+  <button class="btn btn-coral" onclick="resetGame()">🔄 Try Again</button>
+  <button class="btn btn-mint" onclick="nextSection()">➡️ Next Section</button>
+</div>
+
+<script>
+// ══════════════════════════
+// STATE
+// ══════════════════════════
+let score = 0, answered = 0;
+const TOTAL = 12; // 4 DnD + 8 fill-in
+let dndAnswered = 0, dndScore = 0, dndLocked = false;
+
+// track which chip is in which drop zone
+// { dzId: chipId }
+const placements = {};
+let draggedChipId = null;
+let draggedChipFrom = null; // 'bank' or dzId
+
+// ══════════════════════════
+// DRAG & DROP
+// ══════════════════════════
+function dragStart(e) {
+  draggedChipId = e.target.id;
+  // find where chip currently lives
+  draggedChipFrom = 'bank';
+  for (const [dzId, chipId] of Object.entries(placements)) {
+    if (chipId === draggedChipId) { draggedChipFrom = dzId; break; }
+  }
+  e.target.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function dragEnd(e) {
+  e.target.classList.remove('dragging');
+}
+
+// Drop zone handlers
+function dzDragOver(e) {
+  e.preventDefault();
+  if (dndLocked) return;
+  e.currentTarget.classList.add('drag-over');
+}
+function dzDragLeave(e) {
+  e.currentTarget.classList.remove('drag-over');
+}
+function dzDrop(e) {
+  e.preventDefault();
+  if (dndLocked) return;
+  const dz = e.currentTarget;
+  dz.classList.remove('drag-over');
+
+  if (!draggedChipId) return;
+
+  // If dz already has a chip, send it back to bank
+  if (placements[dz.id]) {
+    returnToBank(placements[dz.id]);
+  }
+
+  // Remove chip from previous location
+  if (draggedChipFrom === 'bank') {
+    const chip = document.getElementById(draggedChipId);
+    chip.parentNode && chip.parentNode.removeChild(chip);
+  } else {
+    // remove from old drop zone
+    const oldDz = document.getElementById(draggedChipFrom);
+    oldDz.innerHTML = 'Drop here';
+    oldDz.classList.remove('has-chip', 'correct', 'incorrect');
+    delete placements[draggedChipFrom];
+  }
+
+  // Place chip into drop zone
+  const chip = document.getElementById(draggedChipId);
+  const chipClone = document.createElement('span');
+  chipClone.className = 'drop-chip-inside';
+  chipClone.textContent = chip.dataset.value.length > 18 ? chip.textContent : chip.dataset.value;
+  chipClone.onclick = () => returnChipFromZone(dz.id);
+  dz.innerHTML = '';
+  dz.appendChild(chipClone);
+  dz.classList.add('has-chip');
+
+  placements[dz.id] = draggedChipId;
+  draggedChipId = null;
+}
+
+// Bank handlers
+function bankDragOver(e) {
+  e.preventDefault();
+  if (dndLocked) return;
+  e.currentTarget.classList.add('drag-over');
+}
+function bankDragLeave(e) {
+  e.currentTarget.classList.remove('drag-over');
+}
+function bankDrop(e) {
+  e.preventDefault();
+  if (dndLocked) return;
+  e.currentTarget.classList.remove('drag-over');
+  if (!draggedChipId || draggedChipFrom === 'bank') return;
+  // Return chip from drop zone to bank
+  const oldDz = document.getElementById(draggedChipFrom);
+  oldDz.innerHTML = 'Drop here';
+  oldDz.classList.remove('has-chip', 'correct', 'incorrect');
+  delete placements[draggedChipFrom];
+  returnToBank(draggedChipId);
+  draggedChipId = null;
+}
+
+function returnToBank(chipId) {
+  const chip = document.getElementById(chipId);
+  chip && document.getElementById('answerBank').appendChild(chip);
+}
+
+function returnChipFromZone(dzId) {
+  if (dndLocked) return;
+  const chipId = placements[dzId];
+  if (!chipId) return;
+  const dz = document.getElementById(dzId);
+  dz.innerHTML = 'Drop here';
+  dz.classList.remove('has-chip', 'correct', 'incorrect');
+  delete placements[dzId];
+  returnToBank(chipId);
+}
+
+// ── Touch drag support ──
+let touchChip = null, touchClone = null, touchFrom = null;
+
+document.addEventListener('touchstart', e => {
+  const chip = e.target.closest('.drag-chip');
+  if (!chip || dndLocked) return;
+  touchChip = chip;
+  draggedChipId = chip.id;
+  touchFrom = 'bank';
+  for (const [dzId, chipId] of Object.entries(placements)) {
+    if (chipId === chip.id) { touchFrom = dzId; break; }
+  }
+  touchClone = chip.cloneNode(true);
+  touchClone.style.cssText = 'position:fixed;opacity:0.85;pointer-events:none;z-index:999;transform:scale(1.1) rotate(-3deg);transition:none;';
+  document.body.appendChild(touchClone);
+  const r = chip.getBoundingClientRect();
+  touchClone.style.left = r.left + 'px';
+  touchClone.style.top = r.top + 'px';
+  chip.classList.add('dragging');
+}, { passive: true });
+
+document.addEventListener('touchmove', e => {
+  if (!touchClone) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  touchClone.style.left = (t.clientX - touchClone.offsetWidth/2) + 'px';
+  touchClone.style.top  = (t.clientY - touchClone.offsetHeight/2) + 'px';
+}, { passive: false });
+
+document.addEventListener('touchend', e => {
+  if (!touchClone || !touchChip) return;
+  touchChip.classList.remove('dragging');
+  const t = e.changedTouches[0];
+  touchClone.remove(); touchClone = null;
+
+  const elBelow = document.elementFromPoint(t.clientX, t.clientY);
+  const dz = elBelow && elBelow.closest('.drop-zone');
+  const bank = elBelow && elBelow.closest('.answer-bank');
+
+  if (dz && !dndLocked) {
+    // simulate drop into dz
+    if (placements[dz.id]) returnToBank(placements[dz.id]);
+    if (touchFrom === 'bank') {
+      touchChip.parentNode && touchChip.parentNode.removeChild(touchChip);
+    } else {
+      const oldDz = document.getElementById(touchFrom);
+      oldDz.innerHTML = 'Drop here';
+      oldDz.classList.remove('has-chip', 'correct', 'incorrect');
+      delete placements[touchFrom];
+    }
+    const span = document.createElement('span');
+    span.className = 'drop-chip-inside';
+    span.textContent = touchChip.dataset.value;
+    span.onclick = () => returnChipFromZone(dz.id);
+    dz.innerHTML = ''; dz.appendChild(span);
+    dz.classList.add('has-chip');
+    placements[dz.id] = touchChip.id;
+  } else if (bank && touchFrom !== 'bank' && !dndLocked) {
+    const oldDz = document.getElementById(touchFrom);
+    oldDz.innerHTML = 'Drop here';
+    oldDz.classList.remove('has-chip', 'correct', 'incorrect');
+    delete placements[touchFrom];
+    returnToBank(touchChip.id);
+  }
+  touchChip = null; draggedChipId = null;
+});
+
+// ── Check DnD ──
+function checkDnD() {
+  if (dndLocked) return;
+  const dzIds = ['dz-rev', 'dz-profit', 'dz-loss', 'dz-break'];
+  let correct = 0;
+  dzIds.forEach(dzId => {
+    const dz = document.getElementById(dzId);
+    const chipId = placements[dzId];
+    if (!chipId) return;
+    const chip = document.getElementById(chipId);
+    const inside = dz.querySelector('.drop-chip-inside');
+    if (chip.dataset.value === dz.dataset.answer) {
+      dz.classList.add('correct'); dz.classList.remove('incorrect');
+      if (inside) inside.classList.add('correct-chip');
+      correct++;
+    } else {
+      dz.classList.add('incorrect'); dz.classList.remove('correct');
+      if (inside) inside.classList.add('wrong-chip');
+    }
+  });
+
+  // Only count newly correct ones
+  const fb = document.getElementById('dndFeedback');
+  if (correct === 4) {
+    fb.textContent = '🎉 Perfect! All 4 formulas matched correctly!';
+    fb.style.color = '#2E7D32';
+    dndLocked = true;
+    dndScore = 4; dndAnswered = 4;
+    score = dndScore + countFillIns();
+    answered = dndAnswered + countFillInAnswered();
+    updateScore();
+    if (answered === TOTAL) setTimeout(showEnd, 600);
+  } else {
+    fb.textContent = `${correct}/4 correct — check the wrong ones (in red) and try again!`;
+    fb.style.color = '#E53935';
+    // shake wrong zones
+    dzIds.forEach(dzId => {
+      const dz = document.getElementById(dzId);
+      if (dz.classList.contains('incorrect')) {
+        dz.style.animation = 'wiggle 0.4s ease';
+        setTimeout(() => dz.style.animation = '', 500);
+      }
+    });
+  }
+}
+
+// ══════════════════════════
+// FILL IN THE BLANKS
+// ══════════════════════════
+function checkAnswer(inputId, correct, cardId) {
+  const input = document.getElementById(inputId);
+  const fb = document.getElementById('fb' + inputId.slice(1));
+  const hintEl = document.getElementById('hint' + inputId.slice(1));
+  if (input.readOnly) return;
+  const val = parseFloat(input.value);
+  if (val === correct) {
+    input.classList.add('correct-input'); input.classList.remove('wrong-input');
+    input.readOnly = true;
+    fb.textContent = '✅ Correct!'; fb.className = 'feedback-badge show badge-correct';
+    score = dndScore + countFillIns();
+    answered = dndAnswered + countFillInAnswered();
+    updateScore();
+    if (answered === TOTAL) setTimeout(showEnd, 600);
+  } else {
+    input.classList.add('wrong-input');
+    fb.textContent = '❌ Try again!'; fb.className = 'feedback-badge show badge-wrong';
+    hintEl.classList.add('show');
+    setTimeout(() => input.classList.remove('wrong-input'), 800);
+  }
+}
+
+function checkTextAnswer(inputId, correct, cardId) {
+  const input = document.getElementById(inputId);
+  const fb = document.getElementById('fb' + inputId.slice(1));
+  const hintEl = document.getElementById('hint' + inputId.slice(1));
+  if (input.readOnly) return;
+  if (input.value.trim().toLowerCase() === correct.toLowerCase()) {
+    input.classList.add('correct-input'); input.classList.remove('wrong-input');
+    input.readOnly = true;
+    fb.textContent = '✅ Correct!'; fb.className = 'feedback-badge show badge-correct';
+    score = dndScore + countFillIns();
+    answered = dndAnswered + countFillInAnswered();
+    updateScore();
+    if (answered === TOTAL) setTimeout(showEnd, 600);
+  } else {
+    input.classList.add('wrong-input');
+    fb.textContent = '❌ Try again!'; fb.className = 'feedback-badge show badge-wrong';
+    hintEl.classList.add('show');
+    setTimeout(() => input.classList.remove('wrong-input'), 800);
+  }
+}
+
+function countFillIns() {
+  let c = 0;
+  for (let i = 1; i <= 8; i++) {
+    if (document.getElementById('a'+i)?.readOnly) c++;
+  }
+  return c;
+}
+function countFillInAnswered() { return countFillIns(); }
+
+// ══════════════════════════
+// SCORE & END
+// ══════════════════════════
+function updateScore() {
+  const el = document.getElementById('scoreDisplay');
+  el.textContent = score + ' / ' + TOTAL;
+  el.classList.remove('bump');
+  void el.offsetWidth;
+  el.classList.add('bump');
+  const msgs = ['📝 Let\'s get started!','💡 Great start!','⭐ You\'re getting it!','🔥 On fire!','🏆 Almost done!','🎉 Maths wizard!'];
+  document.getElementById('progressMsg').textContent = msgs[Math.min(Math.floor(score/2), msgs.length-1)];
+}
+
+function showEnd() {
+  document.getElementById('endPanel').style.display = 'block';
+  document.getElementById('finalScore').textContent = score + '/' + TOTAL;
+  const pct = score / TOTAL;
+  document.getElementById('endMsg').textContent = pct >= 0.9
+    ? 'Outstanding! You\'re a finance genius! 🏆'
+    : pct >= 0.6
+    ? 'Well done! Review the formulas and you\'ll be perfect! 🌟'
+    : 'Keep practising! Every business owner learns from mistakes! 💪';
+  if (pct >= 0.7) launchConfetti();
+}
+
+function launchConfetti() {
+  const colors = ['#29B6F6','#FFB300','#E53935','#43A047','#AB47BC','#FF7043'];
+  for (let i = 0; i < 60; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.top = '-20px';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    c.style.width = (8 + Math.random()*8) + 'px';
+    c.style.height = (8 + Math.random()*8) + 'px';
+    c.style.animationDelay = (Math.random()*1.5) + 's';
+    c.style.animationDuration = (2 + Math.random()) + 's';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 4000);
+  }
+}
+
+// ══════════════════════════
+// RESET
+// ══════════════════════════
+function resetGame() {
+  score = 0; answered = 0; dndScore = 0; dndAnswered = 0; dndLocked = false;
+  document.getElementById('endPanel').style.display = 'none';
+  updateScore();
+
+  // Reset fill-ins
+  for (let i = 1; i <= 8; i++) {
+    const inp = document.getElementById('a'+i);
+    const fb  = document.getElementById('fb'+i);
+    const hint= document.getElementById('hint'+i);
+    inp.value=''; inp.readOnly=false;
+    inp.classList.remove('correct-input','wrong-input');
+    fb.className='feedback-badge'; fb.textContent='';
+    hint.classList.remove('show');
+  }
+
+  // Reset DnD
+  const bank = document.getElementById('answerBank');
+  const chipIds = ['chip-rev','chip-profit','chip-loss','chip-break'];
+  chipIds.forEach(id => {
+    const chip = document.getElementById(id);
+    chip.classList.remove('placed','wrong-placed','dragging');
+    bank.appendChild(chip);
+  });
+  for (const key of Object.keys(placements)) delete placements[key];
+  ['dz-rev','dz-profit','dz-loss','dz-break'].forEach(id => {
+    const dz = document.getElementById(id);
+    dz.innerHTML = 'Drop here';
+    dz.classList.remove('has-chip','correct','incorrect');
+  });
+  document.getElementById('dndFeedback').textContent = '';
+}
+
+function closeActivity() {
+  if (confirm('Close this activity? Your progress will be lost.')) {
+    // In a real app: window.history.back() or postMessage to parent
+    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:Nunito,sans-serif;color:#0288D1;font-size:1.3rem;font-weight:800;">✅ Activity closed. See you next time!</div>';
+  }
+}
+
+function nextSection() {
+  alert('🚀 Section 4 incoming — My Business Plan! You\'re becoming a real entrepreneur!');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 2 – Where Does Money Come From? | Planrs</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green-dark: #1B5E20;
+    --green-mid: #43A047;
+    --green-light: #A5D6A7;
+    --bg: #F0FFF4;
+    --blue: #1565C0;
+    --blue-light: #E3F2FD;
+    --red: #C62828;
+    --red-light: #FCE4EC;
+    --amber: #F57F17;
+    --amber-light: #FFF8E1;
+    --purple: #6A1B9A;
+    --purple-light: #F3E5F5;
+  }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    padding: 16px;
+    font-size: 16px;
+    background-image: radial-gradient(circle at 20% 20%, #d4f5d4 0%, transparent 40%),
+                      radial-gradient(circle at 80% 80%, #e8f5e9 0%, transparent 40%);
+  }
+
+  /* ── Close Button ── */
+  .close-btn {
+    position: fixed; top: 12px; left: 16px; z-index: 200;
+    background: white; border: 2px solid #FFCDD2;
+    color: #E53935; border-radius: 50%;
+    width: 38px; height: 38px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; cursor: pointer; font-weight: 900;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+    transition: all 0.2s; line-height: 1;
+  }
+  .close-btn:hover { background: #FFEBEE; transform: scale(1.1) rotate(90deg); box-shadow: 0 5px 16px rgba(229,57,53,0.3); }
+
+  /* ── Close Modal ── */
+  .close-modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 500;
+    background: rgba(0,0,0,0.45); backdrop-filter: blur(4px);
+    align-items: center; justify-content: center;
+  }
+  .close-modal-overlay.show { display: flex; }
+  .close-modal {
+    background: white; border-radius: 24px; padding: 32px 28px;
+    text-align: center; max-width: 320px; width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    animation: modalPop 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes modalPop { from{transform:scale(0.7);opacity:0} to{transform:scale(1);opacity:1} }
+  .close-modal .emoji { font-size: 3rem; margin-bottom: 12px; }
+  .close-modal h3 { font-family: 'Fredoka One', cursive; font-size: 1.4rem; color: #333; margin-bottom: 8px; }
+  .close-modal p { color: #777; font-size: 0.9rem; margin-bottom: 20px; }
+  .modal-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .modal-btn {
+    padding: 10px 22px; border: none; border-radius: 30px;
+    font-family: 'Nunito', sans-serif; font-weight: 700;
+    font-size: 0.9rem; cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+  }
+  .modal-btn:hover { transform: translateY(-2px); }
+  .modal-btn-stay { background: #E8F5E9; color: #2E7D32; }
+  .modal-btn-leave { background: #FF7043; color: white; }
+
+  /* ── Logo ── */
+  .planrs-logo {
+    position: fixed; top: 12px; right: 16px;
+    background: linear-gradient(135deg, #43A047, #2E7D32); color: white;
+    border-radius: 20px; padding: 6px 14px;
+    font-family: 'Fredoka One', cursive; font-size: 14px;
+    z-index: 100; box-shadow: 0 4px 12px rgba(67,160,71,0.4);
+    letter-spacing: 0.5px;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: linear-gradient(135deg, #81C784, #43A047);
+    border-radius: 24px; padding: 22px 24px; margin-bottom: 18px;
+    text-align: center; box-shadow: 0 6px 20px rgba(67,160,71,0.35);
+    position: relative; overflow: hidden;
+  }
+  .header::before {
+    content: ''; position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+  .header h1 { font-family: 'Fredoka One', cursive; font-size: 1.6rem; color: white; margin-bottom: 6px; text-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+  .header p { color: #e8f5e9; font-size: 0.9rem; font-weight: 600; }
+
+  /* ── Score ── */
+  .score-bar {
+    background: white; border-radius: 18px; padding: 12px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 18px; box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    border: 2px solid #C8E6C9;
+  }
+  .score-value { font-family: 'Fredoka One', cursive; font-size: 1.5rem; color: var(--green-mid); }
+
+  /* ── Instruction ── */
+  .instruction {
+    background: #FFF8E1; border-left: 5px solid #FFB300;
+    border-radius: 14px; padding: 14px 18px; margin-bottom: 20px;
+    color: #6D4C00; font-size: 0.92rem; line-height: 1.6;
+    box-shadow: 0 2px 8px rgba(255,179,0,0.15);
+  }
+
+  /* ── Items Pool ── */
+  .items-pool {
+    background: white; border-radius: 20px; padding: 18px;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.08);
+    border: 2px solid #E1BEE7; margin-bottom: 22px;
+    transition: box-shadow 0.3s;
+  }
+  .items-pool h3 { font-family: 'Fredoka One', cursive; color: var(--purple); margin-bottom: 14px; text-align: center; font-size: 1.05rem; }
+  .items-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; min-height: 60px; }
+
+  /* ── Chips ── */
+  .item-chip {
+    padding: 10px 18px; border-radius: 30px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800; font-size: 0.88rem;
+    cursor: grab; user-select: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    transition: transform 0.15s, box-shadow 0.15s, opacity 0.25s;
+    border: 2.5px solid transparent;
+    position: relative;
+    animation: chipFloat 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  .item-chip:nth-child(2) { animation-delay: 0.05s; }
+  .item-chip:nth-child(3) { animation-delay: 0.10s; }
+  .item-chip:nth-child(4) { animation-delay: 0.15s; }
+  .item-chip:nth-child(5) { animation-delay: 0.20s; }
+  .item-chip:nth-child(6) { animation-delay: 0.25s; }
+  .item-chip:nth-child(7) { animation-delay: 0.30s; }
+  .item-chip:nth-child(8) { animation-delay: 0.35s; }
+  .item-chip:nth-child(9) { animation-delay: 0.40s; }
+  .item-chip:nth-child(10) { animation-delay: 0.45s; }
+  .item-chip:nth-child(11) { animation-delay: 0.50s; }
+  .item-chip:nth-child(12) { animation-delay: 0.55s; }
+  @keyframes chipFloat {
+    from { transform: translateY(20px) scale(0.8); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+  }
+  .item-chip:hover { transform: translateY(-3px) scale(1.07); box-shadow: 0 8px 20px rgba(0,0,0,0.18); }
+  .item-chip:active { cursor: grabbing; transform: scale(1.1) rotate(-2deg); box-shadow: 0 12px 28px rgba(0,0,0,0.22); }
+  .item-chip.placed { opacity: 0.25; pointer-events: none; transform: scale(0.9); }
+  .item-chip.dragging { opacity: 0.5; transform: scale(1.1) rotate(3deg); }
+
+  .chip-neutral { background: #F3E5F5; color: var(--purple); border-color: #CE93D8; }
+
+  /* ── Touch drag ghost ── */
+  .touch-ghost {
+    position: fixed; pointer-events: none; z-index: 1000;
+    transform: rotate(-5deg) scale(1.15);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+    transition: none;
+    opacity: 0.92;
+  }
+
+  /* ── Category Boxes ── */
+  .categories-row { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 24px; }
+  .category-box {
+    flex: 1; min-width: 200px; border-radius: 20px; padding: 18px;
+    min-height: 170px; transition: box-shadow 0.2s, transform 0.15s, border-color 0.2s;
+    position: relative; overflow: hidden;
+  }
+  .category-box::before {
+    content: attr(data-emoji); position: absolute;
+    right: -10px; bottom: -10px; font-size: 5rem;
+    opacity: 0.07; pointer-events: none; line-height: 1;
+  }
+  .category-box.drag-over {
+    transform: scale(1.04);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+  }
+  .cat-income { background: #E3F2FD; border: 3px dashed #42A5F5; }
+  .cat-income.drag-over { border-color: #1565C0; background: #BBDEFB; }
+  .cat-expense { background: #FCE4EC; border: 3px dashed #EF9A9A; }
+  .cat-expense.drag-over { border-color: #C62828; background: #FFCDD2; }
+  .cat-savings { background: #FFF8E1; border: 3px dashed #FFD54F; }
+  .cat-savings.drag-over { border-color: #F57F17; background: #FFE0B2; }
+
+  .cat-header { font-family: 'Fredoka One', cursive; font-size: 1.05rem; margin-bottom: 12px; text-align: center; }
+  .income-header { color: var(--blue); }
+  .expense-header { color: var(--red); }
+  .savings-header { color: var(--amber); }
+
+  .cat-drop-area { min-height: 80px; display: flex; flex-wrap: wrap; gap: 7px; align-content: flex-start; }
+
+  /* ── Placed Chips ── */
+  .placed-chip {
+    padding: 7px 13px; border-radius: 20px;
+    font-size: 0.82rem; font-weight: 700;
+    display: flex; align-items: center; gap: 5px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .placed-correct { background: #C8E6C9; color: #1B5E20; }
+  .placed-wrong { background: #FFCDD2; color: #B71C1C; }
+
+  /* ── Animations ── */
+  @keyframes correctBounce {
+    0%{transform:scale(1)} 30%{transform:scale(1.3) rotate(-5deg)} 60%{transform:scale(0.95) rotate(3deg)} 100%{transform:scale(1)}
+  }
+  @keyframes wrongShake {
+    0%,100%{transform:translateX(0) rotate(0)} 20%{transform:translateX(-8px) rotate(-3deg)} 40%{transform:translateX(8px) rotate(3deg)} 60%{transform:translateX(-5px) rotate(-2deg)} 80%{transform:translateX(5px) rotate(2deg)}
+  }
+  @keyframes wrongFade {
+    0%{opacity:1;transform:scale(1)} 70%{opacity:0.8;transform:scale(0.9)} 100%{opacity:0;transform:scale(0.6) translateY(-10px)}
+  }
+  .bounce { animation: correctBounce 0.5s ease; }
+  .shake-anim { animation: wrongShake 0.45s ease, wrongFade 1.6s 0.15s forwards; }
+
+  /* ── Sparkles ── */
+  .sparkle {
+    position: fixed; pointer-events: none; z-index: 300;
+    font-size: 1.4rem; animation: sparklePop 0.8s ease forwards;
+  }
+  @keyframes sparklePop {
+    0%{transform:scale(0) translateY(0);opacity:1}
+    60%{transform:scale(1.3) translateY(-40px);opacity:1}
+    100%{transform:scale(0.5) translateY(-70px);opacity:0}
+  }
+
+  /* ── Toast ── */
+  .feedback-toast {
+    position: fixed; bottom: 30px; left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: white; border-radius: 40px; padding: 13px 30px;
+    font-family: 'Fredoka One', cursive; font-size: 1.1rem;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.18);
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 200; white-space: nowrap;
+  }
+  .feedback-toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── Buttons ── */
+  .btn {
+    padding: 13px 26px; border: none; border-radius: 30px;
+    font-family: 'Fredoka One', cursive; font-size: 1rem;
+    cursor: pointer; transition: all 0.2s; margin: 6px;
+    box-shadow: 0 5px 16px rgba(0,0,0,0.15); letter-spacing: 0.3px;
+  }
+  .btn-coral { background: linear-gradient(135deg, #FF7043, #F4511E); color: white; }
+  .btn-mint { background: linear-gradient(135deg, #26A69A, #00796B); color: white; }
+  .btn:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(0,0,0,0.2); }
+  .btn:active { transform: translateY(0); }
+
+  /* ── End Panel ── */
+  .end-panel {
+    display: none; background: white; border-radius: 24px;
+    padding: 32px; text-align: center;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12); border: 3px solid #A5D6A7;
+    animation: modalPop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .end-panel .big-score {
+    font-family: 'Fredoka One', cursive; font-size: 3.5rem; color: var(--green-mid);
+    text-shadow: 0 4px 12px rgba(67,160,71,0.3);
+  }
+  .confetti-row { font-size: 2rem; letter-spacing: 4px; margin: 10px 0; }
+
+  /* ── Progress Bar ── */
+  .progress-wrap { background: #E8F5E9; border-radius: 20px; height: 10px; margin-bottom: 18px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 20px; background: linear-gradient(90deg, #66BB6A, #43A047); transition: width 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+
+  /* Mobile tweaks */
+  @media (max-width: 600px) {
+    .categories-row { gap: 10px; }
+    .category-box { min-width: 100%; }
+    .item-chip { font-size: 0.82rem; padding: 9px 15px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Close Button -->
+<button class="close-btn" onclick="showCloseModal()" title="Close activity">✕</button>
+
+<!-- Close Confirmation Modal -->
+<div class="close-modal-overlay" id="closeModalOverlay">
+  <div class="close-modal">
+    <div class="emoji">🤔</div>
+    <h3>Leaving so soon?</h3>
+    <p>Your progress will be lost. Are you sure you want to close this activity?</p>
+    <div class="modal-btns">
+      <button class="modal-btn modal-btn-stay" onclick="hideCloseModal()">🙅 Stay & Play!</button>
+      <button class="modal-btn modal-btn-leave" onclick="closeActivity()">👋 Exit</button>
+    </div>
+  </div>
+</div>
+
+<div class="planrs-logo">⭐ Planrs</div>
+
+<div class="header">
+  <h1>💰 Section 2 – Where Does Money Come From?</h1>
+  <p>Sort each item into Income, Expense, or Savings!</p>
+</div>
+
+<div class="score-bar">
+  <span style="color:#888;font-size:0.9rem;font-weight:700">⭐ Score</span>
+  <span class="score-value" id="scoreDisplay">0 / 12</span>
+  <span id="progressMsg" style="font-size:0.88rem;font-weight:700;color:#555">💪 Ready!</span>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-fill" id="progressFill" style="width:0%"></div>
+</div>
+
+<div class="instruction">
+  🎯 <strong>How to play:</strong> Drag each money card below into the right bucket — <strong>Income</strong> (money coming IN), <strong>Expense</strong> (money going OUT), or <strong>Savings</strong> (money kept for later). Think about Priya's juice stall at the school fair!
+</div>
+
+<div class="items-pool">
+  <h3>💳 Drag these money items into the right box!</h3>
+  <div class="items-grid" id="itemsGrid">
+    <div class="item-chip chip-neutral" draggable="true" data-term="Pocket money" data-cat="income">💵 Pocket money</div>
+    <div class="item-chip chip-neutral" draggable="true" data-term="Juice sold at fair" data-cat="income">🥤 Juice sold at fair</div>
+    <div class="item-chip chip-neutral" draggable="true" data-term="Birthday gift cash" data-cat="income">🎁 Birthday gift cash</div>
+    <div class="item-chip chip-neutral" draggable="true" data-term="Paying for lemons" data-cat="expense">🍋 Paying for lemons</div>
+    <div class="item-chip chip-neutral" draggable="true" data-term="Bus fare to school" data-cat="expense">🚌 Bus fare to school</div>
+    <div class="item-chip chip-neutral" draggable="true" data-term="Buying a notebook" data-cat="expense">📒 Buying a notebook</div>
+    <div class="item-chip chip-neutral" draggable="true" data-term="Paying for sugar" data-cat="expense">🍬 Paying for sugar</div>
+    <div class="item-chip chip-neutral" draggable="true" data-term="Piggy bank deposit" data-cat="savings">🐷 Piggy bank deposit</div>
+    <div class="item-chip chip-neutral" draggable="true" data-term="Bank account FD" data-cat="savings">🏦 Bank account FD</div>
+    <div class="item-chip chip-neutral" draggable="true" data-term="Money from tutoring" data-cat="income">📚 Money from tutoring</div>
+    <div class="item-chip chip-neutral" draggable="true" data-term="Saving for a cycle" data-cat="savings">🚲 Saving for a cycle</div>
+    <div class="item-chip chip-neutral" draggable="true" data-term="Buying stickers" data-cat="expense">🌟 Buying stickers</div>
+  </div>
+</div>
+
+<div class="categories-row">
+  <div class="category-box cat-income" id="cat-income" data-cat="income" data-emoji="📈">
+    <div class="cat-header income-header">📈 INCOME<br><small style="font-family:'Nunito';font-weight:600;font-size:0.78rem">Money coming IN</small></div>
+    <div class="cat-drop-area" id="drop-income"></div>
+  </div>
+  <div class="category-box cat-expense" id="cat-expense" data-cat="expense" data-emoji="📉">
+    <div class="cat-header expense-header">📉 EXPENSE<br><small style="font-family:'Nunito';font-weight:600;font-size:0.78rem">Money going OUT</small></div>
+    <div class="cat-drop-area" id="drop-expense"></div>
+  </div>
+  <div class="category-box cat-savings" id="cat-savings" data-cat="savings" data-emoji="🏆">
+    <div class="cat-header savings-header">🏆 SAVINGS<br><small style="font-family:'Nunito';font-weight:600;font-size:0.78rem">Money kept for later</small></div>
+    <div class="cat-drop-area" id="drop-savings"></div>
+  </div>
+</div>
+
+<div class="end-panel" id="endPanel">
+  <div class="confetti-row" id="confettiRow">🎊🎉🏆🎊🎉</div>
+  <h2 id="endTitle" style="font-family:'Fredoka One',cursive;color:#1B5E20;font-size:1.6rem;margin-bottom:8px">🎉 All Sorted!</h2>
+  <div class="big-score" id="finalScore">0/12</div>
+  <p id="endMsg" style="color:#777;margin:10px 0 22px;font-size:0.95rem;font-weight:600"></p>
+  <button class="btn btn-coral" onclick="resetGame()">🔄 Try Again</button>
+  <button class="btn btn-mint" onclick="nextSection()">➡️ Next Section</button>
+</div>
+
+<div class="feedback-toast" id="toast"></div>
+
+<script>
+let score = 0, total = 12;
+let dragged = null;
+let touchGhost = null;
+let touchDragging = null;
+
+const correctMessages = ["🌟 Amazing!","🎯 Correct!","⭐ You're a star!","🏆 Brilliant!","🚀 Keep going!","💰 Money smart!","🎊 Nailed it!"];
+const wrongMessages = ["😊 Not quite! Try again","💪 Almost! Think harder","🌈 Oops! Try another box","🤔 Hmm, not there!"];
+
+const sparkleEmojis = ['✨','⭐','💫','🌟','💥','🎇','🎆'];
+
+// ─── Desktop Drag & Drop ───
+document.querySelectorAll('.item-chip').forEach(chip => {
+  chip.addEventListener('dragstart', e => {
+    dragged = chip;
+    chip.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text', chip.dataset.term);
+  });
+  chip.addEventListener('dragend', () => {
+    chip.classList.remove('dragging');
+  });
+});
+
+document.querySelectorAll('.category-box').forEach(box => {
+  box.addEventListener('dragover', e => { e.preventDefault(); box.classList.add('drag-over'); });
+  box.addEventListener('dragleave', e => {
+    if (!box.contains(e.relatedTarget)) box.classList.remove('drag-over');
+  });
+  box.addEventListener('drop', e => {
+    e.preventDefault();
+    box.classList.remove('drag-over');
+    handleDrop(dragged, box);
+  });
+});
+
+// ─── Touch Drag & Drop ───
+document.querySelectorAll('.item-chip').forEach(chip => {
+  chip.addEventListener('touchstart', e => {
+    if (chip.classList.contains('placed')) return;
+    touchDragging = chip;
+    const touch = e.touches[0];
+    const rect = chip.getBoundingClientRect();
+
+    touchGhost = chip.cloneNode(true);
+    touchGhost.classList.add('touch-ghost');
+    touchGhost.style.width = rect.width + 'px';
+    touchGhost.style.padding = getComputedStyle(chip).padding;
+    touchGhost.style.left = (touch.clientX - rect.width / 2) + 'px';
+    touchGhost.style.top = (touch.clientY - rect.height / 2) + 'px';
+    document.body.appendChild(touchGhost);
+    chip.classList.add('dragging');
+  }, { passive: true });
+
+  chip.addEventListener('touchmove', e => {
+    if (!touchGhost) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    const w = touchGhost.offsetWidth, h = touchGhost.offsetHeight;
+    touchGhost.style.left = (touch.clientX - w / 2) + 'px';
+    touchGhost.style.top = (touch.clientY - h / 2) + 'px';
+
+    // Highlight drop zones
+    document.querySelectorAll('.category-box').forEach(b => b.classList.remove('drag-over'));
+    const el = document.elementFromPoint(touch.clientX, touch.clientY);
+    const box = el?.closest('.category-box');
+    if (box) box.classList.add('drag-over');
+  }, { passive: false });
+
+  chip.addEventListener('touchend', e => {
+    if (!touchGhost || !touchDragging) return;
+    const touch = e.changedTouches[0];
+    const el = document.elementFromPoint(touch.clientX, touch.clientY);
+    const box = el?.closest('.category-box');
+    touchGhost.remove(); touchGhost = null;
+    touchDragging.classList.remove('dragging');
+    document.querySelectorAll('.category-box').forEach(b => b.classList.remove('drag-over'));
+    if (box) handleDrop(touchDragging, box);
+    touchDragging = null;
+  });
+});
+
+function handleDrop(chipEl, box) {
+  if (!chipEl || chipEl.classList.contains('placed')) return;
+  const isCorrect = chipEl.dataset.cat === box.dataset.cat;
+  const dropArea = box.querySelector('.cat-drop-area');
+
+  const placed = document.createElement('div');
+  placed.className = 'placed-chip ' + (isCorrect ? 'placed-correct' : 'placed-wrong');
+  placed.textContent = (isCorrect ? '✅ ' : '❌ ') + chipEl.dataset.term;
+
+  if (isCorrect) {
+    score++;
+    chipEl.classList.add('placed');
+    placed.classList.add('bounce');
+    dropArea.appendChild(placed);
+
+    // Sparkle effect at box center
+    const rect = box.getBoundingClientRect();
+    spawnSparkles(rect.left + rect.width/2, rect.top + rect.height/2);
+    showToast(correctMessages[Math.floor(Math.random()*correctMessages.length)], '#E8F5E9', '#1B5E20');
+  } else {
+    placed.classList.add('shake-anim');
+    dropArea.appendChild(placed);
+    setTimeout(() => placed.remove(), 1800);
+    showToast(wrongMessages[Math.floor(Math.random()*wrongMessages.length)], '#FFEBEE', '#C62828');
+  }
+  updateScore();
+  if (score === total) setTimeout(showEnd, 600);
+}
+
+function spawnSparkles(x, y) {
+  for (let i = 0; i < 5; i++) {
+    const s = document.createElement('div');
+    s.className = 'sparkle';
+    s.textContent = sparkleEmojis[Math.floor(Math.random()*sparkleEmojis.length)];
+    s.style.left = (x + (Math.random()-0.5)*80) + 'px';
+    s.style.top = (y + (Math.random()-0.5)*50) + 'px';
+    s.style.animationDelay = (i*0.08) + 's';
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 900);
+  }
+}
+
+function showToast(msg, bg, color) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.background = bg; t.style.color = color;
+  t.style.border = '2px solid ' + color + '30';
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 1600);
+}
+
+function updateScore() {
+  document.getElementById('scoreDisplay').textContent = score + ' / ' + total;
+  document.getElementById('progressFill').style.width = (score/total*100) + '%';
+  const msgs = ['💪 Ready!','💡 Good start!','⭐ Going great!','🔥 On fire!','🏆 Almost!','🎉 Champion!'];
+  document.getElementById('progressMsg').textContent = msgs[Math.min(Math.floor(score/2.5), msgs.length-1)];
+}
+
+function showEnd() {
+  const panel = document.getElementById('endPanel');
+  panel.style.display = 'block';
+  panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  document.getElementById('finalScore').textContent = score + '/' + total;
+  const pct = score/total;
+  const perfect = pct === 1;
+  document.getElementById('endTitle').textContent = perfect ? '🏆 Perfect Score!' : pct >= 0.7 ? '🌟 Well Done!' : '💪 Good Effort!';
+  document.getElementById('confettiRow').textContent = perfect ? '🎊🎉🏆🌟💰🎊🎉' : '🎉🌟💪🎉';
+  document.getElementById('endMsg').textContent = perfect
+    ? 'Perfect! You understand money flows like a pro! 💼'
+    : pct >= 0.7 ? "Great work! You're a smart money manager! 🌟"
+    : 'Keep practising — every rupee sorted teaches you more! 💪';
+
+  if (perfect) {
+    for (let i = 0; i < 3; i++) {
+      setTimeout(() => spawnSparkles(window.innerWidth/2, window.innerHeight/2), i * 300);
+    }
+  }
+}
+
+function resetGame() {
+  score = 0;
+  document.getElementById('endPanel').style.display = 'none';
+  updateScore();
+  document.querySelectorAll('.item-chip').forEach(c => {
+    c.classList.remove('placed', 'dragging');
+    c.style.animation = 'none';
+    setTimeout(() => c.style.animation = '', 10);
+  });
+  ['income','expense','savings'].forEach(cat => { document.getElementById('drop-'+cat).innerHTML = ''; });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function nextSection() {
+  showToast('🌟 On to Section 3! Amazing work!', '#E8F5E9', '#1B5E20');
+  setTimeout(() => alert('🌟 On to Section 3 — How Do We Calculate Profit? You\'re doing amazing!'), 400);
+}
+
+// ─── Close Modal ───
+function showCloseModal() {
+  document.getElementById('closeModalOverlay').classList.add('show');
+}
+function hideCloseModal() {
+  document.getElementById('closeModalOverlay').classList.remove('show');
+}
+function closeActivity() {
+  hideCloseModal();
+  document.body.style.transition = 'opacity 0.4s';
+  document.body.style.opacity = '0';
+  setTimeout(() => {
+    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:Nunito,sans-serif;font-size:1.2rem;color:#555;flex-direction:column;gap:16px;"><div style="font-size:3rem">👋</div><div>Activity closed. See you next time!</div></div>';
+    document.body.style.opacity = '1';
+  }, 400);
+}
+
+// Close modal on overlay click
+document.getElementById('closeModalOverlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) hideCloseModal();
+});
+</script>
+</body>
+</html>

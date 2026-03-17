@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S1B: True/False Rapid Fire | ⭐ Planrs</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pop1:#FF6B6B;--pop2:#FFE66D;--pop3:#4ECDC4;--pop4:#A29BFE;--pop5:#FD79A8;--pop6:#55EFC4;
+  --bg:#FFF9F0;--card:#FFF;--dark:#2D3436;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--bg);
+  min-height:100vh;
+  padding:14px 14px 30px;
+  position:relative;
+  overflow-x:hidden;
+}
+
+/* Floating background blobs */
+body::before,body::after{
+  content:'';position:fixed;border-radius:50%;pointer-events:none;z-index:0;
+  animation:blobFloat 6s ease-in-out infinite alternate;
+}
+body::before{width:300px;height:300px;background:radial-gradient(circle,#FFE66D55,transparent 70%);top:-80px;left:-80px;}
+body::after{width:350px;height:350px;background:radial-gradient(circle,#A29BFE44,transparent 70%);bottom:-100px;right:-80px;animation-delay:2s;}
+@keyframes blobFloat{from{transform:scale(1) translate(0,0)}to{transform:scale(1.15) translate(20px,20px)}}
+
+/* Stars & floating emojis */
+.floaties{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden;}
+.floaty{position:absolute;font-size:22px;animation:floatUp linear infinite;opacity:.35;}
+@keyframes floatUp{0%{transform:translateY(110vh) rotate(0deg);opacity:.35}100%{transform:translateY(-10vh) rotate(360deg);opacity:0}}
+
+/* LOGO */
+.logo{
+  position:fixed;top:10px;right:12px;
+  background:linear-gradient(135deg,var(--pop1),var(--pop5));
+  color:#FFF;font-family:'Fredoka One',sans-serif;font-size:15px;
+  padding:5px 14px;border-radius:20px;
+  box-shadow:0 4px 14px rgba(255,107,107,.4);z-index:100;
+  letter-spacing:.5px;
+}
+
+/* CLOSE BUTTON */
+.close-btn{
+  position:fixed;top:10px;left:12px;
+  width:38px;height:38px;
+  background:linear-gradient(135deg,#FF6B6B,#CC3300);
+  color:#FFF;font-size:20px;font-weight:900;
+  border:none;border-radius:50%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 14px rgba(204,51,0,.35);z-index:100;
+  transition:transform .2s,box-shadow .2s;
+  line-height:1;
+}
+.close-btn:hover{transform:scale(1.15) rotate(90deg);box-shadow:0 6px 20px rgba(204,51,0,.5);}
+
+/* CLOSE MODAL */
+.close-modal{
+  display:none;position:fixed;inset:0;z-index:999;
+  background:rgba(0,0,0,.55);backdrop-filter:blur(4px);
+  align-items:center;justify-content:center;
+}
+.close-modal.show{display:flex;}
+.close-modal-box{
+  background:#FFF;border-radius:28px;padding:32px 28px;text-align:center;
+  max-width:320px;width:90%;
+  box-shadow:0 20px 60px rgba(0,0,0,.2);
+  animation:popIn .3s cubic-bezier(.175,.885,.32,1.275);
+  border:4px solid var(--pop2);
+}
+@keyframes popIn{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+.close-modal-box .bigmoji{font-size:56px;margin-bottom:10px;}
+.close-modal-box h2{font-family:'Fredoka One',sans-serif;font-size:24px;color:var(--dark);margin-bottom:8px;}
+.close-modal-box p{font-size:15px;color:#636e72;margin-bottom:20px;line-height:1.5;}
+.modal-btns{display:flex;gap:10px;justify-content:center;}
+.modal-btn{border:none;border-radius:14px;padding:12px 22px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:transform .15s;}
+.modal-btn:hover{transform:scale(1.06);}
+.modal-stay{background:linear-gradient(135deg,var(--pop3),#00b894);color:#FFF;}
+.modal-leave{background:linear-gradient(135deg,var(--pop1),#d63031);color:#FFF;}
+
+/* HEADER */
+.header-area{position:relative;z-index:1;text-align:center;margin:50px 0 16px;}
+.header-area h1{
+  font-family:'Fredoka One',sans-serif;
+  font-size:clamp(22px,6vw,36px);
+  background:linear-gradient(135deg,var(--pop1),var(--pop4),var(--pop5));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(2px 2px 0px rgba(162,155,254,.4));
+  line-height:1.2;
+}
+.subtitle{
+  font-size:14px;font-weight:700;color:#b2bec3;margin-top:4px;letter-spacing:.5px;
+}
+
+/* SCORE BAR */
+.score-bar{
+  position:relative;z-index:1;
+  background:linear-gradient(135deg,var(--pop4),var(--pop5));
+  border-radius:16px;padding:10px 20px;text-align:center;
+  color:#FFF;font-family:'Fredoka One',sans-serif;font-size:20px;
+  margin-bottom:14px;
+  box-shadow:0 4px 18px rgba(162,155,254,.4);
+  letter-spacing:.5px;
+}
+.score-bar span{font-size:26px;}
+
+/* PROGRESS */
+.progress-wrap{
+  position:relative;z-index:1;
+  background:#FFE8CC;border-radius:20px;height:14px;margin-bottom:4px;
+  overflow:hidden;border:2px solid #FFCBA4;
+}
+.progress-bar{
+  height:100%;
+  background:linear-gradient(90deg,var(--pop1),var(--pop2),var(--pop5));
+  background-size:200% 100%;
+  border-radius:20px;transition:width .5s cubic-bezier(.68,-.55,.265,1.55);
+  animation:shimmer 2s linear infinite;
+}
+@keyframes shimmer{0%{background-position:0%}100%{background-position:200%}}
+.progress-txt{position:relative;z-index:1;text-align:center;font-size:13px;font-weight:800;color:#a0a0a0;margin-bottom:14px;}
+
+/* QUESTION CARD */
+.qcard{
+  position:relative;z-index:1;
+  background:#FFF;border-radius:24px;
+  padding:24px 18px 20px;
+  box-shadow:0 8px 30px rgba(162,155,254,.18),0 2px 0px 4px var(--pop2);
+  border:3px solid transparent;
+  border-image:linear-gradient(135deg,var(--pop2),var(--pop4)) 1;
+  border-radius:24px;
+  margin-bottom:16px;
+  animation:cardPop .4s cubic-bezier(.175,.885,.32,1.275);
+}
+/* CSS border-image doesn't work with border-radius, so use outline trick */
+.qcard{border:3px solid var(--pop2);outline:3px solid transparent;}
+
+@keyframes cardPop{from{opacity:0;transform:scale(.9) translateY(15px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+.qnum{
+  display:inline-block;
+  background:linear-gradient(135deg,var(--pop1),var(--pop5));
+  color:#FFF;font-family:'Fredoka One',sans-serif;font-size:12px;
+  padding:3px 12px;border-radius:20px;margin-bottom:10px;letter-spacing:1px;
+}
+.qtext{
+  font-family:'Nunito',sans-serif;font-size:18px;font-weight:900;
+  color:var(--dark);line-height:1.5;margin-bottom:20px;
+}
+
+/* TRUE/FALSE BUTTONS */
+.tf-btns{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.tf-btn{
+  border:none;border-radius:18px;padding:20px 10px;
+  font-family:'Fredoka One',sans-serif;font-size:22px;
+  cursor:pointer;transition:transform .15s,box-shadow .2s;
+  position:relative;overflow:hidden;
+}
+.tf-btn::after{
+  content:'';position:absolute;inset:0;
+  background:rgba(255,255,255,0);
+  transition:background .2s;
+}
+.tf-btn:hover:not(:disabled)::after{background:rgba(255,255,255,.15);}
+.tf-btn:hover:not(:disabled){transform:scale(1.06) rotate(-1deg);box-shadow:0 8px 24px rgba(0,0,0,.18);}
+.tf-btn:active:not(:disabled){transform:scale(.97);}
+
+.true-btn{
+  background:linear-gradient(135deg,#C8F7C5,#7FD37F);
+  color:#005500;
+  box-shadow:0 5px 0 #5ab55a, 0 6px 15px rgba(127,211,127,.3);
+}
+.true-btn:hover:not(:disabled){box-shadow:0 8px 0 #5ab55a, 0 10px 20px rgba(127,211,127,.4);}
+
+.false-btn{
+  background:linear-gradient(135deg,#FFD6D6,#FF8F8F);
+  color:#660000;
+  box-shadow:0 5px 0 #e07070, 0 6px 15px rgba(255,107,107,.3);
+}
+.false-btn:hover:not(:disabled){box-shadow:0 8px 0 #e07070, 0 10px 20px rgba(255,107,107,.4);}
+
+.tf-btn:disabled{cursor:not-allowed;transform:none !important;}
+.tf-btn.correct{
+  background:linear-gradient(135deg,#6FCF97,#27AE60);
+  color:#FFF;box-shadow:0 5px 0 #1e8449, 0 6px 18px rgba(39,174,96,.45);
+  animation:correctPulse .4s ease;
+}
+@keyframes correctPulse{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+.tf-btn.wrong{
+  background:linear-gradient(135deg,#EB5757,#C0392B);
+  color:#FFF;box-shadow:0 5px 0 #922b21, 0 6px 18px rgba(192,57,43,.4);
+}
+.tf-btn.missed{
+  background:linear-gradient(135deg,#6FCF97,#27AE60);
+  color:#FFF;opacity:.6;
+  box-shadow:0 3px 0 #1e8449;
+}
+
+/* EXPLANATION */
+.expl{
+  margin-top:14px;
+  background:linear-gradient(135deg,#FFF9E6,#FFF3CD);
+  border-left:5px solid var(--pop2);
+  border-radius:14px;padding:13px 14px;
+  font-size:14px;color:#2d3436;line-height:1.6;
+  display:none;font-weight:700;
+}
+.expl.show{display:block;animation:cardPop .3s ease;}
+.expl-label{font-family:'Fredoka One',sans-serif;font-size:16px;color:var(--pop1);margin-bottom:4px;}
+
+/* NEXT BUTTON */
+.next-btn{
+  display:none;margin:16px auto 0;
+  background:linear-gradient(135deg,var(--pop4),var(--pop5));
+  color:#FFF;border:none;border-radius:16px;
+  padding:14px 36px;font-family:'Fredoka One',sans-serif;
+  font-size:18px;cursor:pointer;
+  box-shadow:0 5px 0 #7c6fe0, 0 6px 18px rgba(162,155,254,.45);
+  transition:transform .15s,box-shadow .15s;
+  letter-spacing:.5px;
+}
+.next-btn.show{display:block;animation:cardPop .3s ease;}
+.next-btn:hover{transform:translateY(-2px);box-shadow:0 8px 0 #7c6fe0, 0 10px 24px rgba(162,155,254,.5);}
+.next-btn:active{transform:translateY(2px);box-shadow:0 2px 0 #7c6fe0;}
+
+/* CHARACTER MASCOT */
+.mascot{
+  font-size:42px;position:absolute;
+  right:16px;top:-22px;
+  animation:mascotBounce 2s ease-in-out infinite;
+  filter:drop-shadow(2px 4px 6px rgba(0,0,0,.15));
+}
+@keyframes mascotBounce{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-8px) rotate(5deg)}}
+
+/* RESULT SCREEN */
+.result{
+  display:none;position:relative;z-index:1;
+  text-align:center;background:#FFF;
+  border-radius:28px;padding:30px 18px;
+  box-shadow:0 10px 40px rgba(162,155,254,.25);
+  border:4px solid var(--pop2);
+}
+.result.show{display:block;animation:cardPop .5s cubic-bezier(.175,.885,.32,1.275);}
+
+.r-emoji{font-size:72px;margin-bottom:8px;animation:mascotBounce 1.5s ease-in-out infinite;}
+.r-title{font-family:'Fredoka One',sans-serif;font-size:30px;background:linear-gradient(135deg,var(--pop1),var(--pop4));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;}
+.r-score{font-family:'Fredoka One',sans-serif;font-size:56px;color:var(--pop4);margin:8px 0;text-shadow:3px 3px 0 rgba(162,155,254,.3);}
+.r-msg{font-size:15px;font-weight:700;color:#636e72;margin-bottom:22px;line-height:1.6;max-width:280px;margin-left:auto;margin-right:auto;}
+
+.btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.b-retry{
+  background:linear-gradient(135deg,var(--pop2),#FDCB6E);
+  color:#2d3436;border:none;border-radius:14px;
+  padding:13px 26px;font-family:'Fredoka One',sans-serif;
+  font-size:16px;cursor:pointer;
+  box-shadow:0 4px 0 #e0a800, 0 5px 15px rgba(253,203,110,.4);
+  transition:transform .15s;
+}
+.b-done{
+  background:linear-gradient(135deg,var(--pop3),#00b894);
+  color:#FFF;border:none;border-radius:14px;
+  padding:13px 26px;font-family:'Fredoka One',sans-serif;
+  font-size:16px;cursor:pointer;
+  box-shadow:0 4px 0 #00816a, 0 5px 15px rgba(78,205,196,.4);
+  transition:transform .15s;
+}
+.b-retry:hover,.b-done:hover{transform:translateY(-3px) scale(1.04);}
+
+/* CONFETTI */
+.confetti-piece{
+  position:fixed;width:10px;height:10px;border-radius:2px;
+  top:-20px;pointer-events:none;z-index:999;
+  animation:confettiFall linear forwards;
+}
+@keyframes confettiFall{
+  0%{transform:translateY(0) rotate(0deg);opacity:1}
+  100%{transform:translateY(110vh) rotate(720deg);opacity:0}
+}
+
+/* SHAKE */
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+.shake{animation:shake .45s ease;}
+
+/* CORRECT GLOW RING */
+@keyframes glowRing{0%{box-shadow:0 0 0 0 rgba(39,174,96,.6)}100%{box-shadow:0 0 0 16px rgba(39,174,96,0)}}
+.glow-correct{animation:glowRing .6s ease forwards !important;}
+
+/* STARS BURST */
+.star-burst{position:fixed;font-size:28px;pointer-events:none;z-index:998;animation:starPop .7s ease forwards;}
+@keyframes starPop{0%{transform:scale(0) rotate(0deg);opacity:1}60%{transform:scale(1.4) rotate(180deg);opacity:1}100%{transform:scale(0) rotate(360deg);opacity:0}}
+
+/* STREAK BADGE */
+.streak-badge{
+  position:relative;z-index:1;text-align:center;margin-bottom:12px;
+  font-family:'Fredoka One',sans-serif;font-size:16px;color:var(--pop1);
+  display:none;animation:cardPop .3s ease;
+}
+.streak-badge.show{display:block;}
+</style>
+</head>
+<body>
+
+<!-- Floating background emojis -->
+<div class="floaties" id="floaties"></div>
+
+<div class="logo">⭐ Planrs</div>
+<button class="close-btn" onclick="openCloseModal()" title="Close Quiz">✕</button>
+
+<!-- CLOSE CONFIRMATION MODAL -->
+<div class="close-modal" id="closeModal">
+  <div class="close-modal-box">
+    <div class="bigmoji">🥺</div>
+    <h2>Wait! Don't go!</h2>
+    <p>You're doing so great! Are you sure you want to leave the quiz?</p>
+    <div class="modal-btns">
+      <button class="modal-btn modal-stay" onclick="closeModal()">🎮 Stay!</button>
+      <button class="modal-btn modal-leave" onclick="leaveQuiz()">👋 Leave</button>
+    </div>
+  </div>
+</div>
+
+<div class="header-area">
+  <h1>⚡ True / False Rapid Fire!</h1>
+  <div class="subtitle">Section 1B — 10 Quick Questions on Cyberbullying 🛡️</div>
+</div>
+
+<div class="score-bar">⭐ Score: <span id="sc">0</span> / 10</div>
+<div class="progress-wrap"><div class="progress-bar" id="pbar" style="width:0%"></div></div>
+<div class="progress-txt" id="ptxt">Question 0 of 10</div>
+<div class="streak-badge" id="strkbadge">🔥 Streak: <span id="strknum">0</span> in a row!</div>
+
+<div id="qarea"></div>
+
+<div class="result" id="res">
+  <div class="r-emoji" id="re">🏆</div>
+  <div class="r-title" id="rt"></div>
+  <div class="r-score" id="rs">0/10</div>
+  <div class="r-msg" id="rm"></div>
+  <div class="btns">
+    <button class="b-retry" onclick="reset()">🔄 Try Again</button>
+    <button class="b-done" onclick="done()">🎓 Continue</button>
+  </div>
+</div>
+
+<script>
+const qs=[
+  {q:"Cyberbullying is only bullying that happens at school.",ans:false,e:"FALSE! Cyberbullying happens online — through phones, apps and internet — so it can happen ANYWHERE including at home, on holidays, and even at 2am!",mascot:"🏠"},
+  {q:"Cyberbullying can be done anonymously — the bully can hide their identity.",ans:true,e:"TRUE! Bullies can create fake accounts or use anonymous apps to hide who they are — which is one reason cyberbullying feels so scary for victims.",mascot:"🕵️"},
+  {q:"Once you delete a post online, it is completely gone forever.",ans:false,e:"FALSE! Screenshots make digital content permanent. Even after you delete something, others may have already saved a copy that can spread further.",mascot:"📸"},
+  {q:"Sending one rude message to someone once counts as cyberbullying.",ans:false,e:"FALSE! A single rude message, while unkind, is not usually cyberbullying. Cyberbullying involves repeated, intentional harm — happening again and again.",mascot:"💬"},
+  {q:"Purposely leaving someone out of a WhatsApp group to hurt them is cyberbullying.",ans:true,e:"TRUE! Deliberate digital exclusion — repeatedly removing someone from group chats to isolate them — is a recognised form of cyberbullying called Exclusion.",mascot:"😔"},
+  {q:"Cyberbullying can cause real physical effects like trouble sleeping and stomach aches.",ans:true,e:"TRUE! The stress of cyberbullying causes real physical symptoms — insomnia, headaches, loss of appetite, and stomach problems are all documented effects.",mascot:"😰"},
+  {q:"Only students who are weak or sensitive get affected by cyberbullying.",ans:false,e:"FALSE! Cyberbullying can affect ANYONE — regardless of age, gender, confidence level or background. It is the bully's behaviour, not the victim's personality, that is the problem.",mascot:"💪"},
+  {q:"Sharing someone's photo online without asking them is a form of cyberbullying.",ans:true,e:"TRUE! Sharing someone's image without consent — especially if it is embarrassing — is called non-consensual image sharing and is a recognised form of cyberbullying.",mascot:"📷"},
+  {q:"Cyberbullying stops affecting a student once they close the app.",ans:false,e:"FALSE! The emotional damage continues long after the device is put down. Victims feel anxious, scared and humiliated even when offline — the harm is not digital, it is real.",mascot:"💔"},
+  {q:"Creating a fake account pretending to be your classmate to post rude things is called Impersonation cyberbullying.",ans:true,e:"TRUE! Impersonation involves creating a fake account pretending to be someone else to damage their reputation or trick their contacts. It is both cyberbullying AND illegal under the IT Act in India.",mascot:"🎭"},
+];
+
+let cur=0,score=0,answered=false,streak=0;
+
+// Floating emojis background
+(function(){
+  const emojis=['⭐','🌟','💫','✨','🎉','🎊','🌈','💜','💛','❤️','🔥','🌸'];
+  const container=document.getElementById('floaties');
+  for(let i=0;i<18;i++){
+    const el=document.createElement('div');
+    el.className='floaty';
+    el.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    el.style.left=Math.random()*100+'%';
+    el.style.fontSize=(14+Math.random()*16)+'px';
+    el.style.animationDuration=(8+Math.random()*14)+'s';
+    el.style.animationDelay=(-Math.random()*14)+'s';
+    container.appendChild(el);
+  }
+})();
+
+function render(){
+  if(cur>=qs.length){showResult();return;}
+  const q=qs[cur];
+  document.getElementById('pbar').style.width=(cur/qs.length*100)+'%';
+  document.getElementById('ptxt').textContent=`Question ${cur+1} of ${qs.length}`;
+  document.getElementById('sc').textContent=score;
+  // streak badge
+  const sb=document.getElementById('strkbadge');
+  if(streak>=2){sb.classList.add('show');document.getElementById('strknum').textContent=streak;}
+  else sb.classList.remove('show');
+
+  document.getElementById('qarea').innerHTML=`
+    <div class="qcard" id="qcard">
+      <div class="mascot">${q.mascot}</div>
+      <div class="qnum">⚡ Question ${cur+1} of ${qs.length}</div>
+      <div class="qtext">${q.q}</div>
+      <div class="tf-btns">
+        <button class="tf-btn true-btn" id="tbtn" onclick="ans(true)">✅ TRUE</button>
+        <button class="tf-btn false-btn" id="fbtn" onclick="ans(false)">❌ FALSE</button>
+      </div>
+      <div class="expl" id="expl">
+        <div class="expl-label">💡 Explanation</div>
+        ${q.e}
+      </div>
+      <button class="next-btn" id="nbtn" onclick="next()">${cur<qs.length-1?'Next Question ➡️':'See My Results 🏆'}</button>
+    </div>`;
+  answered=false;
+}
+
+function ans(a){
+  if(answered)return;
+  answered=true;
+  const q=qs[cur];
+  const correct=a===q.ans;
+  if(correct){score++;streak++;}else{streak=0;}
+  document.getElementById('sc').textContent=score;
+  const tb=document.getElementById('tbtn'),fb=document.getElementById('fbtn');
+  tb.disabled=fb.disabled=true;
+  if(q.ans===true){tb.classList.add('correct');}else{tb.classList.add('missed');}
+  if(q.ans===false){fb.classList.add('correct');}else{fb.classList.add('missed');}
+  if(!correct)(a?tb:fb).classList.add('wrong');
+  document.getElementById('expl').classList.add('show');
+  document.getElementById('nbtn').classList.add('show');
+  if(!correct){
+    document.getElementById('qcard').classList.add('shake');
+  }else{
+    document.getElementById('qcard').classList.add('glow-correct');
+    burstStars();
+    if(score===10||streak>=3) launchConfetti(streak>=3?30:15);
+    else launchConfetti(8);
+  }
+}
+
+function next(){cur++;render();}
+
+function burstStars(){
+  const card=document.getElementById('qcard');
+  const rect=card.getBoundingClientRect();
+  const cx=rect.left+rect.width/2;
+  const cy=rect.top+rect.height/3;
+  const emojis=['⭐','🌟','✨','💫'];
+  for(let i=0;i<5;i++){
+    setTimeout(()=>{
+      const el=document.createElement('div');
+      el.className='star-burst';
+      el.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+      el.style.left=(cx+(-60+Math.random()*120))+'px';
+      el.style.top=(cy+(-40+Math.random()*80))+'px';
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(),800);
+    },i*80);
+  }
+}
+
+function launchConfetti(n=20){
+  const colors=['#FF6B6B','#FFE66D','#4ECDC4','#A29BFE','#FD79A8','#55EFC4','#FDCB6E','#74B9FF'];
+  for(let i=0;i<n;i++){
+    setTimeout(()=>{
+      const el=document.createElement('div');
+      el.className='confetti-piece';
+      el.style.left=Math.random()*100+'vw';
+      el.style.width=(6+Math.random()*10)+'px';
+      el.style.height=(6+Math.random()*10)+'px';
+      el.style.background=colors[Math.floor(Math.random()*colors.length)];
+      el.style.borderRadius=Math.random()>.5?'50%':'2px';
+      el.style.animationDuration=(1.5+Math.random()*2)+'s';
+      el.style.animationDelay=(Math.random()*.5)+'s';
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(),3500);
+    },i*40);
+  }
+}
+
+function showResult(){
+  document.getElementById('qarea').style.display='none';
+  document.getElementById('pbar').style.width='100%';
+  document.getElementById('ptxt').textContent='Quiz Complete! 🎉';
+  document.getElementById('strkbadge').classList.remove('show');
+  const r=document.getElementById('res');r.classList.add('show');
+  document.getElementById('rs').textContent=score+'/10';
+  let em,ti,msg;
+  if(score===10){em='🏆';ti='Perfect! Legendary!';msg='You got EVERY answer right! You truly understand what cyberbullying is and what it is not. Share your knowledge with your friends! 🌟';launchConfetti(60);}
+  else if(score>=7){em='🌟';ti='Brilliant Work!';msg=`You scored ${score} out of 10. Excellent understanding! Review the ones you missed and you will be perfect next time!`;launchConfetti(30);}
+  else if(score>=5){em='👍';ti='Good Effort!';msg=`You scored ${score} out of 10. You are on the right track. Re-read Section 1 and try again — you can do it!`;launchConfetti(12);}
+  else{em='💡';ti='Keep Learning!';msg=`You scored ${score} out of 10. Review the lesson carefully — understanding cyberbullying is really important. Try again! 💪`;}
+  document.getElementById('re').textContent=em;
+  document.getElementById('rt').textContent=ti;
+  document.getElementById('rm').textContent=msg;
+}
+
+function reset(){
+  cur=0;score=0;answered=false;streak=0;
+  document.getElementById('res').classList.remove('show');
+  document.getElementById('qarea').style.display='block';
+  render();
+}
+function done(){alert('Amazing! Move on to Section 2: Who Gets Affected? 🚀');}
+
+// Close modal logic
+function openCloseModal(){document.getElementById('closeModal').classList.add('show');}
+function closeModal(){document.getElementById('closeModal').classList.remove('show');}
+function leaveQuiz(){
+  document.getElementById('closeModal').classList.remove('show');
+  // Try to close tab, fallback to go back
+  if(window.history.length>1) window.history.back();
+  else window.close();
+}
+// Click outside modal to dismiss
+document.getElementById('closeModal').addEventListener('click',function(e){
+  if(e.target===this)closeModal();
+});
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S4A: Safety Quiz | ⭐ Planrs</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --lime:    #C8F135;
+    --purple:  #7B2FFF;
+    --pink:    #FF4FA8;
+    --sky:     #36CFFF;
+    --orange:  #FF8C2A;
+    --green:   #27D97B;
+    --red:     #FF3D5A;
+    --yellow:  #FFE600;
+    --white:   #FFFFFF;
+    --ink:     #1A0833;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #0E0030;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ── Animated star / confetti background ── */
+  #bg-canvas {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  }
+
+  /* ── Close button ── */
+  #close-btn {
+    position: fixed; top: 14px; left: 14px; z-index: 999;
+    background: var(--red); color: #fff;
+    border: none; border-radius: 50%;
+    width: 44px; height: 44px;
+    font-size: 22px; font-weight: 900;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 14px rgba(255,61,90,.5);
+    transition: transform .2s, background .2s;
+    font-family: 'Fredoka One', cursive;
+    line-height: 1;
+  }
+  #close-btn:hover { transform: scale(1.15) rotate(10deg); background: #ff0033; }
+
+  /* ── Logo badge ── */
+  .logo {
+    position: fixed; top: 14px; right: 14px; z-index: 999;
+    background: var(--yellow); color: var(--ink);
+    font-family: 'Fredoka One', cursive;
+    font-size: 14px; padding: 5px 13px;
+    border-radius: 30px;
+    box-shadow: 0 3px 10px rgba(0,0,0,.3);
+    border: 2.5px solid var(--ink);
+  }
+
+  /* ── Main wrapper ── */
+  #app {
+    position: relative; z-index: 1;
+    max-width: 620px; margin: 0 auto;
+    padding: 70px 14px 40px;
+  }
+
+  /* ── Header ── */
+  .header {
+    text-align: center; margin-bottom: 18px;
+  }
+  .header h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(26px, 6vw, 38px);
+    color: var(--lime);
+    text-shadow: 4px 4px 0 #3a0080, 0 0 30px #7b2fff88;
+    letter-spacing: 1px;
+    line-height: 1.15;
+  }
+  .header .sub {
+    color: #c9a8ff; font-size: 14px; font-weight: 700;
+    margin-top: 4px; letter-spacing: .5px;
+  }
+
+  /* ── Score pill ── */
+  .score-pill {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    background: linear-gradient(135deg,#7B2FFF,#FF4FA8);
+    border-radius: 60px; padding: 10px 24px;
+    margin: 0 auto 14px;
+    max-width: 280px;
+    box-shadow: 0 6px 22px #7b2fff66;
+    border: 3px solid rgba(255,255,255,.15);
+  }
+  .score-pill .star-icon { font-size: 22px; }
+  .score-pill .score-txt {
+    font-family: 'Fredoka One', cursive;
+    color: #fff; font-size: 20px; letter-spacing: 1px;
+  }
+
+  /* ── Progress bar ── */
+  .prog-wrap {
+    background: rgba(255,255,255,.1);
+    border-radius: 30px; height: 14px;
+    overflow: hidden; margin-bottom: 4px;
+    border: 2px solid rgba(255,255,255,.1);
+  }
+  .prog-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--lime), var(--sky));
+    border-radius: 30px;
+    transition: width .5s cubic-bezier(.34,1.56,.64,1);
+    position: relative; overflow: hidden;
+  }
+  .prog-bar::after {
+    content: '';
+    position: absolute; top: 0; left: -60px; width: 50px; height: 100%;
+    background: rgba(255,255,255,.35);
+    animation: shimmer 1.5s infinite;
+  }
+  @keyframes shimmer { to { left: 110%; } }
+  .prog-txt {
+    text-align: center; color: #c9a8ff; font-size: 13px;
+    font-weight: 800; margin-bottom: 16px; letter-spacing: .5px;
+  }
+
+  /* ── Question card ── */
+  .qcard {
+    background: #1A0050;
+    border-radius: 24px;
+    padding: 22px 18px 18px;
+    border: 3px solid #7B2FFF;
+    box-shadow: 0 10px 40px rgba(123,47,255,.35), 0 0 0 1px rgba(255,255,255,.06);
+    margin-bottom: 16px;
+    animation: popIn .4s cubic-bezier(.34,1.56,.64,1);
+    position: relative; overflow: hidden;
+  }
+  .qcard::before {
+    content: '';
+    position: absolute; top: -40px; right: -40px;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle, #7b2fff44, transparent 70%);
+    border-radius: 50%; pointer-events: none;
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(.88) translateY(16px); }
+    to   { opacity: 1; transform: scale(1)   translateY(0); }
+  }
+
+  .qnum {
+    font-size: 11px; font-weight: 900; color: var(--sky);
+    text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;
+  }
+  .qtext {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(16px,4vw,20px); color: #fff;
+    line-height: 1.4; margin-bottom: 18px;
+  }
+
+  /* ── Options ── */
+  .opts { display: flex; flex-direction: column; gap: 10px; }
+  .opt {
+    background: rgba(255,255,255,.07);
+    border: 2.5px solid rgba(255,255,255,.18);
+    border-radius: 14px;
+    padding: 12px 14px; font-size: 15px;
+    color: #e0d0ff; cursor: pointer;
+    text-align: left; font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    display: flex; align-items: flex-start; gap: 10px;
+    transition: transform .15s, background .15s, border-color .15s;
+    position: relative; overflow: hidden;
+  }
+  .opt:hover:not(:disabled) {
+    background: rgba(123,47,255,.3);
+    border-color: var(--purple);
+    transform: scale(1.02) translateX(3px);
+  }
+  .opt .lbl {
+    background: var(--purple); color: #fff;
+    border-radius: 8px; padding: 2px 9px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 14px; flex-shrink: 0; margin-top: 1px;
+    min-width: 28px; text-align: center;
+  }
+  .opt.correct {
+    background: rgba(39,217,123,.2);
+    border-color: var(--green);
+    color: #fff;
+    animation: bounceIn .4s cubic-bezier(.34,1.56,.64,1);
+  }
+  .opt.correct .lbl { background: var(--green); }
+  .opt.wrong {
+    background: rgba(255,61,90,.2);
+    border-color: var(--red);
+    color: #ffd0d8;
+  }
+  .opt.wrong .lbl { background: var(--red); }
+  .opt.reveal {
+    background: rgba(39,217,123,.12);
+    border-color: var(--green); opacity: .7;
+  }
+  .opt.reveal .lbl { background: var(--green); }
+  .opt:disabled { cursor: not-allowed; transform: none !important; }
+  @keyframes bounceIn {
+    0%   { transform: scale(.9); }
+    60%  { transform: scale(1.06); }
+    100% { transform: scale(1); }
+  }
+
+  /* ── Explanation ── */
+  .expl {
+    display: none; margin-top: 14px;
+    background: rgba(255,230,0,.1);
+    border-left: 5px solid var(--yellow);
+    border-radius: 12px; padding: 12px 14px;
+    font-size: 14px; color: #ffe680;
+    line-height: 1.6; font-weight: 700;
+  }
+  .expl.show { display: block; animation: popIn .35s ease; }
+
+  /* ── Next button ── */
+  .next-btn {
+    display: none; margin: 16px auto 0;
+    background: linear-gradient(135deg, var(--lime) 0%, var(--sky) 100%);
+    color: var(--ink); border: none;
+    border-radius: 50px; padding: 13px 36px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 17px; cursor: pointer;
+    box-shadow: 0 6px 20px rgba(200,241,53,.35);
+    transition: transform .2s;
+    letter-spacing: .5px;
+  }
+  .next-btn.show { display: block; animation: popIn .3s ease; }
+  .next-btn:hover { transform: scale(1.07); }
+
+  /* ── Result screen ── */
+  #res {
+    display: none; text-align: center;
+    background: #1A0050;
+    border-radius: 28px; padding: 32px 20px 28px;
+    border: 3px solid var(--purple);
+    box-shadow: 0 16px 60px rgba(123,47,255,.4);
+    animation: popIn .5s cubic-bezier(.34,1.56,.64,1);
+    position: relative; overflow: hidden;
+  }
+  #res.show { display: block; }
+  #res::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, #7b2fff33 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .r-em { font-size: 66px; margin-bottom: 10px; }
+  .r-ti {
+    font-family: 'Fredoka One', cursive;
+    font-size: 28px; color: var(--lime);
+    text-shadow: 3px 3px 0 #3a0080;
+    margin-bottom: 8px;
+  }
+  .r-sc {
+    font-family: 'Fredoka One', cursive;
+    font-size: 52px; color: var(--yellow);
+    text-shadow: 3px 3px 0 #7a5000;
+    margin: 6px 0;
+  }
+  .r-ms { font-size: 15px; color: #c9a8ff; margin-bottom: 22px; line-height: 1.6; font-weight: 700; }
+
+  .btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .b-r {
+    background: linear-gradient(135deg,var(--orange),#e05000);
+    color: #fff; border: none; border-radius: 14px;
+    padding: 12px 26px; font-family: 'Fredoka One', cursive;
+    font-size: 15px; cursor: pointer;
+    box-shadow: 0 5px 16px rgba(255,140,42,.4);
+    transition: transform .2s;
+  }
+  .b-r:hover { transform: scale(1.07); }
+  .b-d {
+    background: linear-gradient(135deg,var(--green),#1a9055);
+    color: #fff; border: none; border-radius: 14px;
+    padding: 12px 26px; font-family: 'Fredoka One', cursive;
+    font-size: 15px; cursor: pointer;
+    box-shadow: 0 5px 16px rgba(39,217,123,.4);
+    transition: transform .2s;
+  }
+  .b-d:hover { transform: scale(1.07); }
+
+  /* ── Close overlay ── */
+  #close-overlay {
+    display: none; position: fixed; inset: 0; z-index: 2000;
+    background: rgba(10,0,30,.85);
+    backdrop-filter: blur(8px);
+    align-items: center; justify-content: center;
+  }
+  #close-overlay.show { display: flex; }
+  .close-modal {
+    background: #1A0050;
+    border-radius: 24px; padding: 32px 26px;
+    border: 3px solid var(--pink);
+    text-align: center; max-width: 340px;
+    animation: popIn .35s cubic-bezier(.34,1.56,.64,1);
+    box-shadow: 0 20px 60px rgba(255,79,168,.3);
+  }
+  .close-modal .em { font-size: 54px; margin-bottom: 10px; }
+  .close-modal h2 {
+    font-family: 'Fredoka One', cursive;
+    color: var(--pink); font-size: 22px; margin-bottom: 8px;
+  }
+  .close-modal p { color: #c9a8ff; font-size: 14px; font-weight: 700; line-height: 1.6; margin-bottom: 20px; }
+  .close-modal .modal-btns { display: flex; gap: 12px; justify-content: center; }
+  .btn-stay {
+    background: linear-gradient(135deg,var(--purple),var(--pink));
+    color: #fff; border: none; border-radius: 12px;
+    padding: 11px 22px; font-family: 'Fredoka One', cursive;
+    font-size: 15px; cursor: pointer;
+    transition: transform .2s; box-shadow: 0 4px 14px rgba(123,47,255,.4);
+  }
+  .btn-stay:hover { transform: scale(1.06); }
+  .btn-leave {
+    background: rgba(255,255,255,.08);
+    color: #c9a8ff; border: 2px solid rgba(255,255,255,.15);
+    border-radius: 12px; padding: 11px 22px;
+    font-family: 'Fredoka One', cursive; font-size: 15px;
+    cursor: pointer; transition: transform .2s;
+  }
+  .btn-leave:hover { background: rgba(255,255,255,.15); transform: scale(1.06); }
+
+  /* ── Shake / pulse ── */
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20%      { transform: translateX(-8px); }
+    40%      { transform: translateX(8px); }
+    60%      { transform: translateX(-5px); }
+    80%      { transform: translateX(5px); }
+  }
+  @keyframes pulseCard {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.025); }
+    100% { transform: scale(1); }
+  }
+  .shake  { animation: shake .45s ease; }
+  .pulse  { animation: pulseCard .4s ease; }
+
+  /* Floating emoji decorations */
+  .floatie {
+    position: fixed; pointer-events: none; z-index: 0;
+    font-size: 28px; animation: floatUp linear infinite;
+    opacity: .18;
+  }
+  @keyframes floatUp {
+    from { transform: translateY(0) rotate(0deg); opacity: .18; }
+    to   { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Animated background -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- Floating emojis -->
+<div class="floatie" style="left:5%;bottom:-60px;animation-duration:12s;animation-delay:0s">🛡️</div>
+<div class="floatie" style="left:20%;bottom:-60px;animation-duration:9s;animation-delay:2s">⭐</div>
+<div class="floatie" style="left:40%;bottom:-60px;animation-duration:14s;animation-delay:1s">🔒</div>
+<div class="floatie" style="left:60%;bottom:-60px;animation-duration:11s;animation-delay:3.5s">💡</div>
+<div class="floatie" style="left:75%;bottom:-60px;animation-duration:10s;animation-delay:1.8s">🌟</div>
+<div class="floatie" style="left:88%;bottom:-60px;animation-duration:13s;animation-delay:0.5s">🎯</div>
+
+<!-- Close button -->
+<button id="close-btn" onclick="openCloseModal()" title="Close quiz">✕</button>
+
+<!-- Logo -->
+<div class="logo">⭐ Planrs</div>
+
+<!-- Close confirmation modal -->
+<div id="close-overlay">
+  <div class="close-modal">
+    <div class="em">🤔</div>
+    <h2>Wait! Don't go yet!</h2>
+    <p>You're doing amazing! If you leave now, your progress will be lost. Are you sure?</p>
+    <div class="modal-btns">
+      <button class="btn-stay" onclick="closeModal()">Keep Going! 💪</button>
+      <button class="btn-leave" onclick="confirmLeave()">Leave Quiz</button>
+    </div>
+  </div>
+</div>
+
+<!-- App -->
+<div id="app">
+  <div class="header">
+    <h1>🛡️ Online Safety Quiz</h1>
+    <p class="sub">Section 4A · 8 Power Questions!</p>
+  </div>
+
+  <div class="score-pill">
+    <span class="star-icon">⭐</span>
+    <span class="score-txt">Score: <span id="sc">0</span> / 8</span>
+    <span class="star-icon">⭐</span>
+  </div>
+
+  <div class="prog-wrap"><div class="prog-bar" id="pb" style="width:0%"></div></div>
+  <div class="prog-txt" id="pt">Question 0 of 8</div>
+
+  <div id="qa"></div>
+
+  <div id="res">
+    <div class="r-em" id="re">🏆</div>
+    <div class="r-ti" id="rt"></div>
+    <div class="r-sc" id="rs">0/8</div>
+    <div class="r-ms" id="rm"></div>
+    <div class="btns">
+      <button class="b-r" onclick="reset()">🔄 Try Again</button>
+      <button class="b-d" onclick="done()">🎓 Finish Lesson</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Background canvas sparkles ── */
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, stars = [];
+
+function resizeCanvas() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', () => { resizeCanvas(); initStars(); });
+resizeCanvas();
+
+function initStars() {
+  stars = [];
+  const count = Math.floor(W * H / 6000);
+  for (let i = 0; i < count; i++) {
+    stars.push({
+      x: Math.random() * W, y: Math.random() * H,
+      r: Math.random() * 1.8 + .4,
+      a: Math.random(),
+      da: (Math.random() - .5) * .008,
+      color: ['#7B2FFF','#FF4FA8','#36CFFF','#C8F135','#FFE600'][Math.floor(Math.random()*5)]
+    });
+  }
+}
+initStars();
+
+function drawBg() {
+  ctx.clearRect(0, 0, W, H);
+  stars.forEach(s => {
+    s.a += s.da;
+    if (s.a < 0) { s.a = 0; s.da *= -1; }
+    if (s.a > 1) { s.a = 1; s.da *= -1; }
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = s.color + Math.floor(s.a * 200).toString(16).padStart(2,'0');
+    ctx.fill();
+  });
+  requestAnimationFrame(drawBg);
+}
+drawBg();
+
+/* ── Confetti burst on correct answer ── */
+function confettiBurst(x, y) {
+  const colors = ['#C8F135','#FF4FA8','#36CFFF','#FFE600','#7B2FFF','#FF8C2A'];
+  for (let i = 0; i < 22; i++) {
+    const el = document.createElement('div');
+    const size = Math.random() * 10 + 6;
+    el.style.cssText = `
+      position:fixed; left:${x}px; top:${y}px;
+      width:${size}px; height:${size}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      border-radius:${Math.random()>.5?'50%':'3px'};
+      pointer-events:none; z-index:9999;
+      transform:translate(-50%,-50%);
+      animation: cf${i} .9s ease-out forwards;
+    `;
+    const dx = (Math.random()-0.5)*280, dy = (Math.random()-1.2)*220;
+    const rot = Math.random()*540;
+    const styleEl = document.createElement('style');
+    styleEl.textContent = `@keyframes cf${i} {
+      0%   { transform:translate(-50%,-50%) scale(1) rotate(0deg); opacity:1; }
+      100% { transform:translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) scale(0) rotate(${rot}deg); opacity:0; }
+    }`;
+    document.head.appendChild(styleEl);
+    document.body.appendChild(el);
+    setTimeout(() => { el.remove(); styleEl.remove(); }, 950);
+  }
+}
+
+/* ── Quiz data ── */
+const qs = [
+  {q:"Priya receives 50 mean comments on her Instagram post from an unknown account. What should she do FIRST?",opts:["Reply with equally mean comments to defend herself","Screenshot the evidence, report the account, and tell a trusted adult","Delete her Instagram account permanently","Share the mean comments on WhatsApp for sympathy"],correct:1,e:"✅ Always screenshot (keep evidence), report to the platform, and tell a trusted adult. Never retaliate — it escalates things and gives the bully more material!"},
+  {q:"What does the 5-step Safety Shield sequence begin with?",opts:["Tell a trusted adult immediately","Block the bully's account first","STOP — do not reply or retaliate, no matter how angry you feel","Screenshot everything before doing anything else"],correct:2,e:"✅ Step 1 of the Safety Shield is STOP — do not reply or retaliate. Replying fuels the bully. Then Screenshot → Block → Report → Tell a trusted adult."},
+  {q:"Raju's classmate shared his embarrassing photo in the class WhatsApp group. Who should Raju involve FIRST?",opts:["Only his best friend — keep it secret","Nobody — it will go away eventually","A trusted adult — parent, teacher or counsellor — immediately","Post about it publicly on Instagram to expose the bully"],correct:2,e:"✅ Always involve a trusted adult immediately — they have authority to take action that you cannot. Silence allows the bullying to continue. Telling is brave, not weak!"},
+  {q:"Which is the SAFEST password practice?",opts:["Using your name and birthdate like 'Priya2012'","Using the same password for all apps so you don't forget","Sharing your password with your best friend only","Using a mix of letters, numbers & symbols like 'Cricket@Mango7!'"],correct:3,e:"✅ A strong password uses letters, numbers, and symbols. NEVER share it — even with your best friend. Use different passwords for different apps!"},
+  {q:"What is a 'Digital Footprint'?",opts:["The size of your phone's storage space","A type of virus that tracks your location","The permanent trail of everything you do online — posts, comments, likes, searches","Your internet connection speed"],correct:2,e:"✅ Your digital footprint is everything you do online — every post, like, comment, and search. It can last forever, even after deletion. Apply the THINK test before every post!"},
+  {q:"Meera receives a message: 'I know where you live.' What should she do?",opts:["Reply asking who they are","Ignore it — it is probably a prank","Immediately tell a parent and report to the police — this is cyberstalking!","Block only — no need to tell anyone"],correct:2,e:"✅ Messages that reveal your location or threaten you are cyberstalking — a CRIME in India under the IT Act. Tell a parent IMMEDIATELY. Childline 1098 can also help!"},
+  {q:"Which behaviour is a WARNING SIGN of cyberbullying?",opts:["They use their phone happily and share posts freely","They get more followers on Instagram","They suddenly become upset after using their device and avoid school","They stay up late watching YouTube with friends"],correct:2,e:"✅ Sudden sadness after device use, withdrawing from friends, avoiding school — these are classic warning signs of cyberbullying. If you see these in a friend, gently ask and involve a trusted adult."},
+  {q:"Your classmate is being trolled in the school group chat. What is the UPSTANDER action?",opts:["Like the funny comments to avoid being targeted yourself","Stay out of it — it is not your business","Privately message your classmate support, don't engage with the bully, report and tell a teacher","Make a counter-post defending your classmate publicly without telling them"],correct:2,e:"✅ An Upstander sends private support, avoids giving the bully attention, reports the content, and involves a trusted adult. One act of kindness from you can change everything!"},
+];
+
+let cur = 0, score = 0, answered = false;
+
+function render() {
+  if (cur >= qs.length) { showResult(); return; }
+  const q = qs[cur];
+  document.getElementById('pb').style.width = (cur / qs.length * 100) + '%';
+  document.getElementById('pt').textContent = `Question ${cur + 1} of ${qs.length}`;
+  document.getElementById('sc').textContent = score;
+
+  const labels = ['A','B','C','D'];
+  document.getElementById('qa').innerHTML = `
+    <div class="qcard" id="qc">
+      <div class="qnum">⚡ Question ${cur + 1} of ${qs.length}</div>
+      <div class="qtext">${q.q}</div>
+      <div class="opts">
+        ${q.opts.map((o, i) => `
+          <button class="opt" id="o${i}" onclick="pick(${i}, event)">
+            <span class="lbl">${labels[i]}</span>
+            <span>${o}</span>
+          </button>`).join('')}
+      </div>
+      <div class="expl" id="expl">${q.e}</div>
+      <button class="next-btn" id="nb" onclick="next()">
+        ${cur < qs.length - 1 ? 'Next Question ➡️' : 'See My Results 🏆'}
+      </button>
+    </div>`;
+  answered = false;
+}
+
+function pick(i, event) {
+  if (answered) return;
+  answered = true;
+  const q = qs[cur];
+  const ok = i === q.correct;
+  if (ok) score++;
+  document.getElementById('sc').textContent = score;
+
+  q.opts.forEach((_, idx) => {
+    const b = document.getElementById('o' + idx);
+    b.disabled = true;
+    if (idx === q.correct) b.classList.add(i === idx ? 'correct' : 'reveal');
+    if (idx === i && !ok)  b.classList.add('wrong');
+  });
+
+  document.getElementById('expl').classList.add('show');
+  document.getElementById('nb').classList.add('show');
+
+  const qc = document.getElementById('qc');
+  qc.style.borderColor = ok ? '#27D97B' : '#FF3D5A';
+  qc.classList.add(ok ? 'pulse' : 'shake');
+  setTimeout(() => qc.classList.remove('pulse','shake'), 500);
+
+  if (ok && event) confettiBurst(event.clientX, event.clientY);
+}
+
+function next() { cur++; render(); }
+
+function showResult() {
+  document.getElementById('qa').style.display = 'none';
+  document.getElementById('pb').style.width = '100%';
+  document.getElementById('pt').textContent = 'Quiz Complete! 🎓';
+  document.getElementById('res').classList.add('show');
+  document.getElementById('rs').textContent = score + '/8';
+
+  let em, ti, ms;
+  if (score === 8) {
+    em = '🏆'; ti = 'Perfect Score! You\'re a Champion!';
+    ms = 'You answered EVERY question correctly! You\'re a true Internet Safety Champion! Teach your friends what you\'ve learned! 🌟';
+  } else if (score >= 6) {
+    em = '🌟'; ti = 'Amazing Work!';
+    ms = `You scored ${score} out of 8! Excellent online safety knowledge! Review the ones you missed and you'll be fully prepared! 💪`;
+  } else if (score >= 4) {
+    em = '👍'; ti = 'Good Effort!';
+    ms = `You scored ${score} out of 8! You're on the right track! Review Section 4 and try again — you've got this! 🚀`;
+  } else {
+    em = '💡'; ti = 'Keep Learning!';
+    ms = `You scored ${score} out of 8. Online safety is so important — review the lesson carefully and try again. Every attempt makes you smarter! 💪`;
+  }
+  document.getElementById('re').textContent = em;
+  document.getElementById('rt').textContent = ti;
+  document.getElementById('rm').textContent = ms;
+
+  // Celebrate on finish
+  setTimeout(() => {
+    for (let i = 0; i < 5; i++) {
+      setTimeout(() => {
+        confettiBurst(
+          Math.random() * window.innerWidth,
+          Math.random() * window.innerHeight * 0.5
+        );
+      }, i * 200);
+    }
+  }, 300);
+}
+
+function reset() {
+  cur = 0; score = 0; answered = false;
+  document.getElementById('res').classList.remove('show');
+  document.getElementById('qa').style.display = 'block';
+  render();
+}
+
+function done() {
+  alert('🎓 Congratulations on completing the Cyberbullying lesson!\nYou are now a Digital Safety Champion!\nStay safe online! ⭐');
+}
+
+/* ── Close modal ── */
+function openCloseModal() {
+  document.getElementById('close-overlay').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('close-overlay').classList.remove('show');
+}
+function confirmLeave() {
+  // Try close window; if not possible, show message
+  window.close();
+  // Fallback if window.close() is blocked
+  setTimeout(() => {
+    document.body.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;
+        font-family:'Nunito',sans-serif;color:#c9a8ff;text-align:center;padding:30px;
+        background:#0E0030;">
+        <div>
+          <div style="font-size:64px;margin-bottom:16px">👋</div>
+          <h2 style="font-family:'Fredoka One',cursive;color:#C8F135;font-size:28px;margin-bottom:10px">See you next time!</h2>
+          <p style="font-size:16px;font-weight:700;line-height:1.6;max-width:320px">
+            Stay safe online and remember what you learned! You can close this tab now. ⭐
+          </p>
+        </div>
+      </div>`;
+  }, 200);
+}
+
+// Close overlay on backdrop click
+document.getElementById('close-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+render();
+</script>
+</body>
+</html>

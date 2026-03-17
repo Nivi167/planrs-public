@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S1A: Drag & Drop — What is Cyberbullying? | ⭐ Planrs</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Baloo+2:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sun:#FFD93D;--orange:#FF6B35;--pink:#FF6FA8;--purple:#A855F7;
+  --blue:#3B82F6;--teal:#06B6D4;--green:#22C55E;--red:#EF4444;
+  --light:#FFFBF2;--card-bg:#FFF;--shadow:0 6px 20px rgba(0,0,0,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--light);
+  min-height:100vh;
+  padding:16px 14px 60px;
+  overflow-x:hidden;
+  position:relative;
+}
+/* Bubbly BG */
+body::before{
+  content:'';position:fixed;inset:0;z-index:-1;
+  background:
+    radial-gradient(circle at 10% 15%, #FFD93D33 0%, transparent 35%),
+    radial-gradient(circle at 85% 10%, #FF6FA844 0%, transparent 30%),
+    radial-gradient(circle at 60% 90%, #A855F733 0%, transparent 35%),
+    radial-gradient(circle at 20% 80%, #06B6D422 0%, transparent 30%),
+    radial-gradient(circle at 90% 60%, #22C55E22 0%, transparent 25%),
+    #FFFBF2;
+}
+/* Floating stars */
+.star{position:fixed;pointer-events:none;z-index:0;animation:floaty 6s ease-in-out infinite;}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-18px) rotate(20deg)}}
+
+/* LOGO */
+.logo{
+  position:fixed;top:12px;right:14px;
+  background:linear-gradient(135deg,var(--sun),var(--orange));
+  color:#FFF;font-weight:900;font-size:13px;
+  padding:5px 12px;border-radius:30px;
+  box-shadow:0 3px 10px rgba(255,107,53,.35);z-index:200;
+  font-family:'Baloo 2',cursive;letter-spacing:.5px;
+}
+
+/* HEADER */
+.header{text-align:center;margin-bottom:12px;position:relative;z-index:1}
+.header h1{
+  font-family:'Baloo 2',cursive;
+  font-size:clamp(22px,5vw,34px);
+  color:var(--purple);
+  text-shadow:3px 3px 0 #E9D5FF, 5px 5px 0 rgba(168,85,247,.15);
+  letter-spacing:-0.5px;
+  line-height:1.2;
+  animation:titleBounce .6s cubic-bezier(.36,.07,.19,.97) both;
+}
+@keyframes titleBounce{0%{transform:scale(0.7) translateY(-20px);opacity:0}80%{transform:scale(1.05)}100%{transform:scale(1) translateY(0);opacity:1}}
+.sub{color:#A78BFA;font-size:13px;font-weight:700;margin-top:4px;letter-spacing:1px;text-transform:uppercase}
+
+/* SCORE BAR */
+.score-bar{
+  background:linear-gradient(135deg,var(--sun),var(--orange));
+  border-radius:20px;padding:10px 20px;
+  text-align:center;font-weight:900;
+  color:#FFF;font-size:18px;
+  margin-bottom:14px;
+  box-shadow:0 5px 15px rgba(255,107,53,.3);
+  font-family:'Baloo 2',cursive;
+  position:relative;z-index:1;
+  animation:slideIn .5s ease both .1s;
+}
+.score-bar span{
+  background:#FFF;color:var(--orange);
+  border-radius:10px;padding:1px 10px;
+  font-size:20px;display:inline-block;
+  transform:translateY(1px);
+}
+@keyframes slideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+
+/* TIP BOX */
+.tip{
+  background:#EFF6FF;border-left:5px solid var(--blue);
+  border-radius:14px;padding:11px 15px;
+  margin-bottom:16px;color:#1E40AF;
+  font-size:14px;line-height:1.55;font-weight:700;
+  box-shadow:0 3px 10px rgba(59,130,246,.1);
+  position:relative;z-index:1;
+  animation:slideIn .5s ease both .2s;
+}
+
+/* POOL */
+.pool-label{
+  font-size:16px;color:var(--purple);
+  font-weight:900;margin-bottom:8px;
+  font-family:'Baloo 2',cursive;
+  position:relative;z-index:1;
+}
+.pool{
+  display:flex;flex-wrap:wrap;gap:10px;
+  background:#FFF;border-radius:18px;
+  padding:14px;border:3px dashed #C4B5FD;
+  min-height:80px;margin-bottom:18px;
+  position:relative;z-index:1;
+  box-shadow:inset 0 2px 8px rgba(168,85,247,.06), 0 4px 14px rgba(0,0,0,.06);
+  transition:border-color .2s,background .2s;
+}
+.pool.pool-over{background:#F5F3FF;border-color:#A855F7;}
+
+/* CARD */
+.card{
+  background:linear-gradient(145deg,#FFF,#F9F5FF);
+  border:2.5px solid #C4B5FD;
+  border-radius:14px;
+  padding:10px 36px 10px 13px;
+  cursor:grab;font-size:13.5px;font-weight:700;
+  color:#374151;user-select:none;
+  touch-action:none;
+  position:relative;
+  box-shadow:0 4px 10px rgba(168,85,247,.12), 0 2px 0 #C4B5FD;
+  transition:transform .15s, box-shadow .15s, border-color .15s;
+  max-width:320px;
+  animation:popIn .3s cubic-bezier(.36,.07,.19,.97) both;
+}
+@keyframes popIn{0%{opacity:0;transform:scale(.7) rotate(-3deg)}80%{transform:scale(1.05)}100%{opacity:1;transform:scale(1) rotate(0)}}
+.card:hover{transform:scale(1.05) rotate(-1deg);box-shadow:0 8px 20px rgba(168,85,247,.2);border-color:#A855F7}
+.card.dragging{opacity:.3;transform:scale(.95) rotate(3deg);cursor:grabbing}
+
+/* CLOSE BUTTON on card */
+.card-close{
+  position:absolute;top:50%;right:8px;transform:translateY(-50%);
+  width:22px;height:22px;border-radius:50%;
+  background:linear-gradient(135deg,#F87171,#EF4444);
+  border:none;cursor:pointer;
+  color:#FFF;font-size:14px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;
+  line-height:1;
+  box-shadow:0 2px 6px rgba(239,68,68,.35);
+  transition:transform .15s,background .15s;
+  padding:0;
+}
+.card-close:hover{transform:translateY(-50%) scale(1.25);background:linear-gradient(135deg,#DC2626,#B91C1C)}
+
+/* ZONES */
+.zones{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;position:relative;z-index:1;}
+@media(max-width:480px){.zones{grid-template-columns:1fr}}
+.zone{
+  background:#FFF;border-radius:18px;
+  padding:14px;border:3px solid;
+  min-height:150px;transition:background .2s,border-style .2s,transform .1s;
+  box-shadow:0 5px 18px rgba(0,0,0,.07);
+}
+.zone.cyber{border-color:#FCA5A5;background:linear-gradient(160deg,#FFF,#FFF5F5)}
+.zone.not{border-color:#86EFAC;background:linear-gradient(160deg,#FFF,#F0FFF4)}
+.zone.over{background:#FFF8E1 !important;border-style:dashed !important;border-color:var(--sun) !important;transform:scale(1.02)}
+.zone h4{
+  font-family:'Baloo 2',cursive;
+  font-size:15px;font-weight:800;margin-bottom:10px;
+  padding:7px 12px;border-radius:12px;text-align:center;
+  letter-spacing:.2px;
+}
+.zone.cyber h4{background:linear-gradient(135deg,#FEE2E2,#FECACA);color:#B91C1C;box-shadow:0 2px 8px rgba(239,68,68,.12)}
+.zone.not h4{background:linear-gradient(135deg,#DCFCE7,#BBF7D0);color:#15803D;box-shadow:0 2px 8px rgba(34,197,94,.12)}
+
+/* CHIPS inside zones */
+.chip{
+  background:#F9FAFB;border-radius:10px;
+  padding:7px 36px 7px 10px;font-size:13px;
+  color:#374151;font-weight:700;
+  display:flex;align-items:center;gap:6px;
+  margin-bottom:7px;position:relative;
+  border:2px solid #E5E7EB;
+  animation:chipPop .25s cubic-bezier(.36,.07,.19,.97) both;
+  transition:background .2s, border-color .2s;
+}
+@keyframes chipPop{0%{opacity:0;transform:scale(.75)}80%{transform:scale(1.06)}100%{opacity:1;transform:scale(1)}}
+.chip.correct{background:linear-gradient(135deg,#DCFCE7,#BBF7D0);border-color:#86EFAC;color:#166534}
+.chip.incorrect{background:linear-gradient(135deg,#FEE2E2,#FECACA);border-color:#FCA5A5;color:#9B1C1C}
+
+/* Close button on chips */
+.chip-close{
+  position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  width:20px;height:20px;border-radius:50%;
+  background:linear-gradient(135deg,#FB923C,#EA580C);
+  border:none;cursor:pointer;
+  color:#FFF;font-size:12px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;
+  padding:0;line-height:1;
+  box-shadow:0 2px 5px rgba(234,88,12,.35);
+  transition:transform .15s;
+}
+.chip-close:hover{transform:translateY(-50%) scale(1.3)}
+
+/* CHECK BUTTON */
+.check-btn{
+  display:block;margin:0 auto 12px;
+  background:linear-gradient(135deg,var(--blue),var(--teal));
+  color:#FFF;border:none;border-radius:16px;
+  padding:14px 44px;font-size:18px;font-weight:900;
+  cursor:pointer;
+  box-shadow:0 6px 18px rgba(59,130,246,.35), 0 3px 0 #1D4ED8;
+  font-family:'Baloo 2',cursive;letter-spacing:.3px;
+  transition:transform .15s,box-shadow .15s;
+  position:relative;z-index:1;
+}
+.check-btn:hover{transform:scale(1.06) translateY(-2px);box-shadow:0 10px 25px rgba(59,130,246,.45),0 3px 0 #1D4ED8}
+.check-btn:active{transform:scale(.97) translateY(1px);box-shadow:0 3px 10px rgba(59,130,246,.3),0 1px 0 #1D4ED8}
+
+/* FEEDBACK */
+.fb{
+  text-align:center;font-size:16px;font-weight:800;
+  min-height:28px;margin-bottom:12px;
+  color:var(--purple);font-family:'Baloo 2',cursive;
+  position:relative;z-index:1;
+}
+
+/* RESULT */
+.result{
+  display:none;
+  background:linear-gradient(145deg,#F0FFF4,#FFFBF2);
+  border:3px solid #86EFAC;border-radius:22px;
+  padding:26px 22px;text-align:center;
+  box-shadow:0 10px 30px rgba(34,197,94,.12);
+  position:relative;z-index:1;
+  margin-top:14px;
+}
+.result.show{display:block;animation:resultPop .5s cubic-bezier(.36,.07,.19,.97) both}
+@keyframes resultPop{0%{transform:scale(.6) rotate(-5deg);opacity:0}80%{transform:scale(1.05) rotate(1deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+.result .r-emoji{font-size:54px;display:block;margin-bottom:8px;animation:bounce 1s ease infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.result h2{color:#15803D;font-size:24px;font-family:'Baloo 2',cursive;margin-bottom:8px}
+.result p{color:#374151;font-size:15px;font-weight:700;margin-bottom:18px;line-height:1.5}
+.btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.b-retry{
+  background:linear-gradient(135deg,var(--orange),#DC2626);
+  color:#FFF;border:none;border-radius:12px;
+  padding:12px 26px;font-size:15px;font-weight:900;
+  cursor:pointer;font-family:'Baloo 2',cursive;
+  box-shadow:0 4px 12px rgba(255,107,53,.35);
+  transition:transform .15s;
+}
+.b-retry:hover{transform:scale(1.08)}
+.b-next{
+  background:linear-gradient(135deg,var(--green),#15803D);
+  color:#FFF;border:none;border-radius:12px;
+  padding:12px 26px;font-size:15px;font-weight:900;
+  cursor:pointer;font-family:'Baloo 2',cursive;
+  box-shadow:0 4px 12px rgba(34,197,94,.35);
+  transition:transform .15s;
+}
+.b-next:hover{transform:scale(1.08)}
+
+/* ANIMATIONS */
+/* EXIT BUTTON */
+.exit-btn{
+  position:fixed;top:12px;left:14px;
+  width:42px;height:42px;
+  background:linear-gradient(145deg,#FF6FA8,#EF4444);
+  color:#FFF;border:none;border-radius:50%;
+  font-size:20px;font-weight:900;
+  cursor:pointer;z-index:200;
+  box-shadow:0 4px 0 #B91C1C, 0 6px 18px rgba(239,68,68,.45);
+  transition:transform .15s,box-shadow .15s;
+  display:flex;align-items:center;justify-content:center;
+  line-height:1;padding:0;
+}
+.exit-btn:hover{transform:scale(1.18) rotate(12deg);box-shadow:0 6px 0 #B91C1C,0 10px 24px rgba(239,68,68,.55)}
+.exit-btn:active{transform:scale(.92);box-shadow:0 2px 0 #B91C1C,0 3px 8px rgba(239,68,68,.3)}
+
+/* EXIT OVERLAY */
+.exit-overlay{
+  display:none;position:fixed;inset:0;z-index:1000;
+  background:rgba(0,0,0,.45);backdrop-filter:blur(4px);
+  align-items:center;justify-content:center;
+}
+.exit-overlay.show{display:flex;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.exit-modal{
+  background:#FFF;border-radius:24px;
+  padding:32px 28px;text-align:center;
+  max-width:340px;width:90%;
+  box-shadow:0 20px 50px rgba(0,0,0,.2);
+  animation:modalPop .3s cubic-bezier(.36,.07,.19,.97) both;
+  border:3px solid #FCA5A5;
+}
+@keyframes modalPop{0%{transform:scale(.6) rotate(-4deg);opacity:0}80%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
+.exit-emoji{font-size:52px;margin-bottom:10px;animation:bounce 1s ease infinite}
+.exit-modal h2{font-family:'Baloo 2',cursive;color:#B91C1C;font-size:22px;margin-bottom:8px}
+.exit-modal p{color:#6B7280;font-size:14px;font-weight:700;margin-bottom:20px;line-height:1.5}
+.exit-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.exit-cancel{
+  background:linear-gradient(135deg,var(--green),#15803D);
+  color:#FFF;border:none;border-radius:12px;
+  padding:11px 22px;font-size:15px;font-weight:900;
+  cursor:pointer;font-family:'Baloo 2',cursive;
+  box-shadow:0 4px 12px rgba(34,197,94,.35);
+  transition:transform .15s;
+}
+.exit-cancel:hover{transform:scale(1.08)}
+.exit-confirm{
+  background:linear-gradient(135deg,#F87171,#DC2626);
+  color:#FFF;border:none;border-radius:12px;
+  padding:11px 22px;font-size:15px;font-weight:900;
+  cursor:pointer;font-family:'Baloo 2',cursive;
+  box-shadow:0 4px 12px rgba(239,68,68,.35);
+  transition:transform .15s;
+}
+.exit-confirm:hover{transform:scale(1.08)}
+
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-8px)}80%{transform:translateX(8px)}}
+.shake{animation:shake .4s ease}
+
+/* Confetti dots */
+.confetti-piece{
+  position:fixed;width:10px;height:10px;
+  border-radius:2px;pointer-events:none;z-index:999;
+  animation:confettiFall linear forwards;
+}
+@keyframes confettiFall{
+  0%{transform:translateY(-20px) rotate(0);opacity:1}
+  100%{transform:translateY(100vh) rotate(720deg);opacity:0}
+}
+</style>
+</head>
+<body>
+
+<!-- Floating Stars -->
+<div class="star" style="left:3%;top:12%;font-size:22px;animation-delay:0s">⭐</div>
+<div class="star" style="left:92%;top:8%;font-size:18px;animation-delay:1.5s">🌟</div>
+<div class="star" style="left:5%;top:60%;font-size:16px;animation-delay:3s">✨</div>
+<div class="star" style="left:95%;top:55%;font-size:20px;animation-delay:2s">⭐</div>
+<div class="star" style="left:50%;top:5%;font-size:14px;animation-delay:4s">🌟</div>
+
+<div class="logo">⭐ Planrs</div>
+
+<!-- EXIT BUTTON -->
+<button class="exit-btn" onclick="exitActivity()" title="Exit Activity">✕</button>
+
+<!-- EXIT OVERLAY -->
+<div class="exit-overlay" id="exitOverlay">
+  <div class="exit-modal">
+    <div class="exit-emoji">👋</div>
+    <h2>Leaving so soon?</h2>
+    <p>Your progress will be lost if you exit now. Are you sure?</p>
+    <div class="exit-btns">
+      <button class="exit-cancel" onclick="cancelExit()">🙅 Stay & Play!</button>
+      <button class="exit-confirm" onclick="confirmExit()">✕ Yes, Exit</button>
+    </div>
+  </div>
+</div>
+
+<div class="header">
+  <h1>🌐 What is Cyberbullying?</h1>
+  <p class="sub">Section 1A — Drag &amp; Drop Activity</p>
+</div>
+
+<div class="score-bar">⭐ Sorted: <span id="sc">0</span> / 12</div>
+
+<div class="tip">📌 <strong>How to play:</strong> Drag each card into the correct box — <strong>🚫 Cyberbullying</strong> or <strong>✅ Not Cyberbullying</strong>. Sort all 12 to win! Hit <strong>✕</strong> on any card to send it back to the pool.</div>
+
+<p class="pool-label">📦 Cards to sort:</p>
+<div class="pool" id="pool"></div>
+
+<div class="zones">
+  <div class="zone cyber" id="z-cyber" data-zone="cyber">
+    <h4>🚫 Cyberbullying</h4>
+    <div id="p-cyber"></div>
+  </div>
+  <div class="zone not" id="z-not" data-zone="not">
+    <h4>✅ Not Cyberbullying</h4>
+    <div id="p-not"></div>
+  </div>
+</div>
+
+<button class="check-btn" onclick="check()">Check My Answers ✅</button>
+<div class="fb" id="fb"></div>
+<div class="result" id="res">
+  <span class="r-emoji" id="r-emoji">🎉</span>
+  <h2 id="r-title"></h2>
+  <p id="r-msg"></p>
+  <div class="btns">
+    <button class="b-retry" onclick="reset()">🔄 Try Again</button>
+    <button class="b-next" onclick="next()">Next Activity ➡️</button>
+  </div>
+</div>
+
+<script>
+const cards=[
+  {id:1,t:"Sending repeated mean messages to Priya on WhatsApp every night",c:"cyber"},
+  {id:2,t:"Posting an embarrassing photo of Karan without his permission",c:"cyber"},
+  {id:3,t:"Creating a fake account pretending to be Meera to insult classmates",c:"cyber"},
+  {id:4,t:"Leaving hurtful comments on someone's YouTube school project video",c:"cyber"},
+  {id:5,t:"Purposely removing Raju from every WhatsApp group to isolate him",c:"cyber"},
+  {id:6,t:"Spreading false rumours about Divya on Instagram Stories",c:"cyber"},
+  {id:7,t:"Sending death threats to a classmate's inbox",c:"cyber"},
+  {id:8,t:"Sharing someone's home address publicly in a group to threaten them",c:"cyber"},
+  {id:9,t:"Sending a 'Happy Birthday!' message with a mango cake emoji to your friend",c:"not"},
+  {id:10,t:"Sharing a funny cricket meme that your friend also laughed at",c:"not"},
+  {id:11,t:"Inviting a classmate to join an online study group for the exam",c:"not"},
+  {id:12,t:"Complimenting a classmate's drawing posted in the school WhatsApp group",c:"not"},
+];
+
+let placements={},checked=false,dragId=null,touchClone,touchZone;
+
+function render(){
+  // Pool
+  const pool=document.getElementById('pool');
+  pool.innerHTML='';
+  const poolCards=cards.filter(c=>!placements[c.id]);
+  if(poolCards.length===0){
+    pool.innerHTML='<span style="color:#A78BFA;font-size:14px;font-weight:700;width:100%;text-align:center;display:block;padding:8px">🎉 All cards sorted! Now check your answers!</span>';
+  }
+  poolCards.forEach((c,i)=>{
+    const d=document.createElement('div');
+    d.className='card';d.draggable=true;d.dataset.id=c.id;
+    d.style.animationDelay=(i*0.04)+'s';
+    d.innerHTML=`${c.t}<button class="card-close" title="Remove" onclick="returnCard(${c.id})">✕</button>`;
+    d.addEventListener('dragstart',()=>{dragId=c.id;setTimeout(()=>d.classList.add('dragging'),0)});
+    d.addEventListener('dragend',()=>d.classList.remove('dragging'));
+    d.addEventListener('touchstart',ts,{passive:true});
+    d.addEventListener('touchmove',tm,{passive:false});
+    d.addEventListener('touchend',te);
+    pool.appendChild(d);
+  });
+
+  // Zones
+  ['cyber','not'].forEach(z=>{
+    const el=document.getElementById('p-'+z);
+    el.innerHTML='';
+    Object.entries(placements).filter(([,zz])=>zz===z).forEach(([id],i)=>{
+      const card=cards.find(c=>c.id==id);
+      const ch=document.createElement('div');
+      ch.className='chip';
+      ch.style.animationDelay=(i*0.03)+'s';
+      if(checked) ch.classList.add(card.c===z?'correct':'incorrect');
+      const icon=checked?(card.c===z?'✅':'❌'):'📌';
+      let closeBtn='';
+      if(!checked) closeBtn=`<button class="chip-close" title="Move back" onclick="returnCard(${id})">✕</button>`;
+      ch.innerHTML=`${icon} <span style="flex:1">${card.t}</span>${closeBtn}`;
+      el.appendChild(ch);
+    });
+  });
+
+  document.getElementById('sc').textContent=Object.keys(placements).length;
+}
+
+function returnCard(id){
+  delete placements[id];
+  checked=false;
+  document.getElementById('res').classList.remove('show');
+  render();
+  fb();
+}
+
+['z-cyber','z-not'].forEach(zid=>{
+  const el=document.getElementById(zid);
+  el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('over')});
+  el.addEventListener('dragleave',()=>el.classList.remove('over'));
+  el.addEventListener('drop',e=>{
+    e.preventDefault();el.classList.remove('over');
+    if(dragId){placements[dragId]=el.dataset.zone;dragId=null;checked=false;render();fb()}
+  });
+});
+
+// Pool also accepts drops (drag back)
+const poolEl=document.getElementById('pool');
+poolEl.addEventListener('dragover',e=>{e.preventDefault();poolEl.classList.add('pool-over')});
+poolEl.addEventListener('dragleave',()=>poolEl.classList.remove('pool-over'));
+poolEl.addEventListener('drop',e=>{
+  e.preventDefault();poolEl.classList.remove('pool-over');
+  if(dragId && placements[dragId]){delete placements[dragId];render();fb()}
+});
+
+function ts(e){
+  touchClone=e.currentTarget.cloneNode(true);
+  dragId=e.currentTarget.dataset.id;
+  const r=e.currentTarget.getBoundingClientRect();
+  touchClone.style.cssText=`position:fixed;opacity:.88;pointer-events:none;z-index:9999;width:${r.width}px;transform:rotate(-3deg) scale(1.06)`;
+  document.body.appendChild(touchClone);
+}
+function tm(e){
+  e.preventDefault();
+  const t=e.touches[0];
+  touchClone.style.left=(t.clientX-touchClone.offsetWidth/2)+'px';
+  touchClone.style.top=(t.clientY-35)+'px';
+  touchZone=null;
+  ['z-cyber','z-not'].forEach(zid=>{
+    const z=document.getElementById(zid);
+    const r=z.getBoundingClientRect();
+    if(t.clientX>=r.left&&t.clientX<=r.right&&t.clientY>=r.top&&t.clientY<=r.bottom) touchZone=z.dataset.zone;
+  });
+  // check if over pool
+  const pr=poolEl.getBoundingClientRect();
+  if(t.clientX>=pr.left&&t.clientX<=pr.right&&t.clientY>=pr.top&&t.clientY<=pr.bottom) touchZone='pool';
+}
+function te(){
+  if(touchClone) touchClone.remove();
+  if(touchZone==='pool' && dragId && placements[dragId]){delete placements[dragId];checked=false;render();fb();}
+  else if(touchZone && touchZone!=='pool' && dragId){placements[dragId]=touchZone;checked=false;render();fb();}
+  touchClone=touchZone=null;dragId=null;
+}
+
+function fb(){
+  const n=Object.keys(placements).length;
+  const fbEl=document.getElementById('fb');
+  if(n<cards.length) fbEl.textContent=`${n} of 12 sorted — keep going! 💪`;
+  else fbEl.textContent='All sorted! Hit Check ✅';
+}
+
+function check(){
+  if(Object.keys(placements).length<cards.length){
+    const f=document.getElementById('fb');
+    f.textContent='⚠️ Sort all 12 cards first!';
+    f.classList.add('shake');
+    setTimeout(()=>f.classList.remove('shake'),500);
+    return;
+  }
+  checked=true;
+  let ok=0;
+  Object.entries(placements).forEach(([id,z])=>{if(cards.find(c=>c.id==id).c===z)ok++});
+  render();
+  const r=document.getElementById('res');
+  const emoji=ok===12?'🏆':ok>=8?'🌟':'💡';
+  const title=ok===12?'Perfect Score! 🎉':ok>=8?'Brilliant! 🌟':ok>=6?'Good Try! 👍':'Keep Learning! 💪';
+  const msg=`You correctly sorted ${ok} of 12 examples! ${ok===12?'You are a Cyberbullying expert!':ok>=8?'Great understanding! Try again for a perfect score!':'Review the lesson and try once more!'}`;
+  document.getElementById('r-emoji').textContent=emoji;
+  document.getElementById('r-title').textContent=title;
+  document.getElementById('r-msg').textContent=msg;
+  r.classList.add('show');
+  if(ok===12) launchConfetti();
+}
+
+function launchConfetti(){
+  const colors=['#FFD93D','#FF6B35','#FF6FA8','#A855F7','#3B82F6','#22C55E','#06B6D4'];
+  for(let i=0;i<60;i++){
+    setTimeout(()=>{
+      const c=document.createElement('div');
+      c.className='confetti-piece';
+      c.style.cssText=`left:${Math.random()*100}vw;background:${colors[Math.floor(Math.random()*colors.length)]};
+        width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;
+        border-radius:${Math.random()>0.5?'50%':'2px'};
+        animation-duration:${1.5+Math.random()*2}s;animation-delay:0s;`;
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(),3500);
+    },i*40);
+  }
+}
+
+function reset(){
+  placements={};checked=false;
+  document.getElementById('res').classList.remove('show');
+  document.getElementById('fb').textContent='';
+  render();fb();
+}
+function next(){alert('Great job! Try the True/False activity (section1b) next! 🚀')}
+
+function exitActivity(){document.getElementById('exitOverlay').classList.add('show')}
+function cancelExit(){document.getElementById('exitOverlay').classList.remove('show')}
+function confirmExit(){
+  document.getElementById('exitOverlay').classList.remove('show');
+  document.body.style.transition='opacity .4s ease';
+  document.body.style.opacity='0';
+  setTimeout(()=>{
+    document.body.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:Nunito,sans-serif;background:#FFFBF2;gap:16px"><div style="font-size:64px">👋</div><h2 style="font-family:Baloo 2,cursive;color:#A855F7;font-size:28px">See you next time!</h2><p style="color:#6B7280;font-weight:700">Come back to finish the activity!</p></div>';
+    document.body.style.opacity='1';
+  },400);
+}
+
+render();fb();
+</script>
+</body>
+</html>

@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌈 Upstander Quiz! | Planrs</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --candy1: #FF6B9D;
+    --candy2: #FF9F43;
+    --candy3: #48DBFB;
+    --candy4: #1DD1A1;
+    --candy5: #F368E0;
+    --candy6: #FECA57;
+    --bg: #FFF5F9;
+    --card: #FFFFFF;
+    --text: #2D2D44;
+    --muted: #8E8EA0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    padding: 12px 12px 60px;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Floating confetti BG */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(255,107,157,.12) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(72,219,251,.12) 0%, transparent 40%),
+      radial-gradient(circle at 50% 50%, rgba(254,202,87,.08) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .floaties {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .floaty {
+    position: absolute;
+    font-size: 22px;
+    animation: floatUp linear infinite;
+    opacity: 0.55;
+  }
+
+  @keyframes floatUp {
+    0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+    10%  { opacity: .55; }
+    90%  { opacity: .55; }
+    100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* CLOSE BUTTON */
+  .close-btn {
+    position: fixed;
+    top: 14px;
+    right: 14px;
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, #FF6B9D, #FF9F43);
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    color: #fff;
+    cursor: pointer;
+    z-index: 9999;
+    box-shadow: 0 4px 16px rgba(255,107,157,.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform .2s, box-shadow .2s;
+    font-family: 'Fredoka One', sans-serif;
+  }
+  .close-btn:hover { transform: scale(1.15) rotate(10deg); box-shadow: 0 6px 22px rgba(255,107,157,.6); }
+  .close-btn:active { transform: scale(.95); }
+
+  /* Close overlay */
+  .close-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    z-index: 9998;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn .2s ease;
+  }
+  .close-overlay.show { display: flex; }
+  .close-modal {
+    background: #fff;
+    border-radius: 28px;
+    padding: 32px 28px;
+    text-align: center;
+    max-width: 320px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,.2);
+    border: 4px solid var(--candy6);
+    animation: popIn .3s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes popIn {
+    from { transform: scale(.7); opacity: 0; }
+    to   { transform: scale(1);  opacity: 1; }
+  }
+  .close-modal .em { font-size: 52px; margin-bottom: 10px; }
+  .close-modal h2 { font-family: 'Fredoka One', sans-serif; font-size: 24px; color: var(--text); margin-bottom: 8px; }
+  .close-modal p  { font-size: 14px; color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
+  .close-modal-btns { display: flex; gap: 10px; justify-content: center; }
+  .close-modal-btns button {
+    border: none; border-radius: 14px; padding: 10px 22px;
+    font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 14px; cursor: pointer;
+    transition: transform .15s;
+  }
+  .close-modal-btns button:hover { transform: scale(1.06); }
+  .btn-stay { background: linear-gradient(135deg, #1DD1A1, #00B894); color: #fff; }
+  .btn-quit { background: linear-gradient(135deg, #FF6B9D, #EE5A7A); color: #fff; }
+
+  /* LOGO */
+  .logo {
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    background: linear-gradient(135deg, #FECA57, #FF9F43);
+    color: #fff;
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 15px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    z-index: 100;
+    box-shadow: 0 3px 12px rgba(255,159,67,.4);
+    letter-spacing: .5px;
+  }
+
+  /* HEADER */
+  .header {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding-top: 52px;
+    margin-bottom: 18px;
+  }
+  .header h1 {
+    font-family: 'Fredoka One', sans-serif;
+    font-size: clamp(26px, 6vw, 40px);
+    background: linear-gradient(135deg, #FF6B9D, #FF9F43, #48DBFB, #1DD1A1);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 0px rgba(255,107,157,.3));
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+  .header p {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  /* SCORE BAR */
+  .score-row {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .score-pill {
+    background: linear-gradient(135deg, #FF6B9D, #FF9F43);
+    color: #fff;
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 17px;
+    padding: 6px 18px;
+    border-radius: 30px;
+    box-shadow: 0 4px 14px rgba(255,107,157,.35);
+    letter-spacing: .3px;
+  }
+  .star-row { display: flex; gap: 3px; }
+  .star { font-size: 20px; transition: transform .3s; }
+  .star.lit { animation: starPop .4s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes starPop {
+    0%   { transform: scale(0) rotate(-20deg); }
+    60%  { transform: scale(1.3) rotate(5deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+
+  /* PROGRESS */
+  .prog-wrap {
+    position: relative;
+    z-index: 1;
+    background: #FFE4EF;
+    border-radius: 30px;
+    height: 14px;
+    margin-bottom: 4px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,.08);
+  }
+  .prog-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #FF6B9D, #FF9F43, #FECA57);
+    border-radius: 30px;
+    transition: width .6s cubic-bezier(.34,1.56,.64,1);
+    position: relative;
+    overflow: hidden;
+  }
+  .prog-bar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.3), transparent);
+    animation: shimmer 1.5s infinite;
+  }
+  @keyframes shimmer {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(200%); }
+  }
+  .prog-txt { position: relative; z-index: 1; text-align: center; font-size: 12px; font-weight: 800; color: var(--muted); margin-bottom: 14px; letter-spacing: .5px; text-transform: uppercase; }
+
+  /* SCENARIO CARD */
+  .scene-card {
+    position: relative;
+    z-index: 1;
+    background: var(--card);
+    border-radius: 28px;
+    padding: 22px 18px 20px;
+    box-shadow: 0 8px 32px rgba(255,107,157,.12), 0 2px 8px rgba(0,0,0,.06);
+    border: 3px solid transparent;
+    background-clip: padding-box;
+    margin-bottom: 16px;
+    animation: cardIn .45s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(20px) scale(.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .scene-card::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 30px;
+    background: linear-gradient(135deg, #FF6B9D, #FECA57, #48DBFB, #1DD1A1);
+    z-index: -1;
+  }
+
+  .scene-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #48DBFB, #1DD1A1);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 12px;
+    border-radius: 30px;
+    margin-bottom: 12px;
+  }
+
+  .scene-icon-wrap {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  .scene-icon {
+    display: inline-block;
+    font-size: 52px;
+    animation: iconBounce .6s cubic-bezier(.34,1.56,.64,1);
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,.12));
+  }
+  @keyframes iconBounce {
+    from { transform: scale(0) rotate(-15deg); }
+    to   { transform: scale(1) rotate(0deg); }
+  }
+
+  .scene-txt {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.55;
+    margin-bottom: 8px;
+    background: #FFF5F9;
+    border-radius: 14px;
+    padding: 12px 14px;
+    border-left: 4px solid var(--candy1);
+  }
+
+  .scene-q {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--candy5);
+    margin-bottom: 14px;
+    text-align: center;
+    font-style: normal;
+    padding: 0 4px;
+  }
+
+  /* OPTIONS */
+  .options { display: flex; flex-direction: column; gap: 10px; }
+
+  .opt {
+    border: 3px solid #FFD6E8;
+    border-radius: 16px;
+    padding: 13px 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    text-align: left;
+    transition: transform .15s, border-color .15s, background .15s, box-shadow .15s;
+    background: #FFF;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .opt::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,107,157,.04), rgba(72,219,251,.04));
+    opacity: 0;
+    transition: opacity .2s;
+  }
+  .opt:hover:not(:disabled) {
+    border-color: var(--candy3);
+    transform: scale(1.02) translateY(-1px);
+    box-shadow: 0 6px 20px rgba(72,219,251,.2);
+  }
+  .opt:hover:not(:disabled)::before { opacity: 1; }
+
+  .opt-lbl {
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FF6B9D, #FF9F43);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+    box-shadow: 0 2px 6px rgba(255,107,157,.35);
+    transition: transform .15s;
+  }
+  .opt:hover:not(:disabled) .opt-lbl { transform: scale(1.15) rotate(-5deg); }
+
+  .opt.correct {
+    background: linear-gradient(135deg, #D4FFF0, #B8FFE0);
+    border-color: #1DD1A1;
+    box-shadow: 0 4px 20px rgba(29,209,161,.25);
+    animation: correctPop .4s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes correctPop {
+    0%   { transform: scale(.98); }
+    50%  { transform: scale(1.03); }
+    100% { transform: scale(1); }
+  }
+  .opt.correct .opt-lbl { background: linear-gradient(135deg, #1DD1A1, #00B894); }
+
+  .opt.incorrect {
+    background: linear-gradient(135deg, #FFE8EE, #FFD6DF);
+    border-color: #FF6B9D;
+    box-shadow: 0 4px 20px rgba(255,107,157,.2);
+    animation: wrongShake .3s ease;
+  }
+  @keyframes wrongShake {
+    0%,100% { transform: translateX(0); }
+    25%  { transform: translateX(-6px); }
+    75%  { transform: translateX(6px); }
+  }
+  .opt.incorrect .opt-lbl { background: linear-gradient(135deg, #FF6B9D, #EE5A7A); }
+
+  .opt.reveal {
+    background: linear-gradient(135deg, #D4FFF0, #B8FFE0);
+    border-color: #1DD1A1;
+    opacity: .75;
+  }
+  .opt.reveal .opt-lbl { background: linear-gradient(135deg, #1DD1A1, #00B894); }
+
+  .opt:disabled { cursor: not-allowed; transform: none !important; }
+
+  /* EXPLANATION */
+  .expl {
+    display: none;
+    margin-top: 14px;
+    background: linear-gradient(135deg, #FFF9E0, #FFF0D0);
+    border-radius: 16px;
+    padding: 13px 15px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #5A3E00;
+    line-height: 1.55;
+    border: 2px solid #FECA57;
+    position: relative;
+    overflow: hidden;
+  }
+  .expl::before {
+    content: '💡';
+    position: absolute;
+    top: -6px;
+    right: 12px;
+    font-size: 30px;
+    opacity: .2;
+  }
+  .expl.show {
+    display: block;
+    animation: explIn .4s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes explIn {
+    from { opacity: 0; transform: scale(.95) translateY(8px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  /* NEXT BUTTON */
+  .next-btn {
+    display: none;
+    margin: 14px auto 0;
+    background: linear-gradient(135deg, #FF6B9D, #FF9F43);
+    color: #fff;
+    border: none;
+    border-radius: 18px;
+    padding: 14px 36px;
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 17px;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(255,107,157,.4);
+    transition: transform .2s, box-shadow .2s;
+    letter-spacing: .5px;
+  }
+  .next-btn.show { display: block; animation: btnPop .4s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes btnPop {
+    from { transform: scale(0); } to { transform: scale(1); }
+  }
+  .next-btn:hover { transform: scale(1.06) translateY(-2px); box-shadow: 0 10px 28px rgba(255,107,157,.5); }
+
+  /* RESULT */
+  .result {
+    display: none;
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    background: #fff;
+    border-radius: 28px;
+    padding: 32px 22px;
+    box-shadow: 0 12px 40px rgba(255,107,157,.15);
+    border: 3px solid transparent;
+    background-clip: padding-box;
+    overflow: hidden;
+  }
+  .result::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 30px;
+    background: linear-gradient(135deg, #FF6B9D, #FECA57, #48DBFB, #1DD1A1, #F368E0);
+    z-index: -1;
+  }
+  .result.show { display: block; animation: cardIn .5s cubic-bezier(.34,1.56,.64,1); }
+
+  .r-em { font-size: 68px; margin-bottom: 8px; animation: iconBounce .6s cubic-bezier(.34,1.56,.64,1) .1s both; }
+  .r-ti {
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 28px;
+    background: linear-gradient(135deg, #FF6B9D, #FF9F43);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  .r-sc {
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 52px;
+    background: linear-gradient(135deg, #48DBFB, #1DD1A1);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 4px 0 10px;
+    filter: drop-shadow(0 2px 4px rgba(72,219,251,.3));
+  }
+  .r-ms { font-size: 14px; font-weight: 700; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+  .r-stars { font-size: 28px; margin-bottom: 16px; letter-spacing: 4px; }
+
+  .result-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .result-btns button {
+    border: none; border-radius: 16px; padding: 12px 24px;
+    font-family: 'Fredoka One', sans-serif; font-size: 16px; cursor: pointer;
+    transition: transform .15s, box-shadow .15s;
+    letter-spacing: .3px;
+  }
+  .result-btns button:hover { transform: scale(1.06) translateY(-2px); }
+  .btn-retry { background: linear-gradient(135deg, #FF9F43, #FF6B9D); color: #fff; box-shadow: 0 4px 16px rgba(255,107,157,.35); }
+  .btn-done  { background: linear-gradient(135deg, #1DD1A1, #00B894);  color: #fff; box-shadow: 0 4px 16px rgba(29,209,161,.35); }
+
+  /* Burst effect canvas */
+  #burst { position: fixed; inset: 0; pointer-events: none; z-index: 9997; }
+</style>
+</head>
+<body>
+
+<canvas id="burst"></canvas>
+
+<!-- Floating emojis background -->
+<div class="floaties" id="floaties"></div>
+
+<!-- Close button -->
+<button class="close-btn" onclick="openClose()" title="Close quiz">✕</button>
+
+<!-- Close confirm overlay -->
+<div class="close-overlay" id="closeOverlay">
+  <div class="close-modal">
+    <div class="em">🥺</div>
+    <h2>Wait — leaving already?</h2>
+    <p>Your progress will be lost! Are you sure you want to quit the quiz?</p>
+    <div class="close-modal-btns">
+      <button class="btn-stay" onclick="closeClose()">🙌 Stay!</button>
+      <button class="btn-quit" onclick="quit()">👋 Quit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Logo -->
+<div class="logo">⭐ Planrs</div>
+
+<!-- Header -->
+<div class="header">
+  <h1>🎭 Upstander Quiz!</h1>
+  <p>Section 2B — What Would YOU Do? 6 Situations</p>
+</div>
+
+<!-- Score -->
+<div class="score-row">
+  <div class="score-pill">⭐ Score: <span id="sc">0</span>/6</div>
+  <div class="star-row" id="starRow"></div>
+</div>
+
+<!-- Progress -->
+<div class="prog-wrap"><div class="prog-bar" id="pb" style="width:0%"></div></div>
+<div class="prog-txt" id="pt">Get Ready! 🚀</div>
+
+<!-- Quiz area -->
+<div id="qa"></div>
+
+<!-- Result -->
+<div class="result" id="res">
+  <div class="r-em" id="re">🏆</div>
+  <div class="r-ti" id="rt"></div>
+  <div class="r-sc" id="rs">0/6</div>
+  <div class="r-stars" id="rstar"></div>
+  <div class="r-ms" id="rm"></div>
+  <div class="result-btns">
+    <button class="btn-retry" onclick="reset()">🔄 Try Again!</button>
+    <button class="btn-done"  onclick="done()">🎓 Next Section!</button>
+  </div>
+</div>
+
+<script>
+// ——— Floaties ———
+const floatEmojis = ['🌈','⭐','💫','🎉','🌟','🎈','🦋','🌸','🍭','🎀','✨','🎊','🌺','🦄','🍬'];
+const floatEl = document.getElementById('floaties');
+for (let i = 0; i < 18; i++) {
+  const d = document.createElement('div');
+  d.className = 'floaty';
+  d.textContent = floatEmojis[Math.floor(Math.random() * floatEmojis.length)];
+  d.style.left = Math.random() * 100 + 'vw';
+  d.style.animationDuration = (12 + Math.random() * 14) + 's';
+  d.style.animationDelay = (Math.random() * 14) + 's';
+  d.style.fontSize = (16 + Math.random() * 14) + 'px';
+  floatEl.appendChild(d);
+}
+
+// ——— Stars UI ———
+function buildStars(n) {
+  const row = document.getElementById('starRow');
+  row.innerHTML = '';
+  for (let i = 0; i < 6; i++) {
+    const s = document.createElement('span');
+    s.className = 'star';
+    s.id = 'star' + i;
+    s.textContent = i < n ? '⭐' : '☆';
+    row.appendChild(s);
+  }
+}
+
+function lightStar(n) {
+  const s = document.getElementById('star' + (n - 1));
+  if (s) { s.textContent = '⭐'; s.classList.add('lit'); }
+}
+
+// ——— Confetti burst ———
+function burst(x, y, color) {
+  const canvas = document.getElementById('burst');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const particles = [];
+  const colors = ['#FF6B9D','#FECA57','#48DBFB','#1DD1A1','#F368E0','#FF9F43'];
+  for (let i = 0; i < 55; i++) {
+    particles.push({
+      x, y,
+      vx: (Math.random() - .5) * 14,
+      vy: (Math.random() - 1.5) * 10,
+      r: 4 + Math.random() * 6,
+      c: colors[Math.floor(Math.random() * colors.length)],
+      a: 1, rot: Math.random() * 360, rs: (Math.random() - .5) * 10
+    });
+  }
+  let frame;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.vy += .35; p.a -= .022; p.rot += p.rs;
+      if (p.a <= 0) return;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot * Math.PI / 180);
+      ctx.globalAlpha = p.a; ctx.fillStyle = p.c;
+      ctx.beginPath(); ctx.rect(-p.r/2, -p.r/2, p.r, p.r);
+      ctx.fill(); ctx.restore();
+    });
+    if (particles.some(p => p.a > 0)) frame = requestAnimationFrame(draw);
+    else { cancelAnimationFrame(frame); ctx.clearRect(0,0,canvas.width,canvas.height); }
+  }
+  draw();
+}
+
+// ——— Scenarios ———
+const scenarios = [
+  { icon:"😢", scene:"Priya is your classmate. She tells you she receives 50 mean messages every night calling her ugly. She is scared and not sleeping.", q:"As her friend, what is the BEST thing to do?", opts:["Tell her to stop being so sensitive and just ignore it","Help her screenshot the evidence and take her to tell a trusted teacher or parent immediately","Like the bully's messages so you stay popular","Share the mean messages with more friends so everyone knows"], correct:1, e:"🌟 YES! Help Priya document the evidence (screenshot) and immediately involve a trusted adult. Telling her to 'ignore it' dismisses real pain. You are now an Upstander!" },
+  { icon:"📸", scene:"In the class WhatsApp group, someone has shared an embarrassing photo of Karan from sports day without his permission.", q:"What should you do immediately?", opts:["Screenshot it and forward it to your other group — it is funny!","React with a laughing emoji so others do not think you are boring","Do NOT react or share. Report the post and privately tell a trusted adult","Wait and see — maybe Karan will not notice"], correct:2, e:"🌟 YES! Never share or react to non-consensual images — every reaction gives them more reach. Report immediately and inform a trusted adult. Even NOT sharing is a powerful Upstander action!" },
+  { icon:"🎮", scene:"During an online BGMI game, a player from another school is repeatedly calling Raju useless, threatening to hack his account, and using abusive language.", q:"What should Raju do?", opts:["Use equally abusive language to fight back","Quietly leave the match, screenshot the chat, block the player, and report within the game app","Keep playing — it is just a game, not real life","Tell all his friends to also abuse the bully's account"], correct:1, e:"🌟 YES! Never retaliate — it makes things worse. Screenshot for evidence, block the player, and use the in-game report function. Most gaming platforms can ban accounts!" },
+  { icon:"👀", scene:"Ananya sees her classmate Meera being trolled in the school Instagram comments — hundreds of hateful comments. Ananya is scared to speak up.", q:"What can Ananya do as an Upstander WITHOUT confronting the bully?", opts:["Like the bully's comments to avoid being targeted herself","Do nothing — it is not her problem","Send Meera a private DM: 'I see what is happening. I am on your side. Let us tell a teacher.' Then report the post.","Make her own post about how bad bullying is without mentioning Meera"], correct:2, e:"🌟 YES! A private supportive message to Meera + reporting the post is powerful Upstander action. Research shows just ONE person speaking up can stop bullying 50% of the time!" },
+  { icon:"🎭", scene:"Divya receives a friend request from 'Divya_Real_Account' — a new account with no photo, created 2 days ago, that immediately sends her insulting messages.", q:"What should Divya do?", opts:["Accept the request — it might be a secret admirer","Reply to the messages to find out who it is","Do NOT accept. Block the account, screenshot the messages, report to Instagram, and tell a parent","Change her own account name so they cannot find her"], correct:2, e:"🌟 YES! This is a classic fake account used for cyberbullying. Never engage with it. Block + screenshot + report to Instagram + tell a trusted adult is exactly the right sequence!" },
+  { icon:"📱", scene:"Vikram notices that his friend Arjun has stopped laughing, avoids the phone, and has not eaten his tiffin for three days. Arjun gets upset whenever someone mentions Instagram.", q:"What might be happening and what should Vikram do?", opts:["Assume Arjun is just tired from studies and say nothing","Make fun of Arjun for being so sensitive about Instagram","Recognise these as warning signs of cyberbullying. Gently ask Arjun privately and involve a trusted adult.","Post in the class group asking if anyone is bullying Arjun"], correct:2, e:"🌟 YES! These are textbook warning signs of cyberbullying — sudden mood changes, avoiding devices, not eating. Ask privately and kindly: 'Hey, are you okay?' Then involve a trusted adult together!" },
+];
+
+let cur = 0, score = 0, answered = false;
+
+function render() {
+  if (cur >= scenarios.length) { showResult(); return; }
+  const s = scenarios[cur];
+  const pct = cur / scenarios.length * 100;
+  document.getElementById('pb').style.width = pct + '%';
+  document.getElementById('pt').textContent = `Scenario ${cur + 1} of ${scenarios.length} 🎯`;
+  document.getElementById('sc').textContent = score;
+  buildStars(score);
+
+  const labels = ['A','B','C','D'];
+  const optsHTML = s.opts.map((o,i) => `
+    <button class="opt" id="o${i}" onclick="pick(${i})">
+      <span class="opt-lbl">${labels[i]}</span>
+      <span>${o}</span>
+    </button>`).join('');
+
+  document.getElementById('qa').innerHTML = `
+    <div class="scene-card">
+      <div class="scene-badge">Scenario ${cur + 1} of ${scenarios.length}</div>
+      <div class="scene-icon-wrap"><span class="scene-icon">${s.icon}</span></div>
+      <div class="scene-txt">${s.scene}</div>
+      <div class="scene-q">👇 ${s.q}</div>
+      <div class="options">${optsHTML}</div>
+      <div class="expl" id="expl">${s.e}</div>
+      <button class="next-btn" id="nb" onclick="next()">
+        ${cur < scenarios.length - 1 ? 'Next Scenario ➡️' : 'See My Results 🏆'}
+      </button>
+    </div>`;
+  answered = false;
+}
+
+function pick(i) {
+  if (answered) return;
+  answered = true;
+  const s = scenarios[cur];
+  const correct = i === s.correct;
+  if (correct) {
+    score++;
+    document.getElementById('sc').textContent = score;
+    lightStar(score);
+    // confetti burst from the clicked button
+    const btn = document.getElementById('o' + i);
+    const rect = btn.getBoundingClientRect();
+    burst(rect.left + rect.width / 2, rect.top + rect.height / 2);
+  }
+  s.opts.forEach((_, idx) => {
+    const b = document.getElementById('o' + idx);
+    b.disabled = true;
+    if (idx === s.correct) b.classList.add(idx === i ? 'correct' : 'reveal');
+    if (idx === i && !correct) b.classList.add('incorrect');
+  });
+  document.getElementById('expl').classList.add('show');
+  document.getElementById('nb').classList.add('show');
+}
+
+function next() { cur++; render(); }
+
+function showResult() {
+  document.getElementById('qa').style.display = 'none';
+  document.getElementById('pb').style.width = '100%';
+  document.getElementById('pt').textContent = 'All done! 🎉';
+  buildStars(score);
+  const r = document.getElementById('res');
+  r.classList.add('show');
+  document.getElementById('rs').textContent = score + '/6';
+  let em, ti, ms, stars;
+  if (score === 6) { em='🏆'; ti='Perfect Upstander!'; ms='You made the right choice in every single scenario! You are a true Upstander hero — your school needs people like you!'; stars='⭐⭐⭐⭐⭐⭐'; }
+  else if (score >= 4) { em='🌟'; ti='Brilliant Decisions!'; ms=`You got ${score} of 6 right! You have great instincts. Review the ones you missed to be fully prepared!`; stars='⭐'.repeat(score) + '☆'.repeat(6-score); }
+  else if (score >= 3) { em='👍'; ti='Good Thinking!'; ms=`You got ${score} of 6 right. Good start! Review Section 2 and try again to improve your decision-making!`; stars='⭐'.repeat(score) + '☆'.repeat(6-score); }
+  else { em='💡'; ti='Keep Practicing!'; ms=`You got ${score} of 6. These are tough situations! Re-read Section 2 carefully, then try again. Practice makes perfect!`; stars='⭐'.repeat(score) + '☆'.repeat(6-score); }
+  document.getElementById('re').textContent = em;
+  document.getElementById('rt').textContent = ti;
+  document.getElementById('rstar').textContent = stars;
+  document.getElementById('rm').textContent = ms;
+  // Big burst on result
+  setTimeout(() => burst(window.innerWidth/2, window.innerHeight/3), 200);
+}
+
+function reset() {
+  cur = 0; score = 0; answered = false;
+  document.getElementById('res').classList.remove('show');
+  document.getElementById('qa').style.display = 'block';
+  render();
+}
+
+function done() { alert('Excellent! Move on to Section 3: How Does Cyberbullying Happen? 🚀'); }
+
+// ——— Close modal ———
+function openClose() { document.getElementById('closeOverlay').classList.add('show'); }
+function closeClose() { document.getElementById('closeOverlay').classList.remove('show'); }
+function quit() { document.getElementById('closeOverlay').classList.remove('show'); window.close(); history.back(); }
+
+// ——— Init ———
+render();
+</script>
+</body>
+</html>

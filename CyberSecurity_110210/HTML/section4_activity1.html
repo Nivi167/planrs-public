@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cyberbullying Scenarios — Section 4</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  font-family:'Nunito',sans-serif;
+  min-height:100vh;
+  padding:12px 12px 40px;
+  display:flex;flex-direction:column;align-items:center;
+  overflow-x:hidden;
+  position:relative;
+  background:#0a0a1a;
+}
+
+.aurora{
+  position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 30%, #ff006688 0%, transparent 60%),
+    radial-gradient(ellipse 70% 70% at 80% 20%, #7c3aed99 0%, transparent 55%),
+    radial-gradient(ellipse 90% 50% at 50% 80%, #0ea5e988 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 90% 70%, #f59e0b88 0%, transparent 55%),
+    radial-gradient(ellipse 100% 100% at 50% 50%, #0a0a1a 40%, transparent 100%);
+  animation:auroraShift 10s ease-in-out infinite alternate;
+}
+@keyframes auroraShift{
+  0%  {filter:hue-rotate(0deg) brightness(1)}
+  50% {filter:hue-rotate(40deg) brightness(1.15)}
+  100%{filter:hue-rotate(-20deg) brightness(0.9)}
+}
+
+.stars-layer{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.star{
+  position:absolute;
+  width:3px;height:3px;border-radius:50%;
+  animation:shootStar linear infinite;
+}
+@keyframes shootStar{
+  0%  {transform:translate(0,0) scale(1);opacity:1}
+  100%{transform:translate(-300px,200px) scale(0);opacity:0}
+}
+
+.orbs-layer{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.orb{
+  position:absolute;border-radius:50%;
+  animation:orbFloat ease-in-out infinite alternate;
+  filter:blur(1px);
+}
+@keyframes orbFloat{
+  0%  {transform:translateY(0) scale(1) rotate(0deg)}
+  100%{transform:translateY(-60px) scale(1.1) rotate(180deg)}
+}
+
+.bubbles-layer{position:fixed;inset:0;z-index:3;pointer-events:none;overflow:hidden}
+.bbl{
+  position:absolute;border-radius:50%;
+  border:2px solid rgba(255,255,255,0.25);
+  animation:riseUp linear infinite;
+}
+@keyframes riseUp{
+  0%  {transform:translateY(110vh) scale(1) rotate(0deg);opacity:0.6}
+  100%{transform:translateY(-15vh) scale(1.4) rotate(360deg);opacity:0}
+}
+
+.emoji-layer{position:fixed;inset:0;z-index:4;pointer-events:none;overflow:hidden}
+.emj{
+  position:absolute;
+  animation:emojiRise linear infinite;
+  font-size:20px;
+  filter:drop-shadow(0 0 6px rgba(255,255,255,0.5));
+}
+@keyframes emojiRise{
+  0%  {transform:translateY(110vh) rotate(0deg);opacity:0}
+  10% {opacity:1}
+  90% {opacity:1}
+  100%{transform:translateY(-10vh) rotate(720deg);opacity:0}
+}
+
+.grid-layer{
+  position:fixed;inset:0;z-index:5;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size:50px 50px;
+}
+
+.content{position:relative;z-index:10;width:100%;display:flex;flex-direction:column;align-items:center}
+
+.planrs{
+  position:fixed;top:12px;right:14px;z-index:100;
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(16px);
+  border:1.5px solid rgba(255,255,255,0.3);
+  color:#fff;
+  font-family:'Fredoka One',cursive;
+  font-size:13px;letter-spacing:1px;
+  padding:5px 14px;border-radius:40px;
+  text-shadow:0 1px 4px rgba(0,0,0,0.4);
+}
+
+h1{
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(22px,6vw,36px);
+  color:#fff;
+  margin:48px 0 4px;
+  text-align:center;
+  letter-spacing:1px;
+  text-shadow:0 0 30px rgba(255,0,102,0.8),0 0 60px rgba(124,58,237,0.6),3px 3px 0 rgba(0,0,0,0.4);
+  animation:titleGlow 3s ease-in-out infinite alternate;
+}
+@keyframes titleGlow{
+  0% {text-shadow:0 0 30px #ff006699,0 0 60px #7c3aed66,3px 3px 0 rgba(0,0,0,0.4)}
+  50%{text-shadow:0 0 40px #f59e0b99,0 0 80px #0ea5e966,3px 3px 0 rgba(0,0,0,0.4)}
+  100%{text-shadow:0 0 30px #00d4ff99,0 0 60px #ec489966,3px 3px 0 rgba(0,0,0,0.4)}
+}
+
+.subtitle{
+  color:rgba(255,255,255,0.75);
+  font-size:13px;font-weight:700;
+  margin-bottom:18px;text-align:center;letter-spacing:0.5px;
+}
+
+.score-bar{
+  background:rgba(255,255,255,0.07);
+  backdrop-filter:blur(20px);
+  border:1.5px solid rgba(255,255,255,0.2);
+  border-radius:60px;
+  padding:10px 26px;
+  margin-bottom:14px;
+  font-family:'Fredoka One',cursive;
+  font-size:18px;color:#fff;
+  display:flex;gap:22px;flex-wrap:wrap;justify-content:center;
+  box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+.progress{
+  width:100%;max-width:530px;
+  background:rgba(255,255,255,0.08);
+  border:1.5px solid rgba(255,255,255,0.15);
+  border-radius:40px;height:16px;
+  margin-bottom:20px;overflow:hidden;
+}
+.progress-fill{
+  background:linear-gradient(90deg,#ff006e,#ff7700,#ffe500,#00e676,#00b4ff,#a855f7);
+  background-size:300% 100%;
+  height:100%;border-radius:40px;
+  transition:width 0.6s cubic-bezier(.36,.07,.19,.97);
+  animation:rainbowFlow 3s linear infinite;
+  box-shadow:0 0 16px rgba(255,200,0,0.6);
+}
+@keyframes rainbowFlow{
+  0%  {background-position:0% 50%}
+  100%{background-position:300% 50%}
+}
+
+.card{
+  background:rgba(255,255,255,0.06);
+  backdrop-filter:blur(24px);
+  border-radius:28px;
+  padding:26px 22px;
+  max-width:530px;width:100%;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.12),inset 0 1px 0 rgba(255,255,255,0.15);
+  margin-bottom:20px;
+  animation:cardIn 0.5s cubic-bezier(.36,.07,.19,.97) both;
+  position:relative;overflow:hidden;
+}
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,#ff006e,#ff7700,#ffe500,#00e676,#00b4ff,#a855f7,#ff006e);
+  background-size:400% 100%;
+  animation:rainbowBar 2s linear infinite;
+}
+@keyframes rainbowBar{0%{background-position:0% 50%}100%{background-position:400% 50%}}
+@keyframes cardIn{
+  from{transform:translateY(50px) scale(0.95);opacity:0}
+  to  {transform:translateY(0)    scale(1);   opacity:1}
+}
+
+.card-corner{position:absolute;font-size:22px;pointer-events:none;opacity:0.6;animation:cornerSpin 4s linear infinite}
+.card-corner.tl{top:10px;left:12px;animation-direction:reverse}
+.card-corner.tr{top:10px;right:12px}
+@keyframes cornerSpin{0%{transform:rotate(0deg) scale(1)}50%{transform:rotate(180deg) scale(1.3)}100%{transform:rotate(360deg) scale(1)}}
+
+.scenario-num{
+  font-family:'Fredoka One',cursive;
+  font-size:12px;color:rgba(255,255,255,0.6);
+  margin-bottom:10px;text-transform:uppercase;letter-spacing:2.5px;
+}
+
+.scenario-box{
+  border-radius:18px;padding:16px 16px 16px 20px;
+  margin-bottom:18px;
+  position:relative;overflow:hidden;
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.15);
+  border-left:4px solid transparent;
+  animation:borderGlow 4s linear infinite;
+}
+@keyframes borderGlow{
+  0%  {border-left-color:#ff006e;box-shadow:-4px 0 20px rgba(255,0,110,0.4)}
+  25% {border-left-color:#f59e0b;box-shadow:-4px 0 20px rgba(245,158,11,0.4)}
+  50% {border-left-color:#00e676;box-shadow:-4px 0 20px rgba(0,230,118,0.4)}
+  75% {border-left-color:#00b4ff;box-shadow:-4px 0 20px rgba(0,180,255,0.4)}
+  100%{border-left-color:#ff006e;box-shadow:-4px 0 20px rgba(255,0,110,0.4)}
+}
+.scenario-text{font-size:15px;color:rgba(255,255,255,0.92);line-height:1.75;font-weight:700}
+
+.question{
+  font-family:'Fredoka One',cursive;
+  font-size:19px;color:#fff;
+  margin-bottom:16px;line-height:1.45;
+  text-shadow:0 2px 8px rgba(0,0,0,0.3);
+  animation:questionPulse 3s ease-in-out infinite alternate;
+}
+@keyframes questionPulse{
+  0%  {text-shadow:0 0 0px rgba(168,85,247,0)}
+  100%{text-shadow:0 0 20px rgba(168,85,247,0.7)}
+}
+
+.choices{display:flex;flex-direction:column;gap:10px}
+.choice-btn{
+  padding:14px 18px;
+  background:rgba(255,255,255,0.06);
+  border:1.5px solid rgba(255,255,255,0.18);
+  border-radius:16px;
+  font-size:14px;font-family:'Nunito',sans-serif;font-weight:800;
+  color:rgba(255,255,255,0.92);
+  cursor:pointer;text-align:left;
+  line-height:1.45;
+  transition:all 0.2s cubic-bezier(.36,.07,.19,.97);
+  position:relative;overflow:hidden;
+  backdrop-filter:blur(8px);
+}
+.choice-btn:hover:not(:disabled){
+  background:rgba(255,255,255,0.14);
+  border-color:rgba(255,255,255,0.45);
+  transform:translateY(-4px) scale(1.01);
+  box-shadow:0 10px 30px rgba(0,0,0,0.4),0 0 20px rgba(168,85,247,0.35);
+}
+.choice-btn:disabled{cursor:not-allowed}
+
+.choice-btn.correct-ans{
+  background:linear-gradient(135deg,rgba(16,185,129,0.3),rgba(52,211,153,0.2));
+  border-color:#10b981;color:#6ee7b7;
+  box-shadow:0 0 30px rgba(16,185,129,0.5),inset 0 0 20px rgba(16,185,129,0.1);
+  animation:correctPop 0.5s cubic-bezier(.36,.07,.19,.97);
+  text-shadow:0 0 10px rgba(110,231,183,0.8);
+}
+.choice-btn.wrong-ans{
+  background:linear-gradient(135deg,rgba(239,68,68,0.3),rgba(248,113,113,0.2));
+  border-color:#ef4444;color:#fca5a5;
+  box-shadow:0 0 30px rgba(239,68,68,0.5);
+  animation:wrongShake 0.5s cubic-bezier(.36,.07,.19,.97);
+}
+@keyframes correctPop{
+  0%  {transform:scale(1)}30%{transform:scale(1.06)}60%{transform:scale(0.97)}100%{transform:scale(1)}
+}
+@keyframes wrongShake{
+  0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}
+}
+
+.explanation{
+  display:none;
+  border-radius:16px;padding:14px 16px;
+  margin-top:14px;font-size:14px;font-weight:700;line-height:1.75;
+  animation:explainIn 0.4s ease both;
+  border:1.5px solid;
+}
+.explanation.show{display:block}
+.explanation.correct{
+  background:rgba(16,185,129,0.12);border-color:#10b981;color:#a7f3d0;
+  box-shadow:0 0 30px rgba(16,185,129,0.2),inset 0 0 30px rgba(16,185,129,0.05);
+}
+.explanation.wrong{
+  background:rgba(239,68,68,0.12);border-color:#ef4444;color:#fca5a5;
+  box-shadow:0 0 30px rgba(239,68,68,0.2);
+}
+@keyframes explainIn{
+  from{opacity:0;transform:translateY(12px) scale(0.97)}
+  to  {opacity:1;transform:translateY(0)    scale(1)}
+}
+
+.btn-next-q{
+  background:linear-gradient(135deg,#7c3aed,#a855f7,#ec4899);
+  background-size:200% 200%;
+  color:#fff;border:none;
+  border-radius:60px;
+  padding:14px 28px;
+  font-family:'Fredoka One',cursive;
+  font-size:18px;letter-spacing:0.5px;
+  cursor:pointer;margin-top:14px;display:none;width:100%;
+  animation:btnGradient 3s ease infinite,btnPulse 2s ease-in-out infinite;
+  transition:transform 0.2s,box-shadow 0.2s;
+}
+.btn-next-q:hover{transform:translateY(-4px);box-shadow:0 14px 40px rgba(124,58,237,0.7)}
+@keyframes btnGradient{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes btnPulse{
+  0%,100%{box-shadow:0 8px 30px rgba(124,58,237,0.6),0 0 0 0 rgba(168,85,247,0.4)}
+  50%    {box-shadow:0 8px 30px rgba(124,58,237,0.6),0 0 0 12px rgba(168,85,247,0)}
+}
+
+.result-screen{
+  display:none;
+  background:rgba(255,255,255,0.06);
+  backdrop-filter:blur(24px);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:28px;padding:32px 24px;
+  max-width:530px;width:100%;
+  text-align:center;
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+  animation:cardIn 0.6s both;
+}
+.result-screen h2{
+  font-family:'Fredoka One',cursive;
+  color:#fff;font-size:28px;margin-bottom:12px;
+  animation:titleGlow 2s ease-in-out infinite alternate;
+}
+
+.certificate{
+  border-radius:20px;padding:22px;margin:18px 0;
+  position:relative;overflow:hidden;
+  background:rgba(255,255,255,0.05);
+  border:2px dashed rgba(255,255,255,0.25);
+}
+.cert-stars{font-size:22px;display:block;margin-bottom:8px;animation:starSpin 2s ease-in-out infinite}
+@keyframes starSpin{0%,100%{transform:scale(1)}50%{transform:scale(1.2) rotate(10deg)}}
+.certificate h3{font-family:'Fredoka One',cursive;color:#fff;font-size:20px;margin-bottom:8px;text-shadow:0 0 20px rgba(255,200,0,0.6)}
+.certificate p{color:rgba(255,255,255,0.75);font-size:13px;font-weight:700;line-height:1.6}
+
+.btn{
+  padding:13px 26px;border:none;border-radius:50px;
+  font-family:'Fredoka One',cursive;font-size:16px;
+  cursor:pointer;margin:6px;transition:all 0.2s;letter-spacing:0.5px;
+}
+.btn:hover{transform:translateY(-4px) scale(1.05)}
+.btn-reset{background:linear-gradient(135deg,#f97316,#fb923c,#fbbf24);color:#fff;box-shadow:0 6px 20px rgba(249,115,22,0.5)}
+.btn-finish{background:linear-gradient(135deg,#10b981,#34d399,#6ee7b7);color:#064e3b;font-weight:900;box-shadow:0 6px 20px rgba(16,185,129,0.5)}
+
+#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:999;display:none}
+</style>
+</head>
+<body>
+
+<div class="aurora"></div>
+<div class="stars-layer" id="starsLayer"></div>
+<div class="orbs-layer" id="orbsLayer"></div>
+<div class="bubbles-layer" id="bubblesLayer"></div>
+<div class="emoji-layer" id="emojiLayer"></div>
+<div class="grid-layer"></div>
+<canvas id="confetti-canvas"></canvas>
+
+<div class="content">
+  <div class="planrs">⭐ Planrs</div>
+  <h1>🛡️ Cyberbullying Scenario Cards</h1>
+  <p class="subtitle">Section 4 — Cyberbullying & Digital Citizenship &nbsp;|&nbsp; Activity 1 of 2</p>
+
+  <div class="score-bar">
+    <span>✅ <span id="correct">0</span></span>
+    <span>❌ <span id="wrong">0</span></span>
+    <span>📋 <span id="qnum">1</span>/8</span>
+  </div>
+
+  <div class="progress"><div class="progress-fill" id="progressFill" style="width:12.5%"></div></div>
+
+  <div class="card" id="gameCard">
+    <span class="card-corner tl">✨</span>
+    <span class="card-corner tr">🌟</span>
+    <div class="scenario-num" id="sNum">Scenario 1 of 8</div>
+    <div class="scenario-box"><div class="scenario-text" id="scenarioText"></div></div>
+    <div class="question" id="question"></div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button class="btn-next-q" id="nextBtn" onclick="nextQ()">Next ➡️</button>
+  </div>
+
+  <div class="result-screen" id="resultScreen">
+    <h2 id="resultTitle"></h2>
+    <p id="resultDetails" style="color:rgba(255,255,255,0.7);margin:10px 0;font-size:15px;font-weight:800;"></p>
+    <div class="certificate">
+      <span class="cert-stars">🌟 ✨ 🌟</span>
+      <h3>🏆 Cyber Champion Certificate</h3>
+      <p>This certifies that you have completed the Cyberbullying Awareness module and know how to identify, respond to, and prevent online bullying!</p>
+      <p style="margin-top:10px;color:#a78bfa;font-weight:900;">⭐ Planrs Digital Safety Programme</p>
+    </div>
+    <button class="btn btn-reset" onclick="fullReset()">🔄 Play Again</button>
+    <button class="btn btn-finish" onclick="celebrate()">🎉 Complete Course!</button>
+  </div>
+</div>
+
+<script>
+(function buildBackground(){
+  const sl=document.getElementById('starsLayer');
+  const starColors=['#fff','#ffe500','#ff006e','#00b4ff','#a855f7','#00e676','#ff7700'];
+  for(let i=0;i<30;i++){
+    const s=document.createElement('div');s.className='star';
+    const c=starColors[Math.floor(Math.random()*starColors.length)];
+    s.style.cssText=`top:${Math.random()*100}%;left:${Math.random()*100}%;background:${c};box-shadow:0 0 6px 2px ${c};width:${1+Math.random()*3}px;height:${1+Math.random()*3}px;animation-duration:${3+Math.random()*8}s;animation-delay:${Math.random()*10}s;`;
+    sl.appendChild(s);
+  }
+  const ol=document.getElementById('orbsLayer');
+  const orbColors=['rgba(255,0,110,0.18)','rgba(124,58,237,0.2)','rgba(0,180,255,0.18)','rgba(245,158,11,0.18)','rgba(0,230,118,0.15)','rgba(236,72,153,0.18)'];
+  for(let i=0;i<8;i++){
+    const o=document.createElement('div');o.className='orb';
+    const sz=80+Math.random()*160;
+    o.style.cssText=`width:${sz}px;height:${sz}px;background:${orbColors[Math.floor(Math.random()*orbColors.length)]};top:${Math.random()*100}%;left:${Math.random()*100}%;animation-duration:${6+Math.random()*8}s;animation-delay:${Math.random()*6}s;`;
+    ol.appendChild(o);
+  }
+  const bl=document.getElementById('bubblesLayer');
+  const bblColors=['#ff006e40','#7c3aed40','#0ea5e940','#f59e0b40','#10b98140'];
+  for(let i=0;i<20;i++){
+    const b=document.createElement('div');b.className='bbl';
+    const sz=20+Math.random()*70;const c=bblColors[Math.floor(Math.random()*bblColors.length)];
+    b.style.cssText=`width:${sz}px;height:${sz}px;background:${c};border-color:${c.replace('40','80')};left:${Math.random()*100}%;animation-duration:${8+Math.random()*14}s;animation-delay:${Math.random()*12}s;`;
+    bl.appendChild(b);
+  }
+  const el=document.getElementById('emojiLayer');
+  const emojis=['⭐','🌟','💫','✨','🎈','🎀','💜','💙','💛','💚','🌈','🎉','🎊','💥','🌠','🔮','🦋','🌺'];
+  for(let i=0;i<16;i++){
+    const e=document.createElement('div');e.className='emj';
+    e.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    e.style.cssText=`left:${Math.random()*100}%;animation-duration:${10+Math.random()*14}s;animation-delay:${Math.random()*16}s;`;
+    el.appendChild(e);
+  }
+})();
+
+function launchConfetti(){
+  const canvas=document.getElementById('confetti-canvas');
+  canvas.style.display='block';
+  const ctx=canvas.getContext('2d');
+  canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+  const cols=['#ff006e','#a855f7','#00b4ff','#ffe500','#00e676','#ff7700','#ec4899','#34d399'];
+  const pieces=Array.from({length:250},()=>({
+    x:Math.random()*canvas.width,y:Math.random()*canvas.height-canvas.height,
+    r:4+Math.random()*10,c:cols[Math.floor(Math.random()*cols.length)],
+    vx:(Math.random()-0.5)*6,vy:2+Math.random()*7,
+    rot:Math.random()*360,drot:(Math.random()-0.5)*12,
+    shape:Math.random()>0.5?'rect':'circle'
+  }));
+  let frame=0;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p=>{
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle=p.c;
+      if(p.shape==='rect')ctx.fillRect(-p.r,-p.r/2,p.r*2,p.r);
+      else{ctx.beginPath();ctx.arc(0,0,p.r/2,0,Math.PI*2);ctx.fill();}
+      ctx.restore();
+      p.x+=p.vx;p.y+=p.vy;p.rot+=p.drot;
+      if(p.y>canvas.height+20){p.y=-20;p.x=Math.random()*canvas.width;}
+    });
+    frame++;
+    if(frame<300)requestAnimationFrame(draw);
+    else canvas.style.display='none';
+  }
+  draw();
+}
+
+const scenarios=[
+  {
+    scenario:"Anjali's classmate Rohan takes a screenshot of Anjali's old photo where she looks funny and shares it in the class WhatsApp group. Everyone is laughing and making fun of her.",
+    question:"What should Anjali do FIRST?",
+    choices:[
+      {text:"A) Send angry messages back to Rohan in the group",correct:false},
+      {text:"B) Take a screenshot, tell a trusted adult, and ask the admin to delete it",correct:true},
+      {text:"C) Leave the WhatsApp group forever",correct:false},
+      {text:"D) Ignore it — it will go away on its own",correct:false},
+    ],
+    explain:"✅ B is correct! Never retaliate with anger — it makes things worse. Take a screenshot as evidence, then immediately tell a parent or teacher. The group admin can be asked to delete the image. This is the 'Save → Tell → Report' approach!"
+  },
+  {
+    scenario:"Vikram receives a message in his online game: 'You are the worst player ever! Everyone hates you! Leave the game!' This message comes from someone he has never met in real life.",
+    question:"Is this cyberbullying? What should Vikram do?",
+    choices:[
+      {text:"A) It's just a game — this is not real cyberbullying",correct:false},
+      {text:"B) Yes, this is cyberbullying — Block the player and Report the message",correct:true},
+      {text:"C) Vikram should quit gaming forever",correct:false},
+      {text:"D) Vikram should create a fake account to get revenge",correct:false},
+    ],
+    explain:"✅ B is correct! Online gaming harassment IS cyberbullying, even from strangers. Block the bully immediately and use the Report function in the game. Revenge accounts make things worse and may get you banned too."
+  },
+  {
+    scenario:"Priya's friend Sana starts a new WhatsApp group called 'Everything but Priya' where classmates gossip and exclude Priya on purpose. Priya finds out about it.",
+    question:"Which of these is the BEST response?",
+    choices:[
+      {text:"A) Priya creates her own group to exclude Sana",correct:false},
+      {text:"B) Priya tells a trusted adult and the school counsellor about the exclusion",correct:true},
+      {text:"C) Priya keeps quiet and hopes to be invited eventually",correct:false},
+      {text:"D) Priya shares everyone's secrets publicly in another group",correct:false},
+    ],
+    explain:"✅ B is correct! Deliberate exclusion is a form of cyberbullying. Priya should talk to a trusted adult or school counsellor. Creating revenge groups (A) and sharing secrets (D) will escalate the situation."
+  },
+  {
+    scenario:"Meena sees her classmate Arjun being mocked in a group chat. She is not the target, but everyone else is laughing and sending mean memes about Arjun.",
+    question:"What kind of person should Meena be?",
+    choices:[
+      {text:"A) A bystander — stay quiet and just watch",correct:false},
+      {text:"B) A participant — join in so she is not targeted next",correct:false},
+      {text:"C) An upstander — privately tell Arjun she supports him and report the chat",correct:true},
+      {text:"D) Share the memes outside the group so more people know",correct:false},
+    ],
+    explain:"✅ C is correct! An upstander takes action. Meena can privately support Arjun and report the chat to a teacher or parent. Bystanders who do nothing allow bullying to continue. Sharing the memes further (D) makes Meena a bully too!"
+  },
+  {
+    scenario:"Ravi discovers that someone has created a fake Instagram account using his name and photo, and is sending rude messages to his friends while pretending to be him.",
+    question:"What should Ravi do?",
+    choices:[
+      {text:"A) Ignore it — fake accounts get deleted automatically",correct:false},
+      {text:"B) Create another fake account to fight back",correct:false},
+      {text:"C) Take screenshots, tell parents, report to Instagram, and contact cybercrime.gov.in",correct:true},
+      {text:"D) Delete his own real account so no one gets confused",correct:false},
+    ],
+    explain:"✅ C is correct! A fake profile is identity theft AND cyberbullying — it is illegal. Screenshot the evidence, involve parents, report it to Instagram, and if serious, report at cybercrime.gov.in."
+  },
+  {
+    scenario:"Tanya is playing Roblox and a player she does not know keeps following her character and sending personal questions: 'How old are you? What school do you go to? What is your address?'",
+    question:"What should Tanya do?",
+    choices:[
+      {text:"A) Answer all the questions — it is just a game",correct:false},
+      {text:"B) Give fake answers to be funny",correct:false},
+      {text:"C) Immediately block the player, tell a parent, and report in-game",correct:true},
+      {text:"D) Ask the player for their details first before deciding",correct:false},
+    ],
+    explain:"✅ C is correct! Online strangers who ask for personal details like your age, school, or address are a serious red flag. NEVER share this information. Block them immediately, tell a trusted adult, and use the game's report feature!"
+  },
+  {
+    scenario:"Karan notices his friend Asha has become very quiet, stopped coming online, and seems sad at school. Asha told Karan someone is sending her mean messages at night.",
+    question:"As Asha's friend, what should Karan do?",
+    choices:[
+      {text:"A) Tell Asha to just turn off her phone at night",correct:false},
+      {text:"B) Listen to Asha, support her, and encourage her to tell a trusted adult together",correct:true},
+      {text:"C) Find the bully's number and confront them",correct:false},
+      {text:"D) Post about it publicly to warn everyone about the bully",correct:false},
+    ],
+    explain:"✅ B is correct! Supporting a friend who is being bullied means listening without judgment and encouraging them to involve a trusted adult. Confronting the bully (C) can be dangerous. Public posts (D) may worsen the situation for Asha."
+  },
+  {
+    scenario:"During an online class, students send mocking messages in the chat about a classmate's answer. The teacher is not watching the chat carefully.",
+    question:"What is the RIGHT thing to do?",
+    choices:[
+      {text:"A) Join in — everyone is doing it, so it must be okay",correct:false},
+      {text:"B) Stay silent — it's not your problem",correct:false},
+      {text:"C) Do not participate, privately support the classmate, and inform the teacher",correct:true},
+      {text:"D) Screenshot and share outside class for more laughs",correct:false},
+    ],
+    explain:"✅ C is correct! Just because 'everyone is doing it' does not make it right. Good digital citizens do not participate in mocking — they support the person being targeted. Let the teacher know through a private message!"
+  }
+];
+
+let current=0,correct=0,wrong=0;
+const shuffled=[...scenarios].sort(()=>Math.random()-0.5);
+
+function loadQ(){
+  const card=document.getElementById('gameCard');
+  card.style.animation='none';void card.offsetWidth;
+  card.style.animation='cardIn 0.45s cubic-bezier(.36,.07,.19,.97) both';
+  const q=shuffled[current];
+  document.getElementById('sNum').textContent=`Scenario ${current+1} of ${scenarios.length}`;
+  document.getElementById('scenarioText').textContent=q.scenario;
+  document.getElementById('question').textContent=q.question;
+  document.getElementById('progressFill').style.width=`${((current+1)/scenarios.length)*100}%`;
+  document.getElementById('qnum').textContent=current+1;
+  const ch=document.getElementById('choices');ch.innerHTML='';
+  q.choices.sort(()=>Math.random()-0.5).forEach(c=>{
+    const btn=document.createElement('button');
+    btn.className='choice-btn';btn.textContent=c.text;
+    btn.onclick=()=>handleAnswer(c.correct,btn,q);
+    ch.appendChild(btn);
+  });
+  document.getElementById('explanation').className='explanation';
+  document.getElementById('explanation').textContent='';
+  document.getElementById('nextBtn').style.display='none';
+  document.getElementById('nextBtn').onclick=nextQ;
+  document.getElementById('nextBtn').textContent='Next ➡️';
+}
+
+function handleAnswer(isCorrect,btn,q){
+  document.querySelectorAll('.choice-btn').forEach(b=>{
+    b.disabled=true;
+    if(b.textContent===q.choices.find(c=>c.correct)?.text)b.classList.add('correct-ans');
+  });
+  if(!isCorrect)btn.classList.add('wrong-ans');
+  const exp=document.getElementById('explanation');
+  if(isCorrect){
+    correct++;
+    const msgs=['🎉 Brilliant! Great thinking!','⭐ Excellent choice! You rock!','💪 That\'s the right response!','🌟 Amazing! Spot on!','🚀 Superstar answer!'];
+    exp.className='explanation correct show';
+    exp.innerHTML=`<strong>${msgs[Math.floor(Math.random()*msgs.length)]}</strong><br><br>${q.explain}`;
+  }else{
+    wrong++;
+    exp.className='explanation wrong show';
+    exp.innerHTML=`<strong>❌ Not the best choice. Here's why:</strong><br><br>${q.explain}`;
+  }
+  document.getElementById('correct').textContent=correct;
+  document.getElementById('wrong').textContent=wrong;
+  document.getElementById('nextBtn').style.display='block';
+  if(current===scenarios.length-1){
+    document.getElementById('nextBtn').textContent='See Results 🏆';
+    document.getElementById('nextBtn').onclick=showResult;
+  }
+}
+
+function nextQ(){current++;if(current<scenarios.length)loadQ();}
+
+function showResult(){
+  document.getElementById('gameCard').style.display='none';
+  const rs=document.getElementById('resultScreen');rs.style.display='block';
+  const pct=Math.round((correct/scenarios.length)*100);
+  document.getElementById('resultTitle').textContent=
+    pct>=75?'🏆 Cyber Champion! Outstanding!':
+    pct>=50?'⭐ Well Done! Keep Learning!':
+    '💪 Good Effort — Review & Try Again!';
+  document.getElementById('resultDetails').textContent=
+    `Score: ${correct}/${scenarios.length} (${pct}%) · ✅ ${correct} Correct · ❌ ${wrong} Wrong`;
+  if(pct>=75)launchConfetti();
+}
+
+function celebrate(){
+  launchConfetti();
+  setTimeout(()=>alert('🎉 Congratulations! You have completed all 4 sections of Cybersecurity! You are a true Cyber Champion! 🏆'),300);
+}
+
+function fullReset(){
+  current=0;correct=0;wrong=0;
+  document.getElementById('correct').textContent=0;
+  document.getElementById('wrong').textContent=0;
+  document.getElementById('gameCard').style.display='block';
+  document.getElementById('resultScreen').style.display='none';
+  shuffled.sort(()=>Math.random()-0.5);
+  loadQ();
+}
+
+loadQ();
+</script>
+</body>
+</html>

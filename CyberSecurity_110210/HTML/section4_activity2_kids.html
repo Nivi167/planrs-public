@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏆 Cyber Champion Quiz!</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --yellow: #FFD93D;
+    --orange: #FF6B35;
+    --pink: #FF6BB5;
+    --purple: #A855F7;
+    --blue: #3B9EFF;
+    --green: #2ECC71;
+    --red: #FF4757;
+    --teal: #00D2D3;
+    --bg: #0F0C29;
+    --card: #1a1240;
+    --card2: #1e1650;
+    --white: #fff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(135deg, #0F0C29 0%, #302b63 50%, #24243e 100%);
+    min-height: 100vh;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* ── Floating stars BG ── */
+  .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: #fff;
+    animation: twinkle var(--d, 3s) ease-in-out infinite alternate;
+    opacity: 0;
+  }
+  @keyframes twinkle { 0%{opacity:0;transform:scale(0.5)} 100%{opacity:var(--op,0.8);transform:scale(1.2)} }
+
+  /* ── Floating emoji bits ── */
+  .floaters { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  .floater {
+    position: absolute;
+    font-size: var(--fs, 24px);
+    animation: floatUp var(--fd, 8s) linear infinite;
+    opacity: 0;
+    bottom: -60px;
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.7; }
+    90% { opacity: 0.5; }
+    100% { transform: translateY(-110vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* ── Layout ── */
+  .content { position: relative; z-index: 1; width: 100%; max-width: 560px; display: flex; flex-direction: column; align-items: center; }
+
+  /* ── Planrs badge ── */
+  .planrs {
+    position: fixed; top: 14px; right: 18px;
+    background: var(--yellow);
+    color: #333;
+    font-family: 'Fredoka One', cursive;
+    font-size: 14px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(255,211,61,0.4);
+    animation: badge-bob 2s ease-in-out infinite;
+  }
+  @keyframes badge-bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+
+  /* ── Hero ── */
+  .hero {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 18px;
+    padding: 22px 18px 18px;
+    background: linear-gradient(135deg, #6C3483 0%, #2E86AB 50%, #1F7A4D 100%);
+    border-radius: 28px;
+    color: #fff;
+    border: 3px solid rgba(255,255,255,0.2);
+    box-shadow: 0 8px 32px rgba(108,52,131,0.5), 0 0 0 1px rgba(255,255,255,0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.12) 0%, transparent 70%);
+  }
+  .hero h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 28px;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    margin-bottom: 6px;
+  }
+  .hero p { font-size: 14px; opacity: 0.9; font-weight: 600; }
+  .hero-shield {
+    font-size: 56px;
+    animation: shield-pulse 2s ease-in-out infinite;
+    display: block;
+    margin-bottom: 8px;
+  }
+  @keyframes shield-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.12) rotate(-5deg)} }
+
+  /* ── Score bar ── */
+  .score-bar {
+    display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; justify-content: center; width: 100%;
+  }
+  .score-chip {
+    background: var(--card2);
+    border: 2px solid rgba(255,255,255,0.12);
+    border-radius: 24px;
+    padding: 8px 18px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #fff;
+    display: flex; align-items: center; gap: 6px;
+    transition: transform 0.2s;
+  }
+  .score-chip.bump { animation: bump 0.4s cubic-bezier(0.36,0.07,0.19,0.97); }
+  @keyframes bump { 0%,100%{transform:scale(1)} 40%{transform:scale(1.3)} 70%{transform:scale(0.9)} }
+  .chip-correct { border-color: var(--green); color: var(--green); }
+  .chip-wrong { border-color: var(--red); color: var(--red); }
+  .chip-q { border-color: var(--blue); color: var(--blue); }
+
+  /* ── Progress ── */
+  .progress {
+    width: 100%; height: 18px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 20px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    border: 2px solid rgba(255,255,255,0.08);
+  }
+  .progress-fill {
+    background: linear-gradient(90deg, var(--blue), var(--purple), var(--pink));
+    height: 100%; border-radius: 20px;
+    transition: width 0.6s cubic-bezier(.34,1.56,.64,1);
+    position: relative;
+  }
+  .progress-fill::after {
+    content: '⚡';
+    position: absolute;
+    right: -2px; top: -3px;
+    font-size: 18px;
+    animation: spark 0.5s ease-in-out infinite alternate;
+  }
+  @keyframes spark { 0%{transform:scale(0.8)} 100%{transform:scale(1.2)} }
+
+  /* ── Card ── */
+  .card {
+    background: var(--card);
+    border-radius: 28px;
+    padding: 26px 22px;
+    width: 100%;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 2px rgba(255,255,255,0.08);
+    margin-bottom: 18px;
+    animation: slideUp 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    border: 2px solid rgba(255,255,255,0.08);
+  }
+  @keyframes slideUp { from{opacity:0;transform:translateY(40px) scale(0.95)} to{opacity:1;transform:translateY(0) scale(1)} }
+
+  .card-inner-anim { animation: cardPop 0.45s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes cardPop { from{opacity:0;transform:scale(0.9)} to{opacity:1;transform:scale(1)} }
+
+  /* ── Category tag ── */
+  .category-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 16px;
+    border-radius: 24px;
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .cat-basics   { background: rgba(59,158,255,0.2); color: var(--blue); border: 2px solid var(--blue); }
+  .cat-passwords{ background: rgba(255,211,61,0.2); color: var(--yellow); border: 2px solid var(--yellow); }
+  .cat-phishing { background: rgba(255,71,87,0.2); color: #ff8a95; border: 2px solid #ff8a95; }
+  .cat-bullying  { background: rgba(168,85,247,0.2); color: #c084fc; border: 2px solid #c084fc; }
+
+  .q-num { font-size: 12px; color: rgba(255,255,255,0.4); font-weight: 700; margin-bottom: 10px; display: block; letter-spacing: 0.5px; }
+  .question { font-size: 19px; font-weight: 900; color: #fff; margin-bottom: 20px; line-height: 1.5; }
+
+  /* ── Choices (MCQ) ── */
+  .choices { display: flex; flex-direction: column; gap: 10px; }
+  .choice-btn {
+    padding: 14px 18px;
+    border: 2.5px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.06);
+    border-radius: 16px;
+    font-size: 15px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.9);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.18s;
+    line-height: 1.4;
+    font-family: 'Nunito', sans-serif;
+    position: relative;
+    overflow: hidden;
+  }
+  .choice-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,0.08) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .choice-btn:hover:not(:disabled)::before { opacity: 1; }
+  .choice-btn:hover:not(:disabled) { border-color: var(--blue); background: rgba(59,158,255,0.15); transform: translateX(6px) scale(1.01); }
+  .choice-btn:disabled { cursor: not-allowed; }
+  .choice-btn.selected-correct {
+    background: rgba(46,204,113,0.2); border-color: var(--green); color: #a8ffcb; font-weight: 900;
+    animation: correctPop 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes correctPop { 0%{transform:scale(1)} 50%{transform:scale(1.06)} 100%{transform:scale(1)} }
+  .choice-btn.selected-wrong { background: rgba(255,71,87,0.2); border-color: var(--red); color: #ffaaaf; animation: wrongShake 0.4s; }
+  @keyframes wrongShake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }
+  .choice-btn.show-correct { background: rgba(46,204,113,0.12); border-color: #a8ffcb; color: #a8ffcb; }
+
+  /* ── Explanation ── */
+  .explanation {
+    display: none; padding: 14px 16px;
+    border-radius: 16px;
+    margin-top: 14px;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.6;
+    animation: slideUp 0.35s ease;
+  }
+  .explanation.show { display: block; }
+  .exp-correct { background: rgba(46,204,113,0.15); border: 2px solid var(--green); color: #a8ffcb; }
+  .exp-wrong { background: rgba(255,71,87,0.15); border: 2px solid var(--red); color: #ffcdd0; }
+
+  /* ── Next btn ── */
+  .btn-next-q {
+    background: linear-gradient(135deg, var(--purple), var(--blue));
+    color: #fff; border: none; border-radius: 20px;
+    padding: 14px 30px; font-size: 16px; font-weight: 900;
+    cursor: pointer; margin-top: 14px; display: none; width: 100%;
+    font-family: 'Fredoka One', cursive; letter-spacing: 1px;
+    box-shadow: 0 6px 20px rgba(108,52,131,0.4);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn-next-q:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 28px rgba(108,52,131,0.5); }
+
+  /* ─────────────────────────────────────────────
+     DRAG AND DROP SECTION
+  ───────────────────────────────────────────── */
+  .dnd-section {
+    width: 100%; background: var(--card);
+    border-radius: 28px; padding: 24px;
+    border: 2px solid rgba(255,255,255,0.08);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    margin-bottom: 18px; display: none;
+    animation: slideUp 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .dnd-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 20px; color: var(--yellow);
+    margin-bottom: 6px; text-align: center;
+  }
+  .dnd-sub { font-size: 13px; color: rgba(255,255,255,0.5); text-align: center; margin-bottom: 20px; font-weight: 700; }
+  .dnd-targets {
+    display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;
+  }
+  .dnd-target {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.05);
+    border: 2.5px dashed rgba(255,255,255,0.2);
+    border-radius: 14px;
+    min-height: 54px;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .dnd-target.drag-over {
+    border-color: var(--yellow);
+    background: rgba(255,211,61,0.12);
+    transform: scale(1.02);
+  }
+  .dnd-target.filled { border-style: solid; }
+  .dnd-target.correct-drop { border-color: var(--green); background: rgba(46,204,113,0.12); }
+  .dnd-target.wrong-drop { border-color: var(--red); background: rgba(255,71,87,0.12); animation: wrongShake 0.4s; }
+  .target-label {
+    font-size: 13px; font-weight: 800; color: rgba(255,255,255,0.5);
+    white-space: nowrap; min-width: 28px; text-align: center;
+  }
+  .target-slot {
+    flex: 1; min-height: 36px;
+    display: flex; align-items: center;
+    font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.4);
+  }
+  .target-slot.has-item { color: #fff; }
+
+  .dnd-items {
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+    min-height: 52px;
+  }
+  .drag-item {
+    padding: 10px 16px;
+    background: linear-gradient(135deg, var(--purple), var(--blue));
+    border-radius: 12px; color: #fff;
+    font-size: 14px; font-weight: 800;
+    cursor: grab; user-select: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+    border: 2px solid rgba(255,255,255,0.2);
+    animation: itemBounce 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .drag-item:hover { transform: translateY(-4px) rotate(-2deg); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+  .drag-item.dragging { opacity: 0.4; cursor: grabbing; transform: scale(0.95); }
+  .drag-item.locked { cursor: not-allowed; opacity: 0.7; }
+  @keyframes itemBounce { from{transform:scale(0.7);opacity:0} to{transform:scale(1);opacity:1} }
+
+  .dnd-check-btn {
+    background: linear-gradient(135deg, var(--orange), var(--pink));
+    color: #fff; border: none; border-radius: 20px;
+    padding: 13px 28px; font-size: 16px; font-weight: 900;
+    cursor: pointer; width: 100%; margin-top: 8px;
+    font-family: 'Fredoka One', cursive; letter-spacing: 1px;
+    box-shadow: 0 6px 20px rgba(255,107,53,0.4);
+    transition: transform 0.15s;
+  }
+  .dnd-check-btn:hover { transform: translateY(-3px) scale(1.02); }
+  .dnd-result { display: none; padding: 14px; border-radius: 14px; margin-top: 12px; font-size: 14px; font-weight: 700; text-align: center; animation: slideUp 0.3s ease; }
+  .dnd-result.show { display: block; }
+
+  /* ─────────────────────────────────────────────
+     RESULTS SCREEN
+  ───────────────────────────────────────────── */
+  .result-screen { display: none; width: 100%; }
+  .result-hero {
+    background: linear-gradient(135deg, #1a6b3a, #27AE60, #6fcf97);
+    border-radius: 28px; padding: 30px; color: #fff;
+    text-align: center; margin-bottom: 18px;
+    box-shadow: 0 10px 40px rgba(39,174,96,0.4);
+    animation: slideUp 0.5s ease;
+  }
+  .result-hero h2 { font-family: 'Fredoka One', cursive; font-size: 30px; margin-bottom: 8px; }
+  .result-hero .score-big {
+    font-family: 'Fredoka One', cursive;
+    font-size: 72px; font-weight: bold; margin: 10px 0;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    animation: scoreReveal 0.8s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes scoreReveal { from{transform:scale(0) rotate(-20deg);opacity:0} to{transform:scale(1) rotate(0);opacity:1} }
+  .result-hero p { font-size: 17px; font-weight: 800; opacity: 0.9; }
+
+  .certificate-card {
+    background: linear-gradient(135deg, #1a1240 0%, #0d2137 50%, #0d2a1c 100%);
+    border: 3px solid var(--yellow);
+    border-radius: 24px; padding: 26px; text-align: center;
+    margin-bottom: 18px; position: relative; overflow: hidden;
+    box-shadow: 0 8px 32px rgba(255,211,61,0.2);
+    animation: slideUp 0.6s ease 0.1s both;
+  }
+  .certificate-card::before { content: '🛡️'; font-size: 100px; position: absolute; top: -15px; right: -15px; opacity: 0.08; }
+  .cert-title { font-size: 11px; color: rgba(255,211,61,0.7); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px; font-weight: 800; }
+  .cert-main { font-size: 16px; font-weight: 700; color: rgba(255,255,255,0.6); margin-bottom: 8px; }
+  .cert-name { font-family: 'Fredoka One', cursive; font-size: 32px; color: var(--yellow); border-bottom: 2px solid var(--yellow); display: inline-block; padding-bottom: 4px; margin: 8px 0 14px; }
+  .cert-desc { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.7; font-weight: 600; }
+  .cert-badge { display: flex; justify-content: center; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  .badge {
+    background: rgba(255,255,255,0.08);
+    border: 2px solid var(--yellow);
+    border-radius: 20px; padding: 6px 14px;
+    font-size: 13px; font-weight: 800; color: var(--yellow);
+    animation: badgePop 0.5s cubic-bezier(0.34,1.56,0.64,1) var(--delay, 0s) both;
+  }
+  @keyframes badgePop { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+
+  .section-scores {
+    background: var(--card);
+    border: 2px solid rgba(255,255,255,0.08);
+    border-radius: 20px; padding: 18px; margin-bottom: 16px;
+    animation: slideUp 0.6s ease 0.2s both;
+  }
+  .section-scores h3 { color: var(--blue); font-family: 'Fredoka One', cursive; font-size: 18px; margin-bottom: 14px; }
+  .section-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.8); }
+  .section-row:last-child { border-bottom: none; }
+  .score-pill { padding: 4px 12px; border-radius: 20px; font-weight: 900; font-size: 14px; background: rgba(255,255,255,0.1); }
+
+  .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; animation: slideUp 0.6s ease 0.3s both; }
+  .btn {
+    padding: 13px 28px; border: none; border-radius: 24px;
+    font-size: 16px; font-weight: 900; cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    font-family: 'Fredoka One', cursive; letter-spacing: 1px;
+  }
+  .btn:hover { transform: translateY(-3px) scale(1.05); }
+  .btn-reset { background: linear-gradient(135deg, var(--orange), var(--red)); color: #fff; box-shadow: 0 6px 20px rgba(255,107,53,0.4); }
+  .btn-share { background: linear-gradient(135deg, var(--green), var(--teal)); color: #fff; box-shadow: 0 6px 20px rgba(46,204,113,0.4); }
+
+  /* ── Confetti ── */
+  .confetti-piece {
+    position: fixed;
+    top: -30px;
+    border-radius: 4px;
+    animation: confettiFall var(--cf-d, 3s) ease-in var(--cf-delay, 0s) forwards;
+    pointer-events: none; z-index: 999;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateX(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateX(var(--cf-tx, 20px)) translateY(110vh) rotate(var(--cf-r, 720deg)); opacity: 0; }
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 480px) {
+    .hero h1 { font-size: 22px; }
+    .question { font-size: 16px; }
+    .choice-btn { font-size: 14px; padding: 12px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Stars -->
+<div class="stars" id="stars"></div>
+<!-- Floating emojis -->
+<div class="floaters" id="floaters"></div>
+
+<div class="planrs">⭐ Planrs</div>
+
+<div class="content">
+  <!-- Hero -->
+  <div class="hero">
+    <span class="hero-shield">🏆</span>
+    <h1>Cyber Champion Final Quiz!</h1>
+    <p>Section 4 — All Topics · 8 Questions from all 4 sections</p>
+  </div>
+
+  <!-- Score bar -->
+  <div class="score-bar">
+    <div class="score-chip chip-correct" id="chipCorrect">✅ <span id="correct">0</span> Correct</div>
+    <div class="score-chip chip-wrong" id="chipWrong">❌ <span id="wrong">0</span> Wrong</div>
+    <div class="score-chip chip-q">📋 Q <span id="qnum">1</span>/8</div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress"><div class="progress-fill" id="progressFill" style="width:12.5%"></div></div>
+
+  <!-- Quiz card -->
+  <div class="card" id="gameCard">
+    <div>
+      <span class="category-tag" id="catTag">Basics</span>
+      <span class="q-num" id="qLabel">Question 1 of 8</span>
+    </div>
+    <div class="question" id="questionText"></div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button class="btn-next-q" id="nextBtn">Next Question ➡️</button>
+  </div>
+
+  <!-- Drag & Drop Bonus -->
+  <div class="dnd-section" id="dndSection">
+    <div class="dnd-title">🎯 BONUS CHALLENGE!</div>
+    <div class="dnd-sub">Drag the steps into the correct order for handling cyberbullying!</div>
+    <div class="dnd-targets" id="dndTargets"></div>
+    <div class="dnd-items" id="dndItems"></div>
+    <div class="dnd-result" id="dndResult"></div>
+    <button class="dnd-check-btn" id="dndCheckBtn" onclick="checkDnD()">🔍 Check My Answer!</button>
+    <button class="btn-next-q" id="dndNextBtn" style="display:none; margin-top:10px;" onclick="showResult()">See My Certificate! 🏆</button>
+  </div>
+
+  <!-- Results -->
+  <div class="result-screen" id="resultScreen">
+    <div class="result-hero">
+      <h2 id="resultEmoji">🏆</h2>
+      <div class="score-big" id="scoreBig">0/8</div>
+      <p id="resultTitle">Calculating...</p>
+    </div>
+    <div class="certificate-card">
+      <div class="cert-title">⭐ Planrs EdTech Platform — Certificate of Achievement</div>
+      <div class="cert-main">This certifies that</div>
+      <div class="cert-name">Cyber Champion</div>
+      <div class="cert-desc">has successfully completed the <strong>Cybersecurity & Internet Safety</strong> course covering: Cybersecurity Basics, Password Safety, Phishing & Safe Browsing, and Cyberbullying & Digital Citizenship.</div>
+      <div class="cert-badge">
+        <span class="badge" style="--delay:0.3s">🛡️ Cybersecurity</span>
+        <span class="badge" style="--delay:0.4s">🔑 Passwords</span>
+        <span class="badge" style="--delay:0.5s">🔍 Anti-Phishing</span>
+        <span class="badge" style="--delay:0.6s">💙 Digital Citizen</span>
+      </div>
+    </div>
+    <div class="section-scores">
+      <h3>📊 Your Performance</h3>
+      <div class="section-row"><span>🛡️ Section 1 — Cybersecurity Basics</span><span class="score-pill" id="s1score">–</span></div>
+      <div class="section-row"><span>🔑 Section 2 — Password Safety</span><span class="score-pill" id="s2score">–</span></div>
+      <div class="section-row"><span>🎣 Section 3 — Phishing</span><span class="score-pill" id="s3score">–</span></div>
+      <div class="section-row"><span>💙 Section 4 — Digital Citizenship</span><span class="score-pill" id="s4score">–</span></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-reset" onclick="fullReset()">🔄 Retake Quiz</button>
+      <button class="btn btn-share" onclick="celebrate()">🎉 Celebrate!</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ─── Stars ─── */
+(function(){
+  const s = document.getElementById('stars');
+  for (let i = 0; i < 80; i++) {
+    const d = document.createElement('div');
+    d.className = 'star';
+    const sz = Math.random() * 3 + 1;
+    d.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${(Math.random()*4+2).toFixed(1)}s;--op:${(Math.random()*0.7+0.1).toFixed(2)};animation-delay:${(Math.random()*5).toFixed(1)}s`;
+    s.appendChild(d);
+  }
+})();
+
+/* ─── Floaters ─── */
+const EMOJIS = ['🛡️','🔑','💻','🌟','⚡','🎯','🎮','🔐','💙','🏆','✨','🎉'];
+(function(){
+  const f = document.getElementById('floaters');
+  for (let i = 0; i < 16; i++) {
+    const d = document.createElement('div');
+    d.className = 'floater';
+    d.textContent = EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
+    const sz = Math.random()*24+14;
+    d.style.cssText = `left:${Math.random()*100}%;--fs:${sz}px;--fd:${(Math.random()*12+6).toFixed(1)}s;animation-delay:${(Math.random()*10).toFixed(1)}s`;
+    f.appendChild(d);
+  }
+})();
+
+/* ─── Questions ─── */
+const questions = [
+  { section:1, cat:"cat-basics", catLabel:"🛡️ Basics", q:"What does the 'S' in HTTPS stand for?", choices:["Speed","Secure","Share","Search"], correct:1, explain:"The S stands for SECURE! HTTPS websites encrypt your data — always look for it before entering personal info." },
+  { section:2, cat:"cat-passwords", catLabel:"🔑 Passwords", q:"Which of these is the STRONGEST password?", choices:["sunita2010","12345678","T!g3r@M@ng0#99","iloveindia"], correct:2, explain:"T!g3r@M@ng0#99 has uppercase, lowercase, numbers, symbols, and is long — a perfect password recipe!" },
+  { section:3, cat:"cat-phishing", catLabel:"🎣 Phishing", q:"You receive: 'Congratulations! You won Rs. 5 lakh from Jio! Click to claim NOW!' What do you do?", choices:["Click the link and claim your prize","Share it with friends so they win too","Delete it — it is a phishing scam","Call Jio to confirm"], correct:2, explain:"Classic phishing scam! 'You won' + urgency + suspicious link = red flags. Delete immediately. Real companies don't give lakhs via WhatsApp." },
+  { section:1, cat:"cat-basics", catLabel:"🛡️ Basics", q:"India's Cybercrime Helpline number is:", choices:["100","112","1930","1800"], correct:2, explain:"1930 is India's National Cyber Crime Helpline! You can also report at cybercrime.gov.in. Remember this number!" },
+  { section:2, cat:"cat-passwords", catLabel:"🔑 Passwords", q:"Two-Factor Authentication (2FA) means:", choices:["Using two different devices","Sharing your password with a parent","Needing a second step like an OTP after your password","Having two passwords for one account"], correct:2, explain:"2FA adds a second layer — even if someone steals your password, they still need your OTP. You already use this for UPI payments!" },
+  { section:3, cat:"cat-phishing", catLabel:"🎣 Phishing", q:"Which website is safe to visit for NCERT textbooks?", choices:["ncert-books-free.xyz","ncert.nic.in","ncert-downloads.club","free-ncert-books.com"], correct:1, explain:"ncert.nic.in is the official government website. Official Indian sites use .gov.in or .nic.in — not .xyz, .club, or .com!" },
+  { section:4, cat:"cat-bullying", catLabel:"💙 Digital Citizenship", q:"A good digital citizen always:", choices:["Posts whatever they want anonymously","Thinks before posting and treats others online as in person","Shares funny memes about classmates — just a joke","Ignores cyberbullying since it is not their problem"], correct:1, explain:"Digital citizen's golden rule: treat people online as you would face-to-face. Your digital footprint is permanent!" },
+  { section:4, cat:"cat-bullying", catLabel:"💙 Digital Citizenship", q:"Which of these is an example of cyberbullying?", choices:["Playing an online game with friends","Sending kind messages to a new student","Repeatedly posting mean comments on someone's photos","Sharing a friend's birthday photo"], correct:2, explain:"Repeatedly posting mean comments is cyberbullying — it's harmful, intentional, and repeated. Always report, block, and tell a trusted adult!" },
+];
+
+/* ─── DnD challenge ─── */
+const DND_STEPS = [
+  { label: "Step 1", answer: "Stop responding" },
+  { label: "Step 2", answer: "Save evidence" },
+  { label: "Step 3", answer: "Tell a trusted adult" },
+  { label: "Step 4", answer: "Block the bully" },
+  { label: "Step 5", answer: "Report to platform" },
+];
+const DND_ITEMS_SHUFFLED = ["Block the bully", "Tell a trusted adult", "Stop responding", "Report to platform", "Save evidence"];
+
+/* ─── State ─── */
+let current = 0, correct = 0, wrong = 0;
+const sectionCorrect = {1:0,2:0,3:0,4:0};
+const sectionTotal = {1:0,2:0,3:0,4:0};
+questions.forEach(q => sectionTotal[q.section]++);
+const shuffled = [...questions].sort(() => Math.random() - 0.5);
+
+/* ─── Mouse glow on choices ─── */
+document.addEventListener('mousemove', e => {
+  document.querySelectorAll('.choice-btn').forEach(btn => {
+    const r = btn.getBoundingClientRect();
+    btn.style.setProperty('--mx', `${((e.clientX - r.left) / r.width * 100).toFixed(1)}%`);
+    btn.style.setProperty('--my', `${((e.clientY - r.top) / r.height * 100).toFixed(1)}%`);
+  });
+});
+
+/* ─── Load question ─── */
+function loadQ() {
+  const q = shuffled[current];
+  const tag = document.getElementById('catTag');
+  tag.className = `category-tag ${q.cat}`;
+  tag.textContent = q.catLabel;
+  document.getElementById('qLabel').textContent = `Question ${current+1} of ${questions.length}`;
+  document.getElementById('questionText').textContent = q.q;
+  document.getElementById('qnum').textContent = current+1;
+  document.getElementById('progressFill').style.width = `${((current+1)/questions.length)*100}%`;
+
+  const ch = document.getElementById('choices');
+  ch.innerHTML = '';
+  q.choices.forEach((c, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    const letters = ['🅰️','🅱️','🅲️','🅳️'];
+    btn.innerHTML = `<span style="margin-right:8px;font-size:16px">${letters[i]||String.fromCharCode(65+i)}</span>${c}`;
+    btn.style.animationDelay = `${i * 0.07}s`;
+    btn.onclick = () => handleAnswer(i === q.correct, btn, q, i);
+    ch.appendChild(btn);
+  });
+
+  document.getElementById('explanation').className = 'explanation';
+  document.getElementById('explanation').textContent = '';
+  const nb = document.getElementById('nextBtn');
+  nb.style.display = 'none';
+  nb.onclick = nextQ;
+  nb.textContent = 'Next Question ➡️';
+
+  // Animate card content
+  const card = document.getElementById('gameCard');
+  card.querySelector('.question').classList.remove('cardPop');
+  void card.querySelector('.question').offsetWidth;
+  card.querySelector('.question').style.animation = 'cardPop 0.45s cubic-bezier(0.34,1.56,0.64,1)';
+  setTimeout(() => card.querySelector('.question').style.animation = '', 500);
+}
+
+/* ─── Handle answer ─── */
+function handleAnswer(isCorrect, btn, q, idx) {
+  document.querySelectorAll('.choice-btn').forEach((b, i) => {
+    b.disabled = true;
+    if (i === q.correct) b.classList.add('show-correct');
+  });
+
+  if (isCorrect) {
+    correct++;
+    sectionCorrect[q.section]++;
+    btn.classList.add('selected-correct');
+    document.getElementById('explanation').className = 'explanation exp-correct show';
+    spawnParticles(btn, 8);
+  } else {
+    wrong++;
+    btn.classList.add('selected-wrong');
+    document.getElementById('explanation').className = 'explanation exp-wrong show';
+  }
+
+  document.getElementById('explanation').innerHTML =
+    `<strong>${isCorrect ? ['🎉 Excellent!','⭐ Amazing!','🔥 Spot on!','🌟 Brilliant!'][Math.floor(Math.random()*4)] : '❌ Not quite!'}</strong><br>${q.explain}`;
+
+  const cc = document.getElementById('correct');
+  cc.textContent = correct;
+  const ww = document.getElementById('wrong');
+  ww.textContent = wrong;
+
+  const cchip = document.getElementById('chipCorrect');
+  const wchip = document.getElementById('chipWrong');
+  cchip.classList.remove('bump'); void cchip.offsetWidth; if(isCorrect) cchip.classList.add('bump');
+  wchip.classList.remove('bump'); void wchip.offsetWidth; if(!isCorrect) wchip.classList.add('bump');
+
+  const nb = document.getElementById('nextBtn');
+  nb.style.display = 'block';
+
+  if (current === questions.length - 1) {
+    nb.textContent = 'Bonus Challenge! 🎯';
+    nb.onclick = showDnD;
+  }
+}
+
+function nextQ() { current++; if (current < questions.length) loadQ(); }
+
+/* ─── Particle burst ─── */
+function spawnParticles(el, count = 12) {
+  const r = el.getBoundingClientRect();
+  const cx = r.left + r.width/2, cy = r.top + r.height/2;
+  const colors = ['#FFD93D','#FF6B35','#A855F7','#3B9EFF','#2ECC71','#FF6BB5'];
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    const angle = (i / count) * 360;
+    const dist = 60 + Math.random() * 60;
+    const rad = angle * Math.PI / 180;
+    p.style.cssText = `position:fixed;width:${6+Math.random()*6}px;height:${6+Math.random()*6}px;border-radius:50%;background:${colors[i%colors.length]};left:${cx}px;top:${cy}px;pointer-events:none;z-index:999;transition:transform 0.8s ease-out, opacity 0.8s ease-out;opacity:1;`;
+    document.body.appendChild(p);
+    setTimeout(() => { p.style.transform = `translate(${Math.cos(rad)*dist}px,${Math.sin(rad)*dist}px)`;p.style.opacity='0'; }, 20);
+    setTimeout(() => p.remove(), 900);
+  }
+}
+
+/* ─── Confetti rain ─── */
+function launchConfetti(count = 80) {
+  const colors = ['#FFD93D','#FF6B35','#A855F7','#3B9EFF','#2ECC71','#FF6BB5','#00D2D3','#fff'];
+  for (let i = 0; i < count; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    const w = 6+Math.random()*10, h = 8+Math.random()*14;
+    const delay = Math.random() * 1.5;
+    const dur = 2.5 + Math.random() * 2;
+    const tx = (Math.random()-0.5) * 300;
+    const rot = (Math.random()-0.5) * 1440;
+    c.style.cssText = `width:${w}px;height:${h}px;left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};--cf-d:${dur}s;--cf-delay:${delay}s;--cf-tx:${tx}px;--cf-r:${rot}deg;`;
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), (dur + delay + 0.5) * 1000);
+  }
+}
+
+function celebrate() { launchConfetti(120); }
+
+/* ─── DnD Section ─── */
+let dndSlotContent = {}; // slotIndex -> item text
+let dndItemPositions = {}; // text -> slotIndex or null (in pool)
+let draggedItem = null;
+
+function showDnD() {
+  document.getElementById('gameCard').style.display = 'none';
+  const dnd = document.getElementById('dndSection');
+  dnd.style.display = 'block';
+
+  dndSlotContent = {};
+  DND_STEPS.forEach((_, i) => dndSlotContent[i] = null);
+  dndItemPositions = {};
+  DND_ITEMS_SHUFFLED.forEach(t => dndItemPositions[t] = null);
+
+  renderDnD();
+}
+
+function renderDnD() {
+  const targetsEl = document.getElementById('dndTargets');
+  targetsEl.innerHTML = '';
+  DND_STEPS.forEach((step, i) => {
+    const row = document.createElement('div');
+    row.className = 'dnd-target' + (dndSlotContent[i] ? ' filled' : '');
+    row.dataset.slot = i;
+    row.innerHTML = `<span class="target-label">${step.label}</span><div class="target-slot ${dndSlotContent[i]?'has-item':''}" data-slot="${i}">${dndSlotContent[i] || '<span style="opacity:0.35">Drop here...</span>'}</div>`;
+
+    // Drop events
+    row.addEventListener('dragover', e => { e.preventDefault(); row.classList.add('drag-over'); });
+    row.addEventListener('dragleave', () => row.classList.remove('drag-over'));
+    row.addEventListener('drop', e => {
+      e.preventDefault();
+      row.classList.remove('drag-over');
+      const text = e.dataTransfer.getData('text/plain');
+      const slotIdx = parseInt(row.dataset.slot);
+
+      // If slot occupied, return old item to pool
+      if (dndSlotContent[slotIdx]) {
+        dndItemPositions[dndSlotContent[slotIdx]] = null;
+      }
+      // If item was in another slot, free that slot
+      const prevSlot = dndItemPositions[text];
+      if (prevSlot !== null && prevSlot !== undefined) {
+        dndSlotContent[prevSlot] = null;
+      }
+
+      dndSlotContent[slotIdx] = text;
+      dndItemPositions[text] = slotIdx;
+      renderDnD();
+    });
+    targetsEl.appendChild(row);
+  });
+
+  // Items pool
+  const itemsEl = document.getElementById('dndItems');
+  itemsEl.innerHTML = '';
+  DND_ITEMS_SHUFFLED.forEach((text, idx) => {
+    if (dndItemPositions[text] !== null && dndItemPositions[text] !== undefined) return; // placed
+    const item = document.createElement('div');
+    item.className = 'drag-item';
+    item.textContent = text;
+    item.draggable = true;
+    item.style.animationDelay = `${idx * 0.07}s`;
+    item.addEventListener('dragstart', e => {
+      draggedItem = text;
+      e.dataTransfer.setData('text/plain', text);
+      setTimeout(() => item.classList.add('dragging'), 0);
+    });
+    item.addEventListener('dragend', () => item.classList.remove('dragging'));
+    itemsEl.appendChild(item);
+  });
+
+  // Touch support
+  enableTouchDnD();
+}
+
+function enableTouchDnD() {
+  let touchItem = null, clone = null;
+  document.querySelectorAll('.drag-item').forEach(item => {
+    item.addEventListener('touchstart', e => {
+      touchItem = item.textContent;
+      clone = item.cloneNode(true);
+      clone.style.cssText = `position:fixed;opacity:0.8;pointer-events:none;z-index:9999;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;padding:10px 16px;background:linear-gradient(135deg,#A855F7,#3B9EFF);border-radius:12px;color:#fff;border:2px solid rgba(255,255,255,0.3);`;
+      document.body.appendChild(clone);
+    }, {passive:true});
+    item.addEventListener('touchmove', e => {
+      if (!clone) return;
+      const t = e.touches[0];
+      clone.style.left = (t.clientX - 50) + 'px';
+      clone.style.top = (t.clientY - 25) + 'px';
+    }, {passive:true});
+    item.addEventListener('touchend', e => {
+      if (clone) { clone.remove(); clone = null; }
+      if (!touchItem) return;
+      const t = e.changedTouches[0];
+      const el = document.elementFromPoint(t.clientX, t.clientY);
+      const target = el?.closest('.dnd-target');
+      if (target) {
+        const slotIdx = parseInt(target.dataset.slot);
+        if (dndSlotContent[slotIdx]) dndItemPositions[dndSlotContent[slotIdx]] = null;
+        const prevSlot = dndItemPositions[touchItem];
+        if (prevSlot !== null && prevSlot !== undefined) dndSlotContent[prevSlot] = null;
+        dndSlotContent[slotIdx] = touchItem;
+        dndItemPositions[touchItem] = slotIdx;
+        renderDnD();
+      }
+      touchItem = null;
+    });
+  });
+}
+
+function checkDnD() {
+  let allFilled = DND_STEPS.every((_, i) => dndSlotContent[i]);
+  if (!allFilled) {
+    const r = document.getElementById('dndResult');
+    r.className = 'dnd-result show';
+    r.style.background = 'rgba(255,71,87,0.15)';
+    r.style.border = '2px solid #FF4757';
+    r.style.color = '#ffcdd0';
+    r.innerHTML = '⚠️ Please fill all 5 slots before checking!';
+    return;
+  }
+
+  let allCorrect = true;
+  DND_STEPS.forEach((step, i) => {
+    const target = document.querySelectorAll('.dnd-target')[i];
+    if (dndSlotContent[i] === step.answer) {
+      target.classList.add('correct-drop');
+    } else {
+      target.classList.add('wrong-drop');
+      allCorrect = false;
+    }
+  });
+
+  const r = document.getElementById('dndResult');
+  r.className = 'dnd-result show';
+  if (allCorrect) {
+    r.style.background = 'rgba(46,204,113,0.15)';
+    r.style.border = '2px solid #2ECC71';
+    r.style.color = '#a8ffcb';
+    r.innerHTML = '🎉 Perfect! You know exactly how to handle cyberbullying! The order is: Stop → Save → Tell → Block → Report!';
+    spawnParticles(r, 16);
+    document.getElementById('dndCheckBtn').style.display = 'none';
+    document.getElementById('dndNextBtn').style.display = 'block';
+  } else {
+    r.style.background = 'rgba(255,107,53,0.15)';
+    r.style.border = '2px solid #FF6B35';
+    r.style.color = '#ffd3c0';
+    r.innerHTML = '🔄 Not quite right! The correct order is: Stop responding → Save evidence → Tell a trusted adult → Block the bully → Report to platform. Try again!';
+    // Reset after 2s
+    setTimeout(() => {
+      dndSlotContent = {};
+      DND_STEPS.forEach((_, i) => dndSlotContent[i] = null);
+      dndItemPositions = {};
+      DND_ITEMS_SHUFFLED.forEach(t => dndItemPositions[t] = null);
+      r.className = 'dnd-result';
+      renderDnD();
+    }, 2800);
+  }
+}
+
+/* ─── Results ─── */
+function showResult() {
+  document.getElementById('dndSection').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'block';
+  const pct = Math.round((correct/questions.length)*100);
+  document.getElementById('scoreBig').textContent = `${correct}/8`;
+  document.getElementById('resultEmoji').textContent = pct===100?'🏆':pct>=75?'⭐':'💪';
+  document.getElementById('resultTitle').textContent =
+    pct===100 ? 'Perfect Score! You are a Cyber Legend! 🌟' :
+    pct>=75   ? 'Excellent! Cyber Champion Certified! 🎉' :
+    pct>=50   ? 'Good Job! Keep Learning! 💪' : 'Keep Practising — You Can Do It! 🔥';
+
+  [1,2,3,4].forEach(s => {
+    const el = document.getElementById(`s${s}score`);
+    el.textContent = `${sectionCorrect[s]}/${sectionTotal[s]}`;
+    el.style.background = sectionCorrect[s] === sectionTotal[s] ? 'rgba(46,204,113,0.2)' : sectionCorrect[s] >= sectionTotal[s]/2 ? 'rgba(255,167,38,0.2)' : 'rgba(255,71,87,0.2)';
+    el.style.color = sectionCorrect[s] === sectionTotal[s] ? '#2ECC71' : sectionCorrect[s] >= sectionTotal[s]/2 ? '#FFA726' : '#FF4757';
+  });
+
+  launchConfetti(100);
+}
+
+/* ─── Reset ─── */
+function fullReset() {
+  current = 0; correct = 0; wrong = 0;
+  [1,2,3,4].forEach(s => sectionCorrect[s] = 0);
+  document.getElementById('correct').textContent = 0;
+  document.getElementById('wrong').textContent = 0;
+  document.getElementById('gameCard').style.display = 'block';
+  document.getElementById('dndSection').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'none';
+  shuffled.sort(() => Math.random() - 0.5);
+  loadQ();
+}
+
+loadQ();
+</script>
+</body>
+</html>

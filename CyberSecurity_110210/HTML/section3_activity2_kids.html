@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎣 Spot the Scam Detective! — Section 3</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --yellow: #FFD93D;
+  --orange: #FF6B35;
+  --pink: #FF4FA0;
+  --blue: #4ECDC4;
+  --purple: #9B59B6;
+  --green: #2ECC71;
+  --red: #E74C3C;
+  --sky: #74B9FF;
+  --lime: #A8FF3E;
+  --coral: #FF7675;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: #0a0a2e;
+  cursor: default;
+}
+
+/* ===================== MOVING BG ===================== */
+.bg-canvas {
+  position: fixed; inset: 0; z-index: 0; overflow: hidden;
+  background: radial-gradient(ellipse at 20% 50%, #1a0533 0%, #0a0a2e 60%, #001529 100%);
+}
+
+.star { position: absolute; border-radius: 50%; animation: twinkle var(--d) var(--delay) infinite ease-in-out alternate; }
+@keyframes twinkle { from { opacity: 0.2; transform: scale(0.8); } to { opacity: 1; transform: scale(1.3); } }
+
+.cloud {
+  position: absolute;
+  font-size: var(--sz);
+  animation: floatCloud var(--dur) linear infinite;
+  opacity: 0.15;
+  filter: blur(1px);
+}
+@keyframes floatCloud { from { transform: translateX(-200px); } to { transform: translateX(110vw); } }
+
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  animation: floatUp var(--dur) var(--delay) ease-in-out infinite alternate, sway var(--sw) ease-in-out infinite alternate;
+  opacity: 0.12;
+}
+@keyframes floatUp { from { transform: translateY(0); } to { transform: translateY(-40px); } }
+@keyframes sway { from { transform: translateX(-20px); } to { transform: translateX(20px); } }
+
+.emoji-float {
+  position: absolute;
+  font-size: var(--sz);
+  animation: floatEmoji var(--dur) var(--delay) ease-in-out infinite;
+  pointer-events: none;
+  user-select: none;
+}
+@keyframes floatEmoji {
+  0%   { transform: translateY(100vh) rotate(0deg) scale(0.5); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateY(-120px) rotate(360deg) scale(1.2); opacity: 0; }
+}
+
+/* ===================== LAYOUT ===================== */
+.wrapper { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center; padding: 16px; min-height: 100vh; }
+
+/* ===================== HEADER ===================== */
+.header {
+  text-align: center;
+  margin: 20px 0 10px;
+  animation: dropIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes dropIn { from { transform: translateY(-80px) scale(0.5); opacity: 0; } to { transform: none; opacity: 1; } }
+
+.logo-emoji {
+  font-size: 64px;
+  display: block;
+  animation: bounce 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(255,217,61,0.8));
+}
+@keyframes bounce { 0%,100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-14px) rotate(5deg); } }
+
+h1 {
+  font-family: 'Fredoka One', cursive;
+  font-size: 34px;
+  background: linear-gradient(135deg, var(--yellow) 0%, var(--orange) 40%, var(--pink) 70%, var(--blue) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+  line-height: 1.1;
+  letter-spacing: 1px;
+}
+
+.subtitle {
+  color: rgba(255,255,255,0.7);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+/* ===================== SCORE BAR ===================== */
+.score-bar {
+  display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(16px);
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 50px;
+  padding: 10px 24px;
+  margin: 10px 0 8px;
+  animation: dropIn 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+}
+.score-item {
+  font-family: 'Fredoka One', cursive;
+  font-size: 18px;
+  color: #fff;
+}
+.score-item span {
+  display: inline-block;
+  animation: none;
+}
+.score-item span.pop-anim {
+  animation: scorePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes scorePop { 0% { transform: scale(1); } 50% { transform: scale(1.8); } 100% { transform: scale(1); } }
+
+/* ===================== PROGRESS ===================== */
+.progress-wrap {
+  width: 100%; max-width: 520px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 20px; height: 14px;
+  margin-bottom: 14px;
+  overflow: hidden;
+  border: 2px solid rgba(255,255,255,0.15);
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 20px;
+  background: linear-gradient(90deg, var(--yellow), var(--orange), var(--pink));
+  transition: width 0.5s cubic-bezier(0.34, 1.2, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+@keyframes shimmer { from { transform: translateX(-100%); } to { transform: translateX(200%); } }
+
+/* ===================== CARD ===================== */
+.card {
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 28px;
+  padding: 24px;
+  max-width: 540px; width: 100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 80px rgba(78,205,196,0.1);
+  animation: cardSlide 0.5s cubic-bezier(0.34, 1.3, 0.64, 1) both;
+  transform-origin: center;
+}
+@keyframes cardSlide { from { transform: translateY(60px) scale(0.85) rotate(-3deg); opacity: 0; } to { transform: none; opacity: 1; } }
+
+.card-type {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--yellow);
+  margin-bottom: 10px;
+}
+
+/* ===================== SCENARIO BOX ===================== */
+.scenario-box {
+  background: rgba(0,0,0,0.35);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 18px;
+  border-left: 4px solid var(--blue);
+  position: relative;
+  overflow: hidden;
+}
+.scenario-box::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(78,205,196,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+.msg-label {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--blue);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+.msg-content {
+  font-size: 14px;
+  color: rgba(255,255,255,0.9);
+  line-height: 1.65;
+  font-weight: 600;
+}
+.msg-url {
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  background: rgba(0,0,0,0.5);
+  color: var(--lime);
+  padding: 7px 12px;
+  border-radius: 8px;
+  margin-top: 8px;
+  display: inline-block;
+  border: 1px solid rgba(168,255,62,0.3);
+  word-break: break-all;
+}
+
+/* ===================== QUESTION ===================== */
+.question {
+  font-family: 'Fredoka One', cursive;
+  font-size: 20px;
+  color: #fff;
+  margin-bottom: 18px;
+  text-align: center;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+/* ===================== DRAG & DROP ===================== */
+.drag-label {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.drag-area {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+/* Cards to drag */
+.draggable-options {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  min-height: 70px;
+  padding: 8px;
+  border-radius: 16px;
+  transition: background 0.3s;
+}
+
+.drag-chip {
+  background: linear-gradient(135deg, var(--c1), var(--c2));
+  color: #fff;
+  font-family: 'Fredoka One', cursive;
+  font-size: 16px;
+  padding: 12px 22px;
+  border-radius: 50px;
+  cursor: grab;
+  user-select: none;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35), 0 0 0 3px rgba(255,255,255,0.15);
+  transition: transform 0.15s, box-shadow 0.15s;
+  position: relative;
+  animation: chipBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  touch-action: none;
+}
+.drag-chip:nth-child(1) { animation-delay: 0.05s; }
+.drag-chip:nth-child(2) { animation-delay: 0.15s; }
+@keyframes chipBounce { from { transform: scale(0) rotate(-10deg); opacity: 0; } to { transform: scale(1) rotate(0deg); opacity: 1; } }
+.drag-chip:hover { transform: scale(1.08) rotate(-2deg); box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+.drag-chip.dragging { opacity: 0.4; transform: scale(0.9); cursor: grabbing; }
+.drag-chip.ghost {
+  position: fixed; pointer-events: none; z-index: 9999;
+  transform: scale(1.12) rotate(6deg);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  transition: none;
+  animation: none;
+}
+
+/* Drop zones */
+.drop-zones {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.drop-zone {
+  flex: 1;
+  min-width: 130px;
+  min-height: 72px;
+  border-radius: 18px;
+  border: 3px dashed rgba(255,255,255,0.25);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+}
+.drop-zone .zone-icon { font-size: 28px; transition: transform 0.25s; }
+.drop-zone .zone-label {
+  font-family: 'Fredoka One', cursive;
+  font-size: 13px;
+  color: rgba(255,255,255,0.55);
+  transition: color 0.25s;
+}
+.drop-zone.over {
+  border-color: var(--yellow);
+  background: rgba(255,217,61,0.12);
+  transform: scale(1.04);
+  box-shadow: 0 0 24px rgba(255,217,61,0.35);
+}
+.drop-zone.over .zone-icon { transform: scale(1.2) rotate(10deg); }
+.drop-zone.over .zone-label { color: var(--yellow); }
+.drop-zone.filled {
+  border-style: solid;
+  border-color: rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.06);
+}
+.drop-zone.correct-zone {
+  border-color: var(--green);
+  background: rgba(46,204,113,0.15);
+  animation: correctPulse 0.6s ease-out;
+}
+.drop-zone.wrong-zone {
+  border-color: var(--red);
+  background: rgba(231,76,60,0.15);
+  animation: wrongShake 0.5s ease-out;
+}
+@keyframes correctPulse {
+  0% { transform: scale(1); } 30% { transform: scale(1.08); } 60% { transform: scale(0.97); } 100% { transform: scale(1); }
+}
+@keyframes wrongShake {
+  0%,100% { transform: translateX(0); } 20% { transform: translateX(-10px); } 40% { transform: translateX(10px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(6px); }
+}
+
+/* Button fallback */
+.choice-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.choice-btn {
+  padding: 13px 26px;
+  border: none;
+  border-radius: 50px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  position: relative;
+  overflow: hidden;
+}
+.choice-btn::after {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%; width: 200%; height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.25) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.choice-btn:hover::after { opacity: 1; }
+.choice-btn:hover { transform: scale(1.07) translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+.choice-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+.btn-real { background: linear-gradient(135deg, #27AE60, #2ECC71); color: #fff; }
+.btn-scam { background: linear-gradient(135deg, #C0392B, #E74C3C); color: #fff; }
+.btn-safe { background: linear-gradient(135deg, #2980B9, #4ECDC4); color: #fff; }
+.btn-risky { background: linear-gradient(135deg, #E67E22, #F39C12); color: #fff; }
+
+/* ===================== EXPLANATION ===================== */
+.explanation {
+  display: none;
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-top: 14px;
+  font-size: 14px;
+  line-height: 1.65;
+  font-weight: 700;
+  animation: explanationPop 0.5s cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+.explanation.show { display: block; }
+.explanation.correct {
+  background: linear-gradient(135deg, rgba(46,204,113,0.2), rgba(39,174,96,0.15));
+  border: 2px solid #2ECC71;
+  color: #A8FFD8;
+}
+.explanation.wrong {
+  background: linear-gradient(135deg, rgba(231,76,60,0.2), rgba(192,57,43,0.15));
+  border: 2px solid #E74C3C;
+  color: #FFB3AE;
+}
+@keyframes explanationPop { from { transform: scale(0.85) translateY(15px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* ===================== NEXT BTN ===================== */
+.btn-next-q {
+  background: linear-gradient(135deg, var(--orange), var(--pink));
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 14px 36px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 18px;
+  cursor: pointer;
+  margin-top: 14px;
+  width: 100%;
+  box-shadow: 0 8px 24px rgba(255,107,53,0.45);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: none;
+  position: relative;
+  overflow: hidden;
+  animation: btnAppear 0.5s cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+@keyframes btnAppear { from { transform: scale(0) rotate(5deg); opacity: 0; } to { transform: none; opacity: 1; } }
+.btn-next-q:hover { transform: scale(1.04) translateY(-3px); box-shadow: 0 14px 36px rgba(255,107,53,0.55); }
+.btn-next-q::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+  animation: sweep 2s ease-in-out infinite;
+}
+@keyframes sweep { 0%,100% { left: -100%; } 50% { left: 100%; } }
+
+/* ===================== CONFETTI ===================== */
+.confetti-piece {
+  position: fixed;
+  width: 10px; height: 14px;
+  border-radius: 2px;
+  animation: confettiFall var(--d) var(--delay) ease-in forwards;
+  z-index: 9999;
+  pointer-events: none;
+}
+@keyframes confettiFall {
+  0%   { transform: translateY(-20px) rotate(0deg) scale(1); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg) scale(0.5); opacity: 0; }
+}
+
+/* ===================== PARTICLES ===================== */
+.particle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  font-size: var(--sz);
+  animation: particleBurst var(--d) ease-out forwards;
+}
+@keyframes particleBurst {
+  0%   { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}
+
+/* ===================== RESULT ===================== */
+.result-screen {
+  display: none;
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 28px;
+  padding: 32px 24px;
+  max-width: 540px; width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  animation: cardSlide 0.6s cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+.result-trophy {
+  font-size: 72px;
+  display: block;
+  animation: trophySpin 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  filter: drop-shadow(0 0 20px rgba(255,217,61,0.8));
+}
+@keyframes trophySpin { from { transform: scale(0) rotate(-180deg); } to { transform: scale(1) rotate(0deg); } }
+.result-screen h2 {
+  font-family: 'Fredoka One', cursive;
+  font-size: 28px;
+  background: linear-gradient(135deg, var(--yellow), var(--orange));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 12px 0 8px;
+}
+.result-score-circle {
+  width: 110px; height: 110px;
+  border-radius: 50%;
+  background: conic-gradient(var(--orange) var(--pct), rgba(255,255,255,0.1) 0);
+  display: flex; align-items: center; justify-content: center;
+  margin: 14px auto;
+  position: relative;
+  box-shadow: 0 0 40px rgba(255,107,53,0.35);
+}
+.result-score-circle::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: rgba(10,10,46,0.9);
+}
+.result-score-inner {
+  position: relative;
+  font-family: 'Fredoka One', cursive;
+  font-size: 26px;
+  color: var(--yellow);
+}
+.result-msg { color: rgba(255,255,255,0.8); font-size: 14px; font-weight: 700; margin: 10px 0 20px; line-height: 1.6; }
+.btn-group { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.btn {
+  padding: 13px 28px;
+  border: none;
+  border-radius: 50px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+.btn:hover { transform: scale(1.07) translateY(-2px); }
+.btn-reset { background: linear-gradient(135deg, var(--coral), var(--orange)); color: #fff; }
+.btn-next-sec { background: linear-gradient(135deg, #27AE60, #2ECC71); color: #fff; }
+
+/* Wiggle */
+.wiggle { animation: wiggleAnim 0.6s ease-in-out infinite; }
+@keyframes wiggleAnim { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+
+/* Stars rating */
+.stars-row { display: flex; justify-content: center; gap: 8px; margin: 8px 0; font-size: 36px; }
+.star-icon { animation: starPop var(--d) var(--delay) cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+@keyframes starPop { from { transform: scale(0) rotate(-30deg); opacity: 0; } to { transform: scale(1) rotate(0deg); opacity: 1; } }
+
+/* Planrs badge */
+.planrs-badge {
+  position: fixed; top: 14px; right: 16px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--yellow);
+  letter-spacing: 1px;
+  z-index: 100;
+}
+
+/* Mobile tweaks */
+@media (max-width: 420px) {
+  h1 { font-size: 26px; }
+  .drag-chip { font-size: 14px; padding: 10px 16px; }
+  .drop-zone { min-width: 110px; min-height: 64px; }
+}
+</style>
+</head>
+<body>
+
+<div class="planrs-badge">⭐ Planrs</div>
+
+<!-- ANIMATED BACKGROUND -->
+<div class="bg-canvas" id="bgCanvas"></div>
+
+<!-- MAIN CONTENT -->
+<div class="wrapper">
+  <div class="header">
+    <span class="logo-emoji">🎣</span>
+    <h1>Spot the Scam Detective!</h1>
+    <p class="subtitle">Section 3 — Phishing & Safe Browsing | Activity 2</p>
+  </div>
+
+  <div class="score-bar">
+    <span class="score-item">✅ <span id="correct">0</span></span>
+    <span class="score-item">❌ <span id="wrong">0</span></span>
+    <span class="score-item">🎯 <span id="qnum">1</span>/<span id="qtotal">8</span></span>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-fill" id="progressFill" style="width:12.5%"></div>
+  </div>
+
+  <div class="card" id="gameCard">
+    <div class="card-type" id="cardType">Scenario 1 of 8</div>
+    <div class="scenario-box">
+      <div class="msg-label" id="msgLabel">📱 MESSAGE RECEIVED:</div>
+      <div class="msg-content" id="msgContent"></div>
+      <div class="msg-url" id="msgUrl" style="display:none"></div>
+    </div>
+    <div class="question" id="question"></div>
+
+    <!-- DRAG & DROP UI -->
+    <div class="drag-label" id="dragLabel">👆 Drag the answer to the correct zone!</div>
+    <div class="drag-area">
+      <div class="draggable-options" id="draggableOptions"></div>
+      <div class="drop-zones" id="dropZones"></div>
+    </div>
+
+    <div class="explanation" id="explanation"></div>
+    <button class="btn-next-q" id="nextQBtn" onclick="nextQuestion()">Next Question ➡️</button>
+  </div>
+
+  <div class="result-screen" id="resultScreen">
+    <span class="result-trophy" id="resultTrophy">🏆</span>
+    <h2 id="resultTitle"></h2>
+    <div class="stars-row" id="starsRow"></div>
+    <div class="result-score-circle" id="scoreCircle">
+      <div class="result-score-inner" id="scoreInner"></div>
+    </div>
+    <p class="result-msg" id="resultMsg"></p>
+    <div class="btn-group">
+      <button class="btn btn-reset" onclick="fullReset()">🔄 Play Again</button>
+      <button class="btn btn-next-sec" onclick="alert('🛡️ You are a Phishing Detective!\n\nMove to Section 4 — Cyberbullying!')">➡️ Next Section</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===================== BG ANIMATION ===================== */
+(function() {
+  const canvas = document.getElementById('bgCanvas');
+  // Stars
+  for (let i = 0; i < 80; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const sz = Math.random() * 3 + 1;
+    const colors = ['#FFD93D','#FF6B35','#4ECDC4','#FF4FA0','#A8FF3E','#74B9FF'];
+    s.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;background:${colors[i%colors.length]};--d:${1+Math.random()*3}s;--delay:${Math.random()*4}s;`;
+    canvas.appendChild(s);
+  }
+  // Clouds
+  const cloudEmoji = ['☁️','⛅','🌤'];
+  for (let i = 0; i < 6; i++) {
+    const c = document.createElement('div');
+    c.className = 'cloud';
+    c.textContent = cloudEmoji[i % cloudEmoji.length];
+    c.style.cssText = `top:${5+Math.random()*60}%;--sz:${40+Math.random()*50}px;--dur:${25+Math.random()*20}s;animation-delay:${-Math.random()*30}s;`;
+    canvas.appendChild(c);
+  }
+  // Bubbles
+  const bubbleColors = ['#FF6B35','#4ECDC4','#FF4FA0','#A8FF3E','#FFD93D'];
+  for (let i = 0; i < 12; i++) {
+    const b = document.createElement('div');
+    b.className = 'bubble';
+    const sz = 60 + Math.random() * 120;
+    b.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;background:${bubbleColors[i%bubbleColors.length]};--dur:${3+Math.random()*4}s;--delay:${Math.random()*4}s;--sw:${2+Math.random()*3}s;`;
+    canvas.appendChild(b);
+  }
+  // Floating emojis
+  const floaters = ['🔐','🛡️','💻','📱','🌐','🔑','⚠️','✅','🚨','🎯'];
+  for (let i = 0; i < 10; i++) {
+    const e = document.createElement('div');
+    e.className = 'emoji-float';
+    e.textContent = floaters[i];
+    e.style.cssText = `left:${Math.random()*100}%;--sz:${20+Math.random()*16}px;--dur:${8+Math.random()*8}s;--delay:${Math.random()*12}s;`;
+    canvas.appendChild(e);
+  }
+})();
+
+/* ===================== QUESTIONS ===================== */
+const questions = [
+  {
+    type:"WhatsApp Message", msgLabel:"📱 WHATSAPP MESSAGE RECEIVED:",
+    msg:"Congratulations! You have been selected to WIN Rs. 5,00,000 from Jio! Click this link NOW to claim your prize before it expires in 2 hours!",
+    url:"http://jio-prize-claim.xyz/win",
+    question:"Is this message REAL or a SCAM?",
+    choices:[{text:"✅ Real Message",val:false,c1:"#27AE60",c2:"#2ECC71"},{text:"🚨 It's a Scam!",val:true,c1:"#C0392B",c2:"#E74C3C"}],
+    correct:true,
+    explain:"🚨 SCAM! Red flags: 'Congratulations' with no reason, extreme urgency ('2 hours!'), suspicious URL ending in .xyz (not jio.com), and no real company gives lakhs via WhatsApp messages!"
+  },
+  {
+    type:"Website Check", msgLabel:"🌐 WEBSITE ADDRESS IN BROWSER:",
+    msg:"You are about to enter your bank details. The address bar shows:",
+    url:"https://www.sbi.co.in/portal/web/home",
+    question:"Is this website SAFE to use or RISKY?",
+    choices:[{text:"🔒 Safe",val:true,c1:"#2980B9",c2:"#4ECDC4"},{text:"⚠️ Risky",val:false,c1:"#E67E22",c2:"#F39C12"}],
+    correct:true,
+    explain:"✅ SAFE! This is the real SBI website: it starts with https:// (secure), has the correct domain sbi.co.in (official Indian bank extension), and no suspicious characters."
+  },
+  {
+    type:"Email Check", msgLabel:"📧 EMAIL RECEIVED:",
+    msg:"From: support@g00gle.com | Subject: Your Gmail Account Has Been Hacked! Dear User, Your account shows suspicious activity. Click here immediately to verify your identity and reset your password.",
+    url:"http://verify-google-account.club/reset",
+    question:"Is this email REAL or a SCAM?",
+    choices:[{text:"✅ Real Email",val:false,c1:"#27AE60",c2:"#2ECC71"},{text:"🚨 It's a Scam!",val:true,c1:"#C0392B",c2:"#E74C3C"}],
+    correct:true,
+    explain:"🚨 SCAM! The sender email is 'g00gle.com' (zeros instead of O's — fake!). Real Google emails come from @google.com. Also: .club domains and urgent 'hacked!' language are phishing tactics."
+  },
+  {
+    type:"Website Check", msgLabel:"🌐 WEBSITE ADDRESS IN BROWSER:",
+    msg:"You want to check CBSE results. A friend sent you this link:",
+    url:"http://cbse-result2024.in/check",
+    question:"Is this website SAFE to use or RISKY?",
+    choices:[{text:"🔒 Safe",val:false,c1:"#2980B9",c2:"#4ECDC4"},{text:"⚠️ Risky",val:true,c1:"#E67E22",c2:"#F39C12"}],
+    correct:false,
+    explain:"⚠️ RISKY! The real CBSE website is cbse.gov.in. This URL: uses HTTP (not HTTPS), is NOT the official domain, and was likely created to steal your personal info. Always verify official exam sites!"
+  },
+  {
+    type:"SMS Message", msgLabel:"📱 SMS RECEIVED:",
+    msg:"SBI ALERT: Your account will be blocked in 24 hours. Please update your KYC immediately. Send your Aadhaar number and account number to complete verification.",
+    url:null,
+    question:"Should you respond with your Aadhaar number?",
+    choices:[{text:"Yes, my bank needs it",val:false,c1:"#2980B9",c2:"#4ECDC4"},{text:"No! It's a Scam!",val:true,c1:"#C0392B",c2:"#E74C3C"}],
+    correct:true,
+    explain:"🚨 SCAM! NO bank — including SBI — will EVER ask for your Aadhaar number via SMS. This is 'SMishing'. Delete this message and call your bank's official number to verify."
+  },
+  {
+    type:"Email Check", msgLabel:"📧 EMAIL RECEIVED:",
+    msg:"From: noreply@amazon.in | Your order #402-123456 has been shipped! Your package will arrive by Friday. Track your order via the link below. Thank you for shopping with Amazon.",
+    url:"https://www.amazon.in/orders/track",
+    question:"Is this email REAL or a SCAM?",
+    choices:[{text:"✅ Looks Real",val:true,c1:"#27AE60",c2:"#2ECC71"},{text:"🚨 It's a Scam!",val:false,c1:"#C0392B",c2:"#E74C3C"}],
+    correct:true,
+    explain:"✅ This looks real: sender is @amazon.in (official), the message is specific (order number), uses https:// link to amazon.in, and contains no urgency or prize promises. Always hover over links to verify before clicking."
+  },
+  {
+    type:"Gaming Platform", msgLabel:"🎮 IN-GAME MESSAGE RECEIVED:",
+    msg:"ADMIN: You have been selected for FREE DIAMONDS! Send us your account password to verify you are a premium player and receive 10,000 free diamonds instantly!",
+    url:null,
+    question:"What should you do?",
+    choices:[{text:"Share my password!",val:false,c1:"#E67E22",c2:"#F39C12"},{text:"Ignore & Report!",val:true,c1:"#C0392B",c2:"#E74C3C"}],
+    correct:true,
+    explain:"🚨 SCAM! No legitimate game admin will EVER ask for your password. This is account-hijacking. Block this user, report the message, and tell a trusted adult!"
+  },
+  {
+    type:"Website Check", msgLabel:"🌐 CHECKING NCERT TEXTBOOKS ONLINE:",
+    msg:"You want to download a free NCERT textbook. Which website is safe to use?",
+    url:"ncert.nic.in  vs  ncert-free-books.xyz",
+    question:"Which website should you use?",
+    choices:[{text:"ncert.nic.in ✅",val:true,c1:"#27AE60",c2:"#2ECC71"},{text:"ncert-free-books.xyz ❌",val:false,c1:"#C0392B",c2:"#E74C3C"}],
+    correct:true,
+    explain:"✅ Always use ncert.nic.in — the official government site (.nic.in). The .xyz website is fake, may contain malware, and could steal your information. Official Indian education sites use .gov.in or .nic.in."
+  }
+];
+
+let current = 0, correctCount = 0, wrongCount = 0;
+let answered = false;
+const shuffled = [...questions].sort(() => Math.random() - 0.5);
+let dragGhost = null, dragChipEl = null, dragChipIdx = null;
+
+document.getElementById('qtotal').textContent = questions.length;
+
+/* ===================== LOAD QUESTION ===================== */
+function loadQ() {
+  answered = false;
+  const q = shuffled[current];
+  document.getElementById('cardType').textContent = `Scenario ${current+1} of ${questions.length} — ${q.type}`;
+  document.getElementById('msgLabel').textContent = q.msgLabel;
+  document.getElementById('msgContent').textContent = q.msg;
+  const urlEl = document.getElementById('msgUrl');
+  if (q.url) { urlEl.style.display = 'inline-block'; urlEl.textContent = q.url; } else { urlEl.style.display = 'none'; }
+  document.getElementById('question').textContent = q.question;
+  document.getElementById('progressFill').style.width = `${((current+1)/questions.length)*100}%`;
+  document.getElementById('qnum').textContent = current+1;
+  document.getElementById('explanation').className = 'explanation';
+  document.getElementById('explanation').innerHTML = '';
+  document.getElementById('nextQBtn').style.display = 'none';
+  document.getElementById('nextQBtn').onclick = nextQuestion;
+  document.getElementById('nextQBtn').textContent = 'Next Question ➡️';
+  document.getElementById('dragLabel').style.display = 'block';
+
+  // Restart card animation
+  const card = document.getElementById('gameCard');
+  card.style.animation = 'none';
+  void card.offsetWidth;
+  card.style.animation = 'cardSlide 0.5s cubic-bezier(0.34, 1.3, 0.64, 1) both';
+
+  buildDragDrop(q);
+}
+
+/* ===================== BUILD DRAG & DROP ===================== */
+function buildDragDrop(q) {
+  const optionsEl = document.getElementById('draggableOptions');
+  const zonesEl = document.getElementById('dropZones');
+  optionsEl.innerHTML = '';
+  zonesEl.innerHTML = '';
+
+  // Shuffle chips
+  const chips = [...q.choices].sort(() => Math.random() - 0.5);
+
+  chips.forEach((ch, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'drag-chip';
+    chip.textContent = ch.text;
+    chip.dataset.val = ch.val;
+    chip.style.setProperty('--c1', ch.c1);
+    chip.style.setProperty('--c2', ch.c2);
+    chip.dataset.c1 = ch.c1;
+    chip.dataset.c2 = ch.c2;
+    chip.dataset.chipIdx = i;
+
+    // Mouse drag
+    chip.addEventListener('mousedown', startDrag);
+    chip.addEventListener('touchstart', startDragTouch, { passive: false });
+
+    optionsEl.appendChild(chip);
+  });
+
+  // Drop zones for each choice
+  q.choices.forEach((ch) => {
+    const zone = document.createElement('div');
+    zone.className = 'drop-zone';
+    zone.dataset.val = ch.val;
+
+    const icon = document.createElement('div');
+    icon.className = 'zone-icon';
+    icon.textContent = ch.val === q.correct ? '🎯' : '❓';
+
+    const label = document.createElement('div');
+    label.className = 'zone-label';
+    label.textContent = ch.text;
+
+    zone.appendChild(icon);
+    zone.appendChild(label);
+
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('over'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('over'));
+    zone.addEventListener('drop', e => { e.preventDefault(); handleDrop(zone); });
+
+    zonesEl.appendChild(zone);
+  });
+}
+
+/* ===================== DRAG (MOUSE) ===================== */
+function startDrag(e) {
+  if (answered) return;
+  e.preventDefault();
+  dragChipEl = e.currentTarget;
+  createGhost(dragChipEl, e.clientX, e.clientY);
+  dragChipEl.classList.add('dragging');
+  document.addEventListener('mousemove', onDragMove);
+  document.addEventListener('mouseup', onDragEnd);
+}
+
+function onDragMove(e) {
+  moveGhost(e.clientX, e.clientY);
+  highlightZone(e.clientX, e.clientY);
+}
+
+function onDragEnd(e) {
+  document.removeEventListener('mousemove', onDragMove);
+  document.removeEventListener('mouseup', onDragEnd);
+  const zone = getZoneAt(e.clientX, e.clientY);
+  if (zone) {
+    handleDrop(zone);
+  } else {
+    dragChipEl && dragChipEl.classList.remove('dragging');
+  }
+  removeGhost();
+  clearZoneHighlights();
+}
+
+/* ===================== DRAG (TOUCH) ===================== */
+function startDragTouch(e) {
+  if (answered) return;
+  e.preventDefault();
+  const touch = e.touches[0];
+  dragChipEl = e.currentTarget;
+  createGhost(dragChipEl, touch.clientX, touch.clientY);
+  dragChipEl.classList.add('dragging');
+  document.addEventListener('touchmove', onDragMoveTouch, { passive: false });
+  document.addEventListener('touchend', onDragEndTouch);
+}
+
+function onDragMoveTouch(e) {
+  e.preventDefault();
+  const touch = e.touches[0];
+  moveGhost(touch.clientX, touch.clientY);
+  highlightZone(touch.clientX, touch.clientY);
+}
+
+function onDragEndTouch(e) {
+  document.removeEventListener('touchmove', onDragMoveTouch);
+  document.removeEventListener('touchend', onDragEndTouch);
+  const touch = e.changedTouches[0];
+  const zone = getZoneAt(touch.clientX, touch.clientY);
+  if (zone) {
+    handleDrop(zone);
+  } else {
+    dragChipEl && dragChipEl.classList.remove('dragging');
+  }
+  removeGhost();
+  clearZoneHighlights();
+}
+
+/* ===================== GHOST ===================== */
+function createGhost(chip, x, y) {
+  dragGhost = chip.cloneNode(true);
+  dragGhost.className = 'drag-chip ghost';
+  dragGhost.style.setProperty('--c1', chip.dataset.c1);
+  dragGhost.style.setProperty('--c2', chip.dataset.c2);
+  const rect = chip.getBoundingClientRect();
+  dragGhost.style.width = rect.width + 'px';
+  dragGhost.offsetX = x - rect.left;
+  dragGhost.offsetY = y - rect.top;
+  document.body.appendChild(dragGhost);
+  moveGhost(x, y);
+}
+
+function moveGhost(x, y) {
+  if (!dragGhost) return;
+  dragGhost.style.left = (x - dragGhost.offsetX) + 'px';
+  dragGhost.style.top = (y - dragGhost.offsetY) + 'px';
+}
+
+function removeGhost() {
+  if (dragGhost) { dragGhost.remove(); dragGhost = null; }
+  if (dragChipEl) { dragChipEl.classList.remove('dragging'); }
+}
+
+/* ===================== ZONE HELPERS ===================== */
+function getZoneAt(x, y) {
+  const zones = document.querySelectorAll('.drop-zone');
+  for (const zone of zones) {
+    const r = zone.getBoundingClientRect();
+    if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return zone;
+  }
+  return null;
+}
+
+function highlightZone(x, y) {
+  clearZoneHighlights();
+  const zone = getZoneAt(x, y);
+  if (zone && !answered) zone.classList.add('over');
+}
+
+function clearZoneHighlights() {
+  document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('over'));
+}
+
+/* ===================== HANDLE DROP / ANSWER ===================== */
+function handleDrop(zone) {
+  if (answered) return;
+  answered = true;
+  const q = shuffled[current];
+  const droppedVal = dragChipEl ? (dragChipEl.dataset.val === 'true') : null;
+  const zoneVal = zone.dataset.val === 'true';
+  const isCorrect = (droppedVal === q.correct) && (zoneVal === q.correct);
+
+  // Move chip into zone
+  if (dragChipEl) {
+    dragChipEl.classList.remove('dragging');
+    const chipClone = dragChipEl.cloneNode(true);
+    chipClone.style.removeProperty('animation');
+    chipClone.style.position = 'static';
+    chipClone.style.transform = 'none';
+    chipClone.style.cursor = 'default';
+    zone.innerHTML = '';
+    zone.appendChild(chipClone);
+  }
+
+  // Zone feedback
+  document.querySelectorAll('.drop-zone').forEach(z => {
+    z.style.pointerEvents = 'none';
+  });
+
+  if (isCorrect) {
+    zone.classList.add('correct-zone');
+    correctCount++;
+    animateScore('correct');
+    spawnConfetti();
+    spawnParticles(zone, '🎉✨⭐🌟💫');
+  } else {
+    zone.classList.add('wrong-zone');
+    wrongCount++;
+    animateScore('wrong');
+    spawnParticles(zone, '💔❌😬');
+  }
+
+  // Disable all chips
+  document.querySelectorAll('.drag-chip').forEach(c => {
+    c.style.pointerEvents = 'none';
+    c.style.opacity = '0.45';
+  });
+
+  const exp = document.getElementById('explanation');
+  const exclaims = ['🎉 Amazing!','🌟 You nailed it!','🔥 Brilliant detective!','⭐ Super smart!'];
+  exp.className = 'explanation ' + (isCorrect ? 'correct' : 'wrong') + ' show';
+  exp.innerHTML = `<strong>${isCorrect ? exclaims[Math.floor(Math.random()*exclaims.length)] : '❌ Not quite!'}</strong><br>${q.explain}`;
+
+  document.getElementById('correct').textContent = correctCount;
+  document.getElementById('wrong').textContent = wrongCount;
+  document.getElementById('nextQBtn').style.display = 'block';
+  document.getElementById('dragLabel').style.display = 'none';
+
+  if (current === questions.length - 1) {
+    document.getElementById('nextQBtn').textContent = 'See Results 🏆';
+    document.getElementById('nextQBtn').onclick = showResult;
+  }
+}
+
+/* ===================== SCORE ANIMATION ===================== */
+function animateScore(type) {
+  const id = type === 'correct' ? 'correct' : 'wrong';
+  const el = document.getElementById(id).parentElement.querySelector('span:last-child') || document.getElementById(id);
+  el.classList.remove('pop-anim');
+  void el.offsetWidth;
+  el.classList.add('pop-anim');
+  setTimeout(() => el.classList.remove('pop-anim'), 500);
+}
+
+/* ===================== CONFETTI ===================== */
+function spawnConfetti() {
+  const colors = ['#FFD93D','#FF6B35','#FF4FA0','#4ECDC4','#A8FF3E','#9B59B6','#74B9FF'];
+  for (let i = 0; i < 50; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    c.style.cssText = `
+      left:${10+Math.random()*80}vw;
+      top:-20px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      transform:rotate(${Math.random()*360}deg);
+      --d:${1+Math.random()*2}s;
+      --delay:${Math.random()*1.5}s;
+      border-radius:${Math.random()>0.5?'50%':'2px'};
+      width:${6+Math.random()*8}px;
+      height:${8+Math.random()*10}px;
+    `;
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 4000);
+  }
+}
+
+/* ===================== PARTICLES ===================== */
+function spawnParticles(el, emojis) {
+  const rect = el.getBoundingClientRect();
+  const cx = rect.left + rect.width/2;
+  const cy = rect.top + rect.height/2;
+  const arr = [...emojis];
+  for (let i = 0; i < 8; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const angle = (i/8) * Math.PI * 2;
+    const dist = 60 + Math.random() * 80;
+    p.style.cssText = `
+      left:${cx}px; top:${cy}px;
+      --sz:${16+Math.random()*12}px;
+      --tx:${Math.cos(angle)*dist}px;
+      --ty:${Math.sin(angle)*dist}px;
+      --d:${0.5+Math.random()*0.5}s;
+    `;
+    p.textContent = arr[i % arr.length];
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 1500);
+  }
+}
+
+/* ===================== NAV ===================== */
+function nextQuestion() {
+  current++;
+  if (current < questions.length) loadQ();
+}
+
+/* ===================== RESULT ===================== */
+function showResult() {
+  document.getElementById('gameCard').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'block';
+  const pct = Math.round((correctCount/questions.length)*100);
+  const scoreCircle = document.getElementById('scoreCircle');
+  scoreCircle.style.setProperty('--pct', `${pct * 3.6}deg`);
+  document.getElementById('scoreInner').textContent = `${correctCount}/${questions.length}`;
+
+  const stars = pct === 100 ? 3 : pct >= 75 ? 2 : 1;
+  const starsRow = document.getElementById('starsRow');
+  starsRow.innerHTML = '';
+  for (let i = 0; i < 3; i++) {
+    const s = document.createElement('span');
+    s.className = 'star-icon';
+    s.textContent = i < stars ? '⭐' : '☆';
+    s.style.setProperty('--d', '0.6s');
+    s.style.setProperty('--delay', `${0.3 + i*0.15}s`);
+    starsRow.appendChild(s);
+  }
+
+  document.getElementById('resultTrophy').textContent = pct===100?'🏆':pct>=75?'🥈':'🎖️';
+  document.getElementById('resultTitle').textContent = pct===100 ? 'Perfect Phishing Detective!' : pct>=75 ? 'Excellent Cyber Skills!' : 'Good Effort — Keep Learning!';
+  document.getElementById('resultMsg').textContent = `You scored ${pct}%! You can now spot phishing scams and fake websites. Share these skills with your family! 🛡️`;
+
+  if (pct === 100) spawnConfetti();
+}
+
+/* ===================== RESET ===================== */
+function fullReset() {
+  current = 0; correctCount = 0; wrongCount = 0;
+  document.getElementById('correct').textContent = 0;
+  document.getElementById('wrong').textContent = 0;
+  document.getElementById('gameCard').style.display = 'block';
+  document.getElementById('resultScreen').style.display = 'none';
+  shuffled.sort(() => Math.random() - 0.5);
+  loadQ();
+}
+
+loadQ();
+</script>
+</body>
+</html>

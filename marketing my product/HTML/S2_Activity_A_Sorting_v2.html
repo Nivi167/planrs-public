@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sort the Customers! | Planrs</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --children: #FF6B6B;
+    --teens: #A855F7;
+    --adults: #3B82F6;
+    --seniors: #10B981;
+    --bg: #0F0A1E;
+    --surface: #1A1030;
+    --card: #211840;
+    --text: #F0E6FF;
+    --muted: #9B89C4;
+    --gold: #FFD700;
+    --accent: #FF6BFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    padding: 16px 16px 60px;
+    overflow-x: hidden;
+    color: var(--text);
+  }
+
+  /* Animated starfield bg */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse at 20% 20%, #2D1B69 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, #1A0B3B 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, #0F0A1E 0%, #060412 100%);
+    z-index: -2;
+  }
+
+  .stars-layer {
+    position: fixed; inset: 0; z-index: -1;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 25% 40%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 45% 10%, rgba(255,255,255,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 25%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 88% 55%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 15% 80%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 92% 8%, rgba(255,255,255,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 35% 65%, rgba(255,200,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 45%, rgba(180,180,255,0.5) 0%, transparent 100%);
+    animation: twinkle 4s ease-in-out infinite alternate;
+  }
+
+  @keyframes twinkle {
+    0% { opacity: 0.6; }
+    100% { opacity: 1; }
+  }
+
+  /* Header */
+  .planrs-badge { position: fixed; top: 14px; left: 16px;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    border-radius: 20px; padding: 5px 14px;
+    font-size: 13px; font-weight: 900;
+    color: #1A0B00; z-index: 100;
+    box-shadow: 0 0 16px rgba(255,165,0,0.5);
+    font-family: 'Fredoka One', cursive;
+    letter-spacing: 0.5px;
+  }
+
+  /* Bump all main content above the light canvas */
+  h1, .subtitle, .instruction, .progress-wrap, .game-area { position: relative; z-index: 2; }
+
+  .score-box {
+    position: fixed; top: 12px; right: 16px;
+    background: linear-gradient(135deg, var(--card), #2D1860);
+    border: 2px solid var(--accent);
+    border-radius: 24px; padding: 7px 18px;
+    font-size: 15px; font-weight: 900;
+    color: var(--accent); z-index: 100;
+    box-shadow: 0 0 20px rgba(255,107,255,0.3);
+    font-family: 'Fredoka One', cursive;
+    transition: all 0.3s;
+  }
+
+  .score-box.bump {
+    animation: scoreBump 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+  }
+  @keyframes scoreBump {
+    0%,100% { transform: scale(1); }
+    30% { transform: scale(1.3) rotate(-3deg); }
+    60% { transform: scale(1.15) rotate(2deg); }
+  }
+
+  h1 {
+    text-align: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(26px, 5vw, 42px);
+    margin: 58px 0 6px;
+    background: linear-gradient(135deg, #FF6BFF, #A855F7, #60A5FA);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    filter: drop-shadow(0 0 20px rgba(168,85,247,0.5));
+    animation: titleFloat 3s ease-in-out infinite;
+  }
+
+  @keyframes titleFloat {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+
+  .subtitle {
+    text-align: center; color: var(--muted);
+    font-size: 14px; margin-bottom: 18px;
+    font-weight: 700;
+  }
+
+  .instruction {
+    background: linear-gradient(135deg, rgba(168,85,247,0.15), rgba(96,165,250,0.1));
+    border: 1.5px solid rgba(168,85,247,0.3);
+    border-radius: 16px; padding: 13px 18px;
+    margin: 0 auto 22px; max-width: 700px;
+    color: #C4B5FD; font-size: 14px; font-weight: 700;
+    backdrop-filter: blur(10px);
+  }
+
+  .game-area { max-width: 860px; margin: 0 auto; }
+
+  /* Pool */
+  .pool-label {
+    text-align: center; font-family: 'Fredoka One', cursive;
+    font-size: 13px; color: var(--muted); letter-spacing: 1px;
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+
+  .products-pool {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    justify-content: center; padding: 18px;
+    background: rgba(255,255,255,0.03);
+    border: 2px dashed rgba(168,85,247,0.5);
+    border-radius: 20px; margin-bottom: 28px;
+    min-height: 80px;
+    backdrop-filter: blur(6px);
+    position: relative;
+  }
+
+  /* Chips */
+  .item-chip {
+    background: linear-gradient(135deg, #2D1860, #1E1040);
+    border: 2px solid rgba(168,85,247,0.5);
+    border-radius: 28px; padding: 9px 18px;
+    font-size: 13px; font-weight: 800;
+    color: var(--text); cursor: grab;
+    user-select: none; touch-action: none;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    position: relative;
+    animation: chipEntrance 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    white-space: nowrap;
+  }
+
+  .item-chip::before {
+    content: '';
+    position: absolute; inset: -1px;
+    border-radius: 28px;
+    background: linear-gradient(135deg, rgba(168,85,247,0.3), rgba(96,165,250,0.2), rgba(255,107,255,0.2));
+    opacity: 0; transition: opacity 0.2s;
+    z-index: -1;
+  }
+
+  .item-chip:hover {
+    transform: translateY(-4px) scale(1.04);
+    box-shadow: 0 8px 24px rgba(168,85,247,0.4), 0 0 12px rgba(255,107,255,0.2);
+    border-color: var(--accent);
+  }
+
+  .item-chip:hover::before { opacity: 1; }
+  .item-chip:active { cursor: grabbing; transform: scale(1.08) rotate(2deg); }
+
+  .item-chip.dragging {
+    opacity: 0.3;
+    transform: scale(0.95);
+  }
+
+  @keyframes chipEntrance {
+    from { opacity: 0; transform: scale(0.4) rotate(-10deg); }
+    to { opacity: 1; transform: scale(1) rotate(0deg); }
+  }
+
+  /* Category boxes */
+  .categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 16px;
+  }
+
+  .category-box {
+    background: rgba(255,255,255,0.03);
+    border-radius: 22px; padding: 16px;
+    min-height: 160px;
+    border: 2.5px solid rgba(255,255,255,0.12);
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    backdrop-filter: blur(6px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .category-box::before {
+    content: '';
+    position: absolute; inset: 0;
+    border-radius: 20px;
+    opacity: 0.08;
+    transition: opacity 0.3s;
+  }
+
+  .category-box.children { border-color: rgba(255,107,107,0.4); }
+  .category-box.children::before { background: var(--children); }
+  .category-box.teens { border-color: rgba(168,85,247,0.4); }
+  .category-box.teens::before { background: var(--teens); }
+  .category-box.adults { border-color: rgba(59,130,246,0.4); }
+  .category-box.adults::before { background: var(--adults); }
+  .category-box.seniors { border-color: rgba(16,185,129,0.4); }
+  .category-box.seniors::before { background: var(--seniors); }
+
+  .category-box.drag-over {
+    transform: scale(1.04);
+    background: rgba(255,255,255,0.08);
+  }
+
+  .category-box.children.drag-over { border-color: var(--children); box-shadow: 0 0 30px rgba(255,107,107,0.4); }
+  .category-box.teens.drag-over { border-color: var(--teens); box-shadow: 0 0 30px rgba(168,85,247,0.4); }
+  .category-box.adults.drag-over { border-color: var(--adults); box-shadow: 0 0 30px rgba(59,130,246,0.4); }
+  .category-box.seniors.drag-over { border-color: var(--seniors); box-shadow: 0 0 30px rgba(16,185,129,0.4); }
+
+  .cat-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 14px; text-align: center;
+    padding: 6px 10px; border-radius: 16px;
+    margin-bottom: 10px; display: block;
+    letter-spacing: 0.3px;
+  }
+  .children .cat-title { background: rgba(255,107,107,0.2); color: #FF8585; }
+  .teens .cat-title { background: rgba(168,85,247,0.2); color: #C084FC; }
+  .adults .cat-title { background: rgba(59,130,246,0.2); color: #60A5FA; }
+  .seniors .cat-title { background: rgba(16,185,129,0.2); color: #34D399; }
+
+  .cat-emoji {
+    font-size: 28px; display: block;
+    text-align: center; margin-bottom: 6px;
+    animation: emojiWiggle 2.5s ease-in-out infinite;
+  }
+  .category-box:nth-child(1) .cat-emoji { animation-delay: 0s; }
+  .category-box:nth-child(2) .cat-emoji { animation-delay: 0.6s; }
+  .category-box:nth-child(3) .cat-emoji { animation-delay: 1.2s; }
+  .category-box:nth-child(4) .cat-emoji { animation-delay: 1.8s; }
+
+  @keyframes emojiWiggle {
+    0%,100% { transform: rotate(-5deg) scale(1); }
+    25% { transform: rotate(5deg) scale(1.1); }
+    50% { transform: rotate(-3deg) scale(1); }
+    75% { transform: rotate(3deg) scale(1.05); }
+  }
+
+  .dropped-items {
+    display: flex; flex-wrap: wrap; gap: 5px;
+    min-height: 40px;
+  }
+
+  .placed-chip {
+    padding: 5px 12px; border-radius: 20px;
+    font-size: 12px; font-weight: 800;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  .placed-chip.correct {
+    background: rgba(16,185,129,0.2);
+    color: #34D399;
+    border: 1.5px solid rgba(16,185,129,0.5);
+    animation: correctPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .placed-chip.wrong {
+    background: rgba(239,68,68,0.2);
+    color: #F87171;
+    border: 1.5px solid rgba(239,68,68,0.5);
+    animation: wrongShake 0.5s ease;
+  }
+
+  @keyframes correctPop {
+    0% { transform: scale(0) rotate(-15deg); opacity: 0; }
+    50% { transform: scale(1.3) rotate(5deg); }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
+  }
+
+  @keyframes wrongShake {
+    0%,100% { transform: translateX(0) rotate(0); }
+    20% { transform: translateX(-10px) rotate(-3deg); }
+    40% { transform: translateX(10px) rotate(3deg); }
+    60% { transform: translateX(-8px) rotate(-2deg); }
+    80% { transform: translateX(8px) rotate(2deg); }
+  }
+
+  /* Feedback */
+  .feedback-msg {
+    text-align: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: 20px; min-height: 36px;
+    margin: 18px 0;
+    transition: all 0.3s;
+    filter: drop-shadow(0 0 8px currentColor);
+  }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+
+  .btn {
+    padding: 12px 28px; border: none; border-radius: 28px;
+    font-size: 15px; font-weight: 900;
+    cursor: pointer; transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    font-family: 'Fredoka One', cursive;
+    letter-spacing: 0.5px;
+    position: relative; overflow: hidden;
+  }
+
+  .btn::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: rgba(255,255,255,0.15);
+    opacity: 0; transition: opacity 0.15s;
+  }
+
+  .btn:hover { transform: translateY(-3px) scale(1.05); }
+  .btn:hover::after { opacity: 1; }
+  .btn:active { transform: scale(0.97); }
+
+  .btn-check {
+    background: linear-gradient(135deg, #E74C3C, #C0392B);
+    color: white;
+    box-shadow: 0 4px 20px rgba(231,76,60,0.4);
+  }
+
+  .btn-try {
+    background: linear-gradient(135deg, #F39C12, #E67E22);
+    color: white;
+    box-shadow: 0 4px 20px rgba(243,156,18,0.4);
+  }
+
+  .btn-next {
+    background: linear-gradient(135deg, #8E44AD, #6C3483);
+    color: white;
+    box-shadow: 0 4px 20px rgba(142,68,173,0.4);
+  }
+
+  /* Result panel */
+  .result-panel {
+    display: none;
+    background: linear-gradient(135deg, rgba(45,24,96,0.95), rgba(30,16,64,0.95));
+    border: 2px solid rgba(168,85,247,0.5);
+    border-radius: 24px; padding: 30px;
+    text-align: center; margin-top: 24px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 60px rgba(168,85,247,0.3);
+    animation: resultReveal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes resultReveal {
+    from { opacity: 0; transform: scale(0.7) translateY(30px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .result-panel h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 26px;
+    background: linear-gradient(135deg, #FFD700, #FF6BFF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 10px 0 8px;
+  }
+
+  .result-panel .stars {
+    font-size: 36px; margin: 8px 0;
+    animation: starsEntrance 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+  }
+
+  @keyframes starsEntrance {
+    from { transform: scale(0) rotate(-20deg); opacity: 0; }
+    to { transform: scale(1) rotate(0); opacity: 1; }
+  }
+
+  .result-panel p { color: var(--muted); font-size: 15px; font-weight: 700; }
+
+  /* Light ball canvas */
+  #lightCanvas {
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 1;
+    width: 100%; height: 100%;
+  }
+
+  /* Confetti canvas */
+  #confettiCanvas {
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 999;
+  }
+
+  /* Floating particles that appear on correct drop */
+  .particle {
+    position: fixed;
+    pointer-events: none;
+    font-size: 20px;
+    z-index: 998;
+    animation: particleFly 1s ease-out forwards;
+  }
+
+  @keyframes particleFly {
+    0% { transform: translate(0,0) scale(1) rotate(0deg); opacity: 1; }
+    100% { transform: translate(var(--tx), var(--ty)) scale(0) rotate(360deg); opacity: 0; }
+  }
+
+  /* Ghost drag element */
+  #dragGhost {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.9;
+    transition: transform 0.05s;
+    display: none;
+  }
+
+  /* Progress bar */
+  .progress-wrap {
+    max-width: 700px; margin: 0 auto 20px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 20px; height: 10px; overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, #A855F7, #FF6BFF);
+    border-radius: 20px;
+    transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 0 10px rgba(168,85,247,0.6);
+  }
+</style>
+</head>
+<body>
+<div class="stars-layer"></div>
+<canvas id="lightCanvas"></canvas>
+<canvas id="confettiCanvas"></canvas>
+<div id="dragGhost"></div>
+
+<div class="planrs-badge">⭐ Planrs</div>
+<div class="score-box" id="scoreBox">Score: 0 / 12</div>
+
+<h1>🧩 Sort the Customers!</h1>
+<p class="subtitle">Section 2 Activity A — Drag each product to the right customer group</p>
+
+<div class="instruction">
+  🎮 <strong>How to play:</strong> Each product is best suited for a specific customer group. Drag & drop it to the correct box!
+</div>
+
+<div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+<div class="game-area">
+  <div class="pool-label">🎁 Products to Sort</div>
+  <div class="products-pool" id="pool">
+    <div class="item-chip" draggable="true" data-item="Crayons & Sketch Pens" data-cat="children" style="animation-delay:0.0s">🖍️ Crayons & Sketch Pens</div>
+    <div class="item-chip" draggable="true" data-item="Cricket Video Game" data-cat="teens" style="animation-delay:0.05s">🎮 Cricket Video Game</div>
+    <div class="item-chip" draggable="true" data-item="Reading Glasses" data-cat="seniors" style="animation-delay:0.10s">👓 Reading Glasses</div>
+    <div class="item-chip" draggable="true" data-item="Washing Machine" data-cat="adults" style="animation-delay:0.15s">🫧 Washing Machine</div>
+    <div class="item-chip" draggable="true" data-item="Nursery Rhyme Book" data-cat="children" style="animation-delay:0.20s">📚 Nursery Rhyme Book</div>
+    <div class="item-chip" draggable="true" data-item="Stylish Sneakers" data-cat="teens" style="animation-delay:0.25s">👟 Stylish Sneakers</div>
+    <div class="item-chip" draggable="true" data-item="Joint Pain Cream" data-cat="seniors" style="animation-delay:0.30s">💊 Joint Pain Cream</div>
+    <div class="item-chip" draggable="true" data-item="Car Insurance" data-cat="adults" style="animation-delay:0.35s">🚗 Car Insurance</div>
+    <div class="item-chip" draggable="true" data-item="Cartoon Tiffin Box" data-cat="children" style="animation-delay:0.40s">🍱 Cartoon Tiffin Box</div>
+    <div class="item-chip" draggable="true" data-item="Exam Preparation App" data-cat="teens" style="animation-delay:0.45s">📱 Exam Preparation App</div>
+    <div class="item-chip" draggable="true" data-item="Monthly Grocery Pack" data-cat="adults" style="animation-delay:0.50s">🛒 Monthly Grocery Pack</div>
+    <div class="item-chip" draggable="true" data-item="Daily Newspaper" data-cat="seniors" style="animation-delay:0.55s">📰 Daily Newspaper</div>
+  </div>
+
+  <div class="categories">
+    <div class="category-box children" id="drop-children" data-accept="children">
+      <span class="cat-emoji">👦</span>
+      <div class="cat-title">Children (Age 5–12)</div>
+      <div class="dropped-items" id="items-children"></div>
+    </div>
+    <div class="category-box teens" id="drop-teens" data-accept="teens">
+      <span class="cat-emoji">🧑</span>
+      <div class="cat-title">Teenagers (Age 13–18)</div>
+      <div class="dropped-items" id="items-teens"></div>
+    </div>
+    <div class="category-box adults" id="drop-adults" data-accept="adults">
+      <span class="cat-emoji">👨‍💼</span>
+      <div class="cat-title">Adults / Parents</div>
+      <div class="dropped-items" id="items-adults"></div>
+    </div>
+    <div class="category-box seniors" id="drop-seniors" data-accept="seniors">
+      <span class="cat-emoji">👴</span>
+      <div class="cat-title">Senior Citizens</div>
+      <div class="dropped-items" id="items-seniors"></div>
+    </div>
+  </div>
+
+  <div class="feedback-msg" id="feedback"></div>
+  <div class="btn-row">
+    <button class="btn btn-check" onclick="checkAll()">✅ Check Answers</button>
+    <button class="btn btn-try" onclick="resetGame()">🔄 Try Again</button>
+  </div>
+
+  <div class="result-panel" id="resultPanel">
+    <div class="stars" id="resultStars">⭐⭐⭐</div>
+    <h2 id="resultTitle">You Know Your Customers!</h2>
+    <p id="resultMsg"></p>
+    <div class="btn-row" style="margin-top:18px">
+      <button class="btn btn-try" onclick="resetGame()">🔄 Play Again</button>
+      <button class="btn btn-next" onclick="alert('Move to Section 2 Activity B!')">➡️ Next Activity</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let dragItem = null, score = 0, placed = {};
+const correctMsgs = ["Great thinking! 🧠", "Customer expert! 🏆", "You're a star! ⭐", "Amazing! 🎉", "Nailed it! 💥", "Brilliant! ✨"];
+const wrongMsgs = ["Not quite — try again! ❌", "Hmm, think harder! 🤔", "Wrong group! Give it another shot! 💭"];
+
+// ---- Drag & Drop ----
+document.querySelectorAll('.item-chip').forEach(chip => {
+  chip.addEventListener('dragstart', e => {
+    dragItem = chip;
+    setTimeout(() => chip.classList.add('dragging'), 0);
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  chip.addEventListener('dragend', () => chip.classList.remove('dragging'));
+
+  // Touch support
+  let touchStartX, touchStartY;
+  chip.addEventListener('touchstart', e => {
+    dragItem = chip;
+    chip.style.opacity = '0.4';
+    const t = e.touches[0];
+    touchStartX = t.clientX; touchStartY = t.clientY;
+    showGhost(chip, t.clientX, t.clientY);
+  }, { passive: true });
+
+  chip.addEventListener('touchmove', e => {
+    const t = e.touches[0];
+    moveGhost(t.clientX, t.clientY);
+  }, { passive: true });
+
+  chip.addEventListener('touchend', e => {
+    chip.style.opacity = '1';
+    hideGhost();
+    const t = e.changedTouches[0];
+    const el = document.elementFromPoint(t.clientX, t.clientY);
+    const box = el && el.closest('.category-box');
+    if (box) handleDrop(box);
+    dragItem = null;
+  });
+});
+
+document.querySelectorAll('.category-box').forEach(box => {
+  box.addEventListener('dragover', e => { e.preventDefault(); box.classList.add('drag-over'); });
+  box.addEventListener('dragleave', () => box.classList.remove('drag-over'));
+  box.addEventListener('drop', e => { e.preventDefault(); box.classList.remove('drag-over'); handleDrop(box); });
+});
+
+// Ghost drag element for touch
+function showGhost(chip, x, y) {
+  const g = document.getElementById('dragGhost');
+  g.textContent = chip.textContent;
+  g.style.cssText = `display:block; left:${x-60}px; top:${y-20}px;
+    background:linear-gradient(135deg,#2D1860,#1E1040);
+    border:2px solid rgba(168,85,247,0.8); border-radius:28px;
+    padding:9px 18px; font-size:13px; font-weight:800; color:#F0E6FF;
+    box-shadow:0 8px 30px rgba(168,85,247,0.5);
+    font-family:'Nunito',sans-serif; white-space:nowrap;`;
+}
+function moveGhost(x, y) {
+  const g = document.getElementById('dragGhost');
+  g.style.left = (x-60)+'px';
+  g.style.top = (y-20)+'px';
+}
+function hideGhost() {
+  document.getElementById('dragGhost').style.display = 'none';
+}
+
+// ---- Drop handler ----
+function handleDrop(box) {
+  if (!dragItem) return;
+  const cat = box.dataset.accept;
+  const itemCat = dragItem.dataset.cat;
+  const itemName = dragItem.dataset.item;
+  if (placed[itemName]) return;
+
+  const isCorrect = itemCat === cat;
+  placed[itemName] = { correct: isCorrect };
+
+  const chip = document.createElement('div');
+  chip.className = 'placed-chip ' + (isCorrect ? 'correct' : 'wrong');
+  chip.textContent = dragItem.textContent;
+  box.querySelector('.dropped-items').appendChild(chip);
+  dragItem.style.display = 'none';
+
+  const fb = document.getElementById('feedback');
+
+  if (isCorrect) {
+    score++;
+    updateScore();
+    fb.textContent = correctMsgs[Math.floor(Math.random() * correctMsgs.length)];
+    fb.style.color = '#34D399';
+    spawnParticles(box);
+  } else {
+    fb.textContent = wrongMsgs[Math.floor(Math.random() * wrongMsgs.length)];
+    fb.style.color = '#F87171';
+    setTimeout(() => {
+      chip.style.animation = 'none';
+      chip.style.opacity = '0';
+      chip.style.transform = 'scale(0)';
+      chip.style.transition = 'all 0.3s';
+      setTimeout(() => {
+        chip.remove();
+        dragItem.style.display = '';
+        dragItem.style.animation = 'chipEntrance 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        delete placed[itemName];
+      }, 350);
+    }, 1000);
+  }
+
+  dragItem = null;
+
+  if (Object.keys(placed).length === 12 && score === 12) {
+    setTimeout(showResult, 600);
+  }
+}
+
+// ---- Score ----
+function updateScore() {
+  const box = document.getElementById('scoreBox');
+  box.textContent = `Score: ${score} / 12`;
+  box.classList.remove('bump');
+  void box.offsetWidth;
+  box.classList.add('bump');
+  // Update progress
+  document.getElementById('progressBar').style.width = (score / 12 * 100) + '%';
+}
+
+// ---- Particles on correct drop ----
+function spawnParticles(box) {
+  const rect = box.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const emojis = ['⭐','✨','🎉','💫','🌟','🎊','💥'];
+  for (let i = 0; i < 6; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    const angle = (Math.random() * 360) * Math.PI / 180;
+    const dist = 80 + Math.random() * 60;
+    p.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+    p.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+    p.style.left = cx + 'px';
+    p.style.top = cy + 'px';
+    p.style.animationDelay = (Math.random() * 0.2) + 's';
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 1200);
+  }
+}
+
+// ---- Check ----
+function checkAll() {
+  const count = Object.keys(placed).length;
+  if (count < 12) {
+    const fb = document.getElementById('feedback');
+    fb.textContent = `${count}/12 placed — keep going! 💪`;
+    fb.style.color = '#A855F7';
+    return;
+  }
+  showResult();
+}
+
+// ---- Result ----
+function showResult() {
+  const p = document.getElementById('resultPanel');
+  p.style.display = 'block';
+  document.getElementById('resultStars').textContent = score >= 10 ? '⭐⭐⭐' : score >= 7 ? '⭐⭐' : '⭐';
+  document.getElementById('resultTitle').textContent =
+    score === 12 ? '🏆 Perfect Customer Expert!' :
+    score >= 8 ? '🎉 Well Done!' : '👍 Good Effort!';
+  document.getElementById('resultMsg').textContent =
+    `You scored ${score}/12! ${score === 12 ? 'You understand customers like a pro!' : 'Review the customer groups and try again!'}`;
+  p.scrollIntoView({ behavior: 'smooth' });
+  if (score >= 10) launchConfetti();
+}
+
+// ---- Reset ----
+function resetGame() {
+  score = 0; placed = {};
+  document.getElementById('scoreBox').textContent = 'Score: 0 / 12';
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('resultPanel').style.display = 'none';
+  document.getElementById('progressBar').style.width = '0%';
+  document.querySelectorAll('.item-chip').forEach(c => {
+    c.style.display = '';
+    c.style.animation = 'chipEntrance 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both';
+  });
+  document.querySelectorAll('.dropped-items').forEach(d => d.innerHTML = '');
+  stopConfetti();
+}
+
+// ---- Toffee Background Animation ----
+(function() {
+  const canvas = document.getElementById('lightCanvas');
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    initToffees();
+  }
+
+  const TOFFEE_COLORS = [
+    { body: '#FF6B6B', shine: '#FF9999', wrap: '#FF3333', twist: '#CC0000' },
+    { body: '#FFD700', shine: '#FFE966', wrap: '#FFA500', twist: '#CC7700' },
+    { body: '#A855F7', shine: '#C084FC', wrap: '#7C3AED', twist: '#5B21B6' },
+    { body: '#34D399', shine: '#6EE7B7', wrap: '#059669', twist: '#047857' },
+    { body: '#60A5FA', shine: '#93C5FD', wrap: '#2563EB', twist: '#1D4ED8' },
+    { body: '#F472B6', shine: '#F9A8D4', wrap: '#DB2777', twist: '#9D174D' },
+    { body: '#FB923C', shine: '#FDBA74', wrap: '#EA580C', twist: '#C2410C' },
+    { body: '#FACC15', shine: '#FDE68A', wrap: '#CA8A04', twist: '#92400E' },
+  ];
+
+  let toffees = [];
+
+  function makeToffee() {
+    const W = canvas.width, H = canvas.height;
+    const col = TOFFEE_COLORS[Math.floor(Math.random() * TOFFEE_COLORS.length)];
+    const side = Math.random() < 0.5 ? 'left' : 'right';
+    return {
+      x: side === 'left' ? -60 : W + 60,
+      y: Math.random() * H,
+      vx: side === 'left' ? (0.4 + Math.random() * 0.8) : -(0.4 + Math.random() * 0.8),
+      vy: (Math.random() - 0.5) * 0.5,
+      rot: Math.random() * Math.PI * 2,
+      rotSpeed: (Math.random() - 0.5) * 0.025,
+      w: 38 + Math.random() * 18,
+      h: 22 + Math.random() * 10,
+      col,
+      alpha: 0.55 + Math.random() * 0.35,
+      wobble: Math.random() * Math.PI * 2,
+      wobbleSpeed: 0.018 + Math.random() * 0.012,
+      scale: 0.85 + Math.random() * 0.5,
+    };
+  }
+
+  function initToffees() {
+    const W = canvas.width, H = canvas.height;
+    toffees = [];
+    // seed toffees spread across screen at start
+    for (let i = 0; i < 22; i++) {
+      const col = TOFFEE_COLORS[Math.floor(Math.random() * TOFFEE_COLORS.length)];
+      toffees.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 1.1,
+        vy: (Math.random() - 0.5) * 0.7,
+        rot: Math.random() * Math.PI * 2,
+        rotSpeed: (Math.random() - 0.5) * 0.022,
+        w: 36 + Math.random() * 20,
+        h: 20 + Math.random() * 12,
+        col,
+        alpha: 0.5 + Math.random() * 0.4,
+        wobble: Math.random() * Math.PI * 2,
+        wobbleSpeed: 0.016 + Math.random() * 0.014,
+        scale: 0.8 + Math.random() * 0.55,
+      });
+    }
+  }
+
+  function drawToffee(t) {
+    const { x, y, rot, w, h, col, alpha, scale } = t;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.translate(x, y);
+    ctx.rotate(rot);
+    ctx.scale(scale, scale);
+
+    const hw = w / 2, hh = h / 2;
+
+    // === Wrapper twist left ===
+    ctx.save();
+    ctx.fillStyle = col.wrap;
+    ctx.beginPath();
+    // left twisted end - fan shape
+    ctx.moveTo(-hw, 0);
+    ctx.bezierCurveTo(-hw - 14, -hh - 6, -hw - 18, -2, -hw - 14, 0);
+    ctx.bezierCurveTo(-hw - 18, 2, -hw - 14, hh + 6, -hw, 0);
+    ctx.fill();
+    // left twist lines
+    ctx.strokeStyle = col.twist;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(-hw - 2, -hh + 2);
+    ctx.quadraticCurveTo(-hw - 10, 0, -hw - 2, hh - 2);
+    ctx.stroke();
+    ctx.restore();
+
+    // === Wrapper twist right ===
+    ctx.save();
+    ctx.fillStyle = col.wrap;
+    ctx.beginPath();
+    ctx.moveTo(hw, 0);
+    ctx.bezierCurveTo(hw + 14, -hh - 6, hw + 18, -2, hw + 14, 0);
+    ctx.bezierCurveTo(hw + 18, 2, hw + 14, hh + 6, hw, 0);
+    ctx.fill();
+    ctx.strokeStyle = col.twist;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(hw + 2, -hh + 2);
+    ctx.quadraticCurveTo(hw + 10, 0, hw + 2, hh - 2);
+    ctx.stroke();
+    ctx.restore();
+
+    // === Body (rounded rectangle) ===
+    ctx.save();
+    ctx.beginPath();
+    ctx.roundRect(-hw, -hh, w, h, hh * 0.7);
+    // body gradient
+    const bodyGrad = ctx.createLinearGradient(-hw, -hh, -hw, hh);
+    bodyGrad.addColorStop(0, col.shine);
+    bodyGrad.addColorStop(0.35, col.body);
+    bodyGrad.addColorStop(0.75, col.wrap);
+    bodyGrad.addColorStop(1, col.twist);
+    ctx.fillStyle = bodyGrad;
+    ctx.fill();
+
+    // stripe lines on body
+    ctx.strokeStyle = col.wrap + 'AA';
+    ctx.lineWidth = 1.8;
+    for (let s = -1; s <= 1; s++) {
+      const sx = s * (hw * 0.38);
+      ctx.beginPath();
+      ctx.moveTo(sx, -hh);
+      ctx.lineTo(sx, hh);
+      ctx.stroke();
+    }
+
+    // body outline
+    ctx.strokeStyle = col.twist;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.roundRect(-hw, -hh, w, h, hh * 0.7);
+    ctx.stroke();
+    ctx.restore();
+
+    // === Shine highlight ===
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(-hw * 0.2, -hh * 0.35, hw * 0.38, hh * 0.22, -0.3, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ctx.fill();
+    ctx.restore();
+
+    ctx.restore();
+  }
+
+  function animateToffees() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const W = canvas.width, H = canvas.height;
+
+    toffees.forEach(t => {
+      t.wobble += t.wobbleSpeed;
+      t.x += t.vx;
+      t.y += t.vy + Math.sin(t.wobble) * 0.3;
+      t.rot += t.rotSpeed;
+
+      // wrap around screen edges
+      const margin = 80;
+      if (t.x > W + margin) t.x = -margin;
+      if (t.x < -margin) t.x = W + margin;
+      if (t.y > H + margin) t.y = -margin;
+      if (t.y < -margin) t.y = H + margin;
+
+      drawToffee(t);
+    });
+
+    requestAnimationFrame(animateToffees);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  animateToffees();
+})();
+
+
+let confettiRunning = false, confettiFrame;
+function launchConfetti() {
+  const canvas = document.getElementById('confettiCanvas');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const ctx = canvas.getContext('2d');
+  const pieces = [];
+  const colors = ['#FF6BFF','#A855F7','#60A5FA','#FFD700','#34D399','#FF6B6B','#F59E0B'];
+
+  for (let i = 0; i < 120; i++) {
+    pieces.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      w: Math.random() * 10 + 6,
+      h: Math.random() * 6 + 3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      vx: (Math.random() - 0.5) * 3,
+      vy: Math.random() * 3 + 2,
+      rot: Math.random() * 360,
+      rotV: (Math.random() - 0.5) * 8
+    });
+  }
+
+  confettiRunning = true;
+  let t = 0;
+  function draw() {
+    if (!confettiRunning) { ctx.clearRect(0,0,canvas.width,canvas.height); return; }
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.rot += p.rotV;
+      if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; }
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI / 180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+    });
+    t++;
+    if (t < 240) confettiFrame = requestAnimationFrame(draw);
+    else stopConfetti();
+  }
+  draw();
+}
+
+function stopConfetti() {
+  confettiRunning = false;
+  cancelAnimationFrame(confettiFrame);
+  const canvas = document.getElementById('confettiCanvas');
+  canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
+}
+</script>
+</body>
+</html>

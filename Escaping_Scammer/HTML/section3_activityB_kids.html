@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⭐ Planrs | What Would You Do? 🏏</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Nunito',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+/* ════════════════════════════════════════
+   EPIC BACKGROUND LAYER STACK
+════════════════════════════════════════ */
+#bg{position:fixed;inset:0;z-index:0;overflow:hidden;}
+
+/* Layer 1 — canvas galaxy */
+#galaxy{position:absolute;inset:0;}
+
+/* Layer 2 — morphing colour wash */
+.colorwash{
+  position:absolute;inset:0;
+  animation:cwCycle 12s ease-in-out infinite;
+  mix-blend-mode:overlay;
+  opacity:.7;
+}
+@keyframes cwCycle{
+  0%  {background:radial-gradient(ellipse at 20% 30%,#ff006e 0%,transparent 55%),radial-gradient(ellipse at 80% 70%,#3a0ca3 0%,transparent 55%);}
+  16% {background:radial-gradient(ellipse at 70% 20%,#f72585 0%,transparent 55%),radial-gradient(ellipse at 30% 80%,#4361ee 0%,transparent 55%);}
+  33% {background:radial-gradient(ellipse at 50% 50%,#7209b7 0%,transparent 60%),radial-gradient(ellipse at 10% 90%,#06d6a0 0%,transparent 50%);}
+  50% {background:radial-gradient(ellipse at 80% 10%,#f77f00 0%,transparent 50%),radial-gradient(ellipse at 20% 60%,#e63946 0%,transparent 55%);}
+  66% {background:radial-gradient(ellipse at 30% 70%,#118ab2 0%,transparent 55%),radial-gradient(ellipse at 90% 40%,#ffd166 0%,transparent 50%);}
+  83% {background:radial-gradient(ellipse at 60% 80%,#06d6a0 0%,transparent 55%),radial-gradient(ellipse at 40% 20%,#ef233c 0%,transparent 55%);}
+  100%{background:radial-gradient(ellipse at 20% 30%,#ff006e 0%,transparent 55%),radial-gradient(ellipse at 80% 70%,#3a0ca3 0%,transparent 55%);}
+}
+
+/* Layer 3 — lava morphing blobs */
+.blob{
+  position:absolute;border-radius:50%;
+  filter:blur(50px);
+  mix-blend-mode:screen;
+  animation:blobMorph ease-in-out infinite alternate;
+}
+@keyframes blobMorph{
+  0%  {transform:scale(1) translate(0,0);border-radius:60% 40% 70% 30%/40% 60% 40% 60%;}
+  25% {transform:scale(1.2) translate(30px,-20px);border-radius:30% 70% 40% 60%/60% 30% 70% 40%;}
+  50% {transform:scale(.9) translate(-20px,30px);border-radius:70% 30% 60% 40%/30% 70% 30% 70%;}
+  75% {transform:scale(1.15) translate(10px,10px);border-radius:40% 60% 30% 70%/70% 40% 60% 30%;}
+  100%{transform:scale(1) translate(0,0);border-radius:60% 40% 70% 30%/40% 60% 40% 60%;}
+}
+
+/* Layer 4 — neon wave rings */
+.wave-ring{
+  position:absolute;border-radius:50%;
+  border:3px solid;
+  animation:waveExpand ease-out infinite;
+  pointer-events:none;
+}
+@keyframes waveExpand{
+  0%  {transform:translate(-50%,-50%) scale(0);opacity:.9;}
+  100%{transform:translate(-50%,-50%) scale(4);opacity:0;}
+}
+
+/* Layer 5 — scanline shimmer */
+.scanlines{
+  position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.04) 3px,rgba(0,0,0,.04) 4px);
+  animation:scanMove 8s linear infinite;
+}
+@keyframes scanMove{0%{background-position:0 0;}100%{background-position:0 200px;}}
+
+/* Layer 6 — neon shooting stars */
+.shoot{
+  position:absolute;height:3px;border-radius:3px;
+  animation:shootAnim linear infinite;
+  opacity:0;
+}
+@keyframes shootAnim{
+  0%  {opacity:0;transform:translate(0,0) scaleX(.3);}
+  8%  {opacity:1;}
+  100%{opacity:0;transform:translate(-500px,350px) scaleX(.6);}
+}
+
+/* Layer 7 — floating neon diamonds */
+.ndiamond{
+  position:absolute;
+  animation:ndFloat ease-in-out infinite;
+  filter:drop-shadow(0 0 10px currentColor);
+}
+@keyframes ndFloat{
+  0%  {transform:translateY(0) rotate(0deg) scale(1);}
+  50% {transform:translateY(-25px) rotate(180deg) scale(1.15);}
+  100%{transform:translateY(0) rotate(360deg) scale(1);}
+}
+
+/* ════ CRICKET STADIUM ════ */
+/* Ground */
+.field{
+  position:absolute;bottom:0;left:0;right:0;height:44vh;
+  background:
+    radial-gradient(ellipse 110% 80% at 50% 110%,#0a3d0a,#1b5e20 25%,#2e7d32 50%,#388e3c 70%,#43a047 85%,#66bb6a);
+  border-top:4px solid rgba(0,255,100,.3);
+  box-shadow:inset 0 30px 80px rgba(0,0,0,.7);
+}
+
+/* Grass mowing stripes */
+.gstripe{position:absolute;top:0;bottom:0;background:rgba(255,255,255,.025);}
+
+/* Boundary */
+.boundary{
+  position:absolute;border-radius:50%;
+  border:3px solid rgba(255,255,180,.18);
+  box-shadow:0 0 20px rgba(255,255,100,.1),inset 0 0 20px rgba(0,200,50,.05);
+}
+
+/* Pitch glow */
+.pitch{
+  position:absolute;bottom:26%;left:50%;transform:translateX(-50%);
+  width:36px;height:180px;
+  background:linear-gradient(180deg,#f5deb3,#c8a04a,#8b6914);
+  border-radius:8px;border:2px solid rgba(255,220,100,.4);
+  box-shadow:0 0 30px rgba(255,200,0,.5),0 0 60px rgba(255,150,0,.2);
+}
+.crease{position:absolute;left:-24px;right:-24px;height:2.5px;background:rgba(255,255,180,.9);box-shadow:0 0 8px rgba(255,255,100,.7);}
+.stump{width:3.5px;background:linear-gradient(180deg,#ffe0b2,#f5deb3);border-radius:2px;box-shadow:0 0 6px rgba(255,220,100,.6);}
+.bail{position:absolute;top:-4px;height:3px;background:#ffe0b2;border-radius:2px;box-shadow:0 0 4px rgba(255,220,100,.8);}
+
+/* Cricket ball — with fire trail */
+.cball{
+  position:absolute;width:18px;height:18px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#ff8f65,#cc1100);
+  border:2px solid #800000;
+  box-shadow:0 0 15px #ff5500,0 0 30px rgba(255,85,0,.5);
+  z-index:3;
+  animation:ballArc 2.8s cubic-bezier(.17,.67,.45,1.2) infinite;
+}
+.cball::before{content:'';position:absolute;top:50%;left:12%;width:76%;height:2px;background:rgba(255,255,255,.7);transform:translateY(-50%);border-radius:2px;}
+@keyframes ballArc{
+  0%  {left:51%;bottom:32%;transform:scale(.5);box-shadow:0 0 10px #ff5500;}
+  15% {left:44%;bottom:58%;transform:scale(.9);}
+  35% {left:28%;bottom:76%;transform:scale(1.25);box-shadow:0 0 25px #ff5500,0 0 50px rgba(255,85,0,.6);}
+  60% {left:10%;bottom:50%;transform:scale(1.1);}
+  78% {left:5% ;bottom:36%;transform:scale(1);}
+  90% {left:14%;bottom:33%;transform:scale(.9);}
+  100%{left:51%;bottom:32%;transform:scale(.5);}
+}
+/* Fire trail particles */
+.fire-trail{
+  position:absolute;border-radius:50%;pointer-events:none;
+  animation:fireFade ease-out infinite;
+}
+@keyframes fireFade{0%{opacity:.8;transform:scale(1);}100%{opacity:0;transform:scale(2) translateY(-15px);}}
+
+/* Players — more detailed */
+.player{position:absolute;animation:pBob ease-in-out infinite;}
+@keyframes pBob{0%,100%{transform:translateY(0) scaleX(1);}50%{transform:translateY(-6px) scaleX(1.03);}}
+.ph{width:22px;height:22px;border-radius:50%;border:2.5px solid rgba(0,0,0,.5);box-shadow:0 2px 6px rgba(0,0,0,.4);}
+.phelm{position:absolute;top:-4px;left:50%;transform:translateX(-50%);width:26px;height:14px;border-radius:50% 50% 0 0;border:2.5px solid rgba(0,0,0,.5);}
+.pbody{width:4px;height:26px;border-radius:3px;margin:0 auto;}
+.parms{display:flex;justify-content:center;position:relative;height:0;}
+.parm{width:18px;height:3.5px;border-radius:2px;background:#333;position:absolute;top:0;}
+.plegs{display:flex;gap:6px;margin:0 auto;width:fit-content;}
+.pleg{width:3.5px;border-radius:2px;background:#222;}
+.pshadow{position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:18px;height:5px;background:rgba(0,0,0,.35);border-radius:50%;filter:blur(3px);}
+.pbat{position:absolute;border-radius:3px;transform-origin:top center;background:linear-gradient(180deg,#ffe082,#a07020);}
+
+/* Crowd stands */
+.stands{position:absolute;bottom:100%;left:0;right:0;height:72px;}
+.crow-row{position:absolute;left:0;right:0;display:flex;justify-content:space-around;align-items:flex-end;}
+.cp{border-radius:50% 50% 0 0;position:relative;animation:cheer ease-in-out infinite;flex-shrink:0;}
+@keyframes cheer{0%,100%{transform:scaleY(1);}50%{transform:scaleY(.6) translateY(6px);}}
+.cflag{position:absolute;top:-14px;left:1px;width:11px;height:8px;border-radius:1px;animation:fwave ease-in-out infinite;transform-origin:left center;}
+@keyframes fwave{0%,100%{transform:rotate(-18deg);}50%{transform:rotate(18deg);}}
+
+/* Stand wall with neon glow */
+.stand-wall{
+  position:absolute;bottom:100%;left:0;right:0;height:22px;
+  background:linear-gradient(135deg,#1a1a3e,#2d1b69,#1a1a3e);
+  border-top:3px solid;
+  border-image:linear-gradient(90deg,#ff006e,#8338ec,#3a86ff,#06d6a0,#ffbe0b) 1;
+  box-shadow:0 -4px 20px rgba(131,56,236,.4);
+}
+
+/* Floodlight towers */
+.ltower{position:absolute;bottom:44%;}
+.lpole{
+  width:7px;border-radius:4px;
+  background:linear-gradient(180deg,#e0e0e0,#9e9e9e,#757575);
+  box-shadow:2px 0 8px rgba(0,0,0,.4);
+}
+.lamp-head{
+  position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  width:32px;height:12px;border-radius:6px;
+  background:linear-gradient(180deg,#fffde7,#ffd54f);
+  animation:lampFlick 2s ease-in-out infinite alternate;
+}
+@keyframes lampFlick{
+  0%  {box-shadow:0 0 20px #ffd54f,0 0 50px #ff8f00,0 0 100px rgba(255,200,0,.4);}
+  100%{box-shadow:0 0 35px #fff9c4,0 0 80px #ffd54f,0 0 150px rgba(255,240,0,.6);}
+}
+.lcone{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  width:0;height:0;
+  border-left:55px solid transparent;
+  border-right:55px solid transparent;
+  opacity:.08;
+  animation:lampFlick 2s ease-in-out infinite alternate;
+}
+/* Lamp glow halo */
+.lamp-halo{
+  position:absolute;top:-25px;left:50%;transform:translateX(-50%);
+  width:60px;height:60px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,200,.5),transparent);
+  filter:blur(12px);
+  animation:lampFlick 2s ease-in-out infinite alternate;
+}
+
+/* Crowd firework sparkles above stands */
+.sparkle{
+  position:absolute;
+  animation:spkl ease-out infinite;
+  border-radius:50%;
+  pointer-events:none;
+}
+@keyframes spkl{
+  0%  {transform:translate(0,0) scale(1);opacity:1;}
+  100%{transform:translate(var(--sx),var(--sy)) scale(0);opacity:0;}
+}
+
+/* ════ GAME UI ════ */
+.wrap{position:relative;z-index:10;max-width:880px;margin:0 auto;padding:14px;}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+
+.logo{
+  font-family:'Fredoka One',cursive;font-size:17px;color:#fff;
+  background:linear-gradient(135deg,#ff006e,#fb5607,#ff9f1c);
+  background-size:200%;
+  padding:8px 20px;border-radius:30px;
+  border:2px solid rgba(255,255,255,.4);
+  animation:logoPulse 3s ease-in-out infinite alternate,logoBg 4s linear infinite;
+}
+@keyframes logoPulse{0%{box-shadow:0 0 15px #ff006e,0 4px 18px rgba(255,0,110,.5);}100%{box-shadow:0 0 35px #ff006e,0 4px 30px rgba(255,0,110,.9),0 0 60px rgba(255,159,28,.4);}}
+@keyframes logoBg{0%{background-position:0%;}100%{background-position:200%;}}
+
+.scorebox{
+  font-family:'Fredoka One',cursive;font-size:17px;
+  background:linear-gradient(135deg,rgba(10,5,30,.95),rgba(30,10,60,.95));
+  padding:8px 20px;border-radius:30px;
+  border:2px solid transparent;
+  background-clip:padding-box;
+  position:relative;
+  animation:sbPulse 2s ease-in-out infinite alternate;
+}
+.scorebox::before{content:'';position:absolute;inset:-2px;border-radius:32px;background:linear-gradient(90deg,#ff006e,#8338ec,#3a86ff,#06d6a0);z-index:-1;animation:borderRot 3s linear infinite;}
+@keyframes borderRot{0%{filter:hue-rotate(0deg);}100%{filter:hue-rotate(360deg);}}
+@keyframes sbPulse{0%{box-shadow:0 0 20px rgba(131,56,236,.4);}100%{box-shadow:0 0 40px rgba(131,56,236,.8),0 0 80px rgba(58,134,255,.3);}}
+.sc-text{background:linear-gradient(90deg,#ffd700,#ff8f00,#ffd700);background-size:200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:logoBg 2s linear infinite;}
+
+/* Holographic game panel */
+.gpanel{
+  background:rgba(10,5,30,.65);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  border-radius:28px;padding:18px;
+  border:1.5px solid rgba(131,56,236,.5);
+  box-shadow:0 10px 50px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.1),0 0 60px rgba(131,56,236,.15);
+}
+
+/* Inner content card */
+.icard{
+  background:linear-gradient(145deg,#1a0533 0%,#0d1b4b 30%,#051a2e 60%,#1a0c30 100%);
+  border-radius:20px;padding:16px;
+  border:1.5px solid rgba(100,150,255,.25);
+  box-shadow:inset 0 2px 30px rgba(131,56,236,.1),0 4px 22px rgba(0,0,0,.5);
+  position:relative;overflow:hidden;
+}
+.icard::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 20% 0%,rgba(255,0,110,.08),transparent 60%),
+             radial-gradient(ellipse at 80% 100%,rgba(58,134,255,.08),transparent 60%);
+  pointer-events:none;
+}
+
+/* Animated border glow on icard */
+.icard::after{
+  content:'';position:absolute;inset:-1px;border-radius:20px;
+  background:linear-gradient(90deg,#ff006e,#8338ec,#3a86ff,#06d6a0,#ffbe0b,#ff006e);
+  background-size:400%;z-index:-1;
+  animation:borderRot 4s linear infinite;
+  opacity:.4;
+}
+
+.badge{
+  display:block;width:fit-content;margin:0 auto 8px;
+  font-family:'Fredoka One',cursive;font-size:13px;color:#fff;
+  background:linear-gradient(135deg,#06d6a0,#118ab2,#06d6a0);
+  background-size:200%;
+  padding:4px 20px;border-radius:30px;
+  box-shadow:0 3px 14px rgba(6,214,160,.6),0 0 30px rgba(17,138,178,.3);
+  animation:logoBg 3s linear infinite;
+}
+
+h1{
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(22px,4.5vw,34px);text-align:center;margin-bottom:2px;
+  background:linear-gradient(90deg,#ff006e,#fb5607,#ffbe0b,#06d6a0,#3a86ff,#8338ec,#ff006e);
+  background-size:300%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:logoBg 4s linear infinite;
+  filter:drop-shadow(0 0 8px rgba(255,0,110,.4));
+}
+.hicon{display:inline-block;-webkit-text-fill-color:initial;color:initial;animation:iconR 2s ease-in-out infinite;}
+@keyframes iconR{0%,100%{transform:rotate(-8deg) scale(1);}50%{transform:rotate(8deg) scale(1.1);}}
+
+.sub{text-align:center;font-size:13px;color:rgba(200,220,255,.8);margin-bottom:10px;font-weight:700;}
+
+/* Neon progress bar */
+.pwrap{
+  background:rgba(255,255,255,.06);border-radius:30px;height:16px;
+  margin-bottom:14px;overflow:hidden;
+  border:1px solid rgba(131,56,236,.3);
+  box-shadow:inset 0 2px 6px rgba(0,0,0,.3);
+}
+.pbar{
+  height:100%;border-radius:30px;
+  background:linear-gradient(90deg,#ff006e,#fb5607,#ffbe0b,#06d6a0,#3a86ff,#8338ec);
+  background-size:300%;
+  transition:width .7s cubic-bezier(.34,1.56,.64,1);
+  animation:logoBg 3s linear infinite;
+  position:relative;overflow:hidden;
+  box-shadow:0 0 15px rgba(255,0,110,.5),0 0 30px rgba(58,134,255,.3);
+}
+.pbar::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);
+  animation:pshine 1.5s linear infinite;
+}
+@keyframes pshine{0%{transform:translateX(-100%);}100%{transform:translateX(200%);}}
+
+/* Instruction */
+.instr{
+  background:linear-gradient(135deg,rgba(255,190,11,.08),rgba(255,0,110,.08),rgba(58,134,255,.08));
+  border:2px solid rgba(255,190,11,.35);
+  border-radius:14px;padding:10px 14px;text-align:center;
+  font-size:13px;color:rgba(255,230,150,.9);margin-bottom:12px;font-weight:700;
+  box-shadow:inset 0 0 20px rgba(255,190,11,.05);
+}
+
+/* Feedback */
+.fb{
+  text-align:center;font-family:'Fredoka One',cursive;font-size:16px;
+  padding:11px 16px;border-radius:16px;margin-bottom:12px;
+  min-height:48px;display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:all .3s cubic-bezier(.34,1.56,.64,1);
+}
+.fb-i{background:rgba(131,56,236,.12);color:rgba(200,200,255,.8);border:2px solid rgba(131,56,236,.3);}
+.fb-ok{background:linear-gradient(135deg,rgba(6,214,160,.2),rgba(17,138,178,.2));color:#06d6a0;border:2px solid #06d6a0;animation:fbBounce .5s cubic-bezier(.34,1.56,.64,1);box-shadow:0 0 20px rgba(6,214,160,.3);}
+.fb-no{background:linear-gradient(135deg,rgba(255,0,110,.2),rgba(251,86,7,.2));color:#ff6b9d;border:2px solid #ff006e;animation:fbShake .4s;box-shadow:0 0 20px rgba(255,0,110,.3);}
+@keyframes fbBounce{0%{transform:scale(.78);}60%{transform:scale(1.06);}100%{transform:scale(1);}}
+@keyframes fbShake{0%,100%{transform:translateX(0);}25%{transform:translateX(-11px);}75%{transform:translateX(11px);}}
+
+/* Pool */
+.plabel{
+  font-family:'Fredoka One',cursive;font-size:13px;text-align:center;margin-bottom:7px;
+  background:linear-gradient(90deg,#ff006e,#8338ec,#3a86ff);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.pool{
+  display:flex;flex-wrap:wrap;gap:9px;justify-content:center;
+  padding:14px;
+  background:rgba(131,56,236,.07);
+  border-radius:18px;
+  border:2px dashed rgba(131,56,236,.4);
+  margin-bottom:14px;min-height:60px;
+  box-shadow:inset 0 0 30px rgba(58,134,255,.05);
+}
+
+/* Action cards */
+.acard{
+  padding:9px 14px;border-radius:14px;
+  font-family:'Nunito',sans-serif;font-size:11.5px;font-weight:800;
+  color:#fff;cursor:grab;user-select:none;
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;
+  touch-action:none;text-align:center;max-width:190px;
+  position:relative;overflow:hidden;
+  animation:cardIn .5s cubic-bezier(.34,1.56,.64,1) both;
+  border:1.5px solid rgba(255,255,255,.35);
+}
+.acard::after{
+  content:'';position:absolute;top:0;left:-70%;width:45%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);
+  transform:skewX(-20deg);
+  animation:cshine 3.5s ease-in-out infinite;
+}
+@keyframes cshine{0%{left:-80%;}35%,100%{left:140%;}}
+.acard:hover{transform:translateY(-6px) scale(1.08) rotate(-1.5deg);}
+.acard:active{transform:scale(.93) rotate(2deg);cursor:grabbing;}
+.acard.dragging{opacity:.25;transform:rotate(5deg) scale(.88);}
+.acard.placed{opacity:.15;pointer-events:none;transform:scale(.86);}
+@keyframes cardIn{0%{opacity:0;transform:translateY(30px) scale(.6) rotate(-8deg);}100%{opacity:1;transform:translateY(0) scale(1) rotate(0);}}
+
+/* Scenarios */
+.scenes{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+.scene{
+  background:rgba(20,10,50,.7);
+  border:2px dashed rgba(131,56,236,.4);
+  border-radius:18px;padding:13px;
+  display:flex;gap:10px;align-items:flex-start;
+  transition:all .25s;flex-wrap:wrap;
+  box-shadow:0 2px 14px rgba(0,0,0,.3);
+  position:relative;overflow:hidden;
+}
+.scene::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,0,110,.04),rgba(58,134,255,.04));
+  border-radius:16px;pointer-events:none;
+}
+.scene:nth-child(odd){background:rgba(5,15,40,.75);border-color:rgba(58,134,255,.35);}
+.scene:nth-child(even){background:rgba(25,5,45,.75);border-color:rgba(255,0,110,.3);}
+.scene.over{
+  border-color:#ffbe0b;border-style:solid;
+  background:rgba(255,190,11,.08);
+  transform:scale(1.015);
+  box-shadow:0 6px 28px rgba(255,190,11,.3),0 0 0 4px rgba(255,190,11,.1);
+}
+.scene.correct{
+  border-color:#06d6a0;border-style:solid;
+  background:rgba(6,214,160,.1);
+  animation:scPop .5s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 4px 25px rgba(6,214,160,.3),0 0 40px rgba(6,214,160,.1);
+}
+@keyframes scPop{0%{transform:scale(1);}40%{transform:scale(1.04);}100%{transform:scale(1);}}
+.scene.wrong{animation:scShake .4s;}
+@keyframes scShake{0%,100%{transform:translateX(0);}20%{transform:translateX(-12px);}60%{transform:translateX(12px);}}
+
+.snum{
+  font-family:'Fredoka One',cursive;font-size:32px;min-width:36px;line-height:1;
+  background:linear-gradient(135deg,#ff006e,#ffbe0b);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 6px rgba(255,0,110,.4));
+}
+.sbody{flex:1;}
+.stext{font-size:12.5px;color:rgba(200,220,255,.9);line-height:1.55;margin-bottom:8px;font-weight:700;}
+.sdrop{
+  min-height:40px;border:2px dashed rgba(131,56,236,.5);border-radius:12px;
+  padding:7px 10px;display:flex;align-items:center;justify-content:center;
+  background:rgba(131,56,236,.08);
+  font-size:12px;color:rgba(160,140,220,.7);
+  transition:all .3s;font-weight:700;
+}
+.sdrop.filled{
+  background:linear-gradient(135deg,rgba(6,214,160,.15),rgba(17,138,178,.15));
+  border-color:#06d6a0;border-style:solid;
+  color:#06d6a0;font-size:12px;font-weight:800;
+  box-shadow:0 0 15px rgba(6,214,160,.2);
+}
+
+/* Final screen */
+.final{
+  display:none;border-radius:24px;padding:28px;text-align:center;
+  background:linear-gradient(145deg,#0d0221,#0d1b4b,#1a0533);
+  border:2px solid rgba(6,214,160,.5);
+  box-shadow:0 10px 50px rgba(0,0,0,.6),0 0 60px rgba(6,214,160,.2);
+}
+.final.show{display:block;animation:finP .65s cubic-bezier(.34,1.56,.64,1);}
+@keyframes finP{0%{transform:scale(.35) rotate(-10deg);opacity:0;}100%{transform:scale(1) rotate(0);opacity:1;}}
+.bigE{font-size:88px;display:block;animation:eBob 1.5s ease-in-out infinite;filter:drop-shadow(0 0 20px rgba(255,190,11,.6));}
+@keyframes eBob{0%,100%{transform:translateY(0) rotate(-4deg);}50%{transform:translateY(-17px) rotate(4deg);}}
+.finscore{
+  font-family:'Fredoka One',cursive;font-size:32px;margin:12px 0 4px;
+  background:linear-gradient(90deg,#ff006e,#ffbe0b,#06d6a0,#3a86ff);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 10px rgba(255,190,11,.5));
+}
+.finmsg{font-size:15px;color:rgba(200,220,255,.9);font-weight:800;margin-bottom:20px;}
+
+.btn{
+  padding:12px 28px;border:none;border-radius:30px;
+  font-family:'Fredoka One',cursive;font-size:16px;cursor:pointer;margin:6px;
+  transition:transform .2s,box-shadow .2s;
+  position:relative;overflow:hidden;border:2px solid rgba(255,255,255,.2);
+}
+.btn::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.18),transparent);border-radius:30px;}
+.btn:hover{transform:translateY(-3px);}
+.btn:active{transform:scale(.95);}
+.btnr{background:linear-gradient(135deg,#ff006e,#fb5607);color:#fff;box-shadow:0 5px 20px rgba(255,0,110,.5);}
+.btng{background:linear-gradient(135deg,#06d6a0,#118ab2);color:#fff;box-shadow:0 5px 20px rgba(6,214,160,.5);}
+
+/* Confetti */
+.cf{position:fixed;border-radius:3px;pointer-events:none;z-index:500;animation:cffall ease-in forwards;}
+@keyframes cffall{0%{transform:translateY(-20px) rotate(0) scale(1);opacity:1;}100%{transform:translateY(100vh) rotate(900deg) scale(.3);opacity:0;}}
+.sburst{position:fixed;pointer-events:none;z-index:450;}
+
+@media(max-width:600px){.acard{max-width:150px;font-size:11px;}.stext{font-size:12px;}h1{font-size:22px;}.bigE{font-size:62px;}}
+</style>
+</head>
+<body>
+
+<!-- ════════ EPIC BACKGROUND ════════ -->
+<div id="bg">
+  <!-- Canvas galaxy -->
+  <canvas id="galaxy"></canvas>
+
+  <!-- Colour wash -->
+  <div class="colorwash"></div>
+
+  <!-- Lava blobs -->
+  <div class="blob" id="b1" style="width:500px;height:500px;top:-100px;left:-150px;background:radial-gradient(circle,#ff006e,#8338ec);opacity:.35;animation-duration:8s;"></div>
+  <div class="blob" id="b2" style="width:600px;height:600px;top:10%;right:-180px;background:radial-gradient(circle,#3a86ff,#06d6a0);opacity:.3;animation-duration:11s;animation-delay:-4s;"></div>
+  <div class="blob" id="b3" style="width:400px;height:400px;bottom:20%;left:5%;background:radial-gradient(circle,#ffbe0b,#fb5607);opacity:.28;animation-duration:9s;animation-delay:-2s;"></div>
+  <div class="blob" id="b4" style="width:350px;height:350px;bottom:5%;right:10%;background:radial-gradient(circle,#8338ec,#3a86ff);opacity:.32;animation-duration:12s;animation-delay:-6s;"></div>
+  <div class="blob" id="b5" style="width:300px;height:300px;top:40%;left:40%;background:radial-gradient(circle,#06d6a0,#118ab2);opacity:.25;animation-duration:10s;animation-delay:-3s;"></div>
+
+  <!-- Scanlines -->
+  <div class="scanlines"></div>
+
+  <!-- Neon wave rings -->
+  <div id="wave-rings"></div>
+
+  <!-- Shooting stars -->
+  <div class="shoot" style="width:160px;top:6%;right:15%;transform:rotate(-28deg);background:linear-gradient(90deg,transparent,#ff006e,transparent);box-shadow:0 0 10px #ff006e;animation-duration:3.5s;animation-delay:0s;"></div>
+  <div class="shoot" style="width:110px;top:14%;right:45%;transform:rotate(-20deg);background:linear-gradient(90deg,transparent,#3a86ff,transparent);box-shadow:0 0 10px #3a86ff;animation-duration:5s;animation-delay:-2s;"></div>
+  <div class="shoot" style="width:130px;top:3%;right:65%;transform:rotate(-33deg);background:linear-gradient(90deg,transparent,#ffbe0b,transparent);box-shadow:0 0 10px #ffbe0b;animation-duration:4.5s;animation-delay:-4s;"></div>
+  <div class="shoot" style="width:100px;top:28%;right:5%;transform:rotate(-24deg);background:linear-gradient(90deg,transparent,#06d6a0,transparent);box-shadow:0 0 10px #06d6a0;animation-duration:6.5s;animation-delay:-1s;"></div>
+  <div class="shoot" style="width:80px;top:20%;right:80%;transform:rotate(-18deg);background:linear-gradient(90deg,transparent,#fb5607,transparent);box-shadow:0 0 10px #fb5607;animation-duration:5.5s;animation-delay:-3.5s;"></div>
+  <div class="shoot" style="width:90px;top:35%;right:30%;transform:rotate(-26deg);background:linear-gradient(90deg,transparent,#8338ec,transparent);box-shadow:0 0 10px #8338ec;animation-duration:4s;animation-delay:-1.5s;"></div>
+
+  <!-- Neon floating diamonds -->
+  <div id="diamonds"></div>
+
+  <!-- Stars -->
+  <div id="stars"></div>
+
+  <!-- Cricket field -->
+  <div class="field" id="fieldEl">
+    <div class="gstripe" style="left:0;width:8.33%"></div>
+    <div class="gstripe" style="left:16.66%;width:8.33%"></div>
+    <div class="gstripe" style="left:33.33%;width:8.33%"></div>
+    <div class="gstripe" style="left:50%;width:8.33%"></div>
+    <div class="gstripe" style="left:66.66%;width:8.33%"></div>
+    <div class="gstripe" style="left:83.33%;width:8.33%"></div>
+    <div class="boundary" style="width:90%;height:185%;bottom:0;left:5%;"></div>
+    <div class="boundary" style="width:46%;height:112%;bottom:0;left:27%;"></div>
+    <div class="pitch">
+      <div class="crease" style="bottom:12px;"></div>
+      <div class="crease" style="top:12px;"></div>
+    </div>
+    <!-- Stumps -->
+    <div style="position:absolute;bottom:27%;left:calc(50% - 15px);display:flex;gap:4px;">
+      <div class="stump" style="height:22px;"></div>
+      <div class="stump" style="height:22px;"></div>
+      <div class="stump" style="height:22px;"></div>
+    </div>
+    <div style="position:absolute;bottom:33.5%;left:calc(50% + 3px);display:flex;gap:4px;">
+      <div class="stump" style="height:22px;"></div>
+      <div class="stump" style="height:22px;"></div>
+      <div class="stump" style="height:22px;"></div>
+    </div>
+    <!-- Ball -->
+    <div class="cball"></div>
+    <!-- Players -->
+    <div id="players"></div>
+    <!-- Stands -->
+    <div class="stands" id="stands">
+      <div class="stand-wall"></div>
+    </div>
+  </div>
+
+  <!-- Flood lights -->
+  <div class="ltower" style="left:4%;">
+    <div class="lpole" style="height:17vh;"></div>
+    <div class="lamp-head"></div>
+    <div class="lamp-halo"></div>
+    <div class="lcone" style="border-top:150px solid rgba(255,240,100,1);"></div>
+  </div>
+  <div class="ltower" style="right:4%;">
+    <div class="lpole" style="height:17vh;"></div>
+    <div class="lamp-head"></div>
+    <div class="lamp-halo"></div>
+    <div class="lcone" style="border-top:150px solid rgba(255,240,100,1);"></div>
+  </div>
+  <div class="ltower" style="left:16%;">
+    <div class="lpole" style="height:12vh;"></div>
+    <div class="lamp-head" style="width:24px;height:9px;"></div>
+    <div class="lamp-halo" style="width:45px;height:45px;top:-18px;"></div>
+    <div class="lcone" style="border-top:100px solid rgba(255,240,100,1);border-left:35px solid transparent;border-right:35px solid transparent;"></div>
+  </div>
+  <div class="ltower" style="right:16%;">
+    <div class="lpole" style="height:12vh;"></div>
+    <div class="lamp-head" style="width:24px;height:9px;"></div>
+    <div class="lamp-halo" style="width:45px;height:45px;top:-18px;"></div>
+    <div class="lcone" style="border-top:100px solid rgba(255,240,100,1);border-left:35px solid transparent;border-right:35px solid transparent;"></div>
+  </div>
+
+  <!-- Floating emoji particles -->
+  <div id="floaters"></div>
+</div>
+
+<!-- ════════ GAME ════════ -->
+<div class="wrap">
+  <div class="topbar">
+    <div class="logo">⭐ Planrs</div>
+    <div class="scorebox"><span class="sc-text">🏏 Score: <span id="sc">0</span>/6</span></div>
+  </div>
+
+  <div class="gpanel">
+    <div class="icard">
+      <div class="badge">Section 3 · Activity B</div>
+      <h1><span class="hicon">🤔</span> What Would You Do?</h1>
+      <p class="sub">Match the correct action to each scam scenario!</p>
+      <div class="pwrap"><div class="pbar" id="pb" style="width:0%"></div></div>
+      <div class="instr">📋 Read each scam scenario, then <strong>drag the correct action card</strong> to the matching situation below! 🎯</div>
+      <div class="fb fb-i" id="fb">🎮 Drag an action card to the matching scenario!</div>
+
+      <div class="plabel">🃏 ACTION CARDS — DRAG TO THE MATCHING SCENARIO!</div>
+      <div class="pool" id="pool">
+        <div class="acard" draggable="true" data-id="a1" data-sc="s1" style="background:linear-gradient(135deg,#ff006e,#fb5607);box-shadow:0 5px 18px rgba(255,0,110,.4);">🛑 Don't click, show Amma</div>
+        <div class="acard" draggable="true" data-id="a2" data-sc="s2" style="background:linear-gradient(135deg,#ffbe0b,#fb5607);box-shadow:0 5px 18px rgba(255,190,11,.4);">📞 Hang up, tell teacher</div>
+        <div class="acard" draggable="true" data-id="a3" data-sc="s3" style="background:linear-gradient(135deg,#8338ec,#3a86ff);box-shadow:0 5px 18px rgba(131,56,236,.4);">❌ Don't download, close tab</div>
+        <div class="acard" draggable="true" data-id="a4" data-sc="s4" style="background:linear-gradient(135deg,#06d6a0,#118ab2);box-shadow:0 5px 18px rgba(6,214,160,.4);">🔒 Block &amp; report on Instagram</div>
+        <div class="acard" draggable="true" data-id="a5" data-sc="s5" style="background:linear-gradient(135deg,#3a86ff,#8338ec);box-shadow:0 5px 18px rgba(58,134,255,.4);">🚨 Call 1930 cybercrime helpline</div>
+        <div class="acard" draggable="true" data-id="a6" data-sc="s6" style="background:linear-gradient(135deg,#f72585,#7209b7);box-shadow:0 5px 18px rgba(247,37,133,.4);">⚠️ Close tab, check real URL</div>
+        <div class="acard" draggable="true" data-id="d1" data-sc="wrong" style="background:linear-gradient(135deg,#555,#777);box-shadow:0 5px 18px rgba(0,0,0,.4);">❌ Click to see what happens</div>
+        <div class="acard" draggable="true" data-id="d2" data-sc="wrong" style="background:linear-gradient(135deg,#555,#777);box-shadow:0 5px 18px rgba(0,0,0,.4);">❌ Send the money quickly</div>
+      </div>
+
+      <div class="scenes">
+        <div class="scene" data-id="s1" id="z-s1"><div class="snum">1</div><div class="sbody"><div class="stext">📱 You receive a WhatsApp message: <em>"CONGRATULATIONS! You won ₹10 Lakh! Click this link to claim your prize NOW before it expires!"</em> from an unknown number.</div><div class="sdrop" id="d-s1">🎯 Drop the correct action here</div></div></div>
+        <div class="scene" data-id="s2" id="z-s2"><div class="snum">2</div><div class="sbody"><div class="stext">📞 An unknown caller says <em>"Hello, I am from Microsoft. Your computer has a virus. Please give me your computer's password right now to fix it!"</em></div><div class="sdrop" id="d-s2">🎯 Drop the correct action here</div></div></div>
+        <div class="scene" data-id="s3" id="z-s3"><div class="snum">3</div><div class="sbody"><div class="stext">💬 A friend online says <em>"Hey! I found a cheat code app for your favourite game! Download this file from my link — it's totally safe, I promise!"</em></div><div class="sdrop" id="d-s3">🎯 Drop the correct action here</div></div></div>
+        <div class="scene" data-id="s4" id="z-s4"><div class="snum">4</div><div class="sbody"><div class="stext">📸 A stranger on Instagram DMs you: <em>"I have your photos and will share them publicly unless you send me ₹500 to Paytm 9876543210 immediately!"</em></div><div class="sdrop" id="d-s4">🎯 Drop the correct action here</div></div></div>
+        <div class="scene" data-id="s5" id="z-s5"><div class="snum">5</div><div class="sbody"><div class="stext">💸 Your father got tricked and sent money to a scammer pretending to be the electricity department. The money has already been transferred.</div><div class="sdrop" id="d-s5">🎯 Drop the correct action here</div></div></div>
+        <div class="scene" data-id="s6" id="z-s6"><div class="snum">6</div><div class="sbody"><div class="stext">🔗 You receive an SMS: <em>"Your SBI account is suspended! Click here: www.sbi-secure-verify.net and enter your OTP to reactivate immediately!"</em></div><div class="sdrop" id="d-s6">🎯 Drop the correct action here</div></div></div>
+      </div>
+
+      <div class="final" id="fin">
+        <span class="bigE">🦸</span>
+        <div class="finscore" id="finScore"></div>
+        <div class="finmsg" id="finMsg"></div>
+        <button class="btn btnr" onclick="resetGame()">🔄 Try Again</button>
+        <button class="btn btng" onclick="alert('Section 3 mastered! Move to Section 4! 🎉')">➡️ Next Section</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════ CANVAS GALAXY ════ */
+(function(){
+  const canvas=document.getElementById('galaxy');
+  const ctx=canvas.getContext('2d');
+  let W,H,particles=[],nebulae=[];
+
+  function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+  resize();window.addEventListener('resize',()=>{resize();init();});
+
+  const STAR_COLS=['#ff6bff','#ff6b6b','#ffd700','#6bffff','#6bff9e','#ff9e6b','#b06bff','#6bbfff','#fff'];
+  const NEBULA_COLS=['rgba(255,0,110,.06)','rgba(131,56,236,.07)','rgba(58,134,255,.06)','rgba(6,214,160,.05)','rgba(255,190,11,.06)'];
+
+  function init(){
+    particles=[];nebulae=[];
+    // Stars
+    for(let i=0;i<220;i++){
+      particles.push({
+        x:Math.random()*W, y:Math.random()*H*.7,
+        r:Math.random()*2.5+.5,
+        col:STAR_COLS[Math.floor(Math.random()*STAR_COLS.length)],
+        pulse:Math.random()*Math.PI*2,
+        pulseSpeed:Math.random()*.04+.01,
+        twinkle:Math.random()*.5+.3
+      });
+    }
+    // Nebula patches
+    for(let i=0;i<12;i++){
+      nebulae.push({
+        x:Math.random()*W, y:Math.random()*H*.65,
+        r:Math.random()*120+60,
+        col:NEBULA_COLS[Math.floor(Math.random()*NEBULA_COLS.length)],
+        pulse:Math.random()*Math.PI*2,
+        speed:Math.random()*.008+.003
+      });
+    }
+  }
+  init();
+
+  // Meteor shower
+  let meteors=[];
+  function spawnMeteor(){
+    if(Math.random()<.015){
+      const cols=['#ff006e','#3a86ff','#ffbe0b','#06d6a0','#8338ec','#fb5607'];
+      meteors.push({
+        x:Math.random()*W+200, y:-10,
+        vx:-(Math.random()*8+6), vy:Math.random()*5+4,
+        life:1, col:cols[Math.floor(Math.random()*cols.length)],
+        len:Math.random()*100+60
+      });
+    }
+  }
+
+  function draw(t){
+    ctx.clearRect(0,0,W,H);
+
+    // Draw nebulae
+    nebulae.forEach(n=>{
+      n.pulse+=n.speed;
+      const alpha=.4+Math.sin(n.pulse)*.3;
+      const grd=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r*(1+Math.sin(n.pulse)*.15));
+      const baseCol=n.col.replace(/[\d.]+\)$/,'');
+      grd.addColorStop(0,baseCol+(alpha)+')');
+      grd.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+      ctx.fillStyle=grd;ctx.fill();
+    });
+
+    // Draw stars
+    particles.forEach(p=>{
+      p.pulse+=p.pulseSpeed;
+      const alpha=Math.max(0,Math.min(1,p.twinkle+Math.sin(p.pulse)*(1-p.twinkle)));
+      // Core star
+      ctx.globalAlpha=alpha;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.col;ctx.fill();
+      // Soft glow halo using shadowBlur
+      ctx.shadowColor=p.col;ctx.shadowBlur=p.r*6;
+      ctx.globalAlpha=alpha*.5;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.col;ctx.fill();
+      ctx.shadowBlur=0;ctx.globalAlpha=1;
+    });
+
+    // Meteors
+    spawnMeteor();
+    meteors=meteors.filter(m=>m.life>0);
+    meteors.forEach(m=>{
+      ctx.save();
+      ctx.globalAlpha=m.life;
+      const grd=ctx.createLinearGradient(m.x,m.y,m.x-m.vx*m.len/10,m.y-m.vy*m.len/10);
+      grd.addColorStop(0,m.col);grd.addColorStop(1,'transparent');
+      ctx.strokeStyle=grd;ctx.lineWidth=2.5;
+      ctx.shadowColor=m.col;ctx.shadowBlur=12;
+      ctx.beginPath();ctx.moveTo(m.x,m.y);ctx.lineTo(m.x-m.vx*8,m.y-m.vy*8);ctx.stroke();
+      ctx.restore();
+      m.x+=m.vx;m.y+=m.vy;m.life-=.025;
+    });
+
+    requestAnimationFrame(draw);
+  }
+  draw(0);
+})();
+
+/* ════ NEON WAVE RINGS ════ */
+(function(){
+  const container=document.getElementById('wave-rings');
+  const ringCols=['#ff006e','#8338ec','#3a86ff','#06d6a0','#ffbe0b','#fb5607'];
+  const positions=[
+    {left:'25%',top:'30%'},{left:'75%',top:'20%'},{left:'50%',top:'50%'},
+    {left:'15%',top:'60%'},{left:'85%',top:'55%'},{left:'40%',top:'15%'}
+  ];
+  positions.forEach((pos,i)=>{
+    const r=document.createElement('div');
+    r.className='wave-ring';
+    const col=ringCols[i%ringCols.length];
+    r.style.cssText=`left:${pos.left};top:${pos.top};width:80px;height:80px;border-color:${col};box-shadow:0 0 15px ${col};animation-duration:${3+i*.8}s;animation-delay:-${i*1.2}s;`;
+    container.appendChild(r);
+    // Second ring slightly offset
+    const r2=document.createElement('div');
+    r2.className='wave-ring';
+    r2.style.cssText=`left:${pos.left};top:${pos.top};width:60px;height:60px;border-color:${col};box-shadow:0 0 10px ${col};animation-duration:${2.5+i*.7}s;animation-delay:-${i*1.2+1}s;`;
+    container.appendChild(r2);
+  });
+})();
+
+/* ════ NEON DIAMONDS ════ */
+(function(){
+  const c=document.getElementById('diamonds');
+  const dCols=['#ff006e','#ffbe0b','#06d6a0','#3a86ff','#8338ec','#fb5607','#f72585'];
+  const shapes=['◆','◇','⬟','⬡','★','✦','✧'];
+  for(let i=0;i<18;i++){
+    const d=document.createElement('div');d.className='ndiamond';
+    d.textContent=shapes[Math.floor(Math.random()*shapes.length)];
+    const col=dCols[Math.floor(Math.random()*dCols.length)];
+    const sz=10+Math.random()*18;
+    const dur=4+Math.random()*6;
+    d.style.cssText=`left:${Math.random()*95}%;top:${Math.random()*70}%;font-size:${sz}px;color:${col};animation-duration:${dur}s;animation-delay:-${Math.random()*dur}s;opacity:.55;`;
+    c.appendChild(d);
+  }
+})();
+
+/* ════ FLOATERS ════ */
+(function(){
+  const c=document.getElementById('floaters');
+  const ems=['🏏','⭐','🌟','✨','🛡️','🔒','🚨','💫','🎯','🏆','🎉','🦸','💎','🔥','🌈','⚡','🎊'];
+  for(let i=0;i<20;i++){
+    const e=document.createElement('div');e.className='femoji';
+    e.textContent=ems[Math.floor(Math.random()*ems.length)];
+    const sz=16+Math.random()*16,dur=14+Math.random()*18;
+    e.style.cssText=`left:${Math.random()*100}%;font-size:${sz}px;animation-duration:${dur}s;animation-delay:-${Math.random()*dur}s;opacity:.18;`;
+    e.style.setProperty('filter','drop-shadow(0 0 8px currentColor)');
+    c.appendChild(e);
+  }
+  const style=document.createElement('style');
+  style.textContent='.femoji{position:absolute;animation:fUp linear infinite;filter:drop-shadow(0 0 8px currentColor);}@keyframes fUp{0%{transform:translateY(110vh) rotate(0deg);}100%{transform:translateY(-100px) rotate(360deg);}}';
+  document.head.appendChild(style);
+})();
+
+/* ════ CROWD ════ */
+(function(){
+  const s=document.getElementById('stands');
+  const cols=['#e91e63','#9c27b0','#2196f3','#4caf50','#ff9800','#00bcd4','#f44336','#ffeb3b','#ff4081','#00e5ff','#76ff03','#ff6d00','#ff1744','#00e676'];
+  for(let row=0;row<3;row++){
+    const r=document.createElement('div');r.className='crow-row';
+    r.style.cssText=`bottom:${22+row*24}px;`;
+    for(let i=0;i<36;i++){
+      const p=document.createElement('div');p.className='cp';
+      const w=11+Math.random()*4,h=14+Math.random()*7;
+      p.style.cssText=`width:${w}px;height:${h}px;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${.5+Math.random()*.9}s;animation-delay:-${Math.random()*2}s;`;
+      if(Math.random()>.4){
+        const f=document.createElement('div');f.className='cflag';
+        f.style.cssText=`background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${.4+Math.random()*.5}s;animation-delay:-${Math.random()}s;`;
+        p.appendChild(f);
+      }
+      r.appendChild(p);
+    }
+    s.appendChild(r);
+  }
+})();
+
+/* ════ PLAYERS ════ */
+(function(){
+  const c=document.getElementById('players');
+  [{l:'46%',b:'36%',col:'#1565c0',hat:'#0d47a1',bat:true,dur:1.7,del:0},
+   {l:'54%',b:'32%',col:'#b71c1c',hat:'#880e4f',bat:false,dur:1.9,del:.4},
+   {l:'27%',b:'34%',col:'#1b5e20',hat:'#2e7d32',bat:false,dur:2.0,del:.7},
+   {l:'71%',b:'34%',col:'#e65100',hat:'#bf360c',bat:false,dur:1.8,del:.3},
+   {l:'17%',b:'38%',col:'#4a148c',hat:'#6a1b9a',bat:false,dur:2.1,del:1.1},
+   {l:'81%',b:'38%',col:'#006064',hat:'#00838f',bat:false,dur:2.2,del:.8},
+   {l:'39%',b:'41%',col:'#f57f17',hat:'#e65100',bat:false,dur:1.6,del:.2},
+  ].forEach(p=>{
+    const w=document.createElement('div');w.className='player';
+    w.style.cssText=`left:${p.l};bottom:${p.b};position:absolute;animation-duration:${p.dur}s;animation-delay:-${p.del}s;`;
+    w.innerHTML=`<div style="position:relative;display:flex;flex-direction:column;align-items:center;">
+      <div class="ph" style="background:${p.col};"><div class="phelm" style="background:${p.hat};border-color:${p.hat};"></div></div>
+      <div class="pbody" style="background:${p.col};"></div>
+      <div style="position:relative;height:0;width:100%;">
+        <div class="parm" style="left:-8px;transform:rotate(-30deg);"></div>
+        <div class="parm" style="right:-8px;transform:rotate(30deg);"></div>
+      </div>
+      <div style="height:8px;"></div>
+      <div class="plegs"><div class="pleg" style="height:18px;"></div><div class="pleg" style="height:18px;"></div></div>
+      ${p.bat?'<div class="pbat" style="position:absolute;right:-22px;top:18px;width:5px;height:28px;transform:rotate(38deg);"></div>':''}
+      <div class="pshadow"></div></div>`;
+    c.appendChild(w);
+  });
+})();
+
+/* ════ PERIODIC SPARKLES above crowd ════ */
+(function(){
+  const sparkCols=['#ff006e','#ffbe0b','#06d6a0','#3a86ff','#8338ec','#ff6b35','#f72585'];
+  function addSparkle(){
+    const el=document.createElement('div');el.className='sparkle';
+    const col=sparkCols[Math.floor(Math.random()*sparkCols.length)];
+    const x=5+Math.random()*90,y=54+Math.random()*8;
+    const angle=Math.random()*360,dist=15+Math.random()*35;
+    const sx=Math.cos(angle*Math.PI/180)*dist,sy=Math.sin(angle*Math.PI/180)*dist;
+    el.style.cssText=`left:${x}%;bottom:${y}%;width:6px;height:6px;background:${col};box-shadow:0 0 8px ${col};--sx:${sx}px;--sy:${sy}px;animation-duration:.8s;`;
+    document.getElementById('fieldEl').appendChild(el);
+    setTimeout(()=>el.remove(),1000);
+  }
+  setInterval(addSparkle,120);
+})();
+
+/* ════ GAME LOGIC ════ */
+let score=0,total=6,dragId=null,dragEl=null;
+const GOT=['🎉 Smart choice! Way to go!','⭐ Exactly right! Brilliant!','🔥 You\'re on fire! Perfect!','🦸 Super hero move!','🏏 SIXER! Amazing!','🌟 Spot on! You rock!','💎 Genius! Keep it up!'];
+const MISS=['❌ Not quite! Try another card!','🤔 Think again, try another!','😅 Not this one! Try another!'];
+
+document.querySelectorAll('.acard').forEach((c,i)=>{c.style.animationDelay=`${i*.08}s`;});
+
+document.querySelectorAll('.acard').forEach(card=>{
+  card.addEventListener('dragstart',e=>{dragId=card.dataset.id;dragEl=card;setTimeout(()=>card.classList.add('dragging'),0);e.dataTransfer.effectAllowed='move';});
+  card.addEventListener('dragend',()=>card.classList.remove('dragging'));
+  let ghost=null;
+  card.addEventListener('touchstart',e=>{e.preventDefault();dragId=card.dataset.id;dragEl=card;},{passive:false});
+  card.addEventListener('touchmove',e=>{
+    e.preventDefault();const t=e.touches[0];
+    if(!ghost){ghost=card.cloneNode(true);ghost.style.cssText=`position:fixed;opacity:.92;pointer-events:none;z-index:999;max-width:160px;transform:rotate(4deg) scale(1.1);transition:none;box-shadow:0 16px 45px rgba(0,0,0,.6);`;document.body.appendChild(ghost);}
+    ghost.style.left=(t.clientX-75)+'px';ghost.style.top=(t.clientY-24)+'px';
+    document.querySelectorAll('.scene').forEach(s=>s.classList.remove('over'));
+    document.elementFromPoint(t.clientX,t.clientY)?.closest('.scene')?.classList.add('over');
+  },{passive:false});
+  card.addEventListener('touchend',e=>{
+    e.preventDefault();if(ghost){ghost.remove();ghost=null;}
+    const t=e.changedTouches[0];
+    const sc2=document.elementFromPoint(t.clientX,t.clientY)?.closest('.scene');
+    document.querySelectorAll('.scene').forEach(s=>s.classList.remove('over'));
+    if(sc2&&dragId)handleDrop(sc2);
+    dragId=null;dragEl=null;
+  });
+});
+
+document.querySelectorAll('.scene').forEach(s=>{
+  s.addEventListener('dragover',e=>{e.preventDefault();s.classList.add('over');});
+  s.addEventListener('dragleave',e=>{if(!s.contains(e.relatedTarget))s.classList.remove('over');});
+  s.addEventListener('drop',e=>{e.preventDefault();s.classList.remove('over');handleDrop(s);});
+});
+
+function handleDrop(scene){
+  if(!dragId||!dragEl)return;
+  const card=document.querySelector(`[data-id="${dragId}"]`);
+  if(!card||card.classList.contains('placed'))return;
+  const ok=card.dataset.sc===scene.dataset.id;
+  const fb=document.getElementById('fb');
+  if(ok){
+    score++;document.getElementById('sc').textContent=score;document.getElementById('pb').style.width=(score/total*100)+'%';
+    scene.classList.add('correct');card.classList.add('placed');
+    const d=document.getElementById('d-'+scene.dataset.id);
+    d.textContent='✅ '+card.textContent;d.classList.add('filled');
+    fb.className='fb fb-ok';fb.textContent=GOT[Math.floor(Math.random()*GOT.length)];
+    burst(scene);
+    if(score===total)setTimeout(showFinal,1800);
+  } else {
+    scene.classList.add('wrong');setTimeout(()=>scene.classList.remove('wrong'),500);
+    fb.className='fb fb-no';fb.textContent=card.dataset.sc==='wrong'?'❌ NEVER do that with scams!':MISS[Math.floor(Math.random()*MISS.length)];
+    setTimeout(()=>{fb.className='fb fb-i';fb.textContent='🎮 Drag an action card to the matching scenario!';},2200);
+  }
+  dragId=null;dragEl=null;
+}
+
+function burst(el){
+  const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+  ['⭐','🌟','✨','💫','🎉','🏆','🌈','💎','⚡','🎊'].forEach((em,i)=>{
+    const s=document.createElement('div');s.className='sburst';s.textContent=em;
+    s.style.cssText=`left:${cx}px;top:${cy}px;font-size:${16+Math.random()*16}px;`;
+    document.body.appendChild(s);
+    const angle=Math.random()*360,dist=60+Math.random()*120;
+    const dx=Math.cos(angle*Math.PI/180)*dist,dy=Math.sin(angle*Math.PI/180)*dist;
+    s.animate([
+      {transform:'translate(-50%,-50%) scale(0)',opacity:1},
+      {transform:`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) scale(1.9)`,opacity:1,offset:.45},
+      {transform:`translate(calc(-50% + ${dx*1.8}px),calc(-50% + ${dy*1.8}px)) scale(0)`,opacity:0}
+    ],{duration:1000,delay:i*45,fill:'forwards'}).onfinish=()=>s.remove();
+  });
+}
+
+function showFinal(){
+  confetti();document.getElementById('fin').className='final show';
+  const pct=Math.round(score/total*100);
+  document.getElementById('finScore').textContent=score+'/'+total+' Correct! ('+pct+'%)';
+  const msgs=['Keep practising! 💪','Good effort! 📚','Well done! 🎯','Excellent! 🌟','PERFECT! Cyber Hero! 🏆'];
+  document.getElementById('finMsg').textContent=msgs[Math.min(4,Math.floor(pct/20))];
+}
+
+function confetti(){
+  const cols=['#ff006e','#ffbe0b','#06d6a0','#8338ec','#fb5607','#3a86ff','#f72585','#76ff03','#ff6b9d','#ffd700'];
+  for(let i=0;i<130;i++){
+    const el=document.createElement('div');el.className='cf';
+    el.style.cssText=`left:${Math.random()*100}vw;top:-22px;width:${Math.random()*14+5}px;height:${Math.random()*14+5}px;background:${cols[Math.floor(Math.random()*cols.length)]};border-radius:${Math.random()>.5?'50%':'3px'};animation-delay:${Math.random()*2}s;animation-duration:${Math.random()*2+1.8}s;box-shadow:0 0 6px currentColor;`;
+    document.body.appendChild(el);setTimeout(()=>el.remove(),5500);
+  }
+}
+
+function resetGame(){
+  score=0;document.getElementById('sc').textContent='0';document.getElementById('pb').style.width='0%';
+  document.getElementById('fin').className='final';
+  document.querySelectorAll('.acard').forEach(c=>c.classList.remove('placed','dragging'));
+  ['s1','s2','s3','s4','s5','s6'].forEach(id=>{
+    const d=document.getElementById('d-'+id),z=document.getElementById('z-'+id);
+    d.textContent='🎯 Drop the correct action here';d.classList.remove('filled');z.classList.remove('correct','wrong');
+  });
+  document.getElementById('fb').className='fb fb-i';document.getElementById('fb').textContent='🎮 Drag an action card to the matching scenario!';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 4 Activity A — Grand Quiz! | Planrs</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #F5F0FF; min-height: 100vh; padding: 16px; }
+  .planrs-badge { position: fixed; top: 10px; left: 12px; background: #FFF3CD; border: 2px solid #FFC107; border-radius: 20px; padding: 4px 12px; font-size: 13px; font-weight: bold; color: #E67E22; z-index: 100; }
+  .score-box { position: fixed; top: 10px; right: 12px; background: #EDE7F6; border: 2px solid #8E44AD; border-radius: 20px; padding: 6px 16px; font-size: 15px; font-weight: bold; color: #6C3483; z-index: 100; }
+  h1 { text-align: center; color: #6C3483; font-size: clamp(20px, 4vw, 28px); margin: 54px 0 4px; }
+  .subtitle { text-align: center; color: #666; font-size: 15px; margin-bottom: 16px; }
+  .progress-area { max-width: 680px; margin: 0 auto 16px; }
+  .progress-label { font-size: 13px; color: #999; margin-bottom: 6px; text-align: center; }
+  .progress-bar { background: #EDE7F6; border-radius: 20px; height: 12px; overflow: hidden; }
+  .progress-fill { background: linear-gradient(90deg, #8E44AD, #BB8FCE); height: 100%; border-radius: 20px; transition: width 0.5s; }
+  .quiz-card { background: white; border-radius: 20px; padding: 28px 24px; max-width: 680px; margin: 0 auto; border: 3px solid #D7BDE2; box-shadow: 0 4px 20px rgba(142,68,173,0.1); }
+  .q-badge { background: #EDE7F6; color: #6C3483; font-size: 12px; font-weight: bold; padding: 4px 14px; border-radius: 20px; display: inline-block; margin-bottom: 12px; }
+  .q-text { font-size: clamp(15px,3vw,18px); color: #333; line-height: 1.55; margin-bottom: 20px; font-weight: 500; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option-btn { background: #F5EEF8; border: 2px solid #D7BDE2; border-radius: 12px; padding: 13px 18px; font-size: 15px; color: #333; text-align: left; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+  .option-btn:hover:not(:disabled) { background: #EDE7F6; border-color: #8E44AD; transform: translateX(4px); }
+  .option-btn.selected { background: #EDE7F6; border-color: #8E44AD; }
+  .option-btn.correct-ans { background: #D5F5E3; border-color: #27AE60; color: #1E8449; font-weight: bold; animation: popIn 0.3s ease; }
+  .option-btn.wrong-ans { background: #FADBD8; border-color: #E74C3C; color: #C0392B; animation: shake 0.4s ease; }
+  @keyframes popIn { 0%{transform:scale(0.97);opacity:0.6} 100%{transform:scale(1);opacity:1} }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+  .explanation-box { background: #FEF9E7; border-left: 4px solid #F39C12; border-radius: 8px; padding: 10px 14px; margin-top: 14px; font-size: 14px; color: #5D4037; display: none; }
+  .feedback-line { text-align: center; font-size: 17px; font-weight: bold; margin-top: 14px; min-height: 26px; }
+  .feedback-line.correct { color: #1E8449; }
+  .feedback-line.wrong { color: #C0392B; }
+  .next-btn { display: none; margin: 16px auto 0; background: #8E44AD; color: white; border: none; border-radius: 25px; padding: 12px 32px; font-size: 16px; font-weight: bold; cursor: pointer; transition: transform 0.15s; }
+  .next-btn:hover { transform: scale(1.05); }
+  .result-card { display: none; background: linear-gradient(135deg, #EDE7F6, #FFF9F0); border-radius: 24px; padding: 32px 24px; max-width: 680px; margin: 20px auto; text-align: center; border: 3px solid #8E44AD; }
+  .result-card h2 { font-size: 26px; color: #6C3483; }
+  .stars-row { font-size: 40px; margin: 14px 0; }
+  .score-big { font-size: 52px; font-weight: bold; color: #8E44AD; }
+  .score-label { font-size: 14px; color: #999; }
+  .result-msg { font-size: 15px; color: #555; margin: 10px 0 20px; }
+  .certificate { background: #FFF9F0; border: 3px dashed #F39C12; border-radius: 16px; padding: 16px; margin: 16px 0; }
+  .certificate h3 { color: #D35400; font-size: 18px; }
+  .certificate p { color: #555; font-size: 14px; margin-top: 6px; }
+  .btn-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+  .btn { padding: 12px 28px; border: none; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; }
+  .btn-try { background: #F39C12; color: white; }
+</style>
+</head>
+<body>
+<div class="planrs-badge">⭐ Planrs</div>
+<div class="score-box" id="scoreBox">Score: 0 / 8</div>
+
+<h1>🏆 Grand Marketing Quiz!</h1>
+<p class="subtitle">Section 4 Activity A — 8 questions covering everything you learned</p>
+
+<div class="progress-area">
+  <div class="progress-label" id="progressLabel">Question 1 of 8</div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+</div>
+
+<div class="quiz-card" id="quizCard">
+  <div class="q-badge" id="qBadge">Q1 / 8</div>
+  <div class="q-text" id="qText">Loading...</div>
+  <div class="options" id="optionsArea"></div>
+  <div class="explanation-box" id="explanationBox"></div>
+  <div class="feedback-line" id="feedbackLine"></div>
+  <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next Question ➡️</button>
+</div>
+
+<div class="result-card" id="resultCard">
+  <div class="stars-row" id="resultStars">⭐⭐⭐</div>
+  <h2 id="resultTitle">Marketing Champion!</h2>
+  <div class="score-big" id="scoreBig">8</div>
+  <div class="score-label">out of 8</div>
+  <div class="result-msg" id="resultMsg">You have mastered marketing for Class 3-5!</div>
+  <div class="certificate" id="certBox">
+    <h3>🎓 Planrs Certificate of Achievement</h3>
+    <p>This certifies that you have successfully completed the <strong>Marketing My Product</strong> course for Class 3–5 Finance on the Planrs EdTech Platform.</p>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-try" onclick="startQuiz()">🔄 Retake Quiz</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    q: "Your neighbour Kavita makes and sells homemade pickles. Her pickles are an example of a ___.",
+    options: ["Advertisement", "Product", "Customer", "Discount"],
+    correct: 1,
+    exp: "Anything made or grown and sold is a product. Kavita's homemade pickle is a product because she made it to sell."
+  },
+  {
+    q: "Rahul wants to sell cricket bats. Which group is his BEST target customer?",
+    options: ["Senior citizens who love gardening", "Toddlers aged 1-3 years", "Teenage and young cricket players", "Office workers who need laptops"],
+    correct: 2,
+    exp: "Cricket bats are used by players — mostly teenagers and young adults who actively play cricket. That is Rahul's target customer!"
+  },
+  {
+    q: "A company reduces its product price from Rs.100 to Rs.70 during Diwali to attract more buyers. This is called a ___.",
+    options: ["Free sample", "Word of mouth", "Discount offer", "TV advertisement"],
+    correct: 2,
+    exp: "Reducing the price to attract buyers is called a discount offer — very common during Indian festivals like Diwali and Eid!"
+  },
+  {
+    q: "Priya tells her three friends about the amazing new mango ice cream at the corner shop. Her friends go buy it. What marketing tool did she use?",
+    options: ["Television advertisement", "Word of mouth", "Hoarding on the road", "Radio jingle"],
+    correct: 1,
+    exp: "When happy customers tell their friends about a product, it is called word of mouth — and it is free and very powerful!"
+  },
+  {
+    q: "Ramu runs a small lemonade stall near a cricket ground. What is the FIRST step of his marketing plan?",
+    options: ["Make a TV commercial", "Know who his customers are", "Buy a hoarding on a highway", "Open a social media account"],
+    correct: 1,
+    exp: "The FIRST step is always to know your customer. Ramu's customers are thirsty cricket players and spectators near the ground — so he should market there!"
+  },
+  {
+    q: "A biscuit company gives tiny free packets of their new flavour biscuit to shoppers at a mall. This is called a ___.",
+    options: ["Discount", "Jingle", "Free sample", "Poster campaign"],
+    correct: 2,
+    exp: "Giving away a small free portion so people can try before buying is called a free sample — one of the cleverest marketing tricks!"
+  },
+  {
+    q: "Ananya makes cookies that cost Rs.15 to make. She sells them for Rs.25 each. How much PROFIT does she make per cookie?",
+    options: ["Rs.5", "Rs.10", "Rs.15", "Rs.25"],
+    correct: 1,
+    exp: "Profit = Selling price minus Cost price. Rs.25 - Rs.15 = Rs.10 profit per cookie. Ananya is a smart little businessperson!"
+  },
+  {
+    q: "Which of these is the BEST description of what 'marketing' means?",
+    options: ["Making a product in a factory", "Buying things from a shop", "Telling people about your product so they come and buy it", "Counting your money after selling"],
+    correct: 2,
+    exp: "Marketing means all the activities you do to let customers know about your product and convince them to buy it. It is the bridge between your product and your customer!"
+  }
+];
+
+let current=0, score=0;
+
+function startQuiz() {
+  current=0; score=0;
+  document.getElementById('scoreBox').textContent='Score: 0 / 8';
+  document.getElementById('resultCard').style.display='none';
+  document.getElementById('quizCard').style.display='block';
+  loadQuestion();
+}
+
+function loadQuestion() {
+  const q=questions[current];
+  document.getElementById('qBadge').textContent=`Q${current+1} / 8`;
+  document.getElementById('qText').textContent=q.q;
+  document.getElementById('progressLabel').textContent=`Question ${current+1} of 8`;
+  document.getElementById('progressFill').style.width=((current/8)*100)+'%';
+  document.getElementById('feedbackLine').textContent='';
+  document.getElementById('feedbackLine').className='feedback-line';
+  document.getElementById('explanationBox').style.display='none';
+  document.getElementById('nextBtn').style.display='none';
+  const area=document.getElementById('optionsArea');
+  area.innerHTML='';
+  q.options.forEach((opt,i) => {
+    const btn=document.createElement('button');
+    btn.className='option-btn';
+    btn.textContent=(i===0?'A. ':i===1?'B. ':i===2?'C. ':'D. ')+opt;
+    btn.onclick=()=>selectAnswer(i, btn);
+    area.appendChild(btn);
+  });
+}
+
+function selectAnswer(idx, btn) {
+  document.querySelectorAll('.option-btn').forEach(b=>b.disabled=true);
+  const q=questions[current];
+  if(idx===q.correct) {
+    score++; document.getElementById('scoreBox').textContent=`Score: ${score} / 8`;
+    btn.className='option-btn correct-ans';
+    document.getElementById('feedbackLine').textContent=['🌟 Correct! Amazing!','⭐ Brilliant!','🎉 Yes! You got it!','💡 Exactly right!','🔥 Superstar!'][Math.floor(Math.random()*5)];
+    document.getElementById('feedbackLine').className='feedback-line correct';
+  } else {
+    btn.className='option-btn wrong-ans';
+    document.querySelectorAll('.option-btn')[q.correct].className='option-btn correct-ans';
+    document.getElementById('feedbackLine').textContent='❌ Not quite — see the right answer above!';
+    document.getElementById('feedbackLine').className='feedback-line wrong';
+  }
+  document.getElementById('explanationBox').textContent='💡 '+q.exp;
+  document.getElementById('explanationBox').style.display='block';
+  document.getElementById('nextBtn').style.display='block';
+  document.getElementById('nextBtn').textContent=current<7?'Next Question ➡️':'🏆 See My Results!';
+}
+
+function nextQuestion() {
+  current++;
+  if(current>=questions.length) showResult();
+  else loadQuestion();
+}
+
+function showResult() {
+  document.getElementById('quizCard').style.display='none';
+  document.getElementById('progressFill').style.width='100%';
+  const r=document.getElementById('resultCard'); r.style.display='block';
+  document.getElementById('resultStars').textContent=score>=7?'⭐⭐⭐':score>=5?'⭐⭐':'⭐';
+  document.getElementById('resultTitle').textContent=score===8?'🏆 Perfect Marketing Champion!':score>=6?'🎉 Marketing Expert!':score>=4?'👍 Good Effort!':'📚 Keep Practising!';
+  document.getElementById('scoreBig').textContent=score;
+  document.getElementById('resultMsg').textContent=score===8?'Outstanding! You answered every question correctly — you are a true mini marketer!':score>=6?`Well done! You got ${score}/8. Review the ones you missed and try again!`:`You got ${score}/8. Go back through the slides and try again — you can do it!`;
+  document.getElementById('certBox').style.display=score>=6?'block':'none';
+  r.scrollIntoView({behavior:'smooth'});
+}
+
+startQuiz();
+</script>
+</body>
+</html>

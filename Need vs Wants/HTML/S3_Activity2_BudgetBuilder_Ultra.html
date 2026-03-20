@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌈 Build Your Budget! | ⭐ Planrs</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+:root {
+  --c1:#FF6B6B; --c2:#FFD93D; --c3:#6BCB77; --c4:#4D96FF;
+  --c5:#FF922B; --c6:#CC5DE8; --c7:#20C997; --c8:#F06595;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+/* ===== BODY / ANIMATED BG ===== */
+body{
+  font-family:'Baloo 2',cursive;
+  min-height:100vh; overflow-x:hidden;
+  background:#0a0a1a;
+}
+
+/* Aurora background */
+.aurora{
+  position:fixed;inset:0;z-index:0;overflow:hidden;
+}
+.aurora-blob{
+  position:absolute;border-radius:50%;filter:blur(80px);
+  animation:auroraDrift ease-in-out infinite;opacity:0.55;
+}
+@keyframes auroraDrift{
+  0%,100%{transform:translate(0,0) scale(1)}
+  33%{transform:translate(60px,-40px) scale(1.15)}
+  66%{transform:translate(-40px,50px) scale(0.9)}
+}
+
+/* Stars */
+.star-field{position:fixed;inset:0;z-index:0;}
+.star{
+  position:absolute;border-radius:50%;background:white;
+  animation:twinkle ease-in-out infinite;
+}
+@keyframes twinkle{0%,100%{opacity:0.1;transform:scale(1)}50%{opacity:1;transform:scale(1.8)}}
+
+/* Neon grid floor */
+.grid-floor{
+  position:fixed;bottom:0;left:0;right:0;height:200px;z-index:0;
+  background:repeating-linear-gradient(
+    90deg,rgba(77,150,255,0.08) 0px,rgba(77,150,255,0.08) 1px,transparent 1px,transparent 60px
+  ),
+  repeating-linear-gradient(
+    0deg,rgba(77,150,255,0.08) 0px,rgba(77,150,255,0.08) 1px,transparent 1px,transparent 40px
+  );
+  mask-image:linear-gradient(to top,black 0%,transparent 100%);
+  animation:gridPulse 3s ease-in-out infinite;
+}
+@keyframes gridPulse{0%,100%{opacity:0.5}50%{opacity:1}}
+
+/* Floating emojis layer */
+.floaties{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.floaty{
+  position:absolute;animation:floatRise linear infinite;
+  user-select:none;will-change:transform;
+}
+@keyframes floatRise{
+  0%{transform:translateY(105vh) rotate(0deg);opacity:0}
+  5%{opacity:1}
+  95%{opacity:0.7}
+  100%{transform:translateY(-10vh) rotate(720deg);opacity:0}
+}
+
+/* ===== CONTAINER ===== */
+.wrap{position:relative;z-index:2;max-width:980px;margin:0 auto;padding:16px 14px 50px}
+
+/* ===== PLANRS BADGE ===== */
+.planrs-badge{
+  position:fixed;top:14px;left:16px;z-index:200;
+  background:linear-gradient(135deg,#4D96FF,#CC5DE8);
+  color:white;border-radius:30px;padding:6px 18px;
+  font-size:14px;font-weight:900;letter-spacing:.5px;
+  box-shadow:0 0 20px #4D96FF88,0 0 40px #CC5DE844;
+  animation:badgePulse 2s ease-in-out infinite;
+}
+@keyframes badgePulse{0%,100%{box-shadow:0 0 20px #4D96FF88,0 0 40px #CC5DE844}50%{box-shadow:0 0 35px #4D96FFcc,0 0 60px #CC5DE888}}
+
+/* ===== TITLE ===== */
+.main-title{
+  text-align:center;
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(32px,6vw,58px);
+  margin:70px 0 8px;
+  line-height:1.1;
+  animation:rainbowText 4s linear infinite, titleFloat 3s ease-in-out infinite;
+  background:linear-gradient(90deg,#FF6B6B,#FFD93D,#6BCB77,#4D96FF,#CC5DE8,#FF6B6B);
+  background-size:300% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 20px rgba(255,107,107,0.5));
+}
+@keyframes rainbowText{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+@keyframes titleFloat{0%,100%{transform:translateY(0) rotate(-0.5deg)}50%{transform:translateY(-8px) rotate(0.5deg)}}
+
+.subtitle{
+  text-align:center;color:rgba(255,255,255,0.75);
+  font-size:16px;font-weight:700;margin-bottom:20px;letter-spacing:.3px;
+}
+
+/* ===== INSTRUCTION BOX ===== */
+.instructions{
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(16px);
+  border:2px solid rgba(255,255,255,0.2);
+  border-radius:24px;padding:16px 24px;
+  margin-bottom:28px;text-align:center;
+  color:rgba(255,255,255,0.9);font-size:15px;font-weight:700;
+  box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.15);
+  animation:glassGlow 3s ease-in-out infinite;
+}
+@keyframes glassGlow{
+  0%,100%{box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.15)}
+  50%{box-shadow:0 8px 48px rgba(77,150,255,0.25),inset 0 1px 0 rgba(255,255,255,0.25)}
+}
+.instructions strong{color:#FFD93D}
+
+/* ===== MONEY CARDS ===== */
+.money-display{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-bottom:30px}
+.money-card,.remaining-card{
+  border-radius:24px;padding:20px 36px;
+  position:relative;overflow:hidden;
+  backdrop-filter:blur(20px);
+  box-shadow:0 8px 32px rgba(0,0,0,0.3);
+  animation:cardFloat 4s ease-in-out infinite;
+}
+.money-card{
+  background:linear-gradient(135deg,rgba(107,203,119,0.25),rgba(32,201,151,0.15));
+  border:2px solid rgba(107,203,119,0.5);
+  animation-delay:0s;
+}
+.remaining-card{
+  background:linear-gradient(135deg,rgba(255,146,43,0.25),rgba(255,107,107,0.15));
+  border:2px solid rgba(255,146,43,0.5);
+  animation-delay:0.5s;
+}
+@keyframes cardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.money-card::before,.remaining-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.1),transparent);
+  pointer-events:none;
+}
+.money-card::after{
+  content:'💚';position:absolute;right:12px;top:10px;font-size:30px;opacity:0.3;
+  animation:iconSpin 4s linear infinite;
+}
+.remaining-card::after{
+  content:'🎯';position:absolute;right:12px;top:10px;font-size:30px;opacity:0.3;
+  animation:iconSpin 5s linear infinite reverse;
+}
+@keyframes iconSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.money-total{font-family:'Fredoka One',cursive;font-size:40px;color:#6BCB77;
+  text-shadow:0 0 20px #6BCB7788;}
+.remaining-amount{font-family:'Fredoka One',cursive;font-size:40px;color:#FF922B;
+  text-shadow:0 0 20px #FF922B88;transition:color .3s,transform .2s;}
+.remaining-amount.pop{animation:numPop .25s ease}
+@keyframes numPop{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+.money-label{font-size:11px;color:rgba(255,255,255,0.5);font-weight:700;
+  text-transform:uppercase;letter-spacing:1.5px;margin-top:2px}
+
+/* ===== SECTION TITLE ===== */
+.section-title{
+  text-align:center;font-family:'Fredoka One',cursive;
+  font-size:22px;color:rgba(255,255,255,0.85);
+  margin-bottom:16px;letter-spacing:.5px;
+}
+.section-title span{
+  background:linear-gradient(90deg,#FFD93D,#FF6B6B);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+
+/* ===== CATEGORY CARDS ===== */
+.categories{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:18px;margin-bottom:32px}
+.cat-card{
+  border-radius:26px;padding:20px;position:relative;overflow:hidden;
+  backdrop-filter:blur(16px);
+  background:rgba(255,255,255,0.06);
+  border:1.5px solid rgba(255,255,255,0.12);
+  box-shadow:0 8px 32px rgba(0,0,0,0.25);
+  transition:transform .25s,box-shadow .25s;
+  animation:cardIn .6s cubic-bezier(.34,1.56,.64,1) both;
+  cursor:default;
+}
+.cat-card:nth-child(1){animation-delay:.05s}.cat-card:nth-child(2){animation-delay:.1s}
+.cat-card:nth-child(3){animation-delay:.15s}.cat-card:nth-child(4){animation-delay:.2s}
+.cat-card:nth-child(5){animation-delay:.25s}.cat-card:nth-child(6){animation-delay:.3s}
+.cat-card:nth-child(7){animation-delay:.35s}.cat-card:nth-child(8){animation-delay:.4s}
+.cat-card:nth-child(9){animation-delay:.45s}
+@keyframes cardIn{from{opacity:0;transform:translateY(40px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+.cat-card:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 20px 48px rgba(0,0,0,.35)}
+.cat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;border-radius:26px 26px 0 0;
+}
+.cat-card.need::before{background:linear-gradient(90deg,#6BCB77,#20C997,#6BCB77);background-size:200%;animation:gradShift 2s linear infinite}
+.cat-card.save::before{background:linear-gradient(90deg,#FFD93D,#FF922B,#FFD93D);background-size:200%;animation:gradShift 2s linear infinite}
+.cat-card.want::before{background:linear-gradient(90deg,#4D96FF,#CC5DE8,#4D96FF);background-size:200%;animation:gradShift 2s linear infinite}
+@keyframes gradShift{0%{background-position:0%}100%{background-position:200%}}
+
+/* Glow tint on hover per type */
+.cat-card.need:hover{box-shadow:0 20px 48px rgba(107,203,119,.25)}
+.cat-card.save:hover{box-shadow:0 20px 48px rgba(255,210,61,.25)}
+.cat-card.want:hover{box-shadow:0 20px 48px rgba(77,150,255,.25)}
+
+.cat-header{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.cat-icon{
+  font-size:34px;width:58px;height:58px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:18px;flex-shrink:0;position:relative;
+  animation:iconWobble 3s ease-in-out infinite;
+}
+.cat-card:nth-child(2) .cat-icon{animation-delay:.3s}.cat-card:nth-child(3) .cat-icon{animation-delay:.6s}
+.cat-card:nth-child(4) .cat-icon{animation-delay:.9s}.cat-card:nth-child(5) .cat-icon{animation-delay:1.2s}
+.cat-card:nth-child(6) .cat-icon{animation-delay:1.5s}.cat-card:nth-child(7) .cat-icon{animation-delay:1.8s}
+.cat-card:nth-child(8) .cat-icon{animation-delay:2.1s}.cat-card:nth-child(9) .cat-icon{animation-delay:2.4s}
+@keyframes iconWobble{0%,100%{transform:rotate(-4deg) scale(1)}50%{transform:rotate(4deg) scale(1.1)}}
+.cat-name{font-family:'Fredoka One',cursive;font-size:16px;color:white;letter-spacing:.3px}
+.cat-type{font-size:11px;font-weight:800;padding:3px 12px;border-radius:20px;display:inline-block;margin-top:4px;letter-spacing:.5px}
+.type-need{background:rgba(107,203,119,.2);color:#6BCB77;border:1.5px solid rgba(107,203,119,.4)}
+.type-save{background:rgba(255,210,61,.2);color:#FFD93D;border:1.5px solid rgba(255,210,61,.4)}
+.type-want{background:rgba(77,150,255,.2);color:#4D96FF;border:1.5px solid rgba(77,150,255,.4)}
+
+/* ===== SLIDER ===== */
+.slider-row{display:flex;align-items:center;gap:12px}
+.slider{
+  flex:1;-webkit-appearance:none;height:12px;border-radius:6px;outline:none;cursor:pointer;
+  transition:height .15s;
+}
+.slider:hover{height:16px}
+.slider::-webkit-slider-thumb{
+  -webkit-appearance:none;width:28px;height:28px;border-radius:50%;cursor:pointer;
+  border:3px solid rgba(255,255,255,.6);
+  box-shadow:0 0 14px currentColor,0 4px 12px rgba(0,0,0,.4);
+  transition:transform .15s,box-shadow .15s;
+}
+.slider:hover::-webkit-slider-thumb{transform:scale(1.3)}
+.slider:active::-webkit-slider-thumb{transform:scale(1.5)}
+.amount-display{
+  min-width:96px;text-align:right;
+  font-family:'Fredoka One',cursive;font-size:20px;
+  text-shadow:0 0 12px currentColor;
+  transition:transform .15s;
+}
+
+/* ===== DRAG & DROP ===== */
+.dnd-section{
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(20px);
+  border:2px solid rgba(255,255,255,0.1);
+  border-radius:28px;padding:24px;margin-bottom:28px;
+  box-shadow:0 8px 40px rgba(0,0,0,.3);
+  position:relative;overflow:hidden;
+}
+.dnd-section::before{
+  content:'';position:absolute;inset:0;border-radius:28px;
+  background:linear-gradient(135deg,rgba(77,150,255,.05),rgba(204,93,232,.05));
+  pointer-events:none;
+}
+.dnd-title{
+  font-family:'Fredoka One',cursive;font-size:24px;
+  color:white;text-align:center;margin-bottom:4px;letter-spacing:.5px;
+}
+.dnd-subtitle{font-size:13px;color:rgba(255,255,255,.5);text-align:center;margin-bottom:20px;font-weight:700}
+.dnd-columns{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+
+.dnd-col{
+  flex:1;min-width:165px;max-width:280px;
+  border-radius:22px;padding:16px;min-height:140px;
+  transition:all .2s;position:relative;overflow:hidden;
+}
+.dnd-col::before{
+  content:'';position:absolute;inset:0;border-radius:22px;
+  background:linear-gradient(135deg,rgba(255,255,255,.08),transparent);
+  pointer-events:none;
+}
+.need-col{background:rgba(107,203,119,.12);border:2.5px solid rgba(107,203,119,.4)}
+.save-col{background:rgba(255,210,61,.12);border:2.5px solid rgba(255,210,61,.4)}
+.want-col{background:rgba(77,150,255,.12);border:2.5px solid rgba(77,150,255,.4)}
+.dnd-col.dragover{
+  transform:scale(1.04);
+  box-shadow:0 0 30px rgba(255,255,255,.2),inset 0 0 20px rgba(255,255,255,.05);
+}
+.need-col.dragover{border-color:#6BCB77;box-shadow:0 0 30px rgba(107,203,119,.4)}
+.save-col.dragover{border-color:#FFD93D;box-shadow:0 0 30px rgba(255,210,61,.4)}
+.want-col.dragover{border-color:#4D96FF;box-shadow:0 0 30px rgba(77,150,255,.4)}
+
+.dnd-col-title{
+  font-family:'Fredoka One',cursive;font-size:16px;
+  margin-bottom:12px;display:flex;align-items:center;gap:8px;
+}
+.need-col .dnd-col-title{color:#6BCB77}
+.save-col .dnd-col-title{color:#FFD93D}
+.want-col .dnd-col-title{color:#4D96FF}
+
+.dnd-items{display:flex;flex-wrap:wrap;gap:8px;min-height:60px}
+.dnd-chip{
+  background:rgba(255,255,255,.1);
+  backdrop-filter:blur(8px);
+  border-radius:50px;padding:7px 14px;
+  font-size:13px;font-weight:800;cursor:grab;
+  box-shadow:0 4px 14px rgba(0,0,0,.2);
+  display:flex;align-items:center;gap:7px;
+  transition:all .2s;user-select:none;
+  color:white;border:1.5px solid rgba(255,255,255,.15);
+  animation:chipPop .3s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes chipPop{from{transform:scale(0) rotate(-10deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+.dnd-chip:hover{transform:translateY(-4px) scale(1.06);background:rgba(255,255,255,.18);box-shadow:0 8px 20px rgba(0,0,0,.3)}
+.dnd-chip:active{cursor:grabbing}
+.dnd-chip.dragging{opacity:.3;transform:scale(.92)}
+.dnd-drop-hint{color:rgba(255,255,255,.25);font-size:12px;font-weight:700;text-align:center;width:100%;padding-top:12px}
+
+/* ===== SUMMARY ===== */
+.check-zone{
+  background:rgba(107,203,119,.08);
+  backdrop-filter:blur(20px);
+  border:2px solid rgba(107,203,119,.3);
+  border-radius:26px;padding:24px;margin-bottom:24px;
+  box-shadow:0 8px 40px rgba(0,0,0,.25),0 0 0 1px rgba(107,203,119,.1);
+  animation:summaryGlow 4s ease-in-out infinite;
+}
+@keyframes summaryGlow{
+  0%,100%{box-shadow:0 8px 40px rgba(0,0,0,.25),0 0 0 1px rgba(107,203,119,.1)}
+  50%{box-shadow:0 8px 40px rgba(0,0,0,.25),0 0 30px rgba(107,203,119,.2)}
+}
+.check-title{font-family:'Fredoka One',cursive;font-size:22px;color:#6BCB77;margin-bottom:16px;letter-spacing:.3px}
+.check-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:14px;font-weight:700;
+}
+.check-row:last-child{border:none}
+.check-label{color:rgba(255,255,255,.6)}
+.check-value{font-family:'Fredoka One',cursive;font-size:20px}
+
+/* Progress bars */
+.prog-label{font-size:11px;color:rgba(255,255,255,.4);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:6px 0 5px}
+.progress-wrap{background:rgba(255,255,255,.08);border-radius:20px;height:14px;overflow:hidden;margin-bottom:12px}
+.progress-bar{
+  height:100%;border-radius:20px;
+  transition:width .5s cubic-bezier(.25,.46,.45,.94);
+  position:relative;overflow:hidden;
+}
+.progress-bar::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);
+  animation:shimmer 1.8s infinite;
+}
+@keyframes shimmer{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+
+/* ===== FEEDBACK ===== */
+.feedback-area{
+  max-width:720px;margin:0 auto 22px;
+  padding:20px 26px;border-radius:24px;text-align:center;
+  font-family:'Fredoka One',cursive;font-size:20px;min-height:64px;
+  transition:all .4s;backdrop-filter:blur(16px);letter-spacing:.3px;
+}
+.feedback-area.active{animation:feedbackIn .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes feedbackIn{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}
+
+/* ===== BUTTONS ===== */
+.center{text-align:center;margin-bottom:10px}
+.btn{
+  display:inline-block;padding:15px 38px;border-radius:50px;border:none;
+  cursor:pointer;font-family:'Fredoka One',cursive;font-size:18px;letter-spacing:.5px;
+  margin:8px;position:relative;overflow:hidden;
+  transition:transform .2s,box-shadow .2s;
+}
+.btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.25),transparent);
+  border-radius:50px;pointer-events:none;
+}
+.btn-blue{
+  background:linear-gradient(135deg,#4D96FF,#CC5DE8);color:white;
+  box-shadow:0 8px 24px rgba(77,150,255,.45),0 0 0 2px rgba(77,150,255,.3);
+}
+.btn-coral{
+  background:linear-gradient(135deg,#FF6B6B,#FF922B);color:white;
+  box-shadow:0 8px 24px rgba(255,107,107,.45),0 0 0 2px rgba(255,107,107,.3);
+}
+.btn:hover{transform:translateY(-4px) scale(1.04)}
+.btn-blue:hover{box-shadow:0 14px 36px rgba(77,150,255,.6),0 0 0 2px rgba(77,150,255,.5)}
+.btn-coral:hover{box-shadow:0 14px 36px rgba(255,107,107,.6),0 0 0 2px rgba(255,107,107,.5)}
+.btn:active{transform:scale(.97)}
+
+/* Ripple */
+.ripple{
+  position:absolute;border-radius:50%;background:rgba(255,255,255,.4);
+  transform:scale(0);animation:rippleOut .6s linear;pointer-events:none;
+}
+@keyframes rippleOut{to{transform:scale(4);opacity:0}}
+
+/* ===== BADGE ===== */
+.badge-area{text-align:center;min-height:70px;margin-top:10px;padding-bottom:40px}
+.badge{
+  display:none;padding:18px 44px;border-radius:60px;
+  font-family:'Fredoka One',cursive;font-size:26px;letter-spacing:.5px;
+  background:linear-gradient(135deg,#FFD700,#FF8C00,#FF6B35);color:white;
+  box-shadow:0 0 40px rgba(255,200,0,.6),0 0 80px rgba(255,140,0,.3),0 8px 32px rgba(0,0,0,.4);
+  text-shadow:0 2px 8px rgba(0,0,0,.3);
+  animation:badgeIn .8s cubic-bezier(.34,1.56,.64,1),badgeGlow 2s ease-in-out infinite .8s;
+}
+@keyframes badgeIn{0%{transform:scale(0) rotate(-20deg);opacity:0}70%{transform:scale(1.1) rotate(3deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes badgeGlow{0%,100%{box-shadow:0 0 40px rgba(255,200,0,.6),0 0 80px rgba(255,140,0,.3),0 8px 32px rgba(0,0,0,.4)}50%{box-shadow:0 0 60px rgba(255,220,0,.9),0 0 120px rgba(255,140,0,.5),0 8px 32px rgba(0,0,0,.4)}}
+
+/* ===== PARTICLES ===== */
+.particle,.confetti-piece,.coin-pop{position:fixed;pointer-events:none;z-index:9999}
+.confetti-piece{animation:confettiFall linear forwards}
+@keyframes confettiFall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(105vh) rotate(960deg);opacity:0}}
+.coin-pop{font-size:24px;animation:coinFly .9s ease-out forwards}
+@keyframes coinFly{0%{transform:translateY(0) scale(1) rotate(0deg);opacity:1}100%{transform:translateY(-90px) scale(.3) rotate(180deg);opacity:0}}
+
+/* ===== TOAST ===== */
+.toast{
+  position:fixed;bottom:28px;left:50%;
+  transform:translateX(-50%) translateY(30px);
+  background:rgba(255,255,255,.12);backdrop-filter:blur(20px);
+  color:white;padding:12px 28px;border-radius:50px;
+  font-family:'Fredoka One',cursive;font-size:16px;
+  border:1.5px solid rgba(255,255,255,.2);
+  z-index:9999;white-space:nowrap;
+  animation:toastIn .4s cubic-bezier(.34,1.56,.64,1) forwards,toastOut .4s ease 1.8s forwards;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+}
+@keyframes toastIn{to{transform:translateX(-50%) translateY(0)}}
+@keyframes toastOut{to{transform:translateX(-50%) translateY(30px);opacity:0}}
+</style>
+</head>
+<body>
+
+<div class="aurora" id="aurora"></div>
+<div class="star-field" id="stars"></div>
+<div class="grid-floor"></div>
+<div class="floaties" id="floaties"></div>
+
+<div class="planrs-badge">⭐ Planrs</div>
+
+<div class="wrap">
+  <h1 class="main-title">🏗️ Build Your Budget!</h1>
+  <p class="subtitle">Section 3 Activity — Allocate ₹30,000 for the Sharma family wisely!</p>
+
+  <div class="instructions">
+    💡 You have <strong>₹30,000</strong> to allocate this month! Use the sliders to set amounts or <strong>drag & drop</strong> below. Cover all <strong>NEEDS</strong> first → then <strong>SAVE</strong> → then enjoy <strong>WANTS</strong>! 🎯
+  </div>
+
+  <div class="money-display">
+    <div class="money-card">
+      <div class="money-total">₹30,000</div>
+      <div class="money-label">📅 Monthly Budget</div>
+    </div>
+    <div class="remaining-card">
+      <div class="remaining-amount" id="remainingAmt">₹30,000</div>
+      <div class="money-label">🎯 Remaining</div>
+    </div>
+  </div>
+
+  <div class="section-title">🎚️ <span>Slide to allocate money!</span></div>
+  <div class="categories" id="categoriesGrid"></div>
+
+  <!-- DRAG & DROP -->
+  <div class="dnd-section">
+    <div class="dnd-title">🖱️ Drag & Drop Budget Buckets!</div>
+    <div class="dnd-subtitle">Drag the category chips into their correct spending bucket</div>
+    <div class="dnd-columns">
+      <div class="dnd-col need-col" id="needBucket"
+        ondragover="onDragOver(event)" ondrop="onDrop(event,'need')" ondragleave="onDragLeave(event)">
+        <div class="dnd-col-title">✅ NEEDS</div>
+        <div class="dnd-items" id="needItems"></div>
+      </div>
+      <div class="dnd-col save-col" id="saveBucket"
+        ondragover="onDragOver(event)" ondrop="onDrop(event,'save')" ondragleave="onDragLeave(event)">
+        <div class="dnd-col-title">🐖 SAVINGS</div>
+        <div class="dnd-items" id="saveItems"></div>
+      </div>
+      <div class="dnd-col want-col" id="wantBucket"
+        ondragover="onDragOver(event)" ondrop="onDrop(event,'want')" ondragleave="onDragLeave(event)">
+        <div class="dnd-col-title">⭐ WANTS</div>
+        <div class="dnd-items" id="wantItems"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="check-zone">
+    <div class="check-title">📊 Your Budget Summary</div>
+    <div class="check-row">
+      <span class="check-label">✅ Needs Allocated:</span>
+      <span class="check-value" id="totalNeeds" style="color:#6BCB77">₹0</span>
+    </div>
+    <div class="prog-label">Needs progress (min ₹20,000)</div>
+    <div class="progress-wrap"><div class="progress-bar" id="needsBar" style="width:0%"></div></div>
+
+    <div class="check-row">
+      <span class="check-label">🐖 Savings Allocated:</span>
+      <span class="check-value" id="totalSavings" style="color:#FFD93D">₹0</span>
+    </div>
+    <div class="check-row">
+      <span class="check-label">⭐ Wants Allocated:</span>
+      <span class="check-value" id="totalWants" style="color:#4D96FF">₹0</span>
+    </div>
+    <div class="prog-label">Total budget used</div>
+    <div class="progress-wrap"><div class="progress-bar" id="totalBar" style="width:0%"></div></div>
+
+    <div class="check-row">
+      <span class="check-label">💰 Total Allocated:</span>
+      <span class="check-value" id="totalAllocated" style="color:white">₹0</span>
+    </div>
+    <div class="check-row">
+      <span class="check-label">🎯 Unallocated:</span>
+      <span class="check-value" id="unallocated" style="color:#FF6B6B">₹30,000</span>
+    </div>
+  </div>
+
+  <div class="feedback-area" id="feedbackArea"></div>
+
+  <div class="center">
+    <button class="btn btn-blue" onclick="checkBudget(this)">✅ Check My Budget!</button>
+    <button class="btn btn-coral" onclick="resetBudget(this)">🔄 Reset</button>
+  </div>
+
+  <div class="badge-area">
+    <div class="badge" id="budgetBadge">🏆 Smart Budget Maker!</div>
+  </div>
+</div>
+
+<script>
+/* ===== DATA ===== */
+const categories = [
+  {id:'rent',      icon:'🏠', name:'Rent',               type:'need', min:6000, max:12000, step:500, default:8000,  color:'#6BCB77'},
+  {id:'food',      icon:'🍚', name:'Food & Groceries',   type:'need', min:3000, max:8000,  step:500, default:5000,  color:'#20C997'},
+  {id:'school',    icon:'📚', name:'School Fees',        type:'need', min:2000, max:5000,  step:500, default:3000,  color:'#4D96FF'},
+  {id:'transport', icon:'🚗', name:'Transport',          type:'need', min:500,  max:4000,  step:500, default:2000,  color:'#CC5DE8'},
+  {id:'bills',     icon:'💡', name:'Bills (Elec/Water)', type:'need', min:500,  max:4000,  step:500, default:2000,  color:'#F06595'},
+  {id:'savings',   icon:'🐖', name:'Savings/Emergency', type:'save', min:0,    max:10000, step:500, default:3000,  color:'#FFD93D'},
+  {id:'clothes',   icon:'👕', name:'Clothing',           type:'want', min:0,    max:5000,  step:500, default:1000,  color:'#FF922B'},
+  {id:'fun',       icon:'🎉', name:'Entertainment',      type:'want', min:0,    max:8000,  step:500, default:3000,  color:'#FF6B6B'},
+  {id:'dining',    icon:'🍕', name:'Dining Out',         type:'want', min:0,    max:5000,  step:500, default:3000,  color:'#F06595'},
+];
+const values = {};
+const chipBucket = {};
+let draggedId = null;
+
+/* ===== BACKGROUND ===== */
+function buildBg(){
+  // Aurora blobs
+  const aurora = document.getElementById('aurora');
+  const blobs = [
+    {w:600,h:600,l:'10%',t:'5%',bg:'radial-gradient(circle,#CC5DE888,transparent 70%)',dur:8},
+    {w:500,h:500,l:'60%',t:'30%',bg:'radial-gradient(circle,#4D96FF77,transparent 70%)',dur:11,delay:2},
+    {w:700,h:700,l:'30%',t:'50%',bg:'radial-gradient(circle,#6BCB7766,transparent 70%)',dur:9,delay:4},
+    {w:400,h:400,l:'75%',t:'5%',bg:'radial-gradient(circle,#FFD93D66,transparent 70%)',dur:13,delay:1},
+    {w:450,h:450,l:'5%',t:'60%',bg:'radial-gradient(circle,#FF6B6B55,transparent 70%)',dur:10,delay:3},
+  ];
+  blobs.forEach(b=>{
+    const el=document.createElement('div');
+    el.className='aurora-blob';
+    el.style.cssText=`width:${b.w}px;height:${b.h}px;left:${b.l};top:${b.t};background:${b.bg};
+      animation-duration:${b.dur}s;animation-delay:${b.delay||0}s`;
+    aurora.appendChild(el);
+  });
+
+  // Stars
+  const sf=document.getElementById('stars');
+  for(let i=0;i<120;i++){
+    const s=document.createElement('div');
+    s.className='star';
+    const sz=Math.random()*3+1;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}vw;top:${Math.random()*100}vh;
+      animation-duration:${2+Math.random()*4}s;animation-delay:${Math.random()*4}s`;
+    sf.appendChild(s);
+  }
+
+  // Floating emojis
+  const emojis=['🌟','💫','🎈','🎀','🎁','🌈','⭐','🎊','🎵','🍭','🦋','🌸','💰','🪙','💸','🎠','🔮','💎','🎆','✨','🌙','🏆','🎯','💡'];
+  const fl=document.getElementById('floaties');
+  for(let i=0;i<24;i++){
+    const el=document.createElement('div');
+    el.className='floaty';
+    el.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    el.style.cssText=`left:${Math.random()*100}vw;
+      font-size:${1.2+Math.random()*2.5}rem;opacity:${0.15+Math.random()*.3};
+      animation-duration:${8+Math.random()*14}s;
+      animation-delay:${Math.random()*10}s`;
+    fl.appendChild(el);
+  }
+}
+
+/* ===== INIT ===== */
+function init(){
+  buildBg();
+  const grid=document.getElementById('categoriesGrid');
+  grid.innerHTML='';
+  categories.forEach(c=>{
+    values[c.id]=c.default;
+    chipBucket[c.id]=c.type;
+    const div=document.createElement('div');
+    div.className='cat-card '+c.type;
+    const iconBg=c.type==='need'?'rgba(107,203,119,.18)':c.type==='save'?'rgba(255,210,61,.18)':'rgba(77,150,255,.18)';
+    const typeCls='type-'+c.type;
+    const typeTxt=c.type==='need'?'✅ NEED':c.type==='save'?'🐖 SAVE':'⭐ WANT';
+    const pct=((c.default-c.min)/(c.max-c.min))*100;
+    const trackStyle=sliderTrack(c.color,pct);
+    div.innerHTML=`
+      <div class="cat-header">
+        <div class="cat-icon" style="background:${iconBg}">${c.icon}</div>
+        <div>
+          <div class="cat-name">${c.name}</div>
+          <span class="cat-type ${typeCls}">${typeTxt}</span>
+        </div>
+      </div>
+      <div class="slider-row">
+        <input type="range" class="slider" id="slider_${c.id}"
+          min="${c.min}" max="${c.max}" step="${c.step}" value="${c.default}"
+          style="${trackStyle};accent-color:${c.color}"
+          oninput="onSlide('${c.id}',this,'${c.color}')">
+        <div class="amount-display" id="disp_${c.id}" style="color:${c.color}">₹${c.default.toLocaleString()}</div>
+      </div>`;
+    grid.appendChild(div);
+  });
+  buildChips();
+  updateSummary();
+}
+
+function sliderTrack(color,pct){
+  return `background:linear-gradient(to right,${color} ${pct}%,rgba(255,255,255,.12) ${pct}%)`;
+}
+
+/* ===== SLIDER ===== */
+function onSlide(id,el,color){
+  const cat=categories.find(c=>c.id===id);
+  values[id]=parseInt(el.value);
+  const disp=document.getElementById('disp_'+id);
+  disp.textContent='₹'+values[id].toLocaleString();
+  disp.style.transform='scale(1.18)';
+  setTimeout(()=>disp.style.transform='scale(1)',150);
+  const pct=((el.value-cat.min)/(cat.max-cat.min))*100;
+  el.style.cssText=sliderTrack(color,pct)+`;accent-color:${color}`;
+  spawnCoin(el,color);
+  updateSummary();
+}
+
+function spawnCoin(el,color){
+  const rect=el.getBoundingClientRect();
+  const coins=['🪙','💰','💵','💸'];
+  const c=document.createElement('div');
+  c.className='coin-pop';
+  c.textContent=coins[Math.floor(Math.random()*coins.length)];
+  c.style.left=(rect.left+rect.width/2-12+Math.random()*40-20)+'px';
+  c.style.top=(rect.top+window.scrollY-8)+'px';
+  document.body.appendChild(c);
+  setTimeout(()=>c.remove(),950);
+}
+
+/* ===== SUMMARY ===== */
+function updateSummary(){
+  const total=Object.values(values).reduce((a,b)=>a+b,0);
+  const rem=30000-total;
+  const needs=categories.filter(c=>c.type==='need').reduce((a,c)=>a+values[c.id],0);
+  const saves=categories.filter(c=>c.type==='save').reduce((a,c)=>a+values[c.id],0);
+  const wants=categories.filter(c=>c.type==='want').reduce((a,c)=>a+values[c.id],0);
+
+  const ra=document.getElementById('remainingAmt');
+  ra.textContent='₹'+Math.max(0,rem).toLocaleString();
+  ra.style.color=rem<0?'#FF6B6B':rem===0?'#6BCB77':'#FF922B';
+  ra.style.textShadow=`0 0 20px ${rem<0?'#FF6B6B':rem===0?'#6BCB77':'#FF922B'}88`;
+  ra.classList.remove('pop'); void ra.offsetWidth; ra.classList.add('pop');
+
+  document.getElementById('totalNeeds').textContent='₹'+needs.toLocaleString();
+  document.getElementById('totalSavings').textContent='₹'+saves.toLocaleString();
+  document.getElementById('totalWants').textContent='₹'+wants.toLocaleString();
+  document.getElementById('totalAllocated').textContent='₹'+total.toLocaleString();
+  document.getElementById('unallocated').textContent='₹'+Math.max(0,rem).toLocaleString();
+  document.getElementById('unallocated').style.color=rem<=0?'#6BCB77':'#FF6B6B';
+
+  const np=Math.min(100,(needs/20000)*100);
+  const nb=document.getElementById('needsBar');
+  nb.style.width=np+'%';
+  nb.style.background=needs>=20000?'linear-gradient(90deg,#6BCB77,#20C997,#6BCB77)':'linear-gradient(90deg,#FF6B6B,#FF922B,#FF6B6B)';
+  nb.style.backgroundSize='200%';
+  nb.style.animation='gradShift 2s linear infinite';
+
+  const tp=Math.min(100,(total/30000)*100);
+  const tb=document.getElementById('totalBar');
+  tb.style.width=tp+'%';
+  tb.style.background=total>30000?'linear-gradient(90deg,#FF6B6B,#FF922B)':'linear-gradient(90deg,#4D96FF,#CC5DE8,#4D96FF)';
+  tb.style.backgroundSize='200%';
+  tb.style.animation='gradShift 2s linear infinite';
+}
+
+/* ===== CHECK ===== */
+function checkBudget(btn){
+  addRipple(btn);
+  const total=Object.values(values).reduce((a,b)=>a+b,0);
+  const needs=categories.filter(c=>c.type==='need').reduce((a,c)=>a+values[c.id],0);
+  const saves=values['savings'];
+  const rem=30000-total;
+  const fb=document.getElementById('feedbackArea');
+  fb.classList.remove('active'); void fb.offsetWidth; fb.classList.add('active');
+
+  if(rem<0){
+    fb.style.background='rgba(255,107,107,.15)'; fb.style.border='2px solid rgba(255,107,107,.5)'; fb.style.color='#FF6B6B';
+    fb.textContent=`❌ Over budget by ₹${Math.abs(rem).toLocaleString()}! Reduce some wants or savings!`;
+    return;
+  }
+  if(needs<20000){
+    fb.style.background='rgba(255,146,43,.15)'; fb.style.border='2px solid rgba(255,146,43,.5)'; fb.style.color='#FF922B';
+    fb.textContent=`⚠️ Needs underfunded! Minimum ₹20,000 needed. Currently: ₹${needs.toLocaleString()}. Add more to essentials!`;
+    return;
+  }
+  if(saves===0){
+    fb.style.background='rgba(255,210,61,.12)'; fb.style.border='2px solid rgba(255,210,61,.5)'; fb.style.color='#FFD93D';
+    fb.textContent=`💡 Needs covered! But save at least ₹1,000 for emergencies — slide the savings up!`;
+    return;
+  }
+  if(rem>2000){
+    fb.style.background='rgba(77,150,255,.12)'; fb.style.border='2px solid rgba(77,150,255,.5)'; fb.style.color='#4D96FF';
+    fb.textContent=`📌 Almost there! ₹${rem.toLocaleString()} still unallocated — spread it between savings and wants!`;
+    return;
+  }
+  fb.style.background='rgba(107,203,119,.15)'; fb.style.border='2px solid rgba(107,203,119,.5)'; fb.style.color='#6BCB77';
+  fb.textContent=`🏆 EXCELLENT BUDGET! Needs ✅  Savings ✅  Wants managed ✅  Unallocated: ₹${rem.toLocaleString()}. The Sharma family is thrilled!`;
+  const badge=document.getElementById('budgetBadge');
+  badge.style.display='inline-block';
+  launchConfetti();
+}
+
+/* ===== CONFETTI ===== */
+function launchConfetti(){
+  const colors=['#FF6B6B','#FFD93D','#6BCB77','#4D96FF','#CC5DE8','#FF922B','#F06595','#20C997'];
+  const shapes=['circle','square','triangle'];
+  for(let i=0;i<100;i++){
+    setTimeout(()=>{
+      const el=document.createElement('div');
+      el.className='confetti-piece';
+      const sz=8+Math.random()*14;
+      const shape=shapes[Math.floor(Math.random()*3)];
+      el.style.cssText=`
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        left:${Math.random()*100}vw; top:-16px;
+        width:${sz}px; height:${sz}px;
+        border-radius:${shape==='circle'?'50%':shape==='square'?'3px':'0'};
+        ${shape==='triangle'?'background:transparent;border-left:'+sz/2+'px solid transparent;border-right:'+sz/2+'px solid transparent;border-bottom:'+sz+'px solid '+colors[Math.floor(Math.random()*colors.length)]+';':''}
+        animation-duration:${1.6+Math.random()*2}s;
+        animation-delay:0s;
+        box-shadow:0 0 6px rgba(255,255,255,.3);
+      `;
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(),3800);
+    },i*28);
+  }
+}
+
+/* ===== RESET ===== */
+function resetBudget(btn){
+  addRipple(btn);
+  const fb=document.getElementById('feedbackArea');
+  fb.textContent=''; fb.style.background=''; fb.style.border=''; fb.classList.remove('active');
+  document.getElementById('budgetBadge').style.display='none';
+  categories.forEach(c=>{
+    values[c.id]=c.default;
+    chipBucket[c.id]=c.type;
+    const sl=document.getElementById('slider_'+c.id);
+    sl.value=c.default;
+    document.getElementById('disp_'+c.id).textContent='₹'+c.default.toLocaleString();
+    const pct=((c.default-c.min)/(c.max-c.min))*100;
+    sl.style.cssText=sliderTrack(c.color,pct)+`;accent-color:${c.color}`;
+  });
+  buildChips();
+  updateSummary();
+}
+
+/* ===== RIPPLE ===== */
+function addRipple(btn){
+  const r=document.createElement('div');
+  r.className='ripple';
+  const sz=Math.max(btn.offsetWidth,btn.offsetHeight);
+  r.style.cssText=`width:${sz}px;height:${sz}px;left:${btn.offsetWidth/2-sz/2}px;top:${btn.offsetHeight/2-sz/2}px`;
+  btn.appendChild(r);
+  setTimeout(()=>r.remove(),700);
+}
+
+/* ===== DRAG & DROP ===== */
+function buildChips(){
+  ['need','save','want'].forEach(t=>{
+    document.getElementById(t+'Items').innerHTML='';
+  });
+  categories.forEach(c=>{
+    const bkt=chipBucket[c.id]||c.type;
+    document.getElementById(bkt+'Items').appendChild(makeChip(c));
+  });
+  updateHints();
+}
+
+function makeChip(c){
+  const chip=document.createElement('div');
+  chip.className='dnd-chip';
+  chip.id='chip_'+c.id;
+  chip.draggable=true;
+  chip.dataset.id=c.id;
+  chip.style.borderColor=c.color+'44';
+  chip.style.boxShadow=`0 0 10px ${c.color}33`;
+  chip.innerHTML=`<span>${c.icon}</span><span>${c.name}</span>`;
+  chip.addEventListener('dragstart',e=>{
+    draggedId=c.id; chip.classList.add('dragging');
+    e.dataTransfer.effectAllowed='move';
+  });
+  chip.addEventListener('dragend',()=>chip.classList.remove('dragging'));
+  return chip;
+}
+
+function onDragOver(e){e.preventDefault();e.dataTransfer.dropEffect='move';e.currentTarget.classList.add('dragover')}
+function onDragLeave(e){e.currentTarget.classList.remove('dragover')}
+function onDrop(e,bkt){
+  e.preventDefault(); e.currentTarget.classList.remove('dragover');
+  if(!draggedId) return;
+  const cat=categories.find(c=>c.id===draggedId);
+  if(!cat) return;
+  chipBucket[draggedId]=bkt;
+  const old=document.getElementById('chip_'+draggedId);
+  if(old) old.remove();
+  document.getElementById(bkt+'Items').appendChild(makeChip(cat));
+  updateHints();
+  const icons={need:'✅',save:'🐖',want:'⭐'};
+  showToast(`${cat.icon} ${cat.name} → ${icons[bkt]} ${bkt.toUpperCase()}`);
+  draggedId=null;
+}
+
+function updateHints(){
+  ['need','save','want'].forEach(t=>{
+    const c=document.getElementById(t+'Items');
+    const existing=c.querySelector('.dnd-drop-hint');
+    if(existing) existing.remove();
+    if(!c.children.length){
+      const h=document.createElement('div');
+      h.className='dnd-drop-hint';h.textContent='✦ Drop here ✦';
+      c.appendChild(h);
+    }
+  });
+}
+
+function showToast(msg){
+  document.querySelectorAll('.toast').forEach(t=>t.remove());
+  const t=document.createElement('div');
+  t.className='toast'; t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),2300);
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fill the Budget! ⭐ Planrs</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;min-height:100vh;padding:16px 16px 60px;overflow-x:hidden;position:relative;background:#0a0015;}
+
+/* ===== RAINBOW + VIOLET ANIMATED BACKGROUND ===== */
+#bgWrap{position:fixed;inset:0;z-index:0;overflow:hidden;}
+
+/* Deep violet base gradient that pulses */
+#bgWrap::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 20% 50%,#6a00ff55 0%,transparent 60%),
+             radial-gradient(ellipse at 80% 30%,#ff006655 0%,transparent 60%),
+             radial-gradient(ellipse at 50% 80%,#00bfff44 0%,transparent 60%),
+             linear-gradient(180deg,#0a0015 0%,#1a0035 40%,#0d001a 100%);
+  animation:bgPulse 8s ease-in-out infinite alternate;
+}
+@keyframes bgPulse{
+  0%{opacity:1;}
+  50%{opacity:0.7;}
+  100%{opacity:1;}
+}
+
+/* Animated aurora bands */
+.aurora{position:absolute;left:-50%;width:200%;height:200px;border-radius:50%;filter:blur(60px);opacity:0.35;animation:auroraFlow linear infinite;}
+@keyframes auroraFlow{
+  0%{transform:translateX(0) translateY(0) rotate(0deg);}
+  100%{transform:translateX(30%) translateY(40px) rotate(5deg);}
+}
+
+/* Shooting stars */
+.star-trail{position:absolute;width:3px;height:3px;border-radius:50%;animation:shootStar linear infinite;}
+@keyframes shootStar{
+  0%{transform:translate(0,0) scale(1);opacity:1;}
+  70%{opacity:1;}
+  100%{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0;}
+}
+
+/* Rainbow rings */
+.ring{position:absolute;border-radius:50%;border:3px solid;animation:ringPulse ease-in-out infinite;opacity:0;}
+@keyframes ringPulse{
+  0%{transform:translate(-50%,-50%) scale(0.2);opacity:0.6;}
+  100%{transform:translate(-50%,-50%) scale(3);opacity:0;}
+}
+
+/* Floating emoji objects */
+.floaty{position:fixed;font-size:2.2rem;pointer-events:none;z-index:2;animation:floatUpDown ease-in-out infinite;}
+@keyframes floatUpDown{
+  0%,100%{transform:translateY(0) rotate(-5deg);}
+  50%{transform:translateY(-25px) rotate(5deg);}
+}
+
+/* Rambo-style diagonal energy slashes */
+.slash{position:fixed;pointer-events:none;z-index:1;overflow:hidden;}
+.slash::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent);
+  animation:slashAnim linear infinite;
+}
+@keyframes slashAnim{
+  0%{transform:translateX(-200%);}
+  100%{transform:translateX(200%);}
+}
+
+/* Particle dots */
+.particle{position:fixed;border-radius:50%;pointer-events:none;z-index:1;animation:particleDrift linear infinite;}
+@keyframes particleDrift{
+  0%{transform:translateY(110vh) translateX(0);opacity:0;}
+  10%{opacity:1;}
+  90%{opacity:1;}
+  100%{transform:translateY(-20vh) translateX(var(--px));opacity:0;}
+}
+
+/* ===== BADGES ===== */
+.planrs-badge{position:fixed;top:12px;left:14px;background:#FFD600;border:3px solid #FF8C00;border-radius:30px;padding:5px 16px;font-family:'Fredoka One',sans-serif;font-size:15px;color:#FF4500;z-index:200;box-shadow:3px 3px 0 #cc6200;animation:wiggle 3s ease-in-out infinite;}
+@keyframes wiggle{0%,100%{transform:rotate(0);}30%{transform:rotate(-4deg);}70%{transform:rotate(4deg);}}
+.score-badge{position:fixed;top:12px;right:14px;background:#1a0035;border:3px solid #aa00ff;border-radius:30px;padding:6px 18px;font-size:16px;font-weight:900;color:#e040fb;z-index:200;box-shadow:3px 3px 0 #6a00c8,0 0 20px #aa00ff88;}
+.score-badge.pulse{animation:sPulse 0.5s ease;}
+@keyframes sPulse{0%{transform:scale(1);}50%{transform:scale(1.35);background:#ff0066;color:white;}100%{transform:scale(1);}}
+
+/* ===== TITLE ===== */
+h1{text-align:center;font-family:'Fredoka One',sans-serif;font-size:clamp(28px,5vw,46px);margin:58px 0 6px;position:relative;z-index:10;
+  background:linear-gradient(90deg,#ff0080,#ff8c00,#ffe000,#00ff88,#00bfff,#aa00ff,#ff0080);
+  background-size:300% 100%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:rainbowText 4s linear infinite,titleIn 0.8s cubic-bezier(.36,.07,.19,.97) both;
+  text-shadow:none;
+  filter:drop-shadow(0 0 18px #aa00ff88);
+}
+@keyframes rainbowText{0%{background-position:0%;}100%{background-position:300%;}}
+@keyframes titleIn{from{transform:scale(0.4) rotate(-8deg);opacity:0;}70%{transform:scale(1.1) rotate(2deg);}to{transform:scale(1) rotate(0);opacity:1;}}
+
+.subtitle{text-align:center;color:#d09cff;font-size:15px;margin-bottom:22px;position:relative;z-index:10;font-weight:700;}
+
+/* ===== INSTRUCTIONS ===== */
+.instructions{background:rgba(30,0,60,0.85);border:3px solid #aa00ff;border-radius:20px;padding:14px 24px;max-width:750px;margin:0 auto 26px;text-align:center;color:#f3d1ff;font-size:15px;font-weight:700;position:relative;z-index:10;box-shadow:0 0 30px #aa00ff44,inset 0 0 20px #aa00ff11;animation:fadeUp 0.6s 0.3s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+
+/* ===== WORD BANK ===== */
+.word-bank{background:linear-gradient(135deg,rgba(20,0,50,0.92),rgba(40,0,80,0.92));border:3px solid #ff0080;border-radius:22px;padding:18px 22px;max-width:750px;margin:0 auto 24px;box-shadow:0 0 40px #ff008044,4px 4px 0 #800040;position:relative;z-index:10;animation:fadeUp 0.6s 0.4s ease both;}
+.word-bank h3{color:#ff80d0;font-size:17px;font-weight:900;margin-bottom:12px;font-family:'Fredoka One',sans-serif;text-shadow:0 0 10px #ff0080;}
+.words{display:flex;flex-wrap:wrap;gap:10px;}
+.word-chip{background:rgba(0,0,0,0.6);border:3px solid;border-radius:40px;padding:8px 18px;font-size:15px;font-weight:800;cursor:grab;transition:all 0.2s;user-select:none;box-shadow:3px 3px 0;position:relative;animation:chipIn 0.4s ease both;color:white;}
+@keyframes chipIn{from{opacity:0;transform:scale(0.4) rotate(-15deg);}to{opacity:1;transform:scale(1) rotate(0);}}
+.word-chip:hover:not(.used){transform:translateY(-5px) scale(1.08);filter:brightness(1.3);}
+.word-chip.selected{transform:translateY(-5px) scale(1.12) rotate(-2deg);filter:brightness(1.5);animation:chipWobble 0.5s ease-in-out infinite alternate;}
+@keyframes chipWobble{from{transform:translateY(-5px) scale(1.12) rotate(-2deg);}to{transform:translateY(-8px) scale(1.15) rotate(2deg);}}
+.word-chip.used{opacity:0.22;pointer-events:none;text-decoration:line-through;filter:grayscale(1);}
+
+/* ===== FILL CARD ===== */
+.fill-card{background:rgba(15,0,40,0.88);border:3px solid;border-radius:22px;padding:24px 28px;max-width:750px;margin:0 auto 22px;position:relative;z-index:10;animation:fadeUp 0.6s ease both;transition:transform 0.3s;backdrop-filter:blur(8px);}
+.fill-card:hover{transform:translateY(-3px);}
+.fill-card:nth-child(1){border-color:#aa00ff;box-shadow:0 0 30px #aa00ff33,4px 4px 0 #5500aa;animation-delay:0.5s;}
+.fill-card:nth-child(2){border-color:#00bfff;box-shadow:0 0 30px #00bfff33,4px 4px 0 #0066aa;animation-delay:0.65s;}
+.fill-card:nth-child(3){border-color:#ff0080;box-shadow:0 0 30px #ff008033,4px 4px 0 #880040;animation-delay:0.8s;}
+.section-title{font-size:19px;font-weight:900;margin-bottom:14px;font-family:'Fredoka One',sans-serif;display:flex;align-items:center;gap:8px;}
+.fill-card:nth-child(1) .section-title{color:#cc66ff;}
+.fill-card:nth-child(2) .section-title{color:#44ddff;}
+.fill-card:nth-child(3) .section-title{color:#ff66b0;}
+.sentence{font-size:clamp(14px,2.5vw,17px);color:#e8d5ff;line-height:2.9;margin-bottom:4px;font-weight:600;}
+
+/* ===== BLANKS ===== */
+.blank{display:inline-flex;align-items:center;justify-content:center;min-width:clamp(68px,11vw,115px);height:38px;border:3px dashed #aa00ff;background:rgba(170,0,255,0.12);padding:4px 12px;font-size:clamp(13px,2vw,16px);font-weight:800;color:white;border-radius:12px;cursor:pointer;transition:all 0.25s;vertical-align:middle;position:relative;user-select:none;}
+.blank:empty::before{content:attr(placeholder);color:#7a4aaa;font-size:12px;font-weight:600;}
+.blank.drag-over{background:rgba(255,0,128,0.25);border-color:#ff0080;border-style:solid;transform:scale(1.12);box-shadow:0 0 20px #ff008066;}
+.blank.filled{border-style:solid;border-color:#cc44ff;background:rgba(170,0,255,0.22);}
+.blank.correct{background:linear-gradient(135deg,#003d1a,#006633);border-color:#00ff88;color:#afffcf;border-style:solid;animation:correctPop 0.5s cubic-bezier(.36,.07,.19,.97) both;box-shadow:0 0 20px #00ff8866;}
+@keyframes correctPop{0%{transform:scale(1);}30%{transform:scale(1.3) rotate(-4deg);}60%{transform:scale(0.92) rotate(2deg);}100%{transform:scale(1) rotate(0);}}
+.blank.wrong{background:linear-gradient(135deg,#3d0000,#660000);border-color:#ff3333;color:#ffaaaa;border-style:solid;animation:shake 0.4s ease;box-shadow:0 0 20px #ff333366;}
+@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-10px) rotate(-3deg);}40%{transform:translateX(10px) rotate(3deg);}60%{transform:translateX(-7px);}80%{transform:translateX(7px);}}
+.blank:hover:not(.correct):not(.wrong){border-color:#ff0080;background:rgba(255,0,128,0.18);transform:scale(1.06);}
+
+/* ===== BUDGET CHART ===== */
+.budget-visual{background:rgba(10,0,30,0.9);border:3px solid #00bfff;border-radius:22px;padding:24px 28px;max-width:750px;margin:0 auto 22px;box-shadow:0 0 40px #00bfff33,4px 4px 0 #006688;position:relative;z-index:10;animation:fadeUp 0.6s 1s ease both;}
+.budget-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.budget-label{width:155px;font-size:14px;font-weight:800;color:#aad4ff;flex-shrink:0;}
+.budget-bar-track{flex:1;background:rgba(255,255,255,0.07);border-radius:40px;height:30px;overflow:hidden;border:1.5px solid rgba(255,255,255,0.1);}
+.budget-bar-fill{height:100%;border-radius:40px;display:flex;align-items:center;padding-left:12px;font-size:13px;font-weight:800;color:white;width:0%;transition:width 1.2s cubic-bezier(.34,1.56,.64,1);text-shadow:1px 1px 3px rgba(0,0,0,0.5);}
+.budget-amount{width:80px;text-align:right;font-size:14px;font-weight:800;color:#aad4ff;flex-shrink:0;}
+
+/* ===== BUTTONS ===== */
+.btn-row{text-align:center;margin-top:22px;position:relative;z-index:10;}
+.btn{display:inline-block;padding:14px 34px;border-radius:50px;border:none;cursor:pointer;font-size:17px;font-weight:900;margin:6px;font-family:'Nunito',sans-serif;transition:all 0.2s;position:relative;letter-spacing:0.5px;}
+.btn:hover{transform:translateY(-4px);filter:brightness(1.2);}
+.btn:active{transform:translateY(1px);}
+.btn-orange{background:linear-gradient(135deg,#ff8c00,#ff4500);color:white;box-shadow:4px 4px 0 #8c2500,0 0 20px #ff8c0066;}
+.btn-coral{background:linear-gradient(135deg,#ff0080,#aa0044);color:white;box-shadow:4px 4px 0 #660022,0 0 20px #ff008066;}
+.btn-mint{background:linear-gradient(135deg,#00cc66,#006633);color:white;box-shadow:4px 4px 0 #003322,0 0 20px #00cc6666;}
+
+/* ===== FEEDBACK ===== */
+.feedback-msg{text-align:center;font-size:18px;font-weight:900;min-height:34px;margin:14px 0;position:relative;z-index:10;font-family:'Fredoka One',sans-serif;color:#ff80d0;text-shadow:0 0 10px #ff0080;}
+
+/* ===== RESULT PANEL ===== */
+.result-panel{background:rgba(15,0,40,0.96);border:4px solid #aa00ff;border-radius:28px;padding:36px;max-width:500px;margin:24px auto;display:none;text-align:center;box-shadow:0 0 80px #aa00ff88,6px 6px 0 #5500aa;position:relative;z-index:10;animation:resultIn 0.6s cubic-bezier(.36,.07,.19,.97) both;}
+@keyframes resultIn{from{transform:scale(0.4) rotate(-8deg);opacity:0;}70%{transform:scale(1.06) rotate(1deg);}to{transform:scale(1) rotate(0);}}
+.score-big{font-size:80px;font-weight:900;font-family:'Fredoka One',sans-serif;background:linear-gradient(135deg,#ff0080,#aa00ff,#00bfff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:scoreIn 0.8s ease both;filter:drop-shadow(0 0 20px #aa00ff);}
+@keyframes scoreIn{from{transform:scale(0);opacity:0;}to{transform:scale(1);opacity:1;}}
+
+/* ===== CONFETTI ===== */
+.conf{position:fixed;pointer-events:none;z-index:999;border-radius:3px;animation:confFall linear forwards;}
+@keyframes confFall{0%{transform:translateY(-20px) rotate(0) translateX(0);opacity:1;}100%{transform:translateY(110vh) rotate(720deg) translateX(var(--tx));opacity:0;}}
+
+/* ===== STAR BURST ===== */
+.starburst{position:fixed;pointer-events:none;z-index:500;font-size:2rem;animation:burst 0.8s ease forwards;}
+@keyframes burst{0%{transform:scale(0) rotate(0);opacity:1;}60%{transform:scale(2) rotate(25deg);opacity:1;}100%{transform:scale(0.5) rotate(50deg) translateY(-80px);opacity:0;}}
+
+/* ===== DRAG GHOST ===== */
+.drag-ghost{position:fixed;background:linear-gradient(135deg,#aa00ff,#ff0080);color:white;padding:8px 18px;border-radius:30px;font-size:16px;font-weight:900;pointer-events:none;z-index:9999;box-shadow:0 8px 30px rgba(170,0,255,0.6);transform:rotate(-6deg) scale(1.1);font-family:'Nunito',sans-serif;}
+</style>
+</head>
+<body>
+<div id="bgWrap"></div>
+<div class="planrs-badge">⭐ Planrs</div>
+<div class="score-badge" id="scoreBadge">🏅 Score: 0/15</div>
+
+<h1>💰 Fill the Budget!</h1>
+<p class="subtitle">Section 3 Activity — Drag words into the blanks & master budgeting!</p>
+
+<div class="instructions">
+  🖱️ <strong>Drag</strong> a glowing word chip into any blank — or <strong>click</strong> a chip then click a blank!<br>
+  Tap a filled blank to return the word to the bank.
+</div>
+
+<div class="word-bank">
+  <h3>📦 Word Bank — Drag or click!</h3>
+  <div class="words" id="wordBank"></div>
+</div>
+
+<div class="fill-card">
+  <div class="section-title">📋 Part 1: Key Concepts</div>
+  <div class="sentence">1. A <span class="blank" id="b1" data-answer="need" placeholder="____"></span> is something essential for survival, like food and shelter.</div>
+  <div class="sentence">2. A <span class="blank" id="b2" data-answer="want" placeholder="____"></span> is something enjoyable but not necessary to survive.</div>
+  <div class="sentence">3. When money is limited, always pay for <span class="blank" id="b3" data-answer="needs" placeholder="____"></span> before spending on wants.</div>
+  <div class="sentence">4. Smart families put aside money as <span class="blank" id="b4" data-answer="savings" placeholder="____"></span> every month.</div>
+  <div class="sentence">5. The golden rule: Needs first, save something, wants with the <span class="blank" id="b5" data-answer="rest" placeholder="____"></span>!</div>
+</div>
+
+<div class="fill-card">
+  <div class="section-title">🏠 Part 2: The Sharma Family Budget</div>
+  <div class="sentence">6. The Sharma family earns Rs. <span class="blank" id="b6" data-answer="30000" placeholder="_____"></span> per month.</div>
+  <div class="sentence">7. Their monthly rent costs Rs. <span class="blank" id="b7" data-answer="8000" placeholder="____"></span>.</div>
+  <div class="sentence">8. After needs (Rs. 20,000), they have Rs. <span class="blank" id="b8" data-answer="10000" placeholder="_____"></span> remaining.</div>
+  <div class="sentence">9. They save Rs. <span class="blank" id="b9" data-answer="3000" placeholder="____"></span> per month, leaving Rs. 7,000 for wants.</div>
+  <div class="sentence">10. Spending on wants first means they can't pay the <span class="blank" id="b10" data-answer="rent" placeholder="____"></span>.</div>
+</div>
+
+<div class="fill-card">
+  <div class="section-title">💡 Part 3: Real Life Choices</div>
+  <div class="sentence">11. Home-cooked <span class="blank" id="b11" data-answer="dal" placeholder="____"></span>-chawal is a healthy, affordable need.</div>
+  <div class="sentence">12. Buying the latest <span class="blank" id="b12" data-answer="phone" placeholder="____"></span> when a basic one works is a want.</div>
+  <div class="sentence">13. A budget helps you avoid <span class="blank" id="b13" data-answer="debt" placeholder="____"></span> by never spending more than you earn.</div>
+  <div class="sentence">14. Consistent saving builds an <span class="blank" id="b14" data-answer="emergency" placeholder="_______"></span> fund for unexpected problems.</div>
+  <div class="sentence">15. Smart money starts with knowing the <span class="blank" id="b15" data-answer="difference" placeholder="_______"></span> between needs and wants!</div>
+</div>
+
+<div class="budget-visual">
+  <div class="section-title" style="color:#44ddff;">📊 Sharma Family Budget — Rs. 30,000/month</div>
+  <div class="budget-row">
+    <div class="budget-label">🍚 Food</div>
+    <div class="budget-bar-track"><div class="budget-bar-fill" style="background:linear-gradient(90deg,#00cc66,#00ff99)">₹5,000</div></div>
+    <div class="budget-amount">₹5,000</div>
+  </div>
+  <div class="budget-row">
+    <div class="budget-label">🏠 Rent</div>
+    <div class="budget-bar-track"><div class="budget-bar-fill" style="background:linear-gradient(90deg,#ff8c00,#ffbb44)">₹8,000</div></div>
+    <div class="budget-amount">₹8,000</div>
+  </div>
+  <div class="budget-row">
+    <div class="budget-label">📚 School Fees</div>
+    <div class="budget-bar-track"><div class="budget-bar-fill" style="background:linear-gradient(90deg,#0088ff,#44aaff)">₹3,000</div></div>
+    <div class="budget-amount">₹3,000</div>
+  </div>
+  <div class="budget-row">
+    <div class="budget-label">🚗 Transport</div>
+    <div class="budget-bar-track"><div class="budget-bar-fill" style="background:linear-gradient(90deg,#aa00ff,#dd44ff)">₹2,000</div></div>
+    <div class="budget-amount">₹2,000</div>
+  </div>
+  <div class="budget-row">
+    <div class="budget-label">💡 Bills</div>
+    <div class="budget-bar-track"><div class="budget-bar-fill" style="background:linear-gradient(90deg,#ff0055,#ff5588)">₹2,000</div></div>
+    <div class="budget-amount">₹2,000</div>
+  </div>
+  <div class="budget-row">
+    <div class="budget-label">🐖 Savings</div>
+    <div class="budget-bar-track"><div class="budget-bar-fill" style="background:linear-gradient(90deg,#00eecc,#66ffdd)">₹3,000</div></div>
+    <div class="budget-amount">₹3,000</div>
+  </div>
+  <div class="budget-row">
+    <div class="budget-label">🎉 Wants</div>
+    <div class="budget-bar-track"><div class="budget-bar-fill" style="background:linear-gradient(90deg,#ff0080,#ff66bb)">₹7,000</div></div>
+    <div class="budget-amount">₹7,000</div>
+  </div>
+</div>
+
+<div class="feedback-msg" id="feedbackMsg"></div>
+<div class="btn-row">
+  <button class="btn btn-orange" onclick="checkAll()">✅ Check Answers</button>
+  <button class="btn btn-coral"  onclick="resetGame()">🔄 Reset</button>
+</div>
+
+<div class="result-panel" id="resultPanel">
+  <h2 id="resultTitle" style="font-family:'Fredoka One',sans-serif;font-size:30px;margin-bottom:8px;color:#dd88ff;"></h2>
+  <div class="score-big" id="finalScore"></div>
+  <p style="font-size:14px;color:#aa66cc;margin-bottom:10px;font-weight:700;">out of 15</p>
+  <p id="resultMsg" style="font-size:16px;color:#ccaaff;margin-bottom:22px;font-weight:700;"></p>
+  <button class="btn btn-coral" onclick="resetGame()">🔄 Try Again</button>
+  <button class="btn btn-mint"  onclick="alert('On to Section 4! 🚀')">➡️ Next Section</button>
+</div>
+
+<script>
+// =========== BACKGROUND SETUP ===========
+(function(){
+  const wrap = document.getElementById('bgWrap');
+
+  // Aurora bands
+  const auroraColors = [
+    'linear-gradient(90deg,#aa00ff,#ff0080,transparent)',
+    'linear-gradient(90deg,transparent,#ff0080,#ff8c00,transparent)',
+    'linear-gradient(90deg,#00bfff,#aa00ff,transparent)',
+    'linear-gradient(90deg,transparent,#ff0080,#ff00ff,transparent)',
+    'linear-gradient(90deg,#00ff88,#00bfff,transparent)',
+  ];
+  const auroraYs = [5, 22, 40, 60, 78];
+  const auroraDurs = [12, 9, 15, 11, 8];
+  auroraColors.forEach((c, i) => {
+    const el = document.createElement('div');
+    el.className = 'aurora';
+    el.style.cssText = `background:${c};top:${auroraYs[i]}%;animation-duration:${auroraDurs[i]}s;animation-delay:-${i*2.5}s;animation-direction:${i%2?'reverse':'normal'};`;
+    wrap.appendChild(el);
+  });
+
+  // Rainbow rings that pulse outward
+  const ringColors = ['#ff0080','#aa00ff','#00bfff','#ff8c00','#00ff88'];
+  for(let i=0;i<8;i++){
+    const el = document.createElement('div');
+    el.className = 'ring';
+    const c = ringColors[i % ringColors.length];
+    el.style.cssText = `
+      width:${100+i*40}px;height:${100+i*40}px;
+      left:${15+Math.random()*70}%;top:${10+Math.random()*80}%;
+      border-color:${c};
+      animation-duration:${3+Math.random()*4}s;
+      animation-delay:-${Math.random()*4}s;
+    `;
+    wrap.appendChild(el);
+  }
+
+  // Shooting stars
+  const starColors = ['#ffffff','#ff80d0','#aad4ff','#ffe080','#80ffcc'];
+  for(let i=0;i<25;i++){
+    const el = document.createElement('div');
+    el.className = 'star-trail';
+    const c = starColors[i % starColors.length];
+    const tx = (Math.random()-0.5)*300;
+    const ty = 80+Math.random()*200;
+    el.style.cssText = `
+      left:${Math.random()*100}%;
+      top:${Math.random()*100}%;
+      background:${c};
+      box-shadow:0 0 6px 2px ${c};
+      width:${2+Math.random()*4}px;height:${2+Math.random()*4}px;
+      --dx:${tx}px;--dy:${ty}px;
+      animation-duration:${1.5+Math.random()*4}s;
+      animation-delay:-${Math.random()*5}s;
+    `;
+    wrap.appendChild(el);
+  }
+
+  // Energy slash strips (Rambo-style)
+  for(let i=0;i<5;i++){
+    const el = document.createElement('div');
+    el.className = 'slash';
+    el.style.cssText = `
+      top:${i*22}%;left:0;right:0;height:${60+Math.random()*80}px;
+      transform:skewY(${-3+Math.random()*6}deg);
+      animation-duration:${2+Math.random()*3}s;
+      animation-delay:-${Math.random()*3}s;
+    `;
+    wrap.appendChild(el);
+  }
+
+  // Floating particles
+  const pColors = ['#ff0080','#aa00ff','#00bfff','#ff8c00','#00ff88','#ffe000'];
+  for(let i=0;i<30;i++){
+    const el = document.createElement('div');
+    el.className = 'particle';
+    const c = pColors[i % pColors.length];
+    el.style.cssText = `
+      left:${Math.random()*100}%;
+      width:${4+Math.random()*8}px;height:${4+Math.random()*8}px;
+      background:${c};
+      box-shadow:0 0 8px 2px ${c};
+      --px:${(Math.random()-0.5)*120}px;
+      animation-duration:${5+Math.random()*12}s;
+      animation-delay:-${Math.random()*12}s;
+      opacity:0.8;
+    `;
+    wrap.appendChild(el);
+  }
+
+  // Floating emoji
+  const floatyEmojis = ['🪙','💜','⚡','🌈','💫','✨','🎯','🚀','💎','🎉'];
+  const positions = [[8,15],[18,60],[30,25],[45,75],[55,10],[65,50],[75,30],[85,65],[92,20],[50,85]];
+  floatyEmojis.forEach((em, i) => {
+    const el = document.createElement('div');
+    el.className = 'floaty';
+    el.textContent = em;
+    el.style.cssText = `left:${positions[i][0]}%;top:${positions[i][1]}%;animation-duration:${2.5+Math.random()*3}s;animation-delay:-${Math.random()*3}s;`;
+    document.body.appendChild(el);
+  });
+})();
+
+// =========== WORD BANK ===========
+const wordBankWords = ['need','want','needs','savings','rest','30000','8000','10000','3000','rent','dal','phone','debt','emergency','difference'];
+const chipData = [
+  {border:'#ff0080',shadow:'#880044'},
+  {border:'#aa00ff',shadow:'#550088'},
+  {border:'#00bfff',shadow:'#005588'},
+  {border:'#ff8c00',shadow:'#884400'},
+  {border:'#00ff88',shadow:'#006633'},
+  {border:'#ffe000',shadow:'#887700'},
+  {border:'#ff4488',shadow:'#880033'},
+  {border:'#bb44ff',shadow:'#660099'},
+  {border:'#44ddff',shadow:'#006677'},
+  {border:'#ffaa00',shadow:'#775500'},
+  {border:'#ff66aa',shadow:'#883355'},
+  {border:'#8844ff',shadow:'#440088'},
+  {border:'#00ccaa',shadow:'#005544'},
+  {border:'#ff6600',shadow:'#883300'},
+  {border:'#ff00cc',shadow:'#880066'},
+];
+
+let selectedWord = null, selectedChip = null, dragWord = null, dragGhost = null;
+
+function initWordBank() {
+  const c = document.getElementById('wordBank');
+  c.innerHTML = '';
+  wordBankWords.forEach((w, i) => {
+    const d = chipData[i % chipData.length];
+    const chip = document.createElement('div');
+    chip.className = 'word-chip';
+    chip.id = 'chip_' + w;
+    chip.textContent = w;
+    chip.setAttribute('draggable', 'true');
+    chip.style.borderColor = d.border;
+    chip.style.boxShadow = `3px 3px 0 ${d.shadow}, 0 0 12px ${d.border}66`;
+    chip.style.animationDelay = (i * 0.055) + 's';
+    chip.addEventListener('click', () => clickSelect(w, chip));
+    chip.addEventListener('dragstart', e => {
+      dragWord = w;
+      e.dataTransfer.setData('text/plain', w);
+      setTimeout(() => chip.style.opacity = '0.3', 0);
+      makeDragGhost(w, e);
+    });
+    chip.addEventListener('dragend', () => {
+      chip.style.opacity = '';
+      removeDragGhost();
+    });
+    c.appendChild(chip);
+  });
+}
+
+function clickSelect(word, chip) {
+  if (chip.classList.contains('used')) return;
+  if (selectedChip) selectedChip.classList.remove('selected');
+  if (selectedWord === word) { selectedWord = null; selectedChip = null; document.getElementById('feedbackMsg').textContent = ''; return; }
+  selectedWord = word; selectedChip = chip;
+  chip.classList.add('selected');
+  document.getElementById('feedbackMsg').textContent = '👆 Click a blank to place: "' + word + '"';
+}
+
+function initBlanks() {
+  for (let i = 1; i <= 15; i++) {
+    const b = document.getElementById('b' + i);
+    b.addEventListener('click', () => {
+      if (b.dataset.filled) {
+        returnChip(b.dataset.filled);
+        b.textContent = ''; b.classList.remove('filled','correct','wrong');
+        delete b.dataset.filled; b.style.borderColor = '';
+      } else if (selectedWord) {
+        placeWord(b, selectedWord);
+        if (selectedChip) selectedChip.classList.remove('selected');
+        selectedWord = null; selectedChip = null;
+        document.getElementById('feedbackMsg').textContent = '';
+      }
+    });
+    b.addEventListener('dragover', e => { e.preventDefault(); b.classList.add('drag-over'); });
+    b.addEventListener('dragleave', () => b.classList.remove('drag-over'));
+    b.addEventListener('drop', e => {
+      e.preventDefault(); b.classList.remove('drag-over');
+      const w = e.dataTransfer.getData('text/plain');
+      if (w) { if (b.dataset.filled) returnChip(b.dataset.filled); placeWord(b, w); }
+    });
+  }
+}
+
+function placeWord(blank, word) {
+  blank.textContent = word;
+  blank.classList.add('filled');
+  blank.dataset.filled = word;
+  blank.classList.remove('correct','wrong');
+  markChip(word, true);
+  playPop();
+}
+
+function returnChip(word) {
+  const chip = document.getElementById('chip_' + word);
+  if (chip) chip.classList.remove('used');
+}
+
+function markChip(word, used) {
+  const chip = document.getElementById('chip_' + word);
+  if (chip) { if(used) chip.classList.add('used'); else chip.classList.remove('used'); }
+}
+
+// Drag ghost
+function makeDragGhost(word, e) {
+  removeDragGhost();
+  dragGhost = document.createElement('div');
+  dragGhost.className = 'drag-ghost';
+  dragGhost.textContent = word;
+  document.body.appendChild(dragGhost);
+  moveGhost(e.clientX, e.clientY);
+  document.addEventListener('dragover', onDragMove);
+}
+function onDragMove(e) { moveGhost(e.clientX, e.clientY); }
+function moveGhost(x, y) { if (dragGhost) { dragGhost.style.left=(x-20)+'px'; dragGhost.style.top=(y-20)+'px'; } }
+function removeDragGhost() { if (dragGhost) { dragGhost.remove(); dragGhost=null; } document.removeEventListener('dragover', onDragMove); }
+
+// Check answers
+function checkAll() {
+  let score = 0;
+  for (let i = 1; i <= 15; i++) {
+    const b = document.getElementById('b' + i);
+    const val = (b.textContent||'').trim().toLowerCase();
+    const ans = b.dataset.answer.toLowerCase();
+    b.classList.remove('correct','wrong');
+    if (val === ans) { score++; b.classList.add('correct'); spawnStars(b); }
+    else b.classList.add('wrong');
+  }
+  const badge = document.getElementById('scoreBadge');
+  badge.textContent = '🏅 Score: ' + score + '/15';
+  badge.classList.remove('pulse'); void badge.offsetWidth; badge.classList.add('pulse');
+  const msg = document.getElementById('feedbackMsg');
+  if (score === 15) {
+    msg.textContent = '🏆 PERFECT! All 15 correct!';
+    msg.style.color = '#00ff88';
+    confetti(200); setTimeout(() => showResult(score), 800);
+  } else {
+    msg.textContent = '✅ ' + score + '/15 — fix the red blanks!';
+    msg.style.color = score >= 10 ? '#00ff88' : '#ff80d0';
+    if (score >= 12) setTimeout(() => showResult(score), 800);
+  }
+}
+
+function showResult(score) {
+  const panel = document.getElementById('resultPanel');
+  panel.style.display = 'block';
+  document.getElementById('finalScore').textContent = score;
+  const p = score / 15 * 100;
+  let title, msg;
+  if (p===100){ title='🏆 Budget Champion!'; msg='Perfect 15/15! You completely mastered budgeting!'; confetti(250); }
+  else if (p>=80){ title='🎉 Excellent!'; msg=score+'/15! Almost there — check the red ones!'; }
+  else if (p>=60){ title='😊 Good Effort!'; msg=score+'/15 — Review the Sharma budget and retry!'; }
+  else { title='💪 Keep Going!'; msg=score+'/15 — Go back to the slides and try again!'; }
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultMsg').textContent = msg;
+}
+
+function resetGame() {
+  selectedWord=null; selectedChip=null; dragWord=null;
+  for (let i=1;i<=15;i++){
+    const b=document.getElementById('b'+i);
+    b.textContent=''; b.classList.remove('correct','wrong','filled','drag-over');
+    b.style.borderColor=''; delete b.dataset.filled;
+  }
+  document.getElementById('scoreBadge').textContent='🏅 Score: 0/15';
+  document.getElementById('feedbackMsg').textContent='';
+  document.getElementById('resultPanel').style.display='none';
+  initWordBank(); animateBars();
+}
+
+// Confetti
+function confetti(n) {
+  const cols = ['#ff0080','#aa00ff','#00bfff','#ff8c00','#00ff88','#ffe000','#ff66ff','#44ffcc'];
+  for (let i=0;i<n;i++) {
+    const el = document.createElement('div');
+    el.className = 'conf';
+    const c = cols[Math.floor(Math.random()*cols.length)];
+    el.style.cssText = `left:${Math.random()*100}vw;top:-20px;background:${c};box-shadow:0 0 6px ${c};width:${8+Math.random()*12}px;height:${8+Math.random()*10}px;border-radius:${Math.random()>.5?'50%':'3px'};animation-duration:${1.8+Math.random()*2.5}s;animation-delay:${Math.random()*.8}s;--tx:${(Math.random()-.5)*250}px;`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  }
+}
+
+// Star bursts
+function spawnStars(el) {
+  const rect = el.getBoundingClientRect();
+  const symbols = ['⭐','✨','💜','💫','🌟'];
+  symbols.forEach((s, i) => {
+    const star = document.createElement('div');
+    star.className = 'starburst';
+    star.textContent = s;
+    star.style.cssText = `left:${rect.left+rect.width/2+(Math.random()-.5)*80}px;top:${rect.top+window.scrollY-20}px;animation-delay:${i*0.09}s;`;
+    document.body.appendChild(star);
+    setTimeout(() => star.remove(), 1200);
+  });
+}
+
+// Sound pop
+function playPop() {
+  try {
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.connect(g); g.connect(ctx.destination);
+    osc.frequency.setValueAtTime(700, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1100, ctx.currentTime+0.1);
+    g.gain.setValueAtTime(0.12, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.18);
+    osc.start(); osc.stop(ctx.currentTime+0.18);
+  } catch(e){}
+}
+
+// Animate bars
+function animateBars() {
+  const widths = ['16.7%','26.7%','10%','6.7%','6.7%','10%','23.3%'];
+  document.querySelectorAll('.budget-bar-fill').forEach((bar, i) => {
+    bar.style.width = '0%';
+    setTimeout(() => { bar.style.width = widths[i]; }, 400 + i*160);
+  });
+}
+
+initWordBank();
+initBlanks();
+animateBars();
+</script>
+</body>
+</html>

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⭐ Planrs | What Do Scammers Want?</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap');
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'Nunito',sans-serif;
+    min-height:100vh;
+    overflow-x:hidden;
+    background:linear-gradient(160deg,#e8f5e9 0%,#c8e6c9 30%,#dcedc8 60%,#f9fbe7 100%);
+  }
+
+  /* =============================================
+     VEG BACKGROUND
+  ============================================= */
+  .veg-bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+
+  .veg{
+    position:absolute;bottom:-120px;
+    animation:vegFloat linear infinite;
+    filter:drop-shadow(0 4px 8px rgba(0,0,0,0.13));
+    opacity:0;
+  }
+
+  @keyframes vegFloat{
+    0%  {transform:translateY(0)    rotate(0deg)   scale(0.7); opacity:0;}
+    6%  {opacity:0.85;}
+    25% {transform:translateY(-25vh) rotate(15deg)  scale(1.0);}
+    50% {transform:translateY(-52vh) rotate(-14deg) scale(0.95);}
+    75% {transform:translateY(-78vh) rotate(20deg)  scale(1.05);}
+    94% {opacity:0.7;}
+    100%{transform:translateY(-112vh) rotate(360deg) scale(0.6); opacity:0;}
+  }
+  @keyframes vegSpin{
+    0%  {transform:translateY(0)    rotate(0deg)   scale(0.8); opacity:0;}
+    8%  {opacity:0.9;}
+    50% {transform:translateY(-55vh) rotate(180deg) scale(1.1);}
+    94% {opacity:0.6;}
+    100%{transform:translateY(-115vh) rotate(720deg) scale(0.5); opacity:0;}
+  }
+  @keyframes vegBounce{
+    0%  {transform:translateY(0)    translateX(0px)   scale(0.7) rotate(0deg);  opacity:0;}
+    8%  {opacity:0.85;}
+    25% {transform:translateY(-25vh) translateX(35px)  scale(1.0) rotate(-22deg);}
+    50% {transform:translateY(-55vh) translateX(-45px) scale(1.1) rotate(28deg);}
+    75% {transform:translateY(-78vh) translateX(25px)  scale(0.9) rotate(-16deg);}
+    94% {opacity:0.5;}
+    100%{transform:translateY(-112vh) translateX(-12px) scale(0.6) rotate(360deg); opacity:0;}
+  }
+
+  /* Scrolling grass strip at bottom */
+  .grass{
+    position:fixed;bottom:0;left:0;width:400%;height:55px;z-index:0;pointer-events:none;
+    background:repeating-linear-gradient(
+      90deg,
+      #66bb6a 0px,#81c784 18px,#4caf50 36px,#a5d6a7 54px,#66bb6a 72px
+    );
+    animation:grassScroll 6s linear infinite;
+    opacity:0.28;border-radius:0;
+  }
+  @keyframes grassScroll{0%{transform:translateX(0);}100%{transform:translateX(-25%);}  }
+
+  /* Soft blobs for depth */
+  .blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:0.1;animation:blobDrift ease-in-out infinite alternate;}
+  @keyframes blobDrift{0%{transform:scale(1) translate(0,0);}100%{transform:scale(1.2) translate(30px,20px);}}
+
+  /* =============================================
+     LAYOUT
+  ============================================= */
+  .wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:16px 12px 60px;}
+
+  .top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+  .logo{
+    font-family:'Fredoka One',cursive;font-size:17px;color:#2e7d32;
+    background:rgba(255,255,255,0.85);backdrop-filter:blur(6px);
+    padding:7px 16px;border-radius:20px;border:2px solid #a5d6a7;
+    box-shadow:0 4px 14px rgba(76,175,80,0.25);
+  }
+  .score-box{
+    font-family:'Fredoka One',cursive;
+    background:linear-gradient(135deg,#ff7043,#ffa726);color:#fff;
+    font-size:16px;padding:7px 20px;border-radius:20px;
+    box-shadow:0 4px 18px rgba(255,112,67,0.4);
+    transition:transform .3s, background .3s;
+    animation:scorePop 2s ease-in-out infinite;
+  }
+  @keyframes scorePop{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
+
+  .badge{
+    display:block;font-family:'Fredoka One',cursive;font-size:13px;
+    background:linear-gradient(135deg,#e53935,#ef9a9a);color:#fff;
+    padding:5px 20px;border-radius:20px;width:fit-content;
+    margin:0 auto 10px;letter-spacing:1px;box-shadow:0 4px 12px rgba(229,57,53,0.35);
+  }
+  h1{
+    font-family:'Fredoka One',cursive;
+    font-size:clamp(22px,4.5vw,34px);color:#1b5e20;text-align:center;margin-bottom:4px;
+    text-shadow:0 3px 0 rgba(255,255,255,0.7),0 6px 16px rgba(0,0,0,0.08);letter-spacing:1px;
+  }
+  .subtitle{text-align:center;font-size:14px;color:#388e3c;margin-bottom:8px;font-weight:700;}
+
+  /* Progress */
+  .progress-wrap{
+    background:rgba(255,255,255,0.5);border-radius:30px;height:16px;
+    margin-bottom:14px;overflow:hidden;border:2px solid #c8e6c9;
+  }
+  .progress-bar{
+    height:100%;background:linear-gradient(90deg,#ff7043,#ffd740,#66bb6a);
+    border-radius:30px;transition:width 0.6s cubic-bezier(0.34,1.56,0.64,1);position:relative;
+  }
+  .progress-bar::after{
+    content:'🥕';position:absolute;right:-10px;top:-4px;font-size:22px;
+    animation:carrotRun .4s ease-in-out infinite alternate;
+  }
+  @keyframes carrotRun{0%{transform:translateY(0) rotate(-10deg);}100%{transform:translateY(-5px) rotate(10deg);}}
+
+  /* Instruction */
+  .instruction{
+    background:rgba(255,255,255,0.75);backdrop-filter:blur(6px);
+    border:2px dashed #81c784;border-radius:20px;
+    padding:10px 18px;text-align:center;font-size:13px;color:#2e7d32;font-weight:700;margin-bottom:16px;
+  }
+
+  /* Pool */
+  .pool{
+    display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:14px;
+    background:rgba(255,255,255,0.65);backdrop-filter:blur(8px);
+    border-radius:24px;border:2px solid #a5d6a7;margin-bottom:18px;min-height:76px;
+    box-shadow:0 4px 24px rgba(76,175,80,0.15);
+  }
+
+  /* Cards */
+  .s-card{
+    padding:11px 15px;border-radius:16px;font-size:13px;font-weight:800;color:#fff;
+    cursor:grab;user-select:none;touch-action:none;max-width:200px;text-align:center;
+    position:relative;overflow:hidden;border:2px solid rgba(255,255,255,0.4);
+    transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;
+    text-shadow:0 1px 3px rgba(0,0,0,0.35);
+    animation:cardPop .5s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  .s-card::before{
+    content:'';position:absolute;top:0;left:-100%;width:55%;height:100%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);
+    animation:shimmer 3.5s ease-in-out infinite;
+  }
+  @keyframes shimmer{0%{left:-100%;}60%,100%{left:160%;}}
+  .s-card:nth-child(1){animation-delay:.05s} .s-card:nth-child(2){animation-delay:.1s}
+  .s-card:nth-child(3){animation-delay:.15s} .s-card:nth-child(4){animation-delay:.2s}
+  .s-card:nth-child(5){animation-delay:.25s} .s-card:nth-child(6){animation-delay:.3s}
+  .s-card:nth-child(7){animation-delay:.35s} .s-card:nth-child(8){animation-delay:.4s}
+  .s-card:nth-child(9){animation-delay:.45s}
+  @keyframes cardPop{0%{transform:scale(0) rotate(-15deg);opacity:0;}100%{transform:scale(1);opacity:1;}}
+  .s-card:hover{transform:translateY(-6px) scale(1.07) rotate(-2deg);box-shadow:0 14px 32px rgba(0,0,0,0.22);}
+  .s-card:active{cursor:grabbing;}
+  .s-card.dragging{opacity:0.2;transform:scale(0.9);}
+  .s-card.placed{opacity:0.15;pointer-events:none;filter:grayscale(1);}
+  .s-card.wiggle{animation:wiggle .5s ease;}
+  @keyframes wiggle{0%,100%{transform:rotate(0);}20%{transform:rotate(-8deg);}40%{transform:rotate(8deg);}60%{transform:rotate(-5deg);}80%{transform:rotate(5deg);}}
+
+  /* Feedback */
+  .feedback{
+    text-align:center;font-family:'Fredoka One',cursive;font-size:17px;
+    padding:11px 18px;border-radius:16px;margin-bottom:14px;min-height:48px;
+    background:rgba(255,255,255,0.7);backdrop-filter:blur(6px);
+    border:2px solid #c8e6c9;color:#388e3c;
+    transition:all .35s cubic-bezier(.34,1.56,.64,1);
+  }
+  .feedback.ok{background:rgba(200,230,201,0.85);border-color:#66bb6a;color:#1b5e20;animation:fbBounce .4s cubic-bezier(.34,1.56,.64,1);}
+  .feedback.bad{background:rgba(255,205,210,0.85);border-color:#ef9a9a;color:#b71c1c;animation:fbShake .4s ease;}
+  @keyframes fbBounce{0%{transform:scale(0.8);}100%{transform:scale(1);}}
+  @keyframes fbShake{0%,100%{transform:translateX(0);}25%{transform:translateX(-10px);}75%{transform:translateX(10px);}}
+
+  /* Buckets */
+  .buckets{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
+  @media(max-width:600px){.buckets{grid-template-columns:1fr;}}
+  .bucket{
+    border-radius:24px;border:3px dashed #bdbdbd;padding:16px 12px;min-height:150px;
+    background:rgba(255,255,255,0.65);backdrop-filter:blur(8px);
+    transition:transform .25s,box-shadow .25s,border-color .25s;position:relative;overflow:hidden;
+  }
+  .bucket::after{
+    content:'';position:absolute;bottom:0;left:0;right:0;height:10px;
+    background:repeating-linear-gradient(90deg,#a5d6a7,#c8e6c9 10px,#a5d6a7 20px);
+    opacity:0.35;border-radius:0 0 22px 22px;
+  }
+  .bucket.over{transform:scale(1.05);border-style:solid;}
+  .bucket.correct{animation:bucketPop .5s cubic-bezier(.34,1.56,.64,1);}
+  @keyframes bucketPop{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
+  .bucket.wrong{animation:bucketShake .4s ease;}
+  @keyframes bucketShake{0%,100%{transform:rotate(0);}20%{transform:rotate(-4deg);}40%{transform:rotate(4deg);}60%{transform:rotate(-3deg);}80%{transform:rotate(3deg);}}
+  .bucket-icon{font-size:44px;text-align:center;display:block;margin-bottom:8px;animation:iconBob 2.5s ease-in-out infinite;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.18));}
+  @keyframes iconBob{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-10px) rotate(3deg);}}
+  .bucket-title{font-family:'Fredoka One',cursive;font-size:14px;text-align:center;margin-bottom:6px;letter-spacing:.5px;}
+  .placed-cards{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:6px;}
+  .placed-tag{
+    font-size:11px;font-weight:800;padding:4px 10px;border-radius:20px;color:#fff;
+    animation:tagPop .4s cubic-bezier(.34,1.56,.64,1);border:1px solid rgba(255,255,255,0.4);
+    text-shadow:0 1px 3px rgba(0,0,0,0.3);
+  }
+  @keyframes tagPop{0%{transform:scale(0) rotate(-10deg);opacity:0;}100%{transform:scale(1);opacity:1;}}
+  #bucket-money    {background:rgba(255,243,224,0.8);border-color:#ffcc80;}
+  #bucket-money.over{border-color:#ff7043;box-shadow:0 0 28px rgba(255,112,67,0.3);}
+  #bucket-password {background:rgba(237,231,246,0.8);border-color:#ce93d8;}
+  #bucket-password.over{border-color:#7c4dff;box-shadow:0 0 28px rgba(124,77,255,0.3);}
+  #bucket-personal {background:rgba(224,247,250,0.8);border-color:#80deea;}
+  #bucket-personal.over{border-color:#00bcd4;box-shadow:0 0 28px rgba(0,188,212,0.3);}
+
+  /* Final */
+  .final{
+    display:none;text-align:center;background:rgba(255,255,255,0.88);backdrop-filter:blur(16px);
+    border-radius:28px;padding:36px;border:3px solid #a5d6a7;box-shadow:0 20px 60px rgba(76,175,80,0.22);
+  }
+  .final.show{display:block;animation:finalIn .6s cubic-bezier(.34,1.56,.64,1);}
+  @keyframes finalIn{0%{transform:scale(.5) rotate(-5deg);opacity:0;}100%{transform:scale(1) rotate(0);opacity:1;}}
+  .final-emoji{font-size:80px;display:block;animation:superBounce .8s ease-in-out infinite alternate;}
+  @keyframes superBounce{0%{transform:translateY(0) scale(1);}100%{transform:translateY(-20px) scale(1.15);}}
+  .final-score{font-family:'Fredoka One',cursive;font-size:34px;color:#ff7043;margin:12px 0;}
+  .final-msg{font-size:16px;color:#388e3c;font-weight:800;margin-bottom:20px;}
+  .stars-row{font-size:38px;letter-spacing:4px;margin:8px 0;}
+  .btn{
+    padding:13px 30px;border:none;border-radius:30px;
+    font-family:'Fredoka One',cursive;font-size:15px;cursor:pointer;margin:6px;letter-spacing:.5px;
+    transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;box-shadow:0 6px 20px rgba(0,0,0,0.2);
+  }
+  .btn:hover{transform:translateY(-4px) scale(1.06);} .btn:active{transform:scale(.95);}
+  .btn-r{background:linear-gradient(135deg,#ff7043,#ffa726);color:#fff;}
+  .btn-n{background:linear-gradient(135deg,#43a047,#66bb6a);color:#fff;}
+  .cp{position:fixed;border-radius:3px;animation:cfFall 2.5s ease-in forwards;z-index:300;pointer-events:none;}
+  @keyframes cfFall{0%{transform:translateY(-20px) rotate(0);opacity:1;}100%{transform:translateY(105vh) rotate(720deg);opacity:0;}}
+  .burst{position:fixed;border-radius:50%;pointer-events:none;z-index:250;animation:burstOut .6s ease-out forwards;}
+  @keyframes burstOut{0%{transform:translate(-50%,-50%) scale(0);opacity:1;}100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.5);opacity:0;}}
+  #ghost{position:fixed;pointer-events:none;z-index:999;opacity:.9;transform:rotate(6deg) scale(1.1);}
+</style>
+</head>
+<body>
+
+<div class="veg-bg" id="vegBg">
+  <div class="grass"></div>
+</div>
+<div id="ghost"></div>
+
+<div class="wrap">
+  <div class="top-bar">
+    <div class="logo">⭐ Planrs</div>
+    <div class="score-box" id="scorebox">Score: <span id="sc">0</span>/9</div>
+  </div>
+  <div class="badge">Section 1 · Activity B</div>
+  <h1>🎯 What Do Scammers Want?</h1>
+  <p class="subtitle">Drag each card to the correct bucket — Money, Passwords, or Personal Info!</p>
+  <div class="progress-wrap"><div class="progress-bar" id="pb" style="width:0"></div></div>
+  <div class="instruction">🃏 <strong>Drag & drop</strong> each card into the right bucket — can you catch all 9 scammers? 🥕</div>
+
+  <div class="pool" id="pool">
+    <div class="s-card" draggable="true" data-id="c1" data-bucket="money"    style="background:linear-gradient(135deg,#ff6b6b,#ff8e53);">💸 UPI Transfer Request</div>
+    <div class="s-card" draggable="true" data-id="c2" data-bucket="password" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);">🔑 'Enter your Gmail password'</div>
+    <div class="s-card" draggable="true" data-id="c3" data-bucket="personal" style="background:linear-gradient(135deg,#00b894,#00cec9);">🪪 'Send your Aadhaar number'</div>
+    <div class="s-card" draggable="true" data-id="c4" data-bucket="money"    style="background:linear-gradient(135deg,#e67e22,#f39c12);">💳 Gift card code request</div>
+    <div class="s-card" draggable="true" data-id="c5" data-bucket="password" style="background:linear-gradient(135deg,#e74c3c,#c0392b);">🔓 'Verify with your OTP'</div>
+    <div class="s-card" draggable="true" data-id="c6" data-bucket="personal" style="background:linear-gradient(135deg,#8e44ad,#9b59b6);">🏠 'What is your home address?'</div>
+    <div class="s-card" draggable="true" data-id="c7" data-bucket="money"    style="background:linear-gradient(135deg,#e91e63,#f06292);">🏦 Bank account number form</div>
+    <div class="s-card" draggable="true" data-id="c8" data-bucket="password" style="background:linear-gradient(135deg,#009688,#4db6ac);">📱 'Login to verify — enter PIN'</div>
+    <div class="s-card" draggable="true" data-id="c9" data-bucket="personal" style="background:linear-gradient(135deg,#795548,#a1887f);">📅 'What is your date of birth?'</div>
+  </div>
+
+  <div class="feedback" id="fb">🥕 Drag a card to get started!</div>
+
+  <div class="buckets">
+    <div class="bucket" id="bucket-money"    data-id="money">
+      <span class="bucket-icon" style="animation-delay:0s">💰</span>
+      <div class="bucket-title" style="color:#e64a19">YOUR MONEY</div>
+      <div class="placed-cards" id="placed-money"></div>
+    </div>
+    <div class="bucket" id="bucket-password" data-id="password">
+      <span class="bucket-icon" style="animation-delay:.5s">🔑</span>
+      <div class="bucket-title" style="color:#6a1b9a">YOUR PASSWORDS</div>
+      <div class="placed-cards" id="placed-password"></div>
+    </div>
+    <div class="bucket" id="bucket-personal" data-id="personal">
+      <span class="bucket-icon" style="animation-delay:1s">📋</span>
+      <div class="bucket-title" style="color:#006064">YOUR PERSONAL INFO</div>
+      <div class="placed-cards" id="placed-personal"></div>
+    </div>
+  </div>
+
+  <div class="final" id="fin">
+    <span class="final-emoji" id="finEmoji">🥦</span>
+    <div class="stars-row"  id="finStars"></div>
+    <div class="final-score" id="finScore"></div>
+    <div class="final-msg"  id="finMsg"></div>
+    <button class="btn btn-r" onclick="resetGame()">🔄 Try Again</button>
+    <button class="btn btn-n" onclick="alert('Amazing! Move to Section 2! 🚀')">➡️ Next Section</button>
+  </div>
+</div>
+
+<script>
+// ── VEGETABLE BACKGROUND ──────────────────────────────────────────────────
+const VEGGIES = ['🥕','🥦','🌽','🍅','🥒','🌶️','🧅','🧄','🥬','🫑','🍆','🥔','🌿','🫛','🌱','🥑','🌾','🫚','🍀'];
+const ANIMS   = ['vegFloat','vegSpin','vegBounce'];
+const vegBg   = document.getElementById('vegBg');
+
+// Soft colour blobs
+[['#a5d6a7',60,10,70],['#c8e6c9',50,60,30],['#dcedc8',70,30,50]].forEach(([c,s,l,t])=>{
+  const b=document.createElement('div'); b.className='blob';
+  b.style.cssText=`width:${s*6}px;height:${s*4}px;background:${c};left:${l}%;top:${t}%;animation-duration:${6+Math.random()*4}s;`;
+  vegBg.appendChild(b);
+});
+
+function makeVeg(staggerBot){
+  const el = document.createElement('div');
+  el.className = 'veg';
+  el.textContent = VEGGIES[Math.floor(Math.random()*VEGGIES.length)];
+  const size = 28 + Math.random()*34;
+  const dur  =  9 + Math.random()*12;
+  const anim = ANIMS[Math.floor(Math.random()*3)];
+  let extra = '';
+  if(staggerBot !== undefined) extra = `bottom:${staggerBot}vh;`;
+  el.style.cssText=`left:${Math.random()*95}%;font-size:${size}px;${extra}
+    animation-name:${anim};animation-duration:${dur}s;
+    animation-timing-function:linear;animation-iteration-count:1;animation-fill-mode:both;`;
+  vegBg.appendChild(el);
+  setTimeout(()=>el.remove(),(dur+1)*1000);
+}
+
+// Initial spread
+for(let i=0;i<24;i++) makeVeg(Math.random()*90);
+// Continuous spawn
+setInterval(()=>makeVeg(), 550);
+
+// ── GAME ──────────────────────────────────────────────────────────────────
+let score=0, total=9, dragId=null, dragEl=null;
+const ghost = document.getElementById('ghost');
+const CORR = ['🎉 Correct! Scammer busted!','⭐ Brilliant!','🔥 Nailed it!','🦸 Super hero!','✨ Spot on!','🥦 Great catch!'];
+const WRNG = ['😅 Not quite! Try again!','🤔 Think carefully!','💪 Keep going!','🧐 Almost! Look again!'];
+
+function setupCard(el){
+  el.addEventListener('dragstart',e=>{dragId=el.dataset.id;dragEl=el;setTimeout(()=>el.classList.add('dragging'),0);e.dataTransfer.effectAllowed='move';});
+  el.addEventListener('dragend',()=>el.classList.remove('dragging'));
+  el.addEventListener('mouseenter',()=>{if(Math.random()<.35&&!el.classList.contains('placed')){el.classList.remove('wiggle');void el.offsetWidth;el.classList.add('wiggle');}});
+
+  el.addEventListener('touchstart',e=>{if(el.classList.contains('placed'))return;e.preventDefault();dragId=el.dataset.id;dragEl=el;const t=e.touches[0],r=el.getBoundingClientRect();ghost.innerHTML=el.outerHTML;ghost.style.cssText=`display:block;position:fixed;pointer-events:none;z-index:999;left:${t.clientX-r.width/2}px;top:${t.clientY-r.height/2}px;width:${r.width}px;transform:rotate(6deg) scale(1.1);opacity:.9;`;el.classList.add('dragging');},{passive:false});
+  el.addEventListener('touchmove',e=>{e.preventDefault();if(!dragId)return;const t=e.touches[0],r=dragEl.getBoundingClientRect();ghost.style.left=(t.clientX-r.width/2)+'px';ghost.style.top=(t.clientY-r.height/2)+'px';document.querySelectorAll('.bucket').forEach(b=>b.classList.remove('over'));document.elementFromPoint(t.clientX,t.clientY)?.closest('.bucket')?.classList.add('over');},{passive:false});
+  el.addEventListener('touchend',e=>{e.preventDefault();ghost.style.display='none';ghost.innerHTML='';dragEl?.classList.remove('dragging');const t=e.changedTouches[0];const bk=document.elementFromPoint(t.clientX,t.clientY)?.closest('.bucket');document.querySelectorAll('.bucket').forEach(b=>b.classList.remove('over'));if(bk&&dragId)drop(bk);dragId=null;dragEl=null;});
+}
+document.querySelectorAll('.s-card').forEach(setupCard);
+document.querySelectorAll('.bucket').forEach(b=>{
+  b.addEventListener('dragover',e=>{e.preventDefault();b.classList.add('over');});
+  b.addEventListener('dragleave',()=>b.classList.remove('over'));
+  b.addEventListener('drop',e=>{e.preventDefault();b.classList.remove('over');drop(b);});
+});
+
+function drop(b){
+  if(!dragId||!dragEl)return;
+  const card=document.querySelector(`[data-id="${dragId}"]`);
+  if(!card||card.classList.contains('placed'))return;
+  const ok = card.dataset.bucket===b.dataset.id;
+  const fb = document.getElementById('fb');
+  if(ok){
+    score++;
+    document.getElementById('sc').textContent=score;
+    document.getElementById('pb').style.width=(score/total*100)+'%';
+    const r=b.getBoundingClientRect();
+    spawnBurst(r.left+r.width/2,r.top+r.height/2);
+    vegRain();
+    b.classList.add('correct');setTimeout(()=>b.classList.remove('correct'),600);
+    card.classList.add('placed');
+    const tag=document.createElement('div');tag.className='placed-tag';tag.style.background=card.style.background;tag.textContent=card.textContent;
+    document.getElementById('placed-'+b.dataset.id).appendChild(tag);
+    fb.className='feedback ok';fb.textContent=CORR[Math.floor(Math.random()*CORR.length)];
+    const sb=document.getElementById('scorebox');sb.style.transform='scale(1.3)';sb.style.background='linear-gradient(135deg,#43a047,#66bb6a)';setTimeout(()=>{sb.style.transform='';sb.style.background='';},450);
+    if(score===total)setTimeout(showFin,1700);
+  } else {
+    b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),500);
+    fb.className='feedback bad';fb.textContent=WRNG[Math.floor(Math.random()*WRNG.length)];
+    card.classList.remove('wiggle');void card.offsetWidth;card.classList.add('wiggle');
+  }
+  dragId=null;dragEl=null;
+}
+
+function vegRain(){
+  for(let i=0;i<8;i++) setTimeout(()=>{
+    const el=document.createElement('div');
+    el.style.cssText=`position:fixed;font-size:${22+Math.random()*18}px;left:${10+Math.random()*80}%;top:-50px;animation:cfFall ${1.2+Math.random()*.8}s ease-in forwards;z-index:200;pointer-events:none;transform:rotate(${Math.random()*360}deg);`;
+    el.textContent=VEGGIES[Math.floor(Math.random()*VEGGIES.length)];
+    document.body.appendChild(el);setTimeout(()=>el.remove(),2200);
+  },i*85);
+}
+
+function spawnBurst(x,y){
+  ['#ffd93d','#ff6b6b','#66bb6a','#74b9ff','#a29bfe','#ff7043'].forEach((c,i)=>{
+    for(let j=0;j<3;j++){
+      const p=document.createElement('div');p.className='burst';
+      const a=Math.random()*360,d=40+Math.random()*80;
+      const dx=Math.cos(a*Math.PI/180)*d,dy=Math.sin(a*Math.PI/180)*d,s=6+Math.random()*10;
+      p.style.cssText=`left:${x}px;top:${y}px;width:${s}px;height:${s}px;background:${c};--dx:${dx}px;--dy:${dy}px;animation-duration:${.4+Math.random()*.3}s;`;
+      document.body.appendChild(p);setTimeout(()=>p.remove(),800);
+    }
+  });
+}
+
+function confetti(){
+  const c=['#ff6b6b','#ffd93d','#66bb6a','#74b9ff','#a29bfe','#fd79a8','#ff7043','#00cec9'];
+  for(let i=0;i<70;i++){const el=document.createElement('div');el.className='cp';const s=Math.random()*12+4;el.style.cssText=`left:${Math.random()*100}vw;top:-20px;width:${s}px;height:${s}px;background:${c[~~(Math.random()*c.length)]};border-radius:${Math.random()>.4?'50%':'2px'};animation-delay:${Math.random()*1.5}s;animation-duration:${1.5+Math.random()*1.5}s;`;document.body.appendChild(el);setTimeout(()=>el.remove(),3500);}
+  for(let i=0;i<22;i++) setTimeout(()=>{const el=document.createElement('div');el.style.cssText=`position:fixed;font-size:${28+Math.random()*22}px;left:${Math.random()*100}%;top:-50px;z-index:301;pointer-events:none;animation:cfFall ${2+Math.random()*1.5}s ease-in forwards;`;el.textContent=VEGGIES[~~(Math.random()*VEGGIES.length)];document.body.appendChild(el);setTimeout(()=>el.remove(),4000);},i*100);
+}
+
+function showFin(){
+  confetti();setTimeout(confetti,950);
+  document.getElementById('fin').className='final show';
+  const p=Math.round(score/total*100);
+  document.getElementById('finScore').textContent=`${score}/${total} Correct! (${p}%)`;
+  const T=[
+    {s:'⭐',          e:'🥕',m:'Keep practising! You\'ll get there! 💪'},
+    {s:'⭐⭐',        e:'🥦',m:'Good effort! Try again and do better! 🧐'},
+    {s:'⭐⭐⭐',      e:'🌽',m:'Well done! Scammers are scared of you!'},
+    {s:'⭐⭐⭐⭐',    e:'🏆',m:'Excellent! Scammers can\'t fool you! 🛡️'},
+    {s:'⭐⭐⭐⭐⭐',  e:'🎉',m:'PERFECT! You\'re a Cyber Champion! 🦸'},
+  ];
+  const t=T[Math.min(4,Math.floor(p/20))];
+  document.getElementById('finStars').textContent=t.s;
+  document.getElementById('finEmoji').textContent=t.e;
+  document.getElementById('finMsg').textContent=t.m;
+}
+
+function resetGame(){
+  score=0;document.getElementById('sc').textContent='0';document.getElementById('pb').style.width='0';
+  document.getElementById('fin').className='final';
+  document.querySelectorAll('.s-card').forEach(c=>c.classList.remove('placed','dragging','wiggle'));
+  ['money','password','personal'].forEach(id=>document.getElementById('placed-'+id).innerHTML='');
+  const fb=document.getElementById('fb');fb.className='feedback';fb.textContent='🥕 Drag a card to get started!';
+  ghost.style.display='none';ghost.innerHTML='';dragId=null;dragEl=null;
+}
+
+// Idle wiggle hint
+setInterval(()=>{const cc=[...document.querySelectorAll('.s-card:not(.placed)')];if(!cc.length)return;const c=cc[~~(Math.random()*cc.length)];c.classList.remove('wiggle');void c.offsetWidth;c.classList.add('wiggle');},3500);
+</script>
+</body>
+</html>

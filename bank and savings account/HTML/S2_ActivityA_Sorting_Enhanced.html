@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 2 Activity A — Sort It!</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --piggy: #FF6B9D;
+  --piggy-light: #FFD6E8;
+  --bank: #4A90E2;
+  --bank-light: #D6EAFF;
+  --both: #7C4DFF;
+  --both-light: #E8DCFF;
+  --soil: #8B5E3C;
+  --grass: #4CAF50;
+  --water: #29B6F6;
+  --sky: #87CEEB;
+  --cloud: rgba(255,255,255,0.9);
+  --card-bg: #FFF8EE;
+  --gold: #FFD700;
+}
+
+html, body { height: 100%; overflow-x: hidden; }
+
+body {
+  font-family: 'Baloo 2', 'Nunito', sans-serif;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* ===== ANIMATED BACKGROUND ===== */
+.bg-scene {
+  position: fixed; inset: 0; z-index: 0;
+  overflow: hidden;
+}
+
+/* Sky gradient */
+.bg-sky {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg,
+    #87CEEB 0%,
+    #B0E2FF 40%,
+    #D4F4FF 60%,
+    #A8E6A3 65%,
+    #6DBE6D 72%,
+    #5AA85A 75%,
+    #8B6914 78%,
+    #7A5A10 82%,
+    #6B4F0E 100%
+  );
+}
+
+/* Sun */
+.sun {
+  position: absolute;
+  top: 30px; right: 80px;
+  width: 70px; height: 70px;
+  background: radial-gradient(circle, #FFE066 40%, #FFC300 70%, transparent 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 40px 20px rgba(255,220,50,0.4);
+  animation: sunPulse 3s ease-in-out infinite;
+}
+@keyframes sunPulse {
+  0%,100% { box-shadow: 0 0 40px 20px rgba(255,220,50,0.35); }
+  50% { box-shadow: 0 0 70px 35px rgba(255,220,50,0.55); }
+}
+
+/* Sun rays */
+.sun::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  background: conic-gradient(
+    rgba(255,220,50,0.3) 0deg, transparent 15deg,
+    rgba(255,220,50,0.3) 30deg, transparent 45deg,
+    rgba(255,220,50,0.3) 60deg, transparent 75deg,
+    rgba(255,220,50,0.3) 90deg, transparent 105deg,
+    rgba(255,220,50,0.3) 120deg, transparent 135deg,
+    rgba(255,220,50,0.3) 150deg, transparent 165deg,
+    rgba(255,220,50,0.3) 180deg, transparent 195deg,
+    rgba(255,220,50,0.3) 210deg, transparent 225deg,
+    rgba(255,220,50,0.3) 240deg, transparent 255deg,
+    rgba(255,220,50,0.3) 270deg, transparent 285deg,
+    rgba(255,220,50,0.3) 300deg, transparent 315deg,
+    rgba(255,220,50,0.3) 330deg, transparent 345deg
+  );
+  animation: spinRays 8s linear infinite;
+}
+@keyframes spinRays { to { transform: rotate(360deg); } }
+
+/* Clouds */
+.cloud {
+  position: absolute;
+  background: white;
+  border-radius: 50px;
+  opacity: 0.9;
+  animation: driftCloud linear infinite;
+}
+.cloud::before, .cloud::after {
+  content: '';
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+}
+.cloud1 { width:100px;height:35px; top:60px; left:-120px; animation-duration:28s; animation-delay:-5s; }
+.cloud1::before { width:50px;height:50px; top:-25px; left:15px; }
+.cloud1::after { width:35px;height:35px; top:-18px; left:50px; }
+.cloud2 { width:140px;height:45px; top:110px; left:-160px; animation-duration:38s; animation-delay:-15s; }
+.cloud2::before { width:65px;height:65px; top:-35px; left:20px; }
+.cloud2::after { width:48px;height:48px; top:-28px; left:75px; }
+.cloud3 { width:80px;height:28px; top:45px; left:-100px; animation-duration:22s; animation-delay:-8s; }
+.cloud3::before { width:40px;height:40px; top:-20px; left:10px; }
+.cloud3::after { width:30px;height:30px; top:-15px; left:40px; }
+@keyframes driftCloud {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(100vw + 200px)); }
+}
+
+/* Birds */
+.bird {
+  position: absolute;
+  font-size: 22px;
+  animation: birdFly linear infinite;
+}
+.bird1 { top:80px; left:-40px; animation-duration:18s; animation-delay:-3s; }
+.bird2 { top:130px; left:-40px; animation-duration:25s; animation-delay:-10s; font-size:16px; }
+@keyframes birdFly {
+  0% { transform: translateX(0) translateY(0); }
+  25% { transform: translateX(25vw) translateY(-15px); }
+  50% { transform: translateX(50vw) translateY(5px); }
+  75% { transform: translateX(75vw) translateY(-10px); }
+  100% { transform: translateX(110vw) translateY(0); }
+}
+
+/* Grass blades (animated) */
+.grass-layer {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 26%;
+}
+.grass-blade {
+  position: absolute;
+  bottom: 40%;
+  width: 8px;
+  background: linear-gradient(to top, #3A8A3A, #66BB6A);
+  border-radius: 4px 4px 0 0;
+  transform-origin: bottom center;
+  animation: swayGrass ease-in-out infinite alternate;
+}
+@keyframes swayGrass {
+  from { transform: rotate(-8deg) scaleY(1); }
+  to { transform: rotate(8deg) scaleY(1.05); }
+}
+
+/* Flowers */
+.flower {
+  position: absolute;
+  bottom: 38%;
+  font-size: 20px;
+  animation: floatFlower ease-in-out infinite alternate;
+}
+@keyframes floatFlower {
+  from { transform: translateY(0) rotate(-5deg); }
+  to { transform: translateY(-5px) rotate(5deg); }
+}
+
+/* Water stream */
+.water-area {
+  position: absolute;
+  bottom: 5%;
+  left: 5%;
+  width: 90px;
+  height: 18px;
+  background: linear-gradient(90deg, #29B6F6, #4FC3F7, #29B6F6);
+  border-radius: 20px;
+  opacity: 0.7;
+  animation: waterFlow 2s linear infinite;
+  overflow: hidden;
+}
+.water-area::after {
+  content: '';
+  position: absolute;
+  top: 4px; left: -100%;
+  width: 50%;
+  height: 4px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 2px;
+  animation: waterShine 1.5s linear infinite;
+}
+@keyframes waterFlow {
+  0%,100% { transform: scaleX(1); }
+  50% { transform: scaleX(1.05); }
+}
+@keyframes waterShine {
+  from { left: -60%; }
+  to { left: 130%; }
+}
+.water-drop {
+  position: absolute;
+  font-size: 18px;
+  animation: dropFall linear infinite;
+  opacity: 0.8;
+}
+@keyframes dropFall {
+  0% { transform: translateY(-20px); opacity: 0; }
+  20% { opacity: 0.9; }
+  80% { opacity: 0.9; }
+  100% { transform: translateY(60px); opacity: 0; }
+}
+
+/* Soil layer */
+.soil-layer {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 22%;
+  background: linear-gradient(180deg, #8B5E3C 0%, #7A5020 50%, #6B4510 100%);
+  border-radius: 60% 60% 0 0 / 20% 20% 0 0;
+}
+.soil-layer::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 10px;
+  background: linear-gradient(180deg, #5A8A30, #4A7A20);
+}
+
+/* Worm */
+.worm {
+  position: absolute;
+  font-size: 20px;
+  animation: wormWiggle ease-in-out infinite alternate;
+}
+@keyframes wormWiggle {
+  from { transform: translateX(0) rotate(-15deg); }
+  to { transform: translateX(10px) rotate(15deg); }
+}
+
+/* Coins flying */
+.coin {
+  position: fixed;
+  font-size: 24px;
+  pointer-events: none;
+  z-index: 999;
+  animation: coinBurst 1s ease-out forwards;
+}
+@keyframes coinBurst {
+  0% { transform: translate(0,0) scale(0.5) rotate(0); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(1.5) rotate(720deg); opacity: 0; }
+}
+
+/* Sparkles */
+.sparkle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 999;
+  animation: sparkleAnim 0.8s ease-out forwards;
+}
+@keyframes sparkleAnim {
+  0% { transform: scale(0) rotate(0); opacity: 1; }
+  50% { transform: scale(1.4) rotate(180deg); opacity: 1; }
+  100% { transform: scale(0) rotate(360deg); opacity: 0; }
+}
+
+/* ===== CONTENT ===== */
+.content {
+  position: relative; z-index: 10;
+  padding: 16px;
+  min-height: 100vh;
+}
+
+.planrs {
+  position: fixed; top: 10px; right: 14px;
+  font-size: 14px; font-weight: 900;
+  color: var(--gold);
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  background: rgba(0,0,0,0.3);
+  padding: 4px 12px;
+  border-radius: 20px;
+  z-index: 100;
+  backdrop-filter: blur(6px);
+}
+
+h1 {
+  text-align: center;
+  font-family: 'Baloo 2', sans-serif;
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  font-weight: 800;
+  background: linear-gradient(135deg, #FF6B9D, #FFD700, #4A90E2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 2px;
+  text-shadow: none;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  animation: titleBounce 2s ease-in-out infinite alternate;
+}
+@keyframes titleBounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-4px); }
+}
+
+.subtitle {
+  text-align: center;
+  color: rgba(255,255,255,0.9);
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.score-bar {
+  background: rgba(255,255,255,0.92);
+  border: 3px solid var(--gold);
+  border-radius: 30px;
+  padding: 8px 24px;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #2E7D32;
+  margin: 0 auto 12px;
+  max-width: 300px;
+  box-shadow: 0 4px 20px rgba(255,215,0,0.4);
+  position: relative;
+  overflow: hidden;
+}
+.score-bar::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -100%;
+  width: 60%;
+  height: 200%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+  animation: shimmer 2s linear infinite;
+}
+@keyframes shimmer { to { left: 150%; } }
+
+.instructions {
+  background: rgba(255,255,255,0.88);
+  border: 2px solid rgba(255,215,0,0.5);
+  border-radius: 16px;
+  padding: 10px 16px;
+  margin: 0 auto 14px;
+  max-width: 520px;
+  font-size: 0.92rem;
+  color: #444;
+  text-align: center;
+  font-weight: 700;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  backdrop-filter: blur(4px);
+}
+
+/* Cards Pool */
+.cards-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  padding: 14px;
+  background: rgba(255,255,255,0.82);
+  border-radius: 20px;
+  border: 3px dashed rgba(255,215,0,0.6);
+  margin-bottom: 16px;
+  min-height: 80px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.item-card {
+  background: linear-gradient(135deg, #FFF8DC, #FFE8B0);
+  border: 3px solid #FFB347;
+  border-radius: 16px;
+  padding: 10px 16px;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #7B3F00;
+  cursor: grab;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  touch-action: none;
+  user-select: none;
+  box-shadow: 0 4px 12px rgba(255,140,0,0.25), inset 0 1px 0 rgba(255,255,255,0.6);
+  position: relative;
+  overflow: hidden;
+}
+.item-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transition: left 0.4s;
+}
+.item-card:hover {
+  transform: translateY(-4px) scale(1.06) rotate(1deg);
+  box-shadow: 0 8px 24px rgba(255,140,0,0.4);
+}
+.item-card:hover::after { left: 150%; }
+.item-card:active { cursor: grabbing; transform: scale(1.08); }
+.item-card.dragging {
+  opacity: 0.5;
+  transform: rotate(-3deg) scale(1.1);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+}
+.item-card.pop-in {
+  animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes popIn {
+  from { transform: scale(0) rotate(-10deg); opacity: 0; }
+  to { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+/* Buckets */
+.buckets {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.bucket {
+  flex: 1;
+  min-width: 200px;
+  max-width: 320px;
+  border-radius: 24px;
+  padding: 14px;
+  min-height: 180px;
+  border: 3px dashed rgba(255,255,255,0.5);
+  transition: all 0.25s ease;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+}
+.bucket h2 {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+#piggyBucket {
+  background: rgba(255,107,157,0.18);
+  border-color: var(--piggy);
+}
+#piggyBucket h2 {
+  background: linear-gradient(135deg, #FF6B9D, #FF4080);
+  color: white;
+  box-shadow: 0 4px 12px rgba(255,64,128,0.4);
+}
+#piggyBucket.hover {
+  background: rgba(255,107,157,0.35);
+  border-style: solid;
+  transform: scale(1.02);
+  box-shadow: 0 8px 32px rgba(255,64,128,0.3);
+}
+
+#bankBucket {
+  background: rgba(74,144,226,0.18);
+  border-color: var(--bank);
+}
+#bankBucket h2 {
+  background: linear-gradient(135deg, #4A90E2, #1565C0);
+  color: white;
+  box-shadow: 0 4px 12px rgba(21,101,192,0.4);
+}
+#bankBucket.hover {
+  background: rgba(74,144,226,0.35);
+  border-style: solid;
+  transform: scale(1.02);
+  box-shadow: 0 8px 32px rgba(74,144,226,0.3);
+}
+
+#bothBucket {
+  background: rgba(124,77,255,0.18);
+  border-color: var(--both);
+}
+#bothBucket h2 {
+  background: linear-gradient(135deg, #7C4DFF, #4A00E0);
+  color: white;
+  box-shadow: 0 4px 12px rgba(74,0,224,0.4);
+}
+#bothBucket.hover {
+  background: rgba(124,77,255,0.35);
+  border-style: solid;
+  transform: scale(1.02);
+  box-shadow: 0 8px 32px rgba(124,77,255,0.3);
+}
+
+.bucket-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.placed-card {
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 0.84rem;
+  font-weight: 800;
+  animation: slideIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes slideIn {
+  from { transform: scale(0) rotate(-15deg); opacity: 0; }
+  to { transform: scale(1) rotate(0); opacity: 1; }
+}
+.placed-card.correct {
+  background: linear-gradient(135deg, #81C784, #4CAF50);
+  color: white;
+  border: 2px solid #2E7D32;
+  box-shadow: 0 3px 10px rgba(76,175,80,0.4);
+}
+.placed-card.wrong {
+  background: linear-gradient(135deg, #EF9A9A, #F44336);
+  color: white;
+  border: 2px solid #C62828;
+  box-shadow: 0 3px 10px rgba(244,67,54,0.4);
+  animation: shake 0.4s, slideIn 0.35s;
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0) rotate(0); }
+  20% { transform: translateX(-8px) rotate(-3deg); }
+  40% { transform: translateX(8px) rotate(3deg); }
+  60% { transform: translateX(-5px) rotate(-2deg); }
+  80% { transform: translateX(5px) rotate(2deg); }
+}
+
+/* Message */
+.message {
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 900;
+  margin-top: 12px;
+  min-height: 40px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  animation: msgPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  color: white;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+}
+@keyframes msgPop {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Buttons */
+.buttons {
+  text-align: center;
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding-bottom: 20px;
+}
+.btn {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: 900;
+  font-family: 'Baloo 2', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  position: relative;
+  overflow: hidden;
+}
+.btn::after {
+  content: '';
+  position: absolute;
+  top: -50%; left: -100%;
+  width: 60%;
+  height: 200%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.3s;
+}
+.btn:hover { transform: translateY(-3px) scale(1.06); }
+.btn:hover::after { left: 150%; }
+.btn:active { transform: scale(0.96); }
+.btn-reset {
+  background: linear-gradient(135deg, #FF6B6B, #FF4500);
+  color: white;
+}
+.btn-next {
+  background: linear-gradient(135deg, #42A5F5, #1565C0);
+  color: white;
+}
+
+/* Drag ghost */
+.drag-ghost {
+  position: fixed;
+  pointer-events: none;
+  z-index: 1000;
+  transform: rotate(5deg) scale(1.1);
+  opacity: 0.9;
+  transition: none;
+}
+
+/* Progress bar */
+.progress-wrap {
+  max-width: 380px;
+  margin: 0 auto 12px;
+  background: rgba(255,255,255,0.4);
+  border-radius: 20px;
+  height: 12px;
+  overflow: hidden;
+  border: 2px solid rgba(255,255,255,0.6);
+}
+.progress-bar {
+  height: 100%;
+  border-radius: 20px;
+  background: linear-gradient(90deg, #FFD700, #FF6B9D, #4A90E2);
+  transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background-size: 200% 100%;
+  animation: gradientShift 3s linear infinite;
+}
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== ANIMATED BACKGROUND SCENE ===== -->
+<div class="bg-scene">
+  <div class="bg-sky"></div>
+  <div class="sun"></div>
+
+  <!-- Clouds -->
+  <div class="cloud cloud1"></div>
+  <div class="cloud cloud2"></div>
+  <div class="cloud cloud3"></div>
+
+  <!-- Birds -->
+  <div class="bird bird1">🕊️</div>
+  <div class="bird bird2">🦋</div>
+
+  <!-- Grass layer with animated blades -->
+  <div class="grass-layer" id="grassLayer"></div>
+
+  <!-- Flowers -->
+  <div id="flowerLayer"></div>
+
+  <!-- Water drops -->
+  <div id="waterLayer"></div>
+
+  <!-- Soil layer -->
+  <div class="soil-layer"></div>
+
+  <!-- Worms -->
+  <div class="worm" id="worm1" style="bottom:8%;left:10%;">🪱</div>
+  <div class="worm" id="worm2" style="bottom:12%;right:15%;animation-duration:2.5s;">🪱</div>
+</div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="content">
+  <div class="planrs">⭐ Planrs</div>
+  <h1>🐷 Sort It — Piggy Bank vs Bank Account!</h1>
+  <p class="subtitle">Section 2 — Activity A | Class 3–5 Finance</p>
+  <div class="score-bar" id="scoreBar">🌟 Score: 0 / 10</div>
+  <div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+  <div class="instructions">👆 Drag each card into the correct box — Piggy Bank 🐷, Bank Account 🏦, or BOTH!</div>
+
+  <div class="cards-pool" id="cardsPool"></div>
+
+  <div class="buckets">
+    <div class="bucket" id="piggyBucket">
+      <h2>🐷 Piggy Bank Only</h2>
+      <div class="bucket-items" id="piggyItems"></div>
+    </div>
+    <div class="bucket" id="bankBucket">
+      <h2>🏦 Bank Account Only</h2>
+      <div class="bucket-items" id="bankItems"></div>
+    </div>
+    <div class="bucket" id="bothBucket">
+      <h2>✅ Both!</h2>
+      <div class="bucket-items" id="bothItems"></div>
+    </div>
+  </div>
+
+  <div class="message" id="message"></div>
+  <div class="buttons">
+    <button class="btn btn-reset" onclick="buildGame()">🔄 Try Again</button>
+    <button class="btn btn-next" onclick="nextSection()">Next Section ➡️</button>
+  </div>
+</div>
+
+<script>
+// ===== BUILD ANIMATED BACKGROUND =====
+(function buildBackground() {
+  // Grass blades
+  const grassLayer = document.getElementById('grassLayer');
+  for (let i = 0; i < 60; i++) {
+    const blade = document.createElement('div');
+    blade.className = 'grass-blade';
+    const h = 20 + Math.random() * 40;
+    blade.style.cssText = `
+      left: ${i * 1.7}%;
+      height: ${h}px;
+      width: ${4 + Math.random() * 6}px;
+      animation-duration: ${1.5 + Math.random() * 2}s;
+      animation-delay: ${Math.random() * 2}s;
+      background: linear-gradient(to top, hsl(${120+Math.random()*30},60%,${30+Math.random()*20}%), hsl(${130+Math.random()*20},70%,55%));
+    `;
+    grassLayer.appendChild(blade);
+  }
+
+  // Flowers
+  const flowerLayer = document.getElementById('flowerLayer');
+  const flowerEmojis = ['🌸','🌻','🌼','🌺','🌹','🌷'];
+  for (let i = 0; i < 12; i++) {
+    const fl = document.createElement('div');
+    fl.className = 'flower';
+    fl.textContent = flowerEmojis[Math.floor(Math.random() * flowerEmojis.length)];
+    fl.style.cssText = `
+      left: ${5 + Math.random() * 90}%;
+      bottom: ${38 + Math.random() * 10}%;
+      animation-duration: ${2 + Math.random() * 2}s;
+      animation-delay: ${Math.random() * 3}s;
+      font-size: ${16 + Math.random() * 10}px;
+    `;
+    flowerLayer.appendChild(fl);
+  }
+
+  // Water drops
+  const waterLayer = document.getElementById('waterLayer');
+  for (let i = 0; i < 8; i++) {
+    const drop = document.createElement('div');
+    drop.className = 'water-drop';
+    drop.textContent = '💧';
+    drop.style.cssText = `
+      left: ${Math.random() * 90}%;
+      top: ${30 + Math.random() * 30}%;
+      animation-duration: ${2 + Math.random() * 3}s;
+      animation-delay: ${Math.random() * 4}s;
+    `;
+    waterLayer.appendChild(drop);
+  }
+
+  // Water stream areas
+  const streamPositions = [
+    {bottom:'6%',left:'8%',width:'80px'},
+    {bottom:'7%',left:'40%',width:'60px'},
+    {bottom:'5%',right:'10%',width:'70px'},
+  ];
+  streamPositions.forEach(pos => {
+    const stream = document.createElement('div');
+    stream.className = 'water-area';
+    Object.assign(stream.style, pos);
+    document.querySelector('.bg-scene').appendChild(stream);
+  });
+})();
+
+// ===== GAME DATA =====
+const items = [
+  { text: "Keeps money at home", bucket: "piggy" },
+  { text: "Earns interest on savings", bucket: "bank" },
+  { text: "Can be broken or stolen", bucket: "piggy" },
+  { text: "Money is protected by law", bucket: "bank" },
+  { text: "Helps build saving habits", bucket: "both" },
+  { text: "Needs Aadhaar to open", bucket: "bank" },
+  { text: "No documents needed", bucket: "piggy" },
+  { text: "You can store rupee coins", bucket: "both" },
+  { text: "Gives you an ATM card", bucket: "bank" },
+  { text: "Great for a first step in saving", bucket: "both" },
+];
+
+let score = 0, placed = 0;
+let dragCard = null, ghost = null;
+let touchOffX = 0, touchOffY = 0;
+
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+
+function buildGame() {
+  score = 0; placed = 0;
+  document.getElementById('scoreBar').textContent = '🌟 Score: 0 / 10';
+  document.getElementById('progressBar').style.width = '0%';
+  document.getElementById('message').textContent = '';
+  ['cardsPool','piggyItems','bankItems','bothItems'].forEach(id => {
+    document.getElementById(id).innerHTML = '';
+  });
+
+  shuffle(items).forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'item-card pop-in';
+    div.textContent = item.text;
+    div.dataset.bucket = item.bucket;
+    div.id = 'card' + i;
+    div.draggable = true;
+    div.style.animationDelay = (i * 0.07) + 's';
+
+    // Desktop drag
+    div.addEventListener('dragstart', e => {
+      dragCard = div;
+      e.dataTransfer.setData('id', div.id);
+      e.dataTransfer.effectAllowed = 'move';
+      setTimeout(() => div.classList.add('dragging'), 0);
+    });
+    div.addEventListener('dragend', () => {
+      div.classList.remove('dragging');
+      dragCard = null;
+    });
+
+    // Touch drag
+    div.addEventListener('touchstart', onTouchStart, { passive: false });
+
+    document.getElementById('cardsPool').appendChild(div);
+  });
+
+  // Bucket event listeners
+  ['piggyBucket','bankBucket','bothBucket'].forEach(id => {
+    const b = document.getElementById(id);
+    // Remove old listeners by cloning
+    const clone = b.cloneNode(true);
+    b.parentNode.replaceChild(clone, b);
+    const fresh = document.getElementById(id);
+
+    fresh.addEventListener('dragover', e => { e.preventDefault(); fresh.classList.add('hover'); });
+    fresh.addEventListener('dragleave', () => fresh.classList.remove('hover'));
+    fresh.addEventListener('drop', e => {
+      e.preventDefault();
+      fresh.classList.remove('hover');
+      const cardId = e.dataTransfer.getData('id');
+      handleDrop(cardId, fresh.id.replace('Bucket',''));
+    });
+  });
+}
+
+// ===== TOUCH DRAG =====
+function onTouchStart(e) {
+  const card = e.target.closest('.item-card');
+  if (!card || card.dataset.placed) return;
+  e.preventDefault();
+  dragCard = card;
+
+  const touch = e.touches[0];
+  const rect = card.getBoundingClientRect();
+  touchOffX = touch.clientX - rect.left;
+  touchOffY = touch.clientY - rect.top;
+
+  // Create ghost
+  ghost = card.cloneNode(true);
+  ghost.className = 'item-card drag-ghost';
+  ghost.style.width = rect.width + 'px';
+  ghost.style.left = (touch.clientX - touchOffX) + 'px';
+  ghost.style.top = (touch.clientY - touchOffY) + 'px';
+  document.body.appendChild(ghost);
+  card.classList.add('dragging');
+
+  document.addEventListener('touchmove', onTouchMove, { passive: false });
+  document.addEventListener('touchend', onTouchEnd, { once: true });
+}
+
+function onTouchMove(e) {
+  e.preventDefault();
+  if (!ghost) return;
+  const touch = e.touches[0];
+  ghost.style.left = (touch.clientX - touchOffX) + 'px';
+  ghost.style.top = (touch.clientY - touchOffY) + 'px';
+
+  // Highlight bucket under finger
+  ghost.style.display = 'none';
+  const el = document.elementFromPoint(touch.clientX, touch.clientY);
+  ghost.style.display = '';
+  const bucket = el && el.closest('.bucket');
+  ['piggyBucket','bankBucket','bothBucket'].forEach(id => {
+    document.getElementById(id).classList.toggle('hover', bucket && bucket.id === id);
+  });
+}
+
+function onTouchEnd(e) {
+  document.removeEventListener('touchmove', onTouchMove);
+  if (ghost) { ghost.remove(); ghost = null; }
+  if (dragCard) dragCard.classList.remove('dragging');
+
+  const touch = e.changedTouches[0];
+  const el = document.elementFromPoint(touch.clientX, touch.clientY);
+  const bucket = el && el.closest('.bucket');
+  ['piggyBucket','bankBucket','bothBucket'].forEach(id => {
+    document.getElementById(id).classList.remove('hover');
+  });
+
+  if (bucket && dragCard && !dragCard.dataset.placed) {
+    handleDrop(dragCard.id, bucket.id.replace('Bucket',''));
+  }
+  dragCard = null;
+}
+
+// ===== DROP HANDLER =====
+function handleDrop(cardId, bucketKey) {
+  const card = document.getElementById(cardId);
+  if (!card || card.dataset.placed) return;
+
+  const correct = card.dataset.bucket === bucketKey;
+  const placed_card = document.createElement('div');
+  placed_card.className = 'placed-card ' + (correct ? 'correct' : 'wrong');
+  placed_card.textContent = (correct ? '✅ ' : '❌ ') + card.textContent;
+
+  const container = document.getElementById(bucketKey + 'Items');
+  if (container) container.appendChild(placed_card);
+
+  if (correct) {
+    card.dataset.placed = '1';
+    card.style.animation = 'popIn 0.3s reverse both';
+    setTimeout(() => card.remove(), 280);
+    score++; placed++;
+    document.getElementById('scoreBar').textContent = `🌟 Score: ${score} / 10`;
+    document.getElementById('progressBar').style.width = (placed * 10) + '%';
+    burstCoins(card);
+    showMsg(true);
+    if (placed === 10) setTimeout(endMsg, 400);
+  } else {
+    setTimeout(() => placed_card.remove(), 700);
+    showMsg(false);
+    shakeCard(card);
+  }
+}
+
+// ===== COIN BURST =====
+function burstCoins(card) {
+  const rect = card.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const emojis = ['💰','🪙','⭐','✨','🌟'];
+  for (let i = 0; i < 8; i++) {
+    const coin = document.createElement('div');
+    coin.className = 'coin';
+    coin.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    const angle = (Math.PI * 2 * i) / 8 + Math.random() * 0.5;
+    const dist = 60 + Math.random() * 60;
+    coin.style.left = cx + 'px';
+    coin.style.top = cy + 'px';
+    coin.style.setProperty('--dx', (Math.cos(angle) * dist) + 'px');
+    coin.style.setProperty('--dy', (Math.sin(angle) * dist - 30) + 'px');
+    document.body.appendChild(coin);
+    setTimeout(() => coin.remove(), 1100);
+  }
+
+  // Sparkles
+  for (let i = 0; i < 5; i++) {
+    const sp = document.createElement('div');
+    sp.className = 'sparkle';
+    sp.textContent = ['✨','💫','🌟'][Math.floor(Math.random() * 3)];
+    sp.style.left = (cx + (Math.random() - 0.5) * 80) + 'px';
+    sp.style.top = (cy + (Math.random() - 0.5) * 80) + 'px';
+    sp.style.fontSize = (16 + Math.random() * 16) + 'px';
+    document.body.appendChild(sp);
+    setTimeout(() => sp.remove(), 900);
+  }
+}
+
+function shakeCard(card) {
+  card.style.animation = 'none';
+  requestAnimationFrame(() => {
+    card.style.animation = 'shake 0.4s';
+  });
+}
+
+// ===== MESSAGES =====
+const good = ["Amazing! 🌟","Correct! 🎉","You're a star! ⭐","Brilliant! 💚","Super! 🚀","Nailed it! 🔥","Awesome! 🦄","Perfect! 💎"];
+const bad = ["Oops! Try another box 😊","Not quite! Think again 💭","Almost! Check again 📚","Hmm… try a different one! 🤔"];
+let mt;
+
+function showMsg(ok) {
+  clearTimeout(mt);
+  const m = document.getElementById('message');
+  m.style.animation = 'none';
+  requestAnimationFrame(() => {
+    m.style.animation = 'msgPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both';
+    m.textContent = ok ? good[Math.floor(Math.random() * good.length)] : bad[Math.floor(Math.random() * bad.length)];
+    m.style.color = ok ? '#FFD700' : '#FF6B6B';
+  });
+  mt = setTimeout(() => m.textContent = '', 1800);
+}
+
+function endMsg() {
+  const m = document.getElementById('message');
+  m.textContent = `🏆 Sorted all ${score}/10! You're a Money Champion! 🎊`;
+  m.style.color = '#FFD700';
+  // Big celebration burst
+  for (let i = 0; i < 5; i++) {
+    setTimeout(() => {
+      const x = Math.random() * window.innerWidth;
+      const y = Math.random() * window.innerHeight * 0.6;
+      const fakeRect = { left: x, top: y, width: 1, height: 1 };
+      const fakeEl = { getBoundingClientRect: () => fakeRect, dataset: {} };
+      burstCoins(fakeEl);
+    }, i * 300);
+  }
+}
+
+function nextSection() {
+  alert('Fantastic! Move to Section 3 — Deposits & ATMs! 🏧');
+}
+
+// Start!
+buildGame();
+</script>
+</body>
+</html>

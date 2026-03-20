@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activity 1B — True or False | Planrs</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Fredoka+One&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --green:#2ECC71;--red:#E74C3C;--blue:#3498DB;--yellow:#F1C40F;
+  --purple:#9B59B6;--orange:#FF6B35;--pink:#FF69B4;
+  --dark:#1a1a2e;--card:#fffef7;
+}
+
+body{
+  font-family:'Nunito',sans-serif;
+  background:linear-gradient(135deg,#667eea 0%,#f093fb 25%,#4facfe 50%,#43e97b 75%,#fa709a 100%);
+  background-size:400% 400%;
+  animation:gradShift 8s ease infinite;
+  min-height:100vh;
+  padding:14px;
+  display:flex;flex-direction:column;align-items:center;
+  overflow-x:hidden;
+}
+
+@keyframes gradShift{
+  0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}
+}
+
+/* ── DRAGGABLE ANIMALS ── */
+#animal-layer{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.animal{
+  position:absolute;font-size:clamp(28px,4vw,52px);
+  cursor:grab;user-select:none;pointer-events:all;
+  transition:transform .15s;
+  filter:drop-shadow(2px 4px 6px rgba(0,0,0,.25));
+  will-change:transform;
+  line-height:1;
+}
+.animal:hover{transform:scale(1.2) rotate(-5deg)!important}
+.animal.dragging{cursor:grabbing;z-index:9999;transform:scale(1.35) rotate(8deg)!important;filter:drop-shadow(4px 8px 16px rgba(0,0,0,.4))}
+.animal.float{animation:floatAni var(--dur,6s) ease-in-out infinite var(--delay,0s)}
+@keyframes floatAni{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-18px) rotate(6deg)}}
+.animal.spin{animation:spinAni var(--dur,8s) linear infinite}
+@keyframes spinAni{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.animal.bounce{animation:bounceAni var(--dur,1.2s) cubic-bezier(.36,.07,.19,.97) infinite alternate var(--delay,0s)}
+@keyframes bounceAni{from{transform:translateY(0)}to{transform:translateY(-22px)}}
+.animal.wiggle{animation:wiggleAni var(--dur,2s) ease-in-out infinite var(--delay,0s)}
+@keyframes wiggleAni{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+
+/* ── MAIN WRAPPER ── */
+.main-wrap{position:relative;z-index:2;width:100%;max-width:700px;display:flex;flex-direction:column;align-items:center}
+
+/* ── TOP BAR ── */
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(12px);
+  border-radius:20px;padding:12px 20px;margin-bottom:14px;
+  box-shadow:0 4px 24px rgba(0,0,0,.15);width:100%;
+  border:3px solid rgba(255,255,255,.8);
+}
+.logo{font-family:'Fredoka One',cursive;color:#9B59B6;font-size:18px;letter-spacing:1px}
+.scorebox{
+  background:linear-gradient(135deg,#667eea,#764ba2);
+  border-radius:12px;padding:6px 18px;
+  font-family:'Fredoka One',cursive;color:#fff;font-size:16px;
+  box-shadow:0 3px 10px rgba(102,126,234,.5);
+}
+
+/* ── TITLE ── */
+h1{
+  font-family:'Fredoka One',cursive;
+  text-align:center;font-size:clamp(20px,5vw,30px);
+  color:#fff;text-shadow:2px 3px 8px rgba(0,0,0,.3);
+  margin-bottom:4px;width:100%;
+  animation:titleBounce 2s ease-in-out infinite;
+}
+@keyframes titleBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.sub{
+  text-align:center;color:rgba(255,255,255,.9);font-size:13px;
+  margin-bottom:14px;font-weight:700;
+  text-shadow:1px 1px 4px rgba(0,0,0,.3);
+}
+
+/* ── DRAG HINT ── */
+.drag-hint{
+  background:rgba(255,255,255,.25);backdrop-filter:blur(8px);
+  border-radius:12px;padding:6px 16px;margin-bottom:14px;
+  font-size:12px;color:#fff;font-weight:700;text-align:center;
+  border:2px dashed rgba(255,255,255,.6);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:.8}50%{opacity:1}}
+
+/* ── PROGRESS ── */
+.progress-bar{
+  background:rgba(255,255,255,.4);border-radius:99px;
+  height:14px;margin-bottom:6px;overflow:hidden;
+  border:2px solid rgba(255,255,255,.6);
+}
+.progress-fill{
+  background:linear-gradient(90deg,#F1C40F,#FF6B35,#FF69B4);
+  height:100%;border-radius:99px;
+  transition:width .5s cubic-bezier(.34,1.56,.64,1);
+  position:relative;overflow:hidden;
+}
+.progress-fill::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent 40%,rgba(255,255,255,.5) 60%,transparent 80%);
+  animation:shimmer 1.5s linear infinite;
+}
+@keyframes shimmer{from{transform:translateX(-100%)}to{transform:translateX(200%)}}
+.prog-label{font-size:12px;color:rgba(255,255,255,.9);font-weight:700;text-align:right;margin-bottom:12px}
+
+/* ── Q CARD ── */
+.q-card{
+  background:rgba(255,255,255,.95);backdrop-filter:blur(16px);
+  border-radius:24px;padding:28px 24px;
+  box-shadow:0 8px 32px rgba(0,0,0,.15);
+  margin-bottom:18px;display:none;text-align:center;
+  border:3px solid rgba(255,255,255,.9);
+  position:relative;overflow:hidden;
+}
+.q-card::before{
+  content:'';position:absolute;top:-50%;left:-50%;
+  width:200%;height:200%;
+  background:radial-gradient(circle,rgba(255,200,100,.08) 0%,transparent 70%);
+  animation:cardGlow 4s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes cardGlow{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.q-card.active{display:block;animation:cardPop .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes cardPop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+
+.q-num{
+  font-family:'Fredoka One',cursive;
+  font-size:13px;color:#9B59B6;
+  text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;
+}
+.q-emoji{font-size:36px;margin-bottom:10px;display:block;animation:floatAni 3s ease-in-out infinite}
+.statement{
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(16px,3.5vw,22px);color:#1a1a2e;
+  line-height:1.5;margin-bottom:24px;min-height:60px;
+}
+
+/* ── TF BUTTONS ── */
+.tf-row{display:flex;gap:14px;justify-content:center}
+.tf-btn{
+  padding:16px 32px;border:none;border-radius:20px;
+  font-family:'Fredoka One',cursive;font-size:18px;
+  cursor:pointer;transition:all .18s cubic-bezier(.34,1.56,.64,1);
+  min-width:120px;
+  position:relative;overflow:hidden;
+  box-shadow:0 6px 20px rgba(0,0,0,.2);
+}
+.tf-btn::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.25),transparent);
+  pointer-events:none;
+}
+.tf-btn:active{transform:scale(.93)!important}
+.true-btn{background:linear-gradient(135deg,#2ECC71,#27AE60);color:#fff}
+.true-btn:hover:not(:disabled){transform:translateY(-4px) scale(1.05);box-shadow:0 10px 28px rgba(46,204,113,.5)}
+.false-btn{background:linear-gradient(135deg,#E74C3C,#C0392B);color:#fff}
+.false-btn:hover:not(:disabled){transform:translateY(-4px) scale(1.05);box-shadow:0 10px 28px rgba(231,76,60,.5)}
+.tf-btn:disabled{opacity:.6;cursor:default}
+.tf-btn.correct-ans{
+  box-shadow:0 0 0 5px #2ECC71,0 10px 30px rgba(46,204,113,.5)!important;
+  transform:scale(1.1)!important;
+  animation:correctPop .5s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes correctPop{0%{transform:scale(1)}50%{transform:scale(1.2)}100%{transform:scale(1.1)}}
+.tf-btn.wrong-ans{
+  box-shadow:0 0 0 5px #E74C3C,0 10px 30px rgba(231,76,60,.5)!important;
+  animation:shake .5s;
+}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-7px)}80%{transform:translateX(7px)}}
+
+/* ── EXPLANATION ── */
+.explanation{
+  display:none;
+  background:linear-gradient(135deg,#f8f4ff,#fff0fa);
+  border:2.5px solid #C39BD3;border-radius:16px;
+  padding:14px 18px;margin-top:16px;
+  font-size:13.5px;color:#6C3483;line-height:1.7;text-align:left;
+  position:relative;
+}
+.explanation::before{content:'💡';position:absolute;top:-14px;left:16px;font-size:22px}
+.explanation.show{display:block;animation:fadeInUp .35s ease}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── NEXT BTN ── */
+.next-btn{
+  display:none;margin-top:16px;width:100%;
+  background:linear-gradient(135deg,#667eea,#764ba2);
+  color:#fff;border:none;border-radius:16px;
+  padding:14px;
+  font-family:'Fredoka One',cursive;font-size:17px;
+  cursor:pointer;box-shadow:0 6px 20px rgba(102,126,234,.45);
+  transition:all .2s cubic-bezier(.34,1.56,.64,1);
+}
+.next-btn:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(102,126,234,.6)}
+.next-btn.show{display:block;animation:fadeInUp .3s ease}
+
+/* ── MSG BAR ── */
+.msgbar{
+  text-align:center;
+  font-family:'Fredoka One',cursive;
+  font-size:20px;min-height:36px;margin:10px 0;
+  width:100%;
+  text-shadow:2px 2px 8px rgba(0,0,0,.25);
+  color:#fff;
+}
+
+/* ── BOTTOM BTNS ── */
+.btnrow{display:flex;gap:11px;justify-content:center;width:100%;max-width:700px}
+.btn{
+  padding:12px 28px;border:none;border-radius:16px;
+  font-family:'Fredoka One',cursive;font-size:16px;
+  cursor:pointer;
+  transition:all .2s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 4px 16px rgba(0,0,0,.2);
+}
+.btn:hover{transform:translateY(-3px)}
+.btn-r{background:linear-gradient(135deg,#FF6B35,#E74C3C);color:#fff}
+.btn-n{background:linear-gradient(135deg,#2ECC71,#27AE60);color:#fff;display:none}
+
+/* ── DONE SCREEN ── */
+.done{
+  display:none;text-align:center;
+  background:rgba(255,255,255,.95);backdrop-filter:blur(16px);
+  border-radius:24px;padding:28px 20px;margin-top:18px;
+  width:100%;max-width:700px;
+  box-shadow:0 8px 32px rgba(0,0,0,.2);
+  border:3px solid rgba(255,255,255,.9);
+}
+.stars{font-size:44px;margin:8px 0;animation:starSpin .6s ease-in-out}
+@keyframes starSpin{from{transform:scale(0) rotate(-180deg)}to{transform:scale(1) rotate(0)}}
+.done h2{font-family:'Fredoka One',cursive;color:#9B59B6;margin-bottom:8px;font-size:clamp(18px,4vw,26px)}
+.dscore-big{
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(36px,8vw,56px);
+  background:linear-gradient(135deg,#667eea,#f093fb,#4facfe);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;margin:8px 0;
+  animation:gradShift 3s ease infinite;background-size:200%;
+}
+.done p{font-size:14px;color:#555;line-height:1.7;margin:6px 0}
+.review{text-align:left;margin-top:14px}
+.r-item{
+  padding:10px 14px;border-radius:12px;margin-bottom:7px;
+  font-size:13px;font-weight:700;
+  transition:transform .15s;
+}
+.r-item:hover{transform:translateX(4px)}
+.r-ok{background:linear-gradient(135deg,#d4efdf,#a9dfbf);color:#1B5E20}
+.r-no{background:linear-gradient(135deg,#fde8e8,#f5b7b1);color:#B71C1C}
+
+/* ── CONFETTI ── */
+.confetti-piece{
+  position:fixed;top:-10px;border-radius:2px;
+  animation:confettiFall linear forwards;
+  pointer-events:none;z-index:999;
+}
+@keyframes confettiFall{
+  0%{transform:translateY(-10px) rotate(0deg);opacity:1}
+  100%{transform:translateY(110vh) rotate(720deg);opacity:0}
+}
+
+/* ── CARD WRAP ── */
+.card-wrap{width:100%;max-width:700px}
+
+/* ── SPARKLES ── */
+.sparkle{
+  position:fixed;pointer-events:none;z-index:998;
+  font-size:24px;animation:sparklePop .8s ease forwards;
+}
+@keyframes sparklePop{
+  0%{transform:scale(0) translateY(0);opacity:1}
+  50%{transform:scale(1.5) translateY(-30px);opacity:1}
+  100%{transform:scale(0) translateY(-60px);opacity:0}
+}
+</style>
+</head>
+<body>
+
+<!-- ANIMAL LAYER -->
+<div id="animal-layer"></div>
+
+<div class="main-wrap">
+  <div class="topbar">
+    <div class="logo">🌟 Planrs</div>
+    <div class="scorebox">Score: <span id="sc">0</span> / 10</div>
+  </div>
+
+  <h1>⚡ True or False — AI Rapid Fire!</h1>
+  <p class="sub">Activity 1B  |  Section 1 — What Is AI?  |  Classes 5–8</p>
+  <div class="drag-hint">🐾 Drag the animals around the screen to rearrange them! 🐾</div>
+
+  <div class="card-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="pfill" style="width:0%"></div></div>
+    <div class="prog-label" id="plabel">Question 1 of 10</div>
+    <div id="qarea"></div>
+  </div>
+
+  <div class="msgbar" id="msg"></div>
+  <div class="btnrow">
+    <button class="btn btn-r" onclick="init()">🔄 Try Again</button>
+    <button class="btn btn-n" id="nxt" onclick="showDone()">See Results 🏆</button>
+  </div>
+
+  <div class="done" id="done">
+    <div class="stars" id="strs"></div>
+    <h2 id="dtitle"></h2>
+    <div class="dscore-big" id="dscore"></div>
+    <p id="dmsg"></p>
+    <div class="review" id="review"></div>
+    <button class="btn btn-r" onclick="init()" style="margin-top:14px">🔄 Play Again</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   QUIZ DATA
+═══════════════════════════════════════════════════ */
+const qs=[
+  {stmt:'AI stands for Automatic Instruction.',ans:false,emoji:'🤖',exp:'AI stands for Artificial Intelligence — it means making computers smart enough to think and learn like humans, not just follow automatic instructions!'},
+  {stmt:'YouTube uses AI to recommend videos you are likely to enjoy.',ans:true,emoji:'📺',exp:'Correct! YouTube\'s recommendation system is a classic example of Machine Learning — it studies your watch history and finds patterns to suggest videos you will love.'},
+  {stmt:'A regular calculator is an example of Artificial Intelligence.',ans:false,emoji:'🧮',exp:'A calculator only follows fixed rules set by programmers — it cannot learn or improve. AI must be able to LEARN from data, which a calculator cannot do.'},
+  {stmt:'AI can learn from data and improve over time.',ans:true,emoji:'📈',exp:'Exactly right! This is the key difference between AI and regular software. AI gets better as it sees more examples — just like how you get better at cricket with practice!'},
+  {stmt:'Google Maps uses AI to find the fastest route and predict traffic.',ans:true,emoji:'🗺️',exp:'Yes! Google Maps uses Machine Learning to analyse millions of trips and real-time data to predict traffic jams and suggest the best route — AI in action every day!'},
+  {stmt:'Humans need to write every single rule for an AI to follow.',ans:false,emoji:'✍️',exp:'This is how OLD computers work, not AI! In Machine Learning, the AI discovers rules itself by studying thousands of examples — nobody writes the rules for it.'},
+  {stmt:'Your phone\'s face-unlock feature uses AI.',ans:true,emoji:'📱',exp:'Absolutely! Face recognition is one of the most popular uses of AI. Your phone was trained on millions of face images to recognise YOUR unique face. Very impressive AI!'},
+  {stmt:'AI and robots are exactly the same thing.',ans:false,emoji:'🦾',exp:'Not quite! A robot is a physical machine — it may or may not use AI. AI is software that helps computers learn and decide. A robot controlled by AI uses both together, but they are not the same!'},
+  {stmt:'WhatsApp uses AI for text autocomplete and spam detection.',ans:true,emoji:'💬',exp:'That\'s right! When WhatsApp suggests the next word as you type, that is AI language prediction. And when it filters spam messages, that is AI classification — both in one app!'},
+  {stmt:'AI systems always give 100% correct answers.',ans:false,emoji:'❓',exp:'No — AI makes mistakes too! AI gives answers based on probability and patterns, not perfect logic. This is why AI ethics and human oversight are so important in critical decisions.'},
+];
+
+const cmsg=['Correct! 🌟','Spot On! 🎉','Brilliant! ⭐','You got it! 🏆','Amazing! 🔥','Wow! 🦁','Super! 🐯'];
+const wmsg=['Not quite — check below 💡','Oops! See explanation 📖','Good try! 🙂'];
+
+let cur=0,score=0,answers=[];
+
+/* ═══════════════════════════════════════════════════
+   ANIMALS — DRAG & DROP BACKGROUND
+═══════════════════════════════════════════════════ */
+const animalList=[
+  {e:'🦁',anim:'float',dur:'5s',delay:'0s'},
+  {e:'🐯',anim:'bounce',dur:'1.4s',delay:'.2s'},
+  {e:'🐘',anim:'wiggle',dur:'3s',delay:'.5s'},
+  {e:'🦒',anim:'float',dur:'7s',delay:'1s'},
+  {e:'🐸',anim:'bounce',dur:'1.1s',delay:'.3s'},
+  {e:'🦋',anim:'spin',dur:'6s',delay:'0s'},
+  {e:'🐬',anim:'float',dur:'4s',delay:'.8s'},
+  {e:'🦊',anim:'wiggle',dur:'2.5s',delay:'.1s'},
+  {e:'🐼',anim:'bounce',dur:'1.6s',delay:'.6s'},
+  {e:'🦄',anim:'float',dur:'6s',delay:'1.5s'},
+  {e:'🐙',anim:'spin',dur:'10s',delay:'.4s'},
+  {e:'🦜',anim:'wiggle',dur:'2s',delay:'.9s'},
+  {e:'🐊',anim:'float',dur:'8s',delay:'1.2s'},
+  {e:'🦓',anim:'bounce',dur:'1.3s',delay:'.7s'},
+  {e:'🐋',anim:'float',dur:'9s',delay:'2s'},
+  {e:'🦅',anim:'spin',dur:'7s',delay:'.2s'},
+  {e:'🐢',anim:'wiggle',dur:'4s',delay:'1.8s'},
+  {e:'🦩',anim:'float',dur:'5.5s',delay:'.4s'},
+  {e:'🐺',anim:'bounce',dur:'1.5s',delay:'1s'},
+  {e:'🦔',anim:'wiggle',dur:'3.5s',delay:'.6s'},
+];
+
+function spawnAnimals(){
+  const layer=document.getElementById('animal-layer');
+  layer.innerHTML='';
+  const W=window.innerWidth,H=window.innerHeight;
+  animalList.forEach((a,i)=>{
+    const el=document.createElement('div');
+    el.className=`animal ${a.anim}`;
+    el.textContent=a.e;
+    el.style.setProperty('--dur',a.dur);
+    el.style.setProperty('--delay',a.delay);
+    // scatter randomly but avoid center area
+    let x,y,tries=0;
+    do{
+      x=Math.random()*90+2;
+      y=Math.random()*90+2;
+      tries++;
+    }while(tries<20 && x>25 && x<75 && y>20 && y<80);
+    el.style.left=x+'%';
+    el.style.top=y+'%';
+    el.dataset.anim=a.anim;
+    makeDraggable(el);
+    layer.appendChild(el);
+  });
+}
+
+function makeDraggable(el){
+  let dragging=false,ox=0,oy=0,startX=0,startY=0;
+  const savedAnim={cls:'',dur:'',delay:''};
+
+  function startDrag(clientX,clientY){
+    dragging=true;
+    savedAnim.cls=el.dataset.anim;
+    el.classList.remove(el.dataset.anim,'float','bounce','wiggle','spin');
+    el.classList.add('dragging');
+    const rect=el.getBoundingClientRect();
+    ox=clientX-rect.left;
+    oy=clientY-rect.top;
+    startX=clientX;startY=clientY;
+    document.body.style.cursor='grabbing';
+    el.style.transition='none';
+  }
+  function moveDrag(clientX,clientY){
+    if(!dragging)return;
+    el.style.left=(clientX-ox)+'px';
+    el.style.top=(clientY-oy)+'px';
+    el.style.right='auto';
+    el.style.bottom='auto';
+    el.style.transform='';
+  }
+  function endDrag(){
+    if(!dragging)return;
+    dragging=false;
+    document.body.style.cursor='';
+    el.classList.remove('dragging');
+    el.style.transition='';
+    // re-apply animation
+    const a=savedAnim.cls;
+    if(a){el.classList.add(a);el.dataset.anim=a;}
+    // pop effect
+    el.style.transform='scale(1.3)';
+    setTimeout(()=>{el.style.transform='';},200);
+    spawnSparkle(parseInt(el.style.left)+el.offsetWidth/2,parseInt(el.style.top)+el.offsetHeight/2);
+  }
+  // mouse
+  el.addEventListener('mousedown',e=>{e.preventDefault();startDrag(e.clientX,e.clientY)});
+  window.addEventListener('mousemove',e=>{if(dragging)moveDrag(e.clientX,e.clientY)});
+  window.addEventListener('mouseup',()=>{if(dragging)endDrag()});
+  // touch
+  el.addEventListener('touchstart',e=>{e.preventDefault();const t=e.touches[0];startDrag(t.clientX,t.clientY)},{passive:false});
+  window.addEventListener('touchmove',e=>{if(dragging){const t=e.touches[0];moveDrag(t.clientX,t.clientY)}},{passive:false});
+  window.addEventListener('touchend',()=>{if(dragging)endDrag()});
+}
+
+/* ═══════════════════════════════════════════════════
+   SPARKLE & CONFETTI
+═══════════════════════════════════════════════════ */
+function spawnSparkle(x,y){
+  const emojis=['✨','⭐','💥','🌟','💫'];
+  const el=document.createElement('div');
+  el.className='sparkle';
+  el.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+  el.style.left=x+'px';el.style.top=y+'px';
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),900);
+}
+
+function launchConfetti(){
+  const colors=['#F1C40F','#E74C3C','#2ECC71','#3498DB','#9B59B6','#FF6B35','#FF69B4'];
+  for(let i=0;i<80;i++){
+    const c=document.createElement('div');
+    c.className='confetti-piece';
+    c.style.left=Math.random()*100+'vw';
+    c.style.width=(6+Math.random()*8)+'px';
+    c.style.height=(8+Math.random()*12)+'px';
+    c.style.background=colors[Math.floor(Math.random()*colors.length)];
+    c.style.animationDuration=(1.5+Math.random()*2)+'s';
+    c.style.animationDelay=(Math.random()*1.5)+'s';
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),4000);
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   QUIZ LOGIC
+═══════════════════════════════════════════════════ */
+function init(){
+  cur=0;score=0;answers=[];
+  document.getElementById('sc').textContent='0';
+  document.getElementById('msg').textContent='';
+  document.getElementById('nxt').style.display='none';
+  document.getElementById('done').style.display='none';
+  build();show(0);
+  spawnAnimals();
+}
+
+function build(){
+  const a=document.getElementById('qarea');a.innerHTML='';
+  qs.forEach((q,i)=>{
+    const d=document.createElement('div');
+    d.className='q-card'+(i===0?' active':'');
+    d.id='qc'+i;
+    d.innerHTML=`
+      <div class="q-num">Question ${i+1} of ${qs.length}</div>
+      <span class="q-emoji">${q.emoji}</span>
+      <div class="statement">${q.stmt}</div>
+      <div class="tf-row">
+        <button class="tf-btn true-btn" id="t${i}" onclick="pick(${i},true)">✅ TRUE</button>
+        <button class="tf-btn false-btn" id="f${i}" onclick="pick(${i},false)">❌ FALSE</button>
+      </div>
+      <div class="explanation" id="ex${i}">${q.exp}</div>
+      <button class="next-btn" id="nb${i}" onclick="next(${i})">${i<qs.length-1?'Next Statement ➡️':'See My Score 🏆'}</button>`;
+    a.appendChild(d);
+  });
+}
+
+function show(i){
+  document.querySelectorAll('.q-card').forEach(c=>c.classList.remove('active'));
+  const c=document.getElementById('qc'+i);
+  if(c){c.classList.add('active');c.scrollIntoView({behavior:'smooth',block:'nearest'})}
+  document.getElementById('pfill').style.width=(i/qs.length*100)+'%';
+  document.getElementById('plabel').textContent=`Question ${i+1} of ${qs.length}`;
+}
+
+function pick(i,val){
+  const q=qs[i];
+  document.getElementById('t'+i).disabled=true;
+  document.getElementById('f'+i).disabled=true;
+  answers[i]=val;
+  const correct=val===q.ans;
+  const chosenBtn=document.getElementById(val?'t'+i:'f'+i);
+  const correctBtn=document.getElementById(q.ans?'t'+i:'f'+i);
+  if(correct){
+    chosenBtn.classList.add('correct-ans');
+    score++;
+    document.getElementById('sc').textContent=score;
+    document.getElementById('msg').textContent=cmsg[Math.floor(Math.random()*cmsg.length)];
+    // mini confetti burst
+    const rect=chosenBtn.getBoundingClientRect();
+    for(let j=0;j<5;j++) spawnSparkle(rect.left+rect.width/2+Math.random()*60-30,rect.top);
+  }else{
+    chosenBtn.classList.add('wrong-ans');
+    correctBtn.classList.add('correct-ans');
+    document.getElementById('msg').textContent=wmsg[Math.floor(Math.random()*wmsg.length)];
+  }
+  document.getElementById('ex'+i).classList.add('show');
+  document.getElementById('nb'+i).classList.add('show');
+}
+
+function next(i){
+  if(i<qs.length-1){cur=i+1;show(cur);}
+  else showDone();
+}
+
+function showDone(){
+  const p=score/qs.length*100;
+  document.getElementById('pfill').style.width='100%';
+  document.getElementById('plabel').textContent='Quiz Complete! 🎉';
+  document.getElementById('nxt').style.display='none';
+  const stars=p>=90?'⭐⭐⭐':p>=70?'⭐⭐':'⭐';
+  document.getElementById('strs').textContent=stars;
+  document.getElementById('dtitle').textContent=p>=90?'AI Facts Expert! 🏆':p>=70?'Great Score! 🎉':'Keep Practising! 💪';
+  document.getElementById('dscore').textContent=score+' / '+qs.length;
+  document.getElementById('dmsg').textContent=p>=90?'You know your AI facts perfectly! Shabash! 🇮🇳 You\'re an AI superstar!':p>=70?'Good understanding! Review the ones you got wrong and aim for 3 stars next time!':'Review the section slides and give it another go — you\'ve got this!';
+  const rv=document.getElementById('review');
+  rv.innerHTML='<p style="font-family:\'Fredoka One\',cursive;color:#9B59B6;margin-bottom:10px;font-size:16px">Your Answers:</p>';
+  qs.forEach((q,i)=>{
+    const ok=answers[i]===q.ans;
+    const d=document.createElement('div');
+    d.className='r-item '+(ok?'r-ok':'r-no');
+    d.textContent=(ok?'✅ ':'❌ ')+`Q${i+1}: ${q.stmt.substring(0,55)}${q.stmt.length>55?'...':''}`;
+    rv.appendChild(d);
+  });
+  document.getElementById('done').style.display='block';
+  document.getElementById('done').scrollIntoView({behavior:'smooth'});
+  if(p>=70) launchConfetti();
+}
+
+/* ═══════════════════════════════════════════════════
+   BOOT
+═══════════════════════════════════════════════════ */
+spawnAnimals();
+init();
+window.addEventListener('resize',spawnAnimals);
+</script>
+</body>
+</html>

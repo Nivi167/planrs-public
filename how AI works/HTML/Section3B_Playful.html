@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Label the Neural Network!</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --pink:   #FF6B9D;
+  --purple: #9B5DE5;
+  --blue:   #00BBF9;
+  --green:  #00F5D4;
+  --yellow: #FEE440;
+  --orange: #F15BB5;
+  --bg:     #0D0D2B;
+  --card:   #16164A;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  padding: 14px;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ── Stars background ── */
+#stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.star {
+  position: absolute; border-radius: 50%;
+  background: #fff; opacity: 0;
+  animation: twinkle linear infinite;
+}
+@keyframes twinkle {
+  0%,100% { opacity: 0; transform: scale(.5); }
+  50%      { opacity: .8; transform: scale(1); }
+}
+
+/* ── Confetti canvas ── */
+#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
+
+/* ── Top bar ── */
+.topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--card); border-radius: 18px; padding: 10px 18px;
+  margin-bottom: 14px; position: relative; z-index: 10;
+  border: 2px solid #ffffff18;
+  animation: slideDown .5s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes slideDown { from{transform:translateY(-30px);opacity:0} to{transform:translateY(0);opacity:1} }
+.logo { font-family:'Baloo 2',cursive; font-size:20px; color:var(--yellow); letter-spacing:.5px; }
+.score-wrap { display:flex; align-items:center; gap:8px; }
+.score-label { font-size:13px; color:#aaa; font-weight:700; }
+.score-pips { display:flex; gap:5px; }
+.pip {
+  width:22px; height:22px; border-radius:50%;
+  background:#ffffff18; border:2px solid #ffffff30;
+  transition: background .3s, transform .3s, border-color .3s;
+}
+.pip.filled { background:var(--yellow); border-color:var(--yellow); transform:scale(1.2); animation: pipPop .4s cubic-bezier(.34,1.56,.64,1); }
+@keyframes pipPop { 0%{transform:scale(0)} 100%{transform:scale(1.2)} }
+
+/* ── Title ── */
+h1 {
+  text-align:center; font-family:'Baloo 2',cursive;
+  color:#fff; font-size:clamp(20px,5vw,30px); margin-bottom:2px;
+  position:relative; z-index:10;
+  animation: popIn .6s cubic-bezier(.34,1.56,.64,1) .1s both;
+}
+.sub { text-align:center; color:#8888cc; font-size:12px; margin-bottom:12px; position:relative; z-index:10; font-weight:700;
+  animation: popIn .6s cubic-bezier(.34,1.56,.64,1) .2s both;
+}
+@keyframes popIn { from{transform:scale(.5);opacity:0} to{transform:scale(1);opacity:1} }
+
+/* ── Instruction bar ── */
+.instr {
+  background: var(--card); border-radius: 14px; padding: 10px 16px;
+  text-align:center; font-size:14px; font-weight:700; color:var(--yellow);
+  margin-bottom:14px; position:relative; z-index:10;
+  border:2px solid #ffffff15;
+  animation: popIn .6s cubic-bezier(.34,1.56,.64,1) .3s both;
+  transition: color .3s;
+  min-height: 42px;
+}
+
+/* ── Label bank ── */
+.bank-wrap {
+  background: var(--card); border-radius:18px; padding:14px;
+  margin-bottom:14px; position:relative; z-index:10;
+  border:2px solid #ffffff12;
+  animation: popIn .6s cubic-bezier(.34,1.56,.64,1) .4s both;
+}
+.bank-title { font-family:'Baloo 2',cursive; color:#8888cc; font-size:13px; text-align:center; margin-bottom:10px; }
+.bank { display:flex; flex-wrap:wrap; gap:9px; justify-content:center; }
+
+.pill {
+  padding: 9px 20px; border-radius:99px; font-family:'Baloo 2',cursive;
+  font-size:15px; cursor:pointer; border:2.5px solid; transition:transform .15s, box-shadow .15s, opacity .3s;
+  position:relative; user-select:none;
+  animation: pillIn .5s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes pillIn { from{transform:scale(0) rotate(-10deg);opacity:0} to{transform:scale(1) rotate(0);opacity:1} }
+.pill:hover:not(.used) { transform:translateY(-4px) scale(1.07); }
+.pill.selected {
+  transform: scale(1.12) translateY(-4px) !important;
+  box-shadow: 0 0 0 4px #fff4, 0 8px 24px #0008;
+}
+.pill.used { opacity:.2; pointer-events:none; transform:none !important; box-shadow:none !important; }
+.pill.bounce { animation: bounce .4s cubic-bezier(.34,1.56,.64,1); }
+@keyframes bounce { 0%,100%{transform:scale(1)} 50%{transform:scale(1.25)} }
+.pill.shake { animation: pillShake .35s; }
+@keyframes pillShake { 0%,100%{rotate:0} 25%{rotate:-8deg} 75%{rotate:8deg} }
+
+/* ── Diagram ── */
+.diagram-wrap {
+  background: var(--card); border-radius:18px; padding:16px;
+  margin-bottom:14px; overflow-x:auto; position:relative; z-index:10;
+  border:2px solid #ffffff12;
+  animation: popIn .6s cubic-bezier(.34,1.56,.64,1) .5s both;
+}
+svg { width:100%; max-width:680px; display:block; margin:auto; }
+
+/* Animated connections */
+.conn { stroke-dasharray:8 5; animation:flow 2s linear infinite; }
+@keyframes flow { to{stroke-dashoffset:-26} }
+
+/* Neurons glow pulse */
+.n-input  { animation:glowPink  2.2s ease-in-out infinite alternate; }
+.n-h1     { animation:glowPurple 2.4s ease-in-out infinite alternate; }
+.n-h2     { animation:glowBlue  2s ease-in-out infinite alternate; }
+.n-output { animation:glowGreen 1.8s ease-in-out infinite alternate; }
+@keyframes glowPink   { from{filter:drop-shadow(0 0 3px #FF6B9D44)} to{filter:drop-shadow(0 0 10px #FF6B9Daa)} }
+@keyframes glowPurple { from{filter:drop-shadow(0 0 3px #9B5DE544)} to{filter:drop-shadow(0 0 10px #9B5DE5aa)} }
+@keyframes glowBlue   { from{filter:drop-shadow(0 0 3px #00BBF944)} to{filter:drop-shadow(0 0 10px #00BBF9aa)} }
+@keyframes glowGreen  { from{filter:drop-shadow(0 0 3px #00F5D444)} to{filter:drop-shadow(0 0 10px #00F5D4aa)} }
+
+/* Drop zones */
+.drop { cursor:pointer; }
+.drop rect { transition:fill .2s, stroke .2s, stroke-width .2s; }
+.drop.ready rect  { stroke-dasharray:6 3; animation:dashSpin 3s linear infinite; }
+@keyframes dashSpin { to{stroke-dashoffset:-40} }
+.drop.highlight rect { stroke-width:3px !important; filter:drop-shadow(0 0 6px currentColor); }
+.drop.correct rect { stroke-width:3px !important; }
+.drop.wrong { animation:zoneShake .4s; }
+@keyframes zoneShake { 0%,100%{translate:0} 25%{translate:-7px} 75%{translate:7px} }
+
+/* ── Message bar ── */
+.msg {
+  text-align:center; font-family:'Baloo 2',cursive; font-size:17px;
+  color:#8888cc; min-height:34px; margin:10px 0;
+  position:relative; z-index:10; transition:color .3s;
+}
+.msg.ok  { color:var(--green); }
+.msg.bad { color:var(--pink); }
+.msg.tip { color:var(--yellow); }
+
+/* ── Buttons ── */
+.btnrow { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; position:relative; z-index:10; margin-bottom:16px; }
+.btn {
+  padding:11px 26px; border:none; border-radius:14px;
+  font-family:'Baloo 2',cursive; font-size:16px; cursor:pointer;
+  transition:transform .1s, filter .1s;
+  box-shadow: 0 5px 0 rgba(0,0,0,.4);
+}
+.btn:active { transform:translateY(3px); box-shadow:0 2px 0 rgba(0,0,0,.4); }
+.btn-reset { background:linear-gradient(135deg,#F15BB5,#FF6B9D); color:#fff; }
+.btn-next  { background:linear-gradient(135deg,#00F5D4,#00BBF9); color:#0D0D2B; display:none; }
+
+/* ── Done card ── */
+.done {
+  display:none; text-align:center; background:var(--card);
+  border-radius:20px; padding:24px; margin-top:14px;
+  border:2px solid #ffffff18; position:relative; z-index:10;
+  animation: bounceIn .6s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes bounceIn { from{transform:scale(.4);opacity:0} to{transform:scale(1);opacity:1} }
+.done h2 { font-family:'Baloo 2',cursive; color:var(--yellow); font-size:24px; margin-bottom:8px; }
+.done p  { color:#aaa; font-size:14px; line-height:1.6; }
+.stars   { font-size:40px; margin:10px 0; animation:starSpin .7s cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes starSpin { from{transform:rotate(-180deg) scale(0)} to{transform:rotate(0) scale(1)} }
+.fact-box {
+  background:#ffffff0e; border-radius:14px; padding:14px; margin-top:14px;
+  border:1px solid #ffffff18; text-align:left;
+}
+.fact-box strong { font-family:'Baloo 2',cursive; color:var(--blue); display:block; margin-bottom:5px; font-size:15px; }
+.fact-box span { font-size:13px; color:#aaa; line-height:1.6; }
+
+/* Particle */
+.particle { position:fixed; pointer-events:none; z-index:9998; font-size:20px; transition:transform .7s ease-out, opacity .7s ease-out; }
+</style>
+</head>
+<body>
+
+<canvas id="confetti"></canvas>
+<div id="stars"></div>
+
+<script>
+// Stars
+const sf = document.getElementById('stars');
+for(let i=0;i<60;i++){
+  const s=document.createElement('div'); s.className='star';
+  const sz=1+Math.random()*3;
+  s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${2+Math.random()*4}s;animation-delay:-${Math.random()*5}s`;
+  sf.appendChild(s);
+}
+</script>
+
+<div class="topbar">
+  <div class="logo">⭐ Planrs</div>
+  <div class="score-wrap">
+    <div class="score-label">Score</div>
+    <div class="score-pips" id="pips"></div>
+  </div>
+</div>
+
+<h1>🏷️ Label the Neural Network!</h1>
+<p class="sub">Activity 3B &nbsp;·&nbsp; Section 3 — Inside the AI Brain &nbsp;·&nbsp; Classes 5–8</p>
+
+<div class="instr" id="instr">👆 <strong>Step 1:</strong> Click a label from the bank to select it!</div>
+
+<div class="bank-wrap">
+  <div class="bank-title">🔤 Click a label to select it, then click its zone on the diagram</div>
+  <div class="bank" id="bank"></div>
+</div>
+
+<div class="diagram-wrap">
+<svg viewBox="0 0 680 315">
+
+  <!-- Animated connections -->
+  <g opacity=".6">
+    <!-- input → h1 -->
+    <line class="conn" x1="138" y1="90"  x2="262" y2="90"  stroke="#FF6B9D" stroke-width="1.8" style="animation-delay:0s"/>
+    <line class="conn" x1="138" y1="90"  x2="262" y2="165" stroke="#FF6B9D" stroke-width="1.8" style="animation-delay:.2s"/>
+    <line class="conn" x1="138" y1="90"  x2="262" y2="240" stroke="#FF6B9D" stroke-width="1.8" style="animation-delay:.4s"/>
+    <line class="conn" x1="138" y1="165" x2="262" y2="90"  stroke="#FF6B9D" stroke-width="1.8" style="animation-delay:.1s"/>
+    <line class="conn" x1="138" y1="165" x2="262" y2="165" stroke="#FF6B9D" stroke-width="1.8" style="animation-delay:.3s"/>
+    <line class="conn" x1="138" y1="165" x2="262" y2="240" stroke="#FF6B9D" stroke-width="1.8" style="animation-delay:.5s"/>
+    <line class="conn" x1="138" y1="240" x2="262" y2="90"  stroke="#FF6B9D" stroke-width="1.8" style="animation-delay:.15s"/>
+    <line class="conn" x1="138" y1="240" x2="262" y2="165" stroke="#FF6B9D" stroke-width="1.8" style="animation-delay:.35s"/>
+    <line class="conn" x1="138" y1="240" x2="262" y2="240" stroke="#FF6B9D" stroke-width="1.8" style="animation-delay:.55s"/>
+    <!-- h1 → h2 -->
+    <line class="conn" x1="308" y1="90"  x2="382" y2="90"  stroke="#9B5DE5" stroke-width="1.8" style="animation-delay:.6s"/>
+    <line class="conn" x1="308" y1="90"  x2="382" y2="165" stroke="#9B5DE5" stroke-width="1.8" style="animation-delay:.8s"/>
+    <line class="conn" x1="308" y1="90"  x2="382" y2="240" stroke="#9B5DE5" stroke-width="1.8" style="animation-delay:1s"/>
+    <line class="conn" x1="308" y1="165" x2="382" y2="90"  stroke="#9B5DE5" stroke-width="1.8" style="animation-delay:.7s"/>
+    <line class="conn" x1="308" y1="165" x2="382" y2="165" stroke="#9B5DE5" stroke-width="1.8" style="animation-delay:.9s"/>
+    <line class="conn" x1="308" y1="165" x2="382" y2="240" stroke="#9B5DE5" stroke-width="1.8" style="animation-delay:1.1s"/>
+    <line class="conn" x1="308" y1="240" x2="382" y2="90"  stroke="#9B5DE5" stroke-width="1.8" style="animation-delay:.65s"/>
+    <line class="conn" x1="308" y1="240" x2="382" y2="165" stroke="#9B5DE5" stroke-width="1.8" style="animation-delay:.85s"/>
+    <line class="conn" x1="308" y1="240" x2="382" y2="240" stroke="#9B5DE5" stroke-width="1.8" style="animation-delay:1.05s"/>
+    <!-- h2 → output -->
+    <line class="conn" x1="428" y1="90"  x2="558" y2="165" stroke="#00BBF9" stroke-width="1.8" style="animation-delay:1.2s"/>
+    <line class="conn" x1="428" y1="165" x2="558" y2="165" stroke="#00BBF9" stroke-width="1.8" style="animation-delay:1.4s"/>
+    <line class="conn" x1="428" y1="240" x2="558" y2="165" stroke="#00BBF9" stroke-width="1.8" style="animation-delay:1.6s"/>
+  </g>
+
+  <!-- ── DROP ZONES ── -->
+  <!-- Input Layer -->
+  <g class="drop" id="z-Input Layer" onclick="zoneClick('Input Layer')">
+    <rect x="36" y="48" width="164" height="228" rx="16" fill="#FF6B9D14" stroke="#FF6B9D" stroke-width="2" stroke-dasharray="7,5"/>
+    <text id="zt-Input Layer" x="118" y="292" text-anchor="middle" font-size="12" fill="#FF6B9D" font-family="Baloo 2,cursive">click to label</text>
+  </g>
+
+  <!-- Hidden Layer 1 -->
+  <g class="drop" id="z-Hidden Layer 1" onclick="zoneClick('Hidden Layer 1')">
+    <rect x="258" y="58" width="74" height="210" rx="14" fill="#9B5DE514" stroke="#9B5DE5" stroke-width="2" stroke-dasharray="7,5"/>
+    <text id="zt-Hidden Layer 1" x="295" y="280" text-anchor="middle" font-size="11" fill="#9B5DE5" font-family="Baloo 2,cursive">click</text>
+  </g>
+
+  <!-- Weights -->
+  <g class="drop" id="z-Weights" onclick="zoneClick('Weights')">
+    <rect x="322" y="142" width="66" height="46" rx="10" fill="#FEE44014" stroke="#FEE440" stroke-width="2" stroke-dasharray="5,4"/>
+    <text id="zt-Weights" x="355" y="169" text-anchor="middle" font-size="11" fill="#FEE440" font-family="Baloo 2,cursive">click</text>
+  </g>
+
+  <!-- Hidden Layer 2 -->
+  <g class="drop" id="z-Hidden Layer 2" onclick="zoneClick('Hidden Layer 2')">
+    <rect x="376" y="58" width="74" height="210" rx="14" fill="#00BBF914" stroke="#00BBF9" stroke-width="2" stroke-dasharray="7,5"/>
+    <text id="zt-Hidden Layer 2" x="413" y="280" text-anchor="middle" font-size="11" fill="#00BBF9" font-family="Baloo 2,cursive">click</text>
+  </g>
+
+  <!-- Output Layer -->
+  <g class="drop" id="z-Output Layer" onclick="zoneClick('Output Layer')">
+    <rect x="530" y="120" width="104" height="96" rx="16" fill="#00F5D414" stroke="#00F5D4" stroke-width="2" stroke-dasharray="7,5"/>
+    <text id="zt-Output Layer" x="582" y="230" text-anchor="middle" font-size="12" fill="#00F5D4" font-family="Baloo 2,cursive">click to label</text>
+  </g>
+
+  <!-- Neurons (on hidden-1) -->
+  <g class="drop" id="z-Neurons" onclick="zoneClick('Neurons')">
+    <rect x="260" y="60" width="70" height="206" rx="13" fill="transparent" stroke="transparent"/>
+    <text id="zt-Neurons" x="295" y="46" text-anchor="middle" font-size="11" fill="#F15BB5" font-family="Baloo 2,cursive">↓ click</text>
+  </g>
+
+  <!-- Input neurons -->
+  <g class="n-input">
+    <circle cx="110" cy="90"  r="28" fill="#1a0a14" stroke="#FF6B9D" stroke-width="2.5"/>
+    <text x="110" y="97"  text-anchor="middle" font-size="22">📷</text>
+  </g>
+  <g class="n-input" style="animation-delay:.4s">
+    <circle cx="110" cy="165" r="28" fill="#1a0a14" stroke="#FF6B9D" stroke-width="2.5"/>
+    <text x="110" y="172" text-anchor="middle" font-size="22">🔢</text>
+  </g>
+  <g class="n-input" style="animation-delay:.8s">
+    <circle cx="110" cy="240" r="28" fill="#1a0a14" stroke="#FF6B9D" stroke-width="2.5"/>
+    <text x="110" y="247" text-anchor="middle" font-size="22">📝</text>
+  </g>
+
+  <!-- Hidden1 neurons -->
+  <g class="n-h1"><circle cx="295" cy="90"  r="22" fill="#0e0820" stroke="#9B5DE5" stroke-width="2.5"/></g>
+  <g class="n-h1" style="animation-delay:.3s"><circle cx="295" cy="165" r="22" fill="#0e0820" stroke="#9B5DE5" stroke-width="2.5"/></g>
+  <g class="n-h1" style="animation-delay:.7s"><circle cx="295" cy="240" r="22" fill="#0e0820" stroke="#9B5DE5" stroke-width="2.5"/></g>
+
+  <!-- Hidden2 neurons -->
+  <g class="n-h2"><circle cx="405" cy="90"  r="22" fill="#020f1a" stroke="#00BBF9" stroke-width="2.5"/></g>
+  <g class="n-h2" style="animation-delay:.5s"><circle cx="405" cy="165" r="22" fill="#020f1a" stroke="#00BBF9" stroke-width="2.5"/></g>
+  <g class="n-h2" style="animation-delay:1s"><circle cx="405" cy="240" r="22" fill="#020f1a" stroke="#00BBF9" stroke-width="2.5"/></g>
+
+  <!-- Output neuron -->
+  <g class="n-output">
+    <circle cx="582" cy="168" r="34" fill="#001a14" stroke="#00F5D4" stroke-width="2.5"/>
+    <text x="582" y="176" text-anchor="middle" font-size="26">🐕</text>
+  </g>
+
+</svg>
+</div>
+
+<div class="msg" id="msg">Click a label from the bank to get started! 🚀</div>
+
+<div class="btnrow">
+  <button class="btn btn-reset" onclick="init()">🔄 Reset</button>
+  <button class="btn btn-next"  id="btn-next">Next ➡️</button>
+</div>
+
+<div class="done" id="done">
+  <div class="stars" id="stars-done"></div>
+  <h2 id="dtitle"></h2>
+  <p id="dmsg"></p>
+  <div class="fact-box">
+    <strong>🧠 Why This Matters</strong>
+    <span>Neural networks power face recognition on your phone, YouTube recommendations, fraud detection — and even help doctors detect cancer! Understanding this structure is a HUGE head-start for your future! 🌟</span>
+  </div>
+  <button class="btn btn-reset" onclick="init()" style="margin-top:16px">🔄 Play Again</button>
+</div>
+
+<script>
+const LABELS = ['Input Layer','Hidden Layer 1','Hidden Layer 2','Output Layer','Weights','Neurons'];
+
+const STYLES = {
+  'Input Layer':    { bg:'#FF6B9D22', border:'#FF6B9D', text:'#FF6B9D', pill:'linear-gradient(135deg,#FF6B9D33,#FF6B9D11)', shadow:'#FF6B9D' },
+  'Hidden Layer 1': { bg:'#9B5DE522', border:'#9B5DE5', text:'#9B5DE5', pill:'linear-gradient(135deg,#9B5DE533,#9B5DE511)', shadow:'#9B5DE5' },
+  'Hidden Layer 2': { bg:'#00BBF922', border:'#00BBF9', text:'#00BBF9', pill:'linear-gradient(135deg,#00BBF933,#00BBF911)', shadow:'#00BBF9' },
+  'Output Layer':   { bg:'#00F5D422', border:'#00F5D4', text:'#00F5D4', pill:'linear-gradient(135deg,#00F5D433,#00F5D411)', shadow:'#00F5D4' },
+  'Weights':        { bg:'#FEE44022', border:'#FEE440', text:'#FEE440', pill:'linear-gradient(135deg,#FEE44033,#FEE44011)', shadow:'#FEE440' },
+  'Neurons':        { bg:'#F15BB522', border:'#F15BB5', text:'#F15BB5', pill:'linear-gradient(135deg,#F15BB533,#F15BB511)', shadow:'#F15BB5' },
+};
+
+const OK  = ['Correct! 🎉','Spot on! ⭐','Brilliant! 🌟','Nailed it! 🏆','Yes! 💜','Superb! 🔥'];
+const BAD = ['Oops! Try another zone 🤔','Not quite… 💭','Wrong spot! Think again 😊'];
+
+let selected = null, score = 0;
+
+// ── Build pips ──────────────────────────────────────────────────
+function buildPips() {
+  const p = document.getElementById('pips'); p.innerHTML='';
+  LABELS.forEach((_,i) => {
+    const d = document.createElement('div'); d.className='pip'; d.id='pip'+i; p.appendChild(d);
+  });
+}
+
+// ── INIT ────────────────────────────────────────────────────────
+function init() {
+  selected=null; score=0;
+  setMsg('Click a label from the bank to get started! 🚀','');
+  setInstr('👆 <strong>Step 1:</strong> Click a label from the bank to select it!');
+  document.getElementById('done').style.display='none';
+  document.getElementById('btn-next').style.display='none';
+
+  LABELS.forEach(l => {
+    const z=document.getElementById('z-'+l);
+    if(z) z.classList.remove('correct','wrong','highlight');
+    const t=document.getElementById('zt-'+l);
+    if(t){ t.textContent = l==='Neurons'?'↓ click':l.length>10?'click':'click to label'; t.setAttribute('fill',STYLES[l].text); }
+  });
+  buildPips();
+  buildBank();
+}
+
+// ── Label bank ──────────────────────────────────────────────────
+function buildBank() {
+  const bank=document.getElementById('bank'); bank.innerHTML='';
+  LABELS.forEach((l,i) => {
+    const s=STYLES[l];
+    const p=document.createElement('div');
+    p.className='pill'; p.id='pill-'+l; p.textContent=l;
+    p.style.cssText=`background:${s.pill};border-color:${s.border};color:${s.text};box-shadow:0 4px 0 ${s.shadow}44;animation-delay:${i*.07}s`;
+    p.onclick=()=>selectLabel(l);
+    bank.appendChild(p);
+  });
+}
+
+// ── Select label ────────────────────────────────────────────────
+function selectLabel(l) {
+  const pill=document.getElementById('pill-'+l);
+  if(pill.classList.contains('used')) return;
+
+  if(selected) {
+    document.getElementById('pill-'+selected)?.classList.remove('selected');
+    clearHighlights();
+  }
+  if(selected===l){ selected=null; setInstr('👆 <strong>Step 1:</strong> Click a label to select it!'); setMsg('Click a label from the bank! 👆',''); return; }
+
+  selected=l;
+  pill.classList.add('selected','bounce');
+  setTimeout(()=>pill.classList.remove('bounce'),400);
+
+  setInstr(`✅ <strong>"${l}"</strong> selected! Now click its matching zone on the diagram 🎯`);
+  setMsg(`"${l}" selected — find its zone! 🎯`,'tip');
+
+  // Highlight all unlabelled zones with a colour pulse
+  LABELS.forEach(zl=>{
+    const z=document.getElementById('z-'+zl);
+    if(z && !z.classList.contains('correct')) z.classList.add('highlight');
+  });
+}
+
+// ── Zone click ──────────────────────────────────────────────────
+function zoneClick(zoneId) {
+  if(!selected){ setMsg('First click a label from the bank! 👆','bad'); shakePills(); return; }
+  const z=document.getElementById('z-'+zoneId);
+  if(!z||z.classList.contains('correct')){ setMsg('Already labelled! ✅',''); return; }
+
+  clearHighlights();
+
+  if(selected===zoneId) {
+    // ✅ Correct
+    z.classList.add('correct');
+    const t=document.getElementById('zt-'+zoneId);
+    if(t){ t.textContent=zoneId; t.setAttribute('fill','#00F5D4'); }
+    document.getElementById('pill-'+selected).classList.remove('selected');
+    document.getElementById('pill-'+selected).classList.add('used');
+    fillPip(score);
+    score++;
+    setMsg(OK[Math.floor(Math.random()*OK.length)],'ok');
+    spawnParticles(z);
+    selected=null;
+    if(score===LABELS.length){
+      setInstr('🎉 <strong>All done!</strong> You labelled every part!');
+      document.getElementById('btn-next').style.display='inline-block';
+      setTimeout(showDone,700);
+    } else {
+      setInstr('👆 <strong>Keep going!</strong> Click another label to continue');
+    }
+  } else {
+    // ❌ Wrong
+    z.classList.add('wrong');
+    setTimeout(()=>z.classList.remove('wrong'),400);
+    const pill=document.getElementById('pill-'+selected);
+    pill.classList.add('shake'); setTimeout(()=>pill.classList.remove('shake'),350);
+    setMsg(BAD[Math.floor(Math.random()*BAD.length)],'bad');
+    // Re-highlight
+    LABELS.forEach(zl=>{
+      const el=document.getElementById('z-'+zl);
+      if(el && !el.classList.contains('correct')) el.classList.add('highlight');
+    });
+  }
+}
+
+function clearHighlights() {
+  LABELS.forEach(l=>document.getElementById('z-'+l)?.classList.remove('highlight'));
+}
+function fillPip(i) {
+  const p=document.getElementById('pip'+i); if(p) p.classList.add('filled');
+}
+function shakePills() {
+  document.querySelectorAll('.pill:not(.used)').forEach(p=>{
+    p.style.animation='none'; void p.offsetWidth;
+    p.classList.add('shake'); setTimeout(()=>p.classList.remove('shake'),350);
+  });
+}
+function setMsg(t,c){ const m=document.getElementById('msg'); m.innerHTML=t; m.className='msg '+(c||''); }
+function setInstr(t){ document.getElementById('instr').innerHTML=t; }
+
+// ── Particles on correct ─────────────────────────────────────────
+function spawnParticles(zone) {
+  const rect=zone.getBoundingClientRect();
+  const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
+  const emojis=['⭐','✨','🌟','💜','🎉','💫','🔥'];
+  for(let i=0;i<8;i++){
+    const el=document.createElement('div'); el.className='particle';
+    el.textContent=emojis[i%emojis.length];
+    const angle=(i/8)*Math.PI*2, r=55+Math.random()*30;
+    el.style.cssText=`left:${cx}px;top:${cy}px;`;
+    document.body.appendChild(el);
+    requestAnimationFrame(()=>{
+      el.style.transform=`translate(${Math.cos(angle)*r}px,${Math.sin(angle)*r}px) scale(1.6)`;
+      el.style.opacity='0';
+    });
+    setTimeout(()=>el.remove(),750);
+  }
+}
+
+// ── Done screen ──────────────────────────────────────────────────
+function showDone() {
+  const pct=score/LABELS.length*100;
+  document.getElementById('stars-done').textContent=pct>=90?'⭐⭐⭐':pct>=60?'⭐⭐':'⭐';
+  document.getElementById('dtitle').textContent=pct>=90?'Neural Network Expert! 🧠🏆':'Great Job! 🎉';
+  document.getElementById('dmsg').textContent=`You labelled ${score} of ${LABELS.length} zones correctly! ${pct>=90?'You totally get how a neural network is structured — Shabash! 🎊':'Review the missed zones and try again!'}`;
+  document.getElementById('done').style.display='block';
+  document.getElementById('done').scrollIntoView({behavior:'smooth'});
+  launchConfetti();
+}
+
+// ── Confetti ─────────────────────────────────────────────────────
+function launchConfetti() {
+  const cv=document.getElementById('confetti'), ctx=cv.getContext('2d');
+  cv.width=window.innerWidth; cv.height=window.innerHeight;
+  const cols=['#FF6B9D','#9B5DE5','#00BBF9','#00F5D4','#FEE440','#F15BB5'];
+  const pieces=Array.from({length:130},()=>({
+    x:Math.random()*cv.width, y:-10-Math.random()*200,
+    r:4+Math.random()*7, d:3+Math.random()*8,
+    color:cols[Math.floor(Math.random()*cols.length)],
+    tilt:0, ts:0.04+Math.random()*.08,
+    shape:Math.random()>.5?'r':'c'
+  }));
+  let angle=0, frame;
+  (function draw(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    angle+=.008;
+    pieces.forEach(p=>{
+      p.tilt+=p.ts; p.y+=Math.cos(angle+p.d)+p.d*.3+1.5; p.x+=Math.sin(angle);
+      ctx.fillStyle=p.color; ctx.beginPath();
+      if(p.shape==='c'){ ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill(); }
+      else { ctx.save();ctx.translate(p.x,p.y);ctx.rotate(Math.sin(p.tilt)*20*Math.PI/180);ctx.fillRect(-p.r,-p.r/2,p.r*2,p.r);ctx.restore(); }
+    });
+    if(pieces.some(p=>p.y<cv.height)) frame=requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,cv.width,cv.height);
+  })();
+  setTimeout(()=>{cancelAnimationFrame(frame);ctx.clearRect(0,0,cv.width,cv.height);},4500);
+}
+
+init();
+</script>
+</body>
+</html>

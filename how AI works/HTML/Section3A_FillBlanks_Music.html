@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activity 3A — Fill in the Blanks | Planrs 🎵</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --c1:#FF6B6B;--c2:#FFD93D;--c3:#6BCB77;--c4:#4D96FF;--c5:#C77DFF;
+  --bg:#1a0533;--card:#fff;--txt:#2d1b4e;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;overflow-x:hidden}
+
+/* ── ANIMATED BACKGROUND ── */
+.bg-canvas{position:fixed;inset:0;overflow:hidden;z-index:0;pointer-events:none}
+.note{position:absolute;font-size:clamp(18px,3vw,34px);animation:floatNote linear infinite;opacity:0;user-select:none;filter:drop-shadow(0 0 6px rgba(255,255,255,.4))}
+@keyframes floatNote{
+  0%{transform:translateY(110vh) rotate(-20deg) scale(.7);opacity:0}
+  10%{opacity:.7}
+  90%{opacity:.5}
+  100%{transform:translateY(-15vh) rotate(30deg) scale(1.2);opacity:0}
+}
+.bubble{position:absolute;border-radius:50%;animation:floatBubble ease-in-out infinite;opacity:.12}
+@keyframes floatBubble{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-40px) scale(1.08)}
+}
+
+/* ── TOPBAR ── */
+.topbar{position:relative;z-index:10;display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.08);backdrop-filter:blur(14px);border:1.5px solid rgba(255,255,255,.15);border-radius:20px;padding:12px 20px;margin:14px;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.logo{font-family:'Fredoka One',cursive;color:#FFD93D;font-size:20px;text-shadow:0 0 20px rgba(255,217,61,.5);letter-spacing:1px}
+.scorebox{background:linear-gradient(135deg,#FFD93D,#FF6B6B);border-radius:50px;padding:7px 20px;font-family:'Fredoka One',cursive;color:#fff;font-size:17px;box-shadow:0 4px 15px rgba(255,107,107,.4);animation:scorePop .3s ease}
+@keyframes scorePop{0%{transform:scale(1.3)}100%{transform:scale(1)}}
+
+/* ── HEADER ── */
+.hero{position:relative;z-index:10;text-align:center;padding:10px 14px 0}
+.hero h1{font-family:'Fredoka One',cursive;font-size:clamp(24px,6vw,42px);color:#fff;text-shadow:0 0 30px rgba(199,125,255,.8);letter-spacing:2px;animation:titleDance 3s ease-in-out infinite}
+@keyframes titleDance{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
+.hero .sub{color:rgba(255,255,255,.7);font-size:13px;font-weight:700;margin-top:4px;letter-spacing:.5px}
+.instr{display:inline-block;background:linear-gradient(135deg,#FFD93D22,#FF6B6B22);border:2px dashed #FFD93D;border-radius:14px;padding:10px 20px;color:#FFD93D;font-size:14px;font-weight:700;margin:12px auto;max-width:94%;text-align:center}
+
+/* ── PROGRESS ── */
+.prog-wrap{position:relative;z-index:10;padding:0 14px;margin-bottom:8px}
+.prog-track{background:rgba(255,255,255,.1);border-radius:99px;height:14px;overflow:hidden;position:relative}
+.prog-fill{background:linear-gradient(90deg,#6BCB77,#4D96FF,#C77DFF);height:100%;border-radius:99px;transition:width .5s cubic-bezier(.68,-.55,.27,1.55);position:relative}
+.prog-fill::after{content:'';position:absolute;right:0;top:0;width:20px;height:14px;background:rgba(255,255,255,.4);border-radius:99px;animation:shimmer .8s ease infinite}
+@keyframes shimmer{0%,100%{opacity:.4}50%{opacity:1}}
+.prog-label{color:rgba(255,255,255,.6);font-size:12px;font-weight:700;text-align:right;margin-top:4px}
+
+/* ── QUESTION CARD ── */
+.q-wrap{position:relative;z-index:10;padding:0 14px}
+.q-card{background:linear-gradient(135deg,rgba(255,255,255,.97),rgba(245,235,255,.95));border-radius:24px;padding:24px;margin-bottom:14px;box-shadow:0 8px 40px rgba(0,0,0,.25);border-top:5px solid var(--c5);display:none;transform:scale(.95);transition:transform .35s cubic-bezier(.68,-.55,.27,1.55)}
+.q-card.active{display:block;animation:cardIn .45s cubic-bezier(.68,-.55,.27,1.55) forwards}
+@keyframes cardIn{0%{opacity:0;transform:translateY(30px) scale(.9)}100%{opacity:1;transform:translateY(0) scale(1)}}
+.q-card.correct{border-top-color:#6BCB77;background:linear-gradient(135deg,#f0fff4,#e8f9ee)}
+.q-card.wrong{animation:wiggle .5s ease;border-top-color:#FF6B6B}
+@keyframes wiggle{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-8px)}80%{transform:translateX(8px)}}
+.q-num{font-family:'Fredoka One',cursive;font-size:13px;color:#C77DFF;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.ctx{font-size:12px;color:#888;font-style:italic;margin-bottom:10px;padding:8px 12px;background:rgba(199,125,255,.08);border-radius:10px;border-left:3px solid #C77DFF}
+.sentence{font-size:clamp(15px,3.5vw,18px);color:var(--txt);line-height:2;font-weight:700}
+
+/* ── BLANK INPUT ── */
+.blank-inp{border:3px solid #C77DFF;border-radius:12px;padding:7px 13px;font-size:15px;font-family:'Nunito',sans-serif;font-weight:800;color:var(--txt);outline:none;min-width:120px;max-width:180px;background:#faf5ff;transition:all .25s;box-shadow:0 3px 10px rgba(199,125,255,.2)}
+.blank-inp:focus{border-color:#4D96FF;box-shadow:0 0 0 4px rgba(77,150,255,.2),0 3px 10px rgba(77,150,255,.3);transform:scale(1.04)}
+.blank-inp.ok{border-color:#6BCB77;background:#f0fff4;color:#276749;box-shadow:0 0 0 4px rgba(107,203,119,.2)}
+.blank-inp.err{border-color:#FF6B6B;background:#fff5f5;animation:errShake .3s}
+@keyframes errShake{0%,100%{transform:translateX(0)}33%{transform:translateX(-5px)}66%{transform:translateX(5px)}}
+
+/* ── DRAG DROP ZONE ── */
+.drag-area{margin-top:14px}
+.drag-label{font-size:12px;font-weight:800;color:#C77DFF;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.chips-pool{display:flex;flex-wrap:wrap;gap:9px;min-height:50px;padding:10px;background:rgba(199,125,255,.07);border-radius:14px;border:2px dashed #C77DFF55}
+.chip{background:linear-gradient(135deg,#C77DFF,#4D96FF);color:#fff;font-family:'Fredoka One',cursive;font-size:14px;padding:8px 18px;border-radius:50px;cursor:grab;user-select:none;box-shadow:0 4px 15px rgba(199,125,255,.4);transition:transform .2s,box-shadow .2s;animation:chipBounce .5s cubic-bezier(.68,-.55,.27,1.55)}
+.chip:hover{transform:translateY(-3px) scale(1.07);box-shadow:0 8px 25px rgba(199,125,255,.5)}
+.chip:active{cursor:grabbing;transform:scale(.95)}
+.chip.used{opacity:.35;pointer-events:none;filter:grayscale(.7)}
+@keyframes chipBounce{0%{transform:scale(0)}100%{transform:scale(1)}}
+.drop-target{display:inline-flex;align-items:center;justify-content:center;min-width:130px;min-height:40px;border:3px dashed #FFD93D;border-radius:12px;background:rgba(255,217,61,.08);color:#FFD93D;font-family:'Fredoka One',cursive;font-size:14px;padding:6px 14px;margin:0 4px;vertical-align:middle;transition:all .2s;cursor:pointer}
+.drop-target.over{background:rgba(255,217,61,.25);transform:scale(1.06);border-style:solid}
+.drop-target.filled{border-style:solid;border-color:#6BCB77;background:rgba(107,203,119,.15);color:#276749;cursor:default}
+.drop-target.filled-wrong{border-color:#FF6B6B;background:rgba(255,107,107,.12);color:#c0392b}
+
+/* ── BUTTONS ── */
+.btn-row-q{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.check-btn{background:linear-gradient(135deg,#6BCB77,#4D96FF);color:#fff;border:none;border-radius:50px;padding:10px 22px;font-family:'Fredoka One',cursive;font-size:15px;cursor:pointer;box-shadow:0 4px 15px rgba(107,203,119,.4);transition:all .2s}
+.check-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(107,203,119,.5)}
+.hint-btn{background:rgba(255,217,61,.15);color:#FFD93D;border:2px solid #FFD93D;border-radius:50px;padding:9px 18px;font-family:'Fredoka One',cursive;font-size:14px;cursor:pointer;transition:all .2s}
+.hint-btn:hover{background:#FFD93D;color:#1a0533}
+.fb{font-family:'Fredoka One',cursive;font-size:15px;padding:6px 14px;border-radius:50px}
+.fb.ok{background:#6BCB77;color:#fff;box-shadow:0 4px 12px rgba(107,203,119,.4)}
+.fb.no{background:#FF6B6B;color:#fff;box-shadow:0 4px 12px rgba(255,107,107,.4)}
+.hint-txt{font-size:13px;color:#C77DFF;margin-top:8px;font-style:italic;padding:8px 14px;background:rgba(199,125,255,.1);border-radius:10px;display:none;font-weight:700}
+
+/* ── MSGBAR ── */
+.msgbar{position:relative;z-index:10;text-align:center;min-height:40px;font-family:'Fredoka One',cursive;font-size:20px;color:#FFD93D;margin:10px 0;text-shadow:0 0 20px rgba(255,217,61,.6);animation:msgPulse 2s ease-in-out infinite}
+@keyframes msgPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+
+/* ── BTN ROW ── */
+.btnrow{position:relative;z-index:10;display:flex;gap:11px;justify-content:center;flex-wrap:wrap;padding:0 14px 20px}
+.btn{padding:12px 28px;border:none;border-radius:50px;font-family:'Fredoka One',cursive;font-size:16px;cursor:pointer;transition:all .2s;box-shadow:0 4px 15px rgba(0,0,0,.2)}
+.btn:hover{transform:translateY(-3px)}
+.btn-r{background:linear-gradient(135deg,#FF6B6B,#FFD93D);color:#fff}
+.btn-n{background:linear-gradient(135deg,#6BCB77,#4D96FF);color:#fff;display:none}
+
+/* ── DONE SCREEN ── */
+.done{display:none;position:relative;z-index:10;text-align:center;background:rgba(255,255,255,.95);border-radius:24px;padding:30px 24px;margin:0 14px 24px;box-shadow:0 12px 50px rgba(0,0,0,.3);overflow:hidden}
+.done::before{content:'';position:absolute;inset:-2px;background:linear-gradient(135deg,#FF6B6B,#FFD93D,#6BCB77,#4D96FF,#C77DFF);border-radius:26px;z-index:-1;animation:borderSpin 3s linear infinite}
+@keyframes borderSpin{0%{filter:hue-rotate(0)}100%{filter:hue-rotate(360deg)}}
+.stars{font-size:46px;margin:10px 0;animation:starSpin 1s ease}
+@keyframes starSpin{0%{transform:scale(0) rotate(-180deg)}100%{transform:scale(1) rotate(0)}}
+.done h2{font-family:'Fredoka One',cursive;color:var(--txt);font-size:clamp(20px,5vw,28px);margin-bottom:8px}
+.done p{font-size:14px;color:#555;line-height:1.7}
+.career-box{background:linear-gradient(135deg,#1a0533,#2d1b4e);border-radius:14px;padding:16px;margin-top:14px;text-align:left}
+.career-box p:first-child{font-family:'Fredoka One',cursive;color:#FFD93D;font-size:15px;margin-bottom:6px}
+.career-box p:last-child{font-size:13px;color:rgba(255,255,255,.85);line-height:1.6}
+
+/* CONFETTI particles */
+.confetti-piece{position:fixed;width:10px;height:10px;top:-10px;border-radius:2px;z-index:999;pointer-events:none;animation:confettiFall linear forwards}
+@keyframes confettiFall{0%{opacity:1;transform:translateY(0) rotate(0)}100%{opacity:0;transform:translateY(105vh) rotate(720deg)}}
+
+/* EMOJI BURST */
+.emoji-burst{position:fixed;font-size:30px;z-index:998;pointer-events:none;animation:burst .8s ease forwards}
+@keyframes burst{0%{transform:scale(0) translate(-50%,-50%);opacity:1}100%{transform:scale(2.5) translate(-50%,-50%);opacity:0}}
+
+/* MODE TABS */
+.mode-tabs{position:relative;z-index:10;display:flex;gap:8px;justify-content:center;margin:10px 14px 0}
+.mode-tab{font-family:'Fredoka One',cursive;font-size:13px;padding:7px 18px;border-radius:50px;border:2px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);cursor:pointer;transition:all .2s}
+.mode-tab.active{background:linear-gradient(135deg,#C77DFF,#4D96FF);border-color:transparent;color:#fff;box-shadow:0 4px 15px rgba(199,125,255,.4)}
+</style>
+</head>
+<body>
+
+<!-- Animated Background -->
+<div class="bg-canvas" id="bgCanvas"></div>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="logo">🎵 Planrs</div>
+  <div class="scorebox" id="scorebox">Score: <span id="sc">0</span> / 8</div>
+</div>
+
+<!-- Hero -->
+<div class="hero">
+  <h1>🧠 Fill in the Blanks! 🎶</h1>
+  <p class="sub">Activity 3A &nbsp;|&nbsp; Section 3 — Inside the AI Brain &nbsp;|&nbsp; Classes 5–8</p>
+</div>
+
+
+
+<div style="position:relative;z-index:10;text-align:center;padding:10px 14px 0">
+  <div class="instr" id="instr">🎯 Drag a word card into the blank — or tap to answer! Use 💡 Hint if stuck!</div>
+</div>
+
+<!-- Progress -->
+<div class="prog-wrap">
+  <div class="prog-track"><div class="prog-fill" id="pfill" style="width:0%"></div></div>
+  <div class="prog-label" id="plbl">Question 1 of 8</div>
+</div>
+
+<!-- Q Area -->
+<div class="q-wrap" id="qarea"></div>
+
+<div class="msgbar" id="msg">🎵 Complete all 8 blanks to finish! 🚀</div>
+<div class="btnrow">
+  <button class="btn btn-r" onclick="init()">🔄 Try Again</button>
+  <button class="btn btn-n" id="nxt" onclick="showDone()">Next Section ➡️</button>
+</div>
+<div class="done" id="done">
+  <div class="stars" id="strs"></div>
+  <h2 id="dtitle"></h2>
+  <p id="dmsg"></p>
+  <div class="career-box">
+    <p>🇮🇳 Career Connection</p>
+    <p>Thousands of AI engineers in Bengaluru, Hyderabad and Pune work on Neural Networks every single day. India is the 2nd largest AI talent pool in the world — your journey starts here! 🚀</p>
+  </div>
+  <button class="btn btn-r" onclick="init()" style="margin-top:16px">🔄 Play Again</button>
+</div>
+
+<script>
+const qs=[
+  {before:"AI's brain is called a ",blank:"Neural Network",after:", inspired by the structure of the human brain.",hint:"N_ural N_twork",ctx:"💡 Just like your brain has neurons connected together, AI has artificial ones!"},
+  {before:"Information enters the AI through the ",blank:"Input",after:" layer — like eyes receiving a photo.",hint:"I_put",ctx:"💡 Think of this as data walking in through the AI's front door!"},
+  {before:"The ",blank:"Hidden",after:" layers are where AI finds patterns — this is the thinking part of the neural network.",hint:"H_dden",ctx:"💡 These layers are called 'hidden' because we cannot easily see what they are doing!"},
+  {before:"Each connection between neurons has a ",blank:"weight",after:" that decides how important that piece of information is.",hint:"w_ight",ctx:"💡 Like a volume dial — higher weight means more important!"},
+  {before:"When AI sorts an email into 'spam' or 'not spam', it is performing ",blank:"classification",after:".",hint:"cl_ssif_cation",ctx:"💡 Classification = sorting into categories, like separating vegetables from fruits!"},
+  {before:"When AI guesses how many runs Team India will score tomorrow, it is making a ",blank:"prediction",after:".",hint:"pr_diction",ctx:"💡 Prediction = guessing a future number or outcome!"},
+  {before:"During training, if the AI gets a wrong answer, it ",blank:"adjusts",after:" its weights to do better next time.",hint:"adj_sts",ctx:"💡 Just like you revise after a wrong answer in practice — AI does the same!"},
+  {before:"A neural network with more hidden ",blank:"layers",after:" can recognise more complex things like faces and emotions.",hint:"l_yers",ctx:"💡 More layers = more floors in the building = more power to think!"},
+];
+
+const NOTES=['🎵','🎶','🎸','🎹','🎺','🎻','🥁','🎷','🎼','🎤','🎧','🪗'];
+const COLORS=['#FF6B6B','#FFD93D','#6BCB77','#4D96FF','#C77DFF','#FF9F43','#ee5a24','#0abde3'];
+const cm=['Brilliant! 🌟','Spot on! 🎯','Amazing! ⭐','Perfect! 🏆','Superb! 🎉','You got it! 💜','Excellent! 🔥','Outstanding! 👏'];
+const wm=['Not quite! Check the hint 💡','Oops! Think again 🙂','So close! Try once more 💪'];
+
+let score=0,done=0,mode='drag';
+let dragWord=null;
+
+/* ── BACKGROUND ANIMATION ── */
+function spawnBg(){
+  const canvas=document.getElementById('bgCanvas');
+  // bubbles
+  for(let i=0;i<8;i++){
+    const b=document.createElement('div');b.className='bubble';
+    const size=Math.random()*200+80;
+    b.style.cssText=`width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;
+    background:radial-gradient(circle,${COLORS[i%COLORS.length]}22,transparent 70%);
+    animation-duration:${4+Math.random()*5}s;animation-delay:${Math.random()*3}s`;
+    canvas.appendChild(b);
+  }
+  // notes
+  function spawnNote(){
+    const n=document.createElement('div');n.className='note';
+    n.textContent=NOTES[Math.floor(Math.random()*NOTES.length)];
+    const dur=6+Math.random()*10;
+    n.style.cssText=`left:${Math.random()*100}%;animation-duration:${dur}s;animation-delay:${Math.random()*4}s`;
+    canvas.appendChild(n);
+    setTimeout(()=>n.remove(),(dur+4)*1000);
+  }
+  for(let i=0;i<20;i++) setTimeout(spawnNote,i*300);
+  setInterval(spawnNote,600);
+}
+
+/* ── CONFETTI ── */
+function launchConfetti(){
+  for(let i=0;i<60;i++){
+    const c=document.createElement('div');c.className='confetti-piece';
+    const col=COLORS[Math.floor(Math.random()*COLORS.length)];
+    const shapes=['2px','50%','0'];
+    c.style.cssText=`left:${Math.random()*100}vw;background:${col};border-radius:${shapes[Math.floor(Math.random()*3)]};
+    animation-duration:${1.5+Math.random()*1.5}s;animation-delay:${Math.random()*.5}s;
+    width:${6+Math.random()*10}px;height:${6+Math.random()*10}px`;
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),3000);
+  }
+}
+function emojiBurst(x,y,emoji){
+  const e=document.createElement('div');e.className='emoji-burst';
+  e.textContent=emoji;e.style.cssText=`left:${x}px;top:${y}px`;
+  document.body.appendChild(e);
+  setTimeout(()=>e.remove(),800);
+}
+
+/* ── MODE ── */
+function setMode(m){
+  mode=m;
+  document.getElementById('tab-type').classList.toggle('active',m==='type');
+  document.getElementById('tab-drag').classList.toggle('active',m==='drag');
+  init();
+}
+
+/* ── DRAG DROP ── */
+function startDrag(e,word){
+  dragWord=word;
+  if(e.dataTransfer) e.dataTransfer.setData('text/plain',word);
+  e.target.classList.add('used');
+}
+function onDragOver(e){e.preventDefault();e.currentTarget.classList.add('over')}
+function onDragLeave(e){e.currentTarget.classList.remove('over')}
+function onDrop(e,i){
+  e.preventDefault();
+  const dt=e.currentTarget;
+  dt.classList.remove('over');
+  if(!dragWord)return;
+  dt.textContent=dragWord;
+  dt.dataset.val=dragWord;
+  dt.classList.add('filled');
+  dragWord=null;
+}
+function clearDrop(el,word){
+  // put chip back
+  const pool=el.closest('.q-card').querySelector('.chips-pool');
+  const chips=pool.querySelectorAll('.chip');
+  chips.forEach(c=>{if(c.textContent===word)c.classList.remove('used')});
+  el.textContent='Drop here';el.dataset.val='';el.classList.remove('filled','filled-wrong');
+}
+
+/* ── INIT ── */
+function init(){
+  score=0;done=0;
+  document.getElementById('sc').textContent='0';
+  document.getElementById('pfill').style.width='0%';
+  document.getElementById('plbl').textContent='Question 1 of 8';
+  document.getElementById('msg').textContent='🎵 Complete all 8 blanks to finish! 🚀';
+  document.getElementById('nxt').style.display='none';
+  document.getElementById('done').style.display='none';
+  const a=document.getElementById('qarea');a.innerHTML='';
+
+  qs.forEach((q,i)=>{
+    const c=document.createElement('div');c.className='q-card'+(i===0?' active':'');c.id='qc'+i;
+    c.style.borderTopColor=COLORS[i%COLORS.length];
+
+    let sentenceHTML='';
+    let controlsHTML='';
+
+    if(mode==='type'){
+      sentenceHTML=`${escH(q.before)}<input type="text" class="blank-inp" id="inp${i}" placeholder="type here…" autocomplete="off" autocorrect="off" spellcheck="false" />${escH(q.after)}`;
+      controlsHTML=`<div class="btn-row-q">
+        <button class="check-btn" onclick="chk(${i})">✅ Check</button>
+        <button class="hint-btn" onclick="hint(${i})">💡 Hint</button>
+        <span class="fb" id="fb${i}"></span>
+      </div>
+      <div class="hint-txt" id="hint${i}">Hint: ${q.hint}</div>`;
+    } else {
+      // build shuffled chips (answer + 3 distractors)
+      const pool=buildPool(q.blank,i);
+      const chipHTML=pool.map(w=>`<div class="chip" draggable="true" 
+        ondragstart="startDrag(event,'${escA(w)}')"
+        onclick="chipClick(this,'${escA(w)}',${i})"
+      >${escH(w)}</div>`).join('');
+      sentenceHTML=`${escH(q.before)}<span class="drop-target" id="drop${i}" 
+        ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event,${i})"
+        onclick="dropClick(this,${i})"
+        data-val=""
+      >Drop here ↓</span>${escH(q.after)}`;
+      controlsHTML=`<div class="drag-area">
+        <div class="drag-label">🎯 Drag a word or tap to answer:</div>
+        <div class="chips-pool" id="pool${i}">${chipHTML}</div>
+      </div>
+      <div class="btn-row-q">
+        <button class="check-btn" onclick="chkDrag(${i})">✅ Check</button>
+        <button class="hint-btn" onclick="hint(${i})">💡 Hint</button>
+        <span class="fb" id="fb${i}"></span>
+      </div>
+      <div class="hint-txt" id="hint${i}">Hint: ${q.hint}</div>`;
+    }
+
+    c.innerHTML=`<div class="q-num">Question ${i+1} of ${qs.length}</div>
+    <div class="ctx">${q.ctx}</div>
+    <div class="sentence">${sentenceHTML}</div>
+    ${controlsHTML}`;
+
+    if(mode==='type'){
+      c.querySelector(`#inp${i}`)?.addEventListener('keypress',e=>{if(e.key==='Enter')chk(i)});
+    }
+    a.appendChild(c);
+  });
+}
+
+function escH(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function escA(s){return s.replace(/'/g,"\\'")}
+
+function buildPool(ans,qi){
+  const distractors=qs.filter((_,j)=>j!==qi).map(x=>x.blank);
+  const shuffled=distractors.sort(()=>Math.random()-.5).slice(0,3);
+  const pool=[ans,...shuffled].sort(()=>Math.random()-.5);
+  return pool;
+}
+
+/* tap chip → fill drop */
+function chipClick(chipEl,word,i){
+  const drop=document.getElementById('drop'+i);
+  if(drop.classList.contains('filled')){
+    // put old word back
+    const oldWord=drop.dataset.val;
+    const pool=document.getElementById('pool'+i);
+    pool.querySelectorAll('.chip').forEach(c=>{if(c.textContent===oldWord)c.classList.remove('used')});
+  }
+  drop.textContent=word;drop.dataset.val=word;
+  drop.classList.add('filled');drop.classList.remove('filled-wrong');
+  chipEl.classList.add('used');
+}
+/* tap drop → clear */
+function dropClick(el,i){
+  if(!el.classList.contains('filled'))return;
+  clearDrop(el,el.dataset.val);
+}
+
+/* ── CHECK TYPE ── */
+function chk(i){
+  const q=qs[i];const c=document.getElementById('qc'+i);if(c.dataset.done)return;
+  const inp=document.getElementById('inp'+i);const fb=document.getElementById('fb'+i);
+  const v=inp.value.trim().toLowerCase();const ans=q.blank.toLowerCase();
+  if(v===ans){
+    markCorrect(c,inp,fb,q.blank,i);
+  } else {
+    markWrong(c,inp,fb,i);
+  }
+}
+
+/* ── CHECK DRAG ── */
+function chkDrag(i){
+  const q=qs[i];const c=document.getElementById('qc'+i);if(c.dataset.done)return;
+  const drop=document.getElementById('drop'+i);const fb=document.getElementById('fb'+i);
+  const v=(drop.dataset.val||'').trim().toLowerCase();const ans=q.blank.toLowerCase();
+  if(v===ans){
+    markCorrect(c,drop,fb,q.blank,i,true);
+  } else {
+    drop.classList.add('filled-wrong');
+    markWrong(c,null,fb,i);
+    setTimeout(()=>drop.classList.remove('filled-wrong'),600);
+  }
+}
+
+function markCorrect(c,inp,fb,blank,i,isDrag){
+  c.classList.add('correct');c.dataset.done='1';
+  if(inp){
+    if(isDrag){inp.textContent=blank;}
+    else{inp.classList.add('ok');inp.disabled=true;inp.value=blank;}
+  }
+  fb.className='fb ok';fb.textContent='✅ Correct!';
+  score++;done++;
+  document.getElementById('sc').textContent=score;
+  // scorebox pop
+  const sb=document.getElementById('scorebox');sb.style.transform='scale(1.3)';setTimeout(()=>sb.style.transform='',300);
+  document.getElementById('pfill').style.width=(done/qs.length*100)+'%';
+  document.getElementById('plbl').textContent=`Question ${Math.min(done+1,qs.length)} of ${qs.length}`;
+  const msg=cm[Math.floor(Math.random()*cm.length)];
+  document.getElementById('msg').textContent=msg;
+  // emoji burst near card
+  const rect=c.getBoundingClientRect();
+  emojiBurst(rect.left+rect.width/2,rect.top+rect.height/2,'⭐');
+  // show next card
+  if(done<qs.length){
+    setTimeout(()=>{
+      document.querySelectorAll('.q-card.active').forEach(x=>x.classList.remove('active'));
+      for(let j=i+1;j<qs.length;j++){
+        const next=document.getElementById('qc'+j);
+        if(!next.dataset.done){next.classList.add('active');next.scrollIntoView({behavior:'smooth',block:'center'});break;}
+      }
+    },600);
+  }
+  if(done===qs.length){launchConfetti();setTimeout(()=>{document.getElementById('nxt').style.display='inline-block';showDone()},800)}
+}
+
+function markWrong(c,inp,fb,i){
+  c.classList.add('wrong');
+  if(inp&&!inp.classList.contains('drop-target'))inp.classList.add('err');
+  fb.className='fb no';fb.textContent='❌ Try again!';
+  document.getElementById('msg').textContent=wm[Math.floor(Math.random()*wm.length)];
+  setTimeout(()=>{c.classList.remove('wrong');if(inp&&!inp.classList.contains('drop-target'))inp.classList.remove('err');fb.textContent=''},700);
+}
+
+function hint(i){const h=document.getElementById('hint'+i);h.style.display=h.style.display==='block'?'none':'block'}
+
+function showDone(){
+  const p=score/qs.length*100;
+  document.getElementById('strs').textContent=p>=90?'⭐⭐⭐':p>=60?'⭐⭐':'⭐';
+  document.getElementById('dtitle').textContent=p>=90?'AI Brain Expert! 🧠🏆':p>=60?'Great Work! 🎉':'Keep Learning! 💪';
+  document.getElementById('dmsg').textContent=`You answered ${score} out of ${qs.length} correctly! ${p>=90?'You truly understand neural networks. Shabash!':p>=60?'Good understanding! Review the missed ones and try again.':'Review Section 3 slides and watch the video again, then try!'}`;
+  document.getElementById('done').style.display='block';
+  document.getElementById('done').scrollIntoView({behavior:'smooth'});
+}
+
+spawnBg();
+init();
+</script>
+</body>
+</html>

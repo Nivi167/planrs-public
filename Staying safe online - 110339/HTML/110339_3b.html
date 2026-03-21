@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 3 – Fill in the Blanks: Cyberbullying & Online Safety</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --orange: #FF6B35;
+  --yellow: #FFD23F;
+  --blue: #3FA7D6;
+  --green: #06D6A0;
+  --pink: #FF6B9D;
+  --purple: #9B5DE5;
+  --white: #FFFDF7;
+  --dark: #1A1A2E;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: #0f0c29;
+  min-height: 100vh;
+  overflow-x: hidden;
+  padding-bottom: 60px;
+}
+
+/* ===== ANIMATED SKY BACKGROUND ===== */
+.bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  overflow: hidden;
+}
+
+/* Stars */
+.stars { position: absolute; inset: 0; }
+.star {
+  position: absolute;
+  background: #fff;
+  border-radius: 50%;
+  animation: twinkle var(--dur) ease-in-out infinite alternate;
+}
+@keyframes twinkle {
+  from { opacity: 0.1; transform: scale(0.8); }
+  to   { opacity: 1;   transform: scale(1.2); }
+}
+
+/* Flying rocket */
+.rocket {
+  position: absolute;
+  font-size: 42px;
+  top: 12%;
+  animation: flyRocket 18s linear infinite;
+  filter: drop-shadow(0 0 12px rgba(255,180,50,0.8));
+}
+@keyframes flyRocket {
+  0%   { left: -80px;  transform: rotate(-15deg) translateY(0); }
+  25%  { transform: rotate(-5deg) translateY(-30px); }
+  50%  { transform: rotate(-15deg) translateY(10px); }
+  75%  { transform: rotate(-8deg) translateY(-20px); }
+  100% { left: 110%;  transform: rotate(-15deg) translateY(0); }
+}
+
+/* Shooting stars */
+.shoot {
+  position: absolute;
+  width: 3px;
+  height: 80px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0), #fff);
+  animation: shoot var(--d) linear infinite;
+  animation-delay: var(--dl);
+}
+@keyframes shoot {
+  0%   { top: -100px; opacity: 1; }
+  100% { top: 110vh;  opacity: 0; }
+}
+
+/* Floating clouds */
+.cloud {
+  position: absolute;
+  font-size: var(--sz);
+  opacity: 0.12;
+  animation: driftCloud var(--cd) linear infinite;
+  animation-delay: var(--cdl);
+}
+@keyframes driftCloud {
+  from { transform: translateX(-200px); }
+  to   { transform: translateX(110vw); }
+}
+
+/* Bobbing planets */
+.planet {
+  position: absolute;
+  border-radius: 50%;
+  animation: bob 6s ease-in-out infinite;
+}
+.planet:nth-child(1) { width:80px; height:80px; background:radial-gradient(circle at 35% 35%, #ff8c69, #c0392b); top:8%; right:8%; animation-delay:0s; box-shadow: 0 0 30px rgba(255,100,50,0.4); }
+.planet:nth-child(2) { width:50px; height:50px; background:radial-gradient(circle at 35% 35%, #a29bfe, #6c5ce7); top:55%; left:4%; animation-delay:2s; box-shadow: 0 0 20px rgba(108,92,231,0.5); }
+.planet:nth-child(3) { width:35px; height:35px; background:radial-gradient(circle at 35% 35%, #74b9ff, #0984e3); bottom:25%; right:5%; animation-delay:4s; box-shadow: 0 0 16px rgba(9,132,227,0.5); }
+@keyframes bob {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-18px); }
+}
+
+/* ===== CONTENT ===== */
+.content {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 20px 16px;
+}
+
+/* Header */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 20px;
+  padding: 12px 20px;
+  margin-bottom: 20px;
+  animation: slideDown 0.6s ease;
+}
+@keyframes slideDown {
+  from { opacity:0; transform: translateY(-30px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+.logo {
+  font-family: 'Fredoka One', cursive;
+  font-size: 22px;
+  color: var(--yellow);
+  text-shadow: 0 0 20px rgba(255,210,63,0.6);
+}
+.score-box {
+  background: linear-gradient(135deg, var(--orange), var(--pink));
+  border-radius: 20px;
+  padding: 6px 18px;
+  font-size: 16px;
+  font-weight: 900;
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(255,107,53,0.4);
+}
+
+/* Title */
+h1 {
+  text-align: center;
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(26px, 5vw, 38px);
+  color: var(--yellow);
+  text-shadow: 0 0 30px rgba(255,210,63,0.5), 3px 3px 0 rgba(255,107,53,0.6);
+  margin-bottom: 6px;
+  animation: popIn 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.subtitle {
+  text-align: center;
+  color: rgba(255,255,255,0.65);
+  font-size: 14px;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+/* Word Bank */
+.word-bank {
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(12px);
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 24px;
+  padding: 18px;
+  margin-bottom: 22px;
+  animation: fadeUp 0.6s 0.2s ease both;
+}
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.word-bank h3 {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+  font-weight: 800;
+}
+.words-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Word Tiles (draggable) */
+.word-tile {
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 12px;
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  cursor: grab;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.3s, background 0.2s;
+  user-select: none;
+  touch-action: none;
+  position: relative;
+  overflow: hidden;
+}
+.word-tile::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent, rgba(255,255,255,0.1));
+  border-radius: inherit;
+}
+.word-tile:hover:not(.used) {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+  background: linear-gradient(135deg, rgba(255,210,63,0.3), rgba(255,107,53,0.3));
+  border-color: var(--yellow);
+}
+.word-tile.dragging {
+  opacity: 0.4;
+  transform: scale(0.95);
+  cursor: grabbing;
+}
+.word-tile.used {
+  opacity: 0.2;
+  pointer-events: none;
+  text-decoration: line-through;
+}
+.word-tile.selected-touch {
+  background: linear-gradient(135deg, rgba(255,210,63,0.5), rgba(255,107,53,0.5));
+  border-color: var(--yellow);
+  transform: scale(1.08) translateY(-4px);
+  box-shadow: 0 8px 25px rgba(255,210,63,0.4);
+  animation: pulse 0.8s ease infinite alternate;
+}
+@keyframes pulse {
+  from { box-shadow: 0 4px 20px rgba(255,210,63,0.4); }
+  to   { box-shadow: 0 8px 35px rgba(255,210,63,0.8); }
+}
+
+/* Color coding by index */
+.word-tile:nth-child(1) { border-color: #FF6B9D; color: #ffc4d6; }
+.word-tile:nth-child(2) { border-color: #FFD23F; color: #fff3a3; }
+.word-tile:nth-child(3) { border-color: #06D6A0; color: #b3fbe8; }
+.word-tile:nth-child(4) { border-color: #3FA7D6; color: #b8e8f8; }
+.word-tile:nth-child(5) { border-color: #FF6B35; color: #ffd0bc; }
+.word-tile:nth-child(6) { border-color: #9B5DE5; color: #dbc4ff; }
+.word-tile:nth-child(7) { border-color: #F15BB5; color: #ffc4e8; }
+.word-tile:nth-child(8) { border-color: #00BBF9; color: #b3eeff; }
+
+/* Sentences */
+.sentences {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.sentence-card {
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 18px;
+  padding: 16px 20px;
+  font-size: 15px;
+  color: rgba(255,255,255,0.88);
+  line-height: 1.8;
+  font-weight: 600;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  animation: fadeUp 0.5s ease both;
+}
+.sentence-card:nth-child(1)  { animation-delay: 0.10s; }
+.sentence-card:nth-child(2)  { animation-delay: 0.15s; }
+.sentence-card:nth-child(3)  { animation-delay: 0.20s; }
+.sentence-card:nth-child(4)  { animation-delay: 0.25s; }
+.sentence-card:nth-child(5)  { animation-delay: 0.30s; }
+.sentence-card:nth-child(6)  { animation-delay: 0.35s; }
+.sentence-card:nth-child(7)  { animation-delay: 0.40s; }
+.sentence-card:nth-child(8)  { animation-delay: 0.45s; }
+.sentence-card.drag-over {
+  border-color: var(--yellow);
+  box-shadow: 0 0 20px rgba(255,210,63,0.3);
+  transform: scale(1.01);
+}
+
+.blank {
+  display: inline-block;
+  min-width: 110px;
+  border-bottom: 3px solid rgba(255,255,255,0.3);
+  padding: 3px 10px;
+  margin: 0 4px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.25s;
+  font-weight: 900;
+  color: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.06);
+  font-size: 14px;
+  text-align: center;
+  position: relative;
+  vertical-align: middle;
+}
+.blank.drop-hover {
+  background: rgba(255,210,63,0.2);
+  border-color: var(--yellow);
+  color: var(--yellow);
+  transform: scale(1.1);
+}
+.blank.filled {
+  color: var(--yellow);
+  background: rgba(255,210,63,0.15);
+  border-color: var(--yellow);
+  border-bottom-width: 3px;
+  cursor: pointer;
+}
+.blank.filled:hover {
+  background: rgba(255,107,53,0.2);
+  border-color: var(--orange);
+}
+.blank.correct {
+  color: var(--green) !important;
+  background: rgba(6,214,160,0.2) !important;
+  border-color: var(--green) !important;
+  animation: correctPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: default;
+}
+.blank.wrong {
+  color: #ff6b6b !important;
+  background: rgba(255,107,107,0.2) !important;
+  border-color: #ff6b6b !important;
+  animation: wrongShake 0.5s ease;
+}
+@keyframes correctPop {
+  0%   { transform: scale(0.7); }
+  60%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+@keyframes wrongShake {
+  0%,100% { transform: translateX(0); }
+  20%      { transform: translateX(-10px); }
+  40%      { transform: translateX(10px); }
+  60%      { transform: translateX(-6px); }
+  80%      { transform: translateX(6px); }
+}
+@keyframes popIn {
+  0%   { transform: scale(0.5); opacity: 0; }
+  70%  { transform: scale(1.1); }
+  100% { transform: scale(1);   opacity: 1; }
+}
+
+/* Buttons */
+.btn-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.btn {
+  padding: 14px 30px;
+  border: none;
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 900;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  letter-spacing: 0.5px;
+}
+.btn:hover { transform: translateY(-3px) scale(1.05); }
+.btn:active { transform: scale(0.97); }
+.btn-check { background: linear-gradient(135deg, #06D6A0, #0a9b75); color:#fff; box-shadow: 0 6px 20px rgba(6,214,160,0.4); }
+.btn-retry { background: linear-gradient(135deg, #FF6B35, #c0392b); color:#fff; box-shadow: 0 6px 20px rgba(255,107,53,0.4); }
+.btn-next  { background: linear-gradient(135deg, #3FA7D6, #2471a3); color:#fff; box-shadow: 0 6px 20px rgba(63,167,214,0.4); }
+
+/* Result Box */
+.result-box {
+  display: none;
+  text-align: center;
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 30px;
+  padding: 36px 28px;
+  margin-top: 24px;
+  animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+}
+.result-box::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(255,210,63,0.15), transparent 70%);
+  pointer-events: none;
+}
+.res-emoji { font-size: 70px; animation: bounce 1s ease infinite; }
+@keyframes bounce {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-14px); }
+}
+.res-msg   { font-family: 'Fredoka One', cursive; font-size: 28px; color: var(--yellow); margin: 12px 0 6px; text-shadow: 0 0 20px rgba(255,210,63,0.5); }
+.res-score { font-family: 'Fredoka One', cursive; font-size: 58px; color: #fff; }
+.res-sub   { color: rgba(255,255,255,0.6); font-size: 15px; margin-top: 8px; font-weight: 600; }
+
+/* Confetti */
+.confetti-piece {
+  position: fixed;
+  width: 10px;
+  height: 12px;
+  top: -20px;
+  z-index: 9999;
+  pointer-events: none;
+  animation: confettiFall var(--cf-dur) linear forwards;
+}
+@keyframes confettiFall {
+  0%   { transform: translateX(0) rotate(0deg);   opacity: 1; }
+  100% { transform: translateX(var(--cf-x)) rotate(var(--cf-r)) translateY(100vh); opacity: 0; }
+}
+
+/* Floating emoji */
+.float-emoji {
+  position: fixed;
+  font-size: 28px;
+  pointer-events: none;
+  z-index: 9999;
+  animation: floatUp 1.2s ease forwards;
+}
+@keyframes floatUp {
+  0%   { transform: translateY(0)   scale(1);    opacity: 1; }
+  100% { transform: translateY(-120px) scale(1.4); opacity: 0; }
+}
+
+/* Ghost drag element */
+#ghost {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.85;
+  transform: scale(1.1) rotate(-4deg);
+  background: linear-gradient(135deg, rgba(255,210,63,0.9), rgba(255,107,53,0.9));
+  border: 2px solid #fff;
+  border-radius: 12px;
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 900;
+  color: #fff;
+  font-family: 'Nunito', sans-serif;
+  display: none;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+/* Progress bar */
+.progress-wrap {
+  background: rgba(255,255,255,0.08);
+  border-radius: 20px;
+  height: 8px;
+  margin-bottom: 18px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green), var(--blue));
+  border-radius: 20px;
+  transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  width: 0%;
+}
+</style>
+</head>
+<body>
+
+<!-- Animated Background -->
+<div class="bg-canvas" id="bgCanvas">
+  <div class="stars" id="starsContainer"></div>
+  <div class="planet"></div>
+  <div class="planet"></div>
+  <div class="planet"></div>
+  <div class="rocket" id="rocket">🚀</div>
+</div>
+
+<div id="ghost"></div>
+
+<div class="content">
+  <header>
+    <div class="logo">⭐ Planrs</div>
+    <div class="score-box">⭐ <span id="scoreVal">0</span> / 8</div>
+  </header>
+
+  <h1>✏️ Fill in the Blanks!</h1>
+  <p class="subtitle">🖱️ Drag a word to the blank — or tap to select, then tap a blank!</p>
+
+  <div class="progress-wrap"><div class="progress-fill" id="progressFill"></div></div>
+
+  <div class="word-bank">
+    <h3>📦 Word Bank — Drag or Tap to Pick</h3>
+    <div class="words-row" id="wordBank">
+      <div class="word-tile" data-word="cyberbullying">🚫 cyberbullying</div>
+      <div class="word-tile" data-word="screenshot">📸 screenshot</div>
+      <div class="word-tile" data-word="fake news">📰 fake news</div>
+      <div class="word-tile" data-word="block">🔒 block</div>
+      <div class="word-tile" data-word="trusted adult">🧑 trusted adult</div>
+      <div class="word-tile" data-word="stranger">👤 stranger</div>
+      <div class="word-tile" data-word="fact check">🔍 fact check</div>
+      <div class="word-tile" data-word="OTP">🔑 OTP</div>
+    </div>
+  </div>
+
+  <div class="sentences" id="sentences">
+    <div class="sentence-card" data-index="0">
+      1. Using technology to hurt, threaten, or embarrass someone is called
+      <span class="blank" data-answer="cyberbullying">______</span>.
+    </div>
+    <div class="sentence-card" data-index="1">
+      2. Before you report a bully, you should
+      <span class="blank" data-answer="screenshot">______</span>
+      the evidence as proof.
+    </div>
+    <div class="sentence-card" data-index="2">
+      3. False stories that look real and spread quickly on WhatsApp are called
+      <span class="blank" data-answer="fake news">______</span>.
+    </div>
+    <div class="sentence-card" data-index="3">
+      4. When someone online is being mean to you, you should
+      <span class="blank" data-answer="block">______</span>
+      them so they cannot contact you.
+    </div>
+    <div class="sentence-card" data-index="4">
+      5. If something online makes you feel uncomfortable or scared, always tell a
+      <span class="blank" data-answer="trusted adult">______</span>.
+    </div>
+    <div class="sentence-card" data-index="5">
+      6. Someone you have only met online — even if they seem friendly — is still a
+      <span class="blank" data-answer="stranger">______</span>
+      until you meet them safely in real life with a parent.
+    </div>
+    <div class="sentence-card" data-index="6">
+      7. Before forwarding any shocking message on WhatsApp, you should always
+      <span class="blank" data-answer="fact check">______</span>
+      it on a trusted website.
+    </div>
+    <div class="sentence-card" data-index="7">
+      8. A one-time password used to verify your identity online is called an
+      <span class="blank" data-answer="OTP">______</span>
+      — never share it with anyone!
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-check" onclick="checkAnswers()">✅ Check Answers</button>
+    <button class="btn btn-retry" onclick="resetGame()">🔄 Try Again</button>
+  </div>
+
+  <div class="result-box" id="resultBox">
+    <div class="res-emoji" id="resEmoji">🎉</div>
+    <div class="res-msg" id="resMsg">Brilliant!</div>
+    <div class="res-score" id="resScore">8/8</div>
+    <p class="res-sub" id="resSub">You are an online safety superstar!</p>
+    <div class="btn-row" style="margin-top:20px">
+      <button class="btn btn-retry" onclick="resetGame()">🔄 Try Again</button>
+      <button class="btn btn-next" onclick="alert('Amazing! Move to Section 4! 🚀')">➡️ Next Section</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== BACKGROUND GENERATION ===== */
+(function() {
+  const container = document.getElementById('starsContainer');
+  for (let i = 0; i < 120; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 3 + 1;
+    s.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%; top:${Math.random()*100}%;
+      --dur:${1.5 + Math.random()*3}s;
+      animation-delay:${Math.random()*3}s;
+    `;
+    container.appendChild(s);
+  }
+  const bg = document.getElementById('bgCanvas');
+  for (let i = 0; i < 6; i++) {
+    const sh = document.createElement('div');
+    sh.className = 'shoot';
+    sh.style.cssText = `left:${10+Math.random()*80}%; --d:${3+Math.random()*4}s; --dl:${Math.random()*6}s;`;
+    bg.appendChild(sh);
+  }
+  const clouds = ['☁️','🌤️','⛅'];
+  for (let i = 0; i < 4; i++) {
+    const c = document.createElement('div');
+    c.className = 'cloud';
+    c.textContent = clouds[i % clouds.length];
+    c.style.cssText = `top:${5+Math.random()*30}%; --sz:${40+Math.random()*30}px; --cd:${20+Math.random()*20}s; --cdl:${-Math.random()*20}s;`;
+    bg.appendChild(c);
+  }
+})();
+
+/* ===== GAME STATE ===== */
+let selectedTile = null;
+let dragWord = null;
+let ghost = document.getElementById('ghost');
+let dragStartEl = null;
+let filled = 0;
+
+function updateProgress() {
+  document.getElementById('progressFill').style.width = (filled / 8 * 100) + '%';
+}
+
+/* ===== TOUCH / CLICK SELECTION (mobile + desktop click) ===== */
+document.querySelectorAll('.word-tile').forEach(tile => {
+  tile.addEventListener('click', e => {
+    if (tile.classList.contains('used')) return;
+    if (selectedTile === tile) {
+      tile.classList.remove('selected-touch');
+      selectedTile = null;
+      return;
+    }
+    document.querySelectorAll('.word-tile').forEach(t => t.classList.remove('selected-touch'));
+    selectedTile = tile;
+    tile.classList.add('selected-touch');
+  });
+});
+
+document.querySelectorAll('.blank').forEach(blank => {
+  blank.addEventListener('click', e => {
+    // If locked after check, ignore
+    if (blank.classList.contains('correct')) return;
+
+    if (selectedTile) {
+      // Place word
+      const oldWord = blank.dataset.filled;
+      if (oldWord) returnWord(oldWord);
+      placeWord(blank, selectedTile.dataset.word, selectedTile);
+      selectedTile.classList.remove('selected-touch');
+      selectedTile.classList.add('used');
+      selectedTile = null;
+    } else if (blank.dataset.filled) {
+      // Return word to bank on click
+      returnWord(blank.dataset.filled);
+      blank.textContent = '______';
+      blank.dataset.filled = '';
+      blank.classList.remove('filled','correct','wrong');
+      filled = Math.max(0, filled - 1);
+      updateProgress();
+    }
+  });
+});
+
+function placeWord(blank, word, tileEl) {
+  if (!blank.dataset.filled) filled++;
+  blank.textContent = word;
+  blank.dataset.filled = word;
+  blank.classList.remove('wrong');
+  blank.classList.add('filled');
+  if (tileEl) tileEl.classList.add('used');
+  updateProgress();
+  spawnFloatEmoji(blank, '✨');
+}
+
+function returnWord(word) {
+  document.querySelectorAll('.word-tile').forEach(t => {
+    if (t.dataset.word === word) {
+      t.classList.remove('used', 'selected-touch');
+    }
+  });
+}
+
+/* ===== DRAG AND DROP (desktop) ===== */
+document.querySelectorAll('.word-tile').forEach(tile => {
+  tile.setAttribute('draggable', 'true');
+
+  tile.addEventListener('dragstart', e => {
+    if (tile.classList.contains('used')) { e.preventDefault(); return; }
+    dragWord = tile.dataset.word;
+    dragStartEl = tile;
+    tile.classList.add('dragging');
+    // Custom ghost
+    ghost.textContent = tile.textContent;
+    ghost.style.display = 'block';
+    ghost.style.left = e.clientX - 60 + 'px';
+    ghost.style.top  = e.clientY - 25 + 'px';
+    e.dataTransfer.setDragImage(document.createElement('div'), 0, 0);
+    e.dataTransfer.effectAllowed = 'copy';
+  });
+
+  tile.addEventListener('dragend', e => {
+    tile.classList.remove('dragging');
+    ghost.style.display = 'none';
+    dragWord = null;
+    dragStartEl = null;
+  });
+});
+
+document.addEventListener('dragover', e => {
+  e.preventDefault();
+  ghost.style.left = e.clientX - 60 + 'px';
+  ghost.style.top  = e.clientY - 25 + 'px';
+});
+
+document.querySelectorAll('.blank').forEach(blank => {
+  blank.addEventListener('dragover', e => {
+    e.preventDefault();
+    if (!blank.classList.contains('correct'))
+      blank.classList.add('drop-hover');
+  });
+  blank.addEventListener('dragleave', () => blank.classList.remove('drop-hover'));
+  blank.addEventListener('drop', e => {
+    e.preventDefault();
+    blank.classList.remove('drop-hover');
+    if (!dragWord || blank.classList.contains('correct')) return;
+    const oldWord = blank.dataset.filled;
+    if (oldWord) returnWord(oldWord);
+    placeWord(blank, dragWord, dragStartEl);
+  });
+});
+
+/* ===== TOUCH DRAG (mobile) ===== */
+let touchTile = null;
+document.querySelectorAll('.word-tile').forEach(tile => {
+  tile.addEventListener('touchstart', e => {
+    if (tile.classList.contains('used')) return;
+    touchTile = tile;
+    dragWord = tile.dataset.word;
+    dragStartEl = tile;
+    ghost.textContent = tile.textContent;
+    ghost.style.display = 'block';
+    const t = e.touches[0];
+    ghost.style.left = t.clientX - 60 + 'px';
+    ghost.style.top  = t.clientY - 40 + 'px';
+  }, { passive: true });
+});
+
+document.addEventListener('touchmove', e => {
+  if (!touchTile) return;
+  const t = e.touches[0];
+  ghost.style.left = t.clientX - 60 + 'px';
+  ghost.style.top  = t.clientY - 40 + 'px';
+  document.querySelectorAll('.blank').forEach(b => {
+    const r = b.getBoundingClientRect();
+    if (t.clientX >= r.left && t.clientX <= r.right && t.clientY >= r.top && t.clientY <= r.bottom) {
+      b.classList.add('drop-hover');
+    } else {
+      b.classList.remove('drop-hover');
+    }
+  });
+}, { passive: true });
+
+document.addEventListener('touchend', e => {
+  if (!touchTile) return;
+  ghost.style.display = 'none';
+  const t = e.changedTouches[0];
+  document.querySelectorAll('.blank').forEach(b => {
+    b.classList.remove('drop-hover');
+    const r = b.getBoundingClientRect();
+    if (t.clientX >= r.left && t.clientX <= r.right && t.clientY >= r.top && t.clientY <= r.bottom) {
+      if (b.classList.contains('correct')) return;
+      const oldWord = b.dataset.filled;
+      if (oldWord) returnWord(oldWord);
+      placeWord(b, dragWord, touchTile);
+    }
+  });
+  touchTile = null;
+  dragWord = null;
+  dragStartEl = null;
+}, { passive: true });
+
+/* ===== CHECK ANSWERS ===== */
+function checkAnswers() {
+  let score = 0;
+  document.querySelectorAll('.blank').forEach(blank => {
+    blank.classList.remove('drop-hover');
+    if (!blank.dataset.filled) return;
+    if (blank.dataset.filled === blank.dataset.answer) {
+      blank.classList.remove('filled','wrong');
+      blank.classList.add('correct');
+      blank.textContent = '✓ ' + blank.dataset.filled;
+      score++;
+    } else {
+      blank.classList.remove('filled');
+      blank.classList.add('wrong');
+    }
+  });
+  document.getElementById('scoreVal').textContent = score;
+
+  const rb = document.getElementById('resultBox');
+  rb.style.display = 'block';
+  document.getElementById('resScore').textContent = score + '/8';
+
+  if (score === 8) {
+    document.getElementById('resEmoji').textContent = '🏆';
+    document.getElementById('resMsg').textContent = 'Perfect Score! Superstar!';
+    document.getElementById('resSub').textContent = 'You are an Online Safety Champion! 🌟';
+    launchConfetti(60);
+  } else if (score >= 6) {
+    document.getElementById('resEmoji').textContent = '🎉';
+    document.getElementById('resMsg').textContent = 'Excellent work!';
+    document.getElementById('resSub').textContent = 'Almost there — you\'ve got this!';
+    launchConfetti(30);
+  } else if (score >= 4) {
+    document.getElementById('resEmoji').textContent = '😊';
+    document.getElementById('resMsg').textContent = 'Good effort!';
+    document.getElementById('resSub').textContent = 'Review the hints and try again!';
+  } else {
+    document.getElementById('resEmoji').textContent = '💡';
+    document.getElementById('resMsg').textContent = 'Keep Trying!';
+    document.getElementById('resSub').textContent = 'Review the slides and have another go!';
+  }
+  rb.scrollIntoView({ behavior: 'smooth' });
+}
+
+/* ===== RESET ===== */
+function resetGame() {
+  document.querySelectorAll('.blank').forEach(b => {
+    b.textContent = '______';
+    b.className = 'blank';
+    delete b.dataset.filled;
+  });
+  document.querySelectorAll('.word-tile').forEach(t => {
+    t.classList.remove('used','selected-touch','dragging');
+  });
+  document.getElementById('scoreVal').textContent = 0;
+  document.getElementById('resultBox').style.display = 'none';
+  selectedTile = null;
+  filled = 0;
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ===== CONFETTI ===== */
+function launchConfetti(count) {
+  const colors = ['#FF6B35','#FFD23F','#06D6A0','#3FA7D6','#FF6B9D','#9B5DE5'];
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const c = document.createElement('div');
+      c.className = 'confetti-piece';
+      c.style.cssText = `
+        left:${Math.random()*100}vw;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
+        --cf-dur:${1.5+Math.random()*2}s;
+        --cf-x:${-100+Math.random()*200}px;
+        --cf-r:${Math.random()*720}deg;
+      `;
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 3500);
+    }, i * 40);
+  }
+}
+
+/* ===== FLOAT EMOJI ===== */
+function spawnFloatEmoji(el, emoji) {
+  const r = el.getBoundingClientRect();
+  const e = document.createElement('div');
+  e.className = 'float-emoji';
+  e.textContent = emoji;
+  e.style.left = (r.left + r.width/2) + 'px';
+  e.style.top  = (r.top + window.scrollY) + 'px';
+  document.body.appendChild(e);
+  setTimeout(() => e.remove(), 1200);
+}
+</script>
+</body>
+</html>

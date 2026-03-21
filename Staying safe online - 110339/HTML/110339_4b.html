@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 4 – Digital Citizenship Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ─── MOVING BACKGROUND ─── */
+  body {
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    padding: 16px;
+    overflow-x: hidden;
+    background: #0d1b2a;
+    position: relative;
+  }
+
+  /* Animated gradient sky */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #1a1a6e, #2E86AB, #27AE60, #F5C842, #E07B39);
+    background-size: 400% 400%;
+    animation: gradientShift 12s ease infinite;
+    z-index: -3;
+  }
+
+  @keyframes gradientShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Floating bubbles background */
+  .bg-bubbles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -2;
+    overflow: hidden;
+  }
+  .bubble {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.15;
+    animation: floatBubble linear infinite;
+  }
+  @keyframes floatBubble {
+    0%   { transform: translateY(110vh) rotate(0deg) scale(1); opacity: 0; }
+    10%  { opacity: 0.15; }
+    90%  { opacity: 0.15; }
+    100% { transform: translateY(-20vh) rotate(360deg) scale(1.2); opacity: 0; }
+  }
+
+  /* Twinkling stars */
+  .stars-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+  }
+  .star-dot {
+    position: absolute;
+    border-radius: 50%;
+    background: #fff;
+    animation: twinkle ease-in-out infinite;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.1; transform: scale(0.8); }
+    50%       { opacity: 0.9; transform: scale(1.4); }
+  }
+
+  /* Floating emojis */
+  .float-emoji {
+    position: fixed;
+    font-size: 28px;
+    animation: floatEmoji linear infinite;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.55;
+  }
+  @keyframes floatEmoji {
+    0%   { transform: translateY(110vh) translateX(0) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.55; }
+    90%  { opacity: 0.55; }
+    100% { transform: translateY(-20vh) translateX(40px) rotate(20deg); opacity: 0; }
+  }
+
+  /* ─── LAYOUT ─── */
+  .wrapper { max-width: 640px; margin: 0 auto; }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(12px);
+    border: 1.5px solid rgba(255,255,255,0.25);
+    border-radius: 20px;
+    padding: 12px 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    animation: slideDown 0.6s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  @keyframes slideDown {
+    from { transform: translateY(-40px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+  }
+
+  .logo { font-family: 'Fredoka One', cursive; font-size: 18px; color: #fff; letter-spacing: 1px; }
+  .score-box {
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.3);
+  }
+  .score-box span { color: #F5C842; }
+
+  h1 {
+    font-family: 'Fredoka One', cursive;
+    text-align: center;
+    font-size: 26px;
+    color: #fff;
+    margin-bottom: 4px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    animation: bounceIn 0.8s cubic-bezier(.34,1.56,.64,1) 0.2s both;
+  }
+  @keyframes bounceIn {
+    from { transform: scale(0.5); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+
+  .subtitle {
+    text-align: center;
+    color: rgba(255,255,255,0.75);
+    font-size: 13px;
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+
+  .q-progress { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .q-progress span { font-size: 12px; color: rgba(255,255,255,0.8); font-weight: 700; }
+  .progress { height: 12px; background: rgba(0,0,0,0.25); border-radius: 10px; margin-bottom: 16px; overflow: hidden; }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #F5C842, #E07B39, #E74C3C);
+    border-radius: 10px;
+    transition: width 0.5s cubic-bezier(.34,1.56,.64,1);
+    position: relative;
+  }
+  .progress-bar::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 0;
+    width: 12px; height: 12px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(255,255,255,0.8);
+  }
+
+  /* ─── QUESTION CARD ─── */
+  .q-card {
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.4);
+    margin-bottom: 16px;
+    animation: cardSlide 0.5s cubic-bezier(.34,1.56,.64,1) both;
+    transition: transform 0.2s;
+  }
+  @keyframes cardSlide {
+    from { transform: translateX(60px) scale(0.95); opacity: 0; }
+    to   { transform: translateX(0) scale(1); opacity: 1; }
+  }
+
+  .q-category {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 800;
+    color: #fff;
+    background: linear-gradient(135deg, #27AE60, #2E86AB);
+    padding: 4px 12px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .q-text { font-size: 17px; color: #1a1a2e; font-weight: 800; line-height: 1.5; margin-bottom: 18px; }
+
+  /* ─── DRAG & DROP OPTIONS ─── */
+  .drag-instructions {
+    font-size: 11px;
+    color: #888;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .drag-zone {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 14px;
+  }
+
+  .drop-target {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 2px dashed #cde8f0;
+    border-radius: 14px;
+    background: #f0faff;
+    margin-bottom: 8px;
+    min-height: 52px;
+    transition: all 0.25s;
+    position: relative;
+  }
+  .drop-target.drag-over { border-color: #2E86AB; background: #d0f0ff; transform: scale(1.02); }
+  .drop-target.filled   { border-style: solid; border-color: #2E86AB; background: #e0f4ff; }
+
+  .drop-label {
+    font-size: 13px;
+    font-weight: 800;
+    color: #2E86AB;
+    min-width: 22px;
+    flex-shrink: 0;
+  }
+  .drop-placeholder {
+    font-size: 12px;
+    color: #aaa;
+    font-weight: 600;
+    font-style: italic;
+  }
+  .dropped-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #2E86AB, #27AE60);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: grab;
+    user-select: none;
+    box-shadow: 0 2px 8px rgba(46,134,171,0.4);
+    animation: chipIn 0.3s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes chipIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+  .options-pool {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px;
+    background: rgba(0,0,0,0.04);
+    border-radius: 16px;
+    min-height: 52px;
+    margin-bottom: 10px;
+    transition: background 0.2s;
+  }
+  .options-pool.drag-over { background: rgba(46,134,171,0.08); }
+
+  .draggable-opt {
+    padding: 8px 14px;
+    background: #fff;
+    border: 2.5px solid #B2DFDB;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #333;
+    cursor: grab;
+    user-select: none;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    animation: optAppear 0.4s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  .draggable-opt:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 6px 16px rgba(0,0,0,0.15); border-color: #2E86AB; }
+  .draggable-opt.dragging { opacity: 0.4; transform: scale(0.9); }
+  @keyframes optAppear {
+    from { transform: scale(0) rotate(-10deg); opacity: 0; }
+    to   { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  /* Classic click fallback buttons */
+  .opts-click { display: flex; flex-direction: column; gap: 10px; }
+  .opt {
+    padding: 14px 16px;
+    border: 2.5px solid #B2DFDB;
+    border-radius: 14px;
+    background: #fff;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 700;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Nunito', sans-serif;
+    animation: optAppear 0.35s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  .opt:hover { background: #e0faec; transform: translateX(6px); border-color: #27AE60; }
+  .opt.correct { background: linear-gradient(135deg,#C8F7DC,#a8f0cc); border-color: #27AE60; color: #1B5E20; animation: popIn 0.4s cubic-bezier(.34,1.56,.64,1); }
+  .opt.wrong   { background: linear-gradient(135deg,#FECDD3,#ffaabb); border-color: #E74C3C; animation: shake 0.4s; color: #7B0B0B; }
+  .opt:disabled { cursor: not-allowed; }
+
+  @keyframes popIn { 0%{transform:scale(0.8);opacity:0} 60%{transform:scale(1.08)} 100%{transform:scale(1);opacity:1} }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+
+  /* Submit drag answer button */
+  .btn-check-drag {
+    display: none;
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, #27AE60, #2E86AB);
+    color: #fff;
+    font-family: 'Fredoka One', cursive;
+    font-size: 17px;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    margin-top: 6px;
+    box-shadow: 0 4px 12px rgba(39,174,96,0.4);
+    transition: transform 0.2s;
+  }
+  .btn-check-drag:hover { transform: scale(1.03); }
+
+  .feedback {
+    font-size: 13px;
+    margin-top: 10px;
+    font-weight: 700;
+    min-height: 20px;
+    line-height: 1.5;
+    padding: 0 4px;
+  }
+  .feedback.good { color: #1B5E20; }
+  .feedback.bad  { color: #c0392b; }
+
+  .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
+  .btn {
+    padding: 12px 28px;
+    border: none;
+    border-radius: 24px;
+    font-size: 15px;
+    font-family: 'Fredoka One', cursive;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+  }
+  .btn:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+  .btn-green  { background: linear-gradient(135deg,#27AE60,#1e8a4b); color: #fff; }
+  .btn-orange { background: linear-gradient(135deg,#E07B39,#c05a20); color: #fff; }
+  .btn-blue   { background: linear-gradient(135deg,#2E86AB,#1a6080); color: #fff; }
+
+  /* ─── RESULT SCREEN ─── */
+  .result-screen {
+    display: none;
+    text-align: center;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 28px;
+    padding: 36px 28px;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.25);
+    animation: resultPop 0.7s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  @keyframes resultPop { from { transform: scale(0.5) rotate(-5deg); opacity: 0; } to { transform: scale(1) rotate(0); opacity: 1; } }
+  .stars { font-size: 32px; margin-bottom: 8px; animation: starSpin 1s cubic-bezier(.34,1.56,.64,1) 0.4s both; }
+  @keyframes starSpin { from { transform: scale(0) rotate(-180deg); } to { transform: scale(1) rotate(0); } }
+  .result-emoji { font-size: 80px; margin-bottom: 12px; animation: resultEmoji 0.8s cubic-bezier(.34,1.56,.64,1) 0.6s both; }
+  @keyframes resultEmoji { from { transform: scale(0) rotate(20deg); opacity: 0; } to { transform: scale(1) rotate(0); opacity: 1; } }
+  .result-title { font-family: 'Fredoka One', cursive; font-size: 28px; color: #27AE60; }
+  .result-score { font-family: 'Fredoka One', cursive; font-size: 60px; color: #E07B39; margin: 8px 0; }
+
+  /* ─── CONFETTI ─── */
+  .confetti { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; }
+  .confetti-piece { position: absolute; border-radius: 2px; animation: fall linear forwards; }
+  @keyframes fall { 0%{top:-10px;opacity:1} 100%{top:100vh;opacity:0} }
+
+  /* ─── MODE TOGGLE ─── */
+  .mode-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .toggle-label { font-size: 12px; font-weight: 800; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.5px; }
+  .toggle-switch {
+    width: 52px; height: 26px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 13px;
+    position: relative;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: background 0.3s;
+  }
+  .toggle-switch.on { background: rgba(39,174,96,0.6); }
+  .toggle-knob {
+    width: 20px; height: 20px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 3px; left: 3px;
+    transition: left 0.3s cubic-bezier(.34,1.56,.64,1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+  .toggle-switch.on .toggle-knob { left: 29px; }
+</style>
+</head>
+<body>
+
+<!-- Moving background layers -->
+<div class="bg-bubbles" id="bgBubbles"></div>
+<div class="stars-bg" id="starsBg"></div>
+<div class="confetti" id="confetti"></div>
+
+<div class="wrapper">
+  <header>
+    <div class="logo">⭐ Planrs</div>
+    <div class="score-box">Score: <span id="scoreVal">0</span>/8</div>
+  </header>
+
+  <h1>🌟 Digital Citizenship Quiz</h1>
+  <p class="subtitle">8 questions on being a responsible digital citizen</p>
+
+  <div class="mode-toggle">
+    <span class="toggle-label">Click Mode</span>
+    <div class="toggle-switch" id="modeToggle" onclick="toggleMode()">
+      <div class="toggle-knob"></div>
+    </div>
+    <span class="toggle-label">Drag Mode 🖱️</span>
+  </div>
+
+  <div class="q-progress">
+    <span>Question <span id="qNumLabel">1</span> of 8</span>
+    <span id="pctLabel">0%</span>
+  </div>
+  <div class="progress"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+
+  <div id="gameArea">
+    <div class="q-card" id="qCard">
+      <div class="q-category" id="qCat">Category</div>
+      <div class="q-text" id="qText">Loading...</div>
+
+      <!-- DRAG & DROP UI -->
+      <div id="dragUI" style="display:none">
+        <div class="drag-instructions">✋ Drag your answer to the correct slot</div>
+        <div class="drag-zone" id="dragZone"></div>
+        <div class="drag-instructions" style="margin-top:4px">Answer Pool</div>
+        <div class="options-pool" id="optionsPool"></div>
+        <button class="btn-check-drag" id="btnCheckDrag" onclick="checkDragAnswer()">✅ Check My Answer!</button>
+      </div>
+
+      <!-- CLICK UI -->
+      <div class="opts-click" id="opts"></div>
+
+      <div class="feedback" id="feedback"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-green" id="nextBtn" onclick="nextQ()" style="display:none">Next Question ➡️</button>
+    </div>
+  </div>
+
+  <div class="result-screen" id="resultScreen">
+    <div class="stars" id="stars">⭐⭐⭐⭐⭐</div>
+    <div class="result-emoji" id="resEmoji">🏆</div>
+    <div class="result-title" id="resTitle">Digital Champion!</div>
+    <div class="result-score" id="resScore">8/8</div>
+    <p style="color:#555;font-size:15px;margin-top:8px" id="resSub">You are a responsible digital citizen!</p>
+    <div class="btn-row">
+      <button class="btn btn-orange" onclick="restart()">🔄 Try Again</button>
+      <button class="btn btn-blue" onclick="alert('🎉 Congratulations! You have completed all 4 sections of Staying Safe Online!')">🏁 Finish Course</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ─────────── ANIMATED BACKGROUND ─────────── */
+function initBackground() {
+  const bubblesEl = document.getElementById('bgBubbles');
+  const colors = ['#27AE60','#2E86AB','#E07B39','#F5C842','#E74C3C','#7B4FBF','#fff'];
+  for (let i = 0; i < 18; i++) {
+    const b = document.createElement('div');
+    b.className = 'bubble';
+    const size = 40 + Math.random() * 120;
+    b.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      animation-duration:${8+Math.random()*14}s;
+      animation-delay:${-Math.random()*12}s;
+    `;
+    bubblesEl.appendChild(b);
+  }
+
+  // Twinkling stars
+  const starsEl = document.getElementById('starsBg');
+  for (let i = 0; i < 50; i++) {
+    const s = document.createElement('div');
+    s.className = 'star-dot';
+    const size = 1.5 + Math.random() * 3;
+    s.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%; top:${Math.random()*100}%;
+      animation-duration:${1.5+Math.random()*3}s;
+      animation-delay:${-Math.random()*3}s;
+    `;
+    starsEl.appendChild(s);
+  }
+
+  // Floating emojis
+  const emojis = ['🔒','💻','📱','🌐','🛡️','⭐','✅','📚','🎓','💡'];
+  emojis.forEach((em, i) => {
+    const e = document.createElement('div');
+    e.className = 'float-emoji';
+    e.textContent = em;
+    e.style.cssText = `
+      left:${5+i*9}%;
+      animation-duration:${12+Math.random()*10}s;
+      animation-delay:${-Math.random()*12}s;
+    `;
+    document.body.appendChild(e);
+  });
+}
+
+/* ─────────── QUIZ DATA ─────────── */
+const questions = [
+  { cat:"Digital Citizenship", q:"What does 'digital citizenship' mean?", opts:["Only using apps made in India","Being responsible and respectful while using technology","Having a smartphone","Spending more time online"], ans:1, exp:"Digital citizenship means using technology responsibly — respecting others, staying safe, and being honest online." },
+  { cat:"Digital Footprint", q:"What is a 'digital footprint'?", opts:["A footstep shape on your phone screen","Your shoe size in centimetres","The trail of data and information you leave when using the internet","A special app for walking"], ans:2, exp:"Every search, post, and click leaves a trace — your digital footprint. Future colleges and employers can find it!" },
+  { cat:"Digital Footprint", q:"Which activity helps build a POSITIVE digital footprint?", opts:["Posting mean comments about celebrities","Sharing helpful study notes in an online group","Using a fake name to troll others","Forwarding every WhatsApp message you receive"], ans:1, exp:"Helpful contributions, kind comments, and educational posts all build a positive online reputation!" },
+  { cat:"Screen Time", q:"What does the 20-20-20 rule help with?", opts:["Improving your cricket batting average","Reducing eye strain from screen use","Making passwords stronger","Identifying fake news"], ans:1, exp:"Every 20 minutes, look at something 20 feet away for 20 seconds — this reduces digital eye strain significantly!" },
+  { cat:"Screen Time", q:"Why is it not good to use your phone in bed at night?", opts:["Phones are too heavy to hold while lying down","Screen blue light stops your sleep hormone and causes poor sleep","Your parents might see what you are doing","The screen gets too hot"], ans:1, exp:"Blue light from screens suppresses melatonin — your sleep hormone. This makes it harder to fall asleep and leads to poor quality sleep." },
+  { cat:"Scams & Phishing", q:"You receive an email: 'Your Google account will be deleted! Click this link NOW and enter your password!' What should you do?", opts:["Click the link immediately — it looks urgent","Enter your password to save your account","Delete the email and tell a parent — this is a phishing scam","Forward it to friends so they know too"], ans:2, exp:"This is a classic phishing scam! Google never asks for passwords via email. Phishing uses urgency to trick you — always verify with a parent!" },
+  { cat:"Scams & Phishing", q:"An OTP (One Time Password) is:", opts:["A one-time party invitation online","A secret code used to verify your identity — NEVER share it","A type of online game","Your school registration number"], ans:1, exp:"OTP is a one-time verification code. Scammers often call pretending to be from banks asking for OTPs — NEVER share it with anyone!" },
+  { cat:"Digital Wellness", q:"What is a healthy screen time goal for entertainment per day for students?", opts:["No limit — the more the better","At least 8 hours","Maximum 2 hours","Exactly 4.5 hours"], ans:2, exp:"Health experts recommend maximum 2 hours of recreational screen time per day for students — balance with sports, reading, and family time!" },
+];
+
+/* ─────────── STATE ─────────── */
+let current = 0, score = 0, dragMode = false;
+let draggedEl = null, draggedFrom = null;
+let dragAnswer = -1; // index of answer placed
+
+/* ─────────── MODE TOGGLE ─────────── */
+function toggleMode() {
+  dragMode = !dragMode;
+  document.getElementById('modeToggle').classList.toggle('on', dragMode);
+  loadQ();
+}
+
+/* ─────────── LOAD QUESTION ─────────── */
+function loadQ() {
+  const q = questions[current];
+  const card = document.getElementById('qCard');
+  card.style.animation = 'none';
+  void card.offsetWidth;
+  card.style.animation = 'cardSlide 0.5s cubic-bezier(.34,1.56,.64,1) both';
+
+  document.getElementById('qCat').textContent = q.cat;
+  document.getElementById('qText').textContent = (current+1) + '. ' + q.q;
+  document.getElementById('qNumLabel').textContent = current + 1;
+  document.getElementById('pctLabel').textContent = Math.round(current/8*100) + '%';
+  document.getElementById('progressBar').style.width = (current/8*100) + '%';
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('nextBtn').style.display = 'none';
+  document.getElementById('btnCheckDrag').style.display = 'none';
+
+  if (dragMode) {
+    document.getElementById('dragUI').style.display = 'block';
+    document.getElementById('opts').style.display = 'none';
+    buildDragUI(q);
+  } else {
+    document.getElementById('dragUI').style.display = 'none';
+    document.getElementById('opts').style.display = 'flex';
+    buildClickUI(q);
+  }
+}
+
+/* ─────────── CLICK UI ─────────── */
+function buildClickUI(q) {
+  const opts = document.getElementById('opts');
+  opts.innerHTML = '';
+  q.opts.forEach((o, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.style.animationDelay = (i * 0.08) + 's';
+    btn.innerHTML = `<span style="display:inline-block;width:24px;height:24px;background:linear-gradient(135deg,#2E86AB,#27AE60);border-radius:50%;color:#fff;font-size:11px;font-weight:900;text-align:center;line-height:24px;margin-right:8px;flex-shrink:0">${['A','B','C','D'][i]}</span>${o}`;
+    btn.onclick = () => handleClickAns(i === q.ans, q.exp, btn, q);
+    opts.appendChild(btn);
+  });
+}
+
+function handleClickAns(isCorrect, exp, btn, q) {
+  document.querySelectorAll('.opt').forEach(b => b.disabled = true);
+  const fb = document.getElementById('feedback');
+  if (isCorrect) {
+    btn.classList.add('correct');
+    fb.className = 'feedback good';
+    fb.textContent = '✅ ' + exp;
+    score++;
+    document.getElementById('scoreVal').textContent = score;
+    spawnParticles(btn);
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback bad';
+    fb.textContent = '❌ ' + exp;
+    document.querySelectorAll('.opt')[q.ans].classList.add('correct');
+  }
+  document.getElementById('nextBtn').style.display = 'inline-block';
+}
+
+/* ─────────── DRAG & DROP UI ─────────── */
+function buildDragUI(q) {
+  dragAnswer = -1;
+  const zone = document.getElementById('dragZone');
+  const pool = document.getElementById('optionsPool');
+  zone.innerHTML = '';
+  pool.innerHTML = '';
+
+  // One drop slot (the answer slot)
+  const slot = document.createElement('div');
+  slot.className = 'drop-target';
+  slot.dataset.slot = '0';
+  slot.innerHTML = `<span class="drop-label">✔</span><span class="drop-placeholder">Drop your answer here…</span>`;
+  zone.appendChild(slot);
+
+  // Drag events on slot
+  slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('drag-over'); });
+  slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
+  slot.addEventListener('drop', e => {
+    e.preventDefault();
+    slot.classList.remove('drag-over');
+    if (!draggedEl) return;
+    // Remove existing chip if any
+    const existing = slot.querySelector('.dropped-chip');
+    if (existing) {
+      pool.appendChild(existing);
+      existing.classList.remove('dropped-chip');
+      existing.classList.add('draggable-opt');
+      attachDragHandlers(existing);
+    }
+    dragAnswer = parseInt(draggedEl.dataset.idx);
+    draggedEl.classList.remove('draggable-opt');
+    draggedEl.classList.add('dropped-chip');
+    draggedEl.draggable = true;
+    slot.querySelector('.drop-placeholder') && slot.querySelector('.drop-placeholder').remove();
+    slot.classList.add('filled');
+    slot.appendChild(draggedEl);
+    draggedEl = null;
+
+    // Show check button
+    document.getElementById('btnCheckDrag').style.display = 'block';
+  });
+
+  // Pool drag events
+  pool.addEventListener('dragover', e => { e.preventDefault(); pool.classList.add('drag-over'); });
+  pool.addEventListener('dragleave', () => pool.classList.remove('drag-over'));
+  pool.addEventListener('drop', e => {
+    e.preventDefault();
+    pool.classList.remove('drag-over');
+    if (!draggedEl) return;
+    // Return chip to pool
+    draggedEl.classList.remove('dropped-chip');
+    draggedEl.classList.add('draggable-opt');
+    pool.appendChild(draggedEl);
+    attachDragHandlers(draggedEl);
+    dragAnswer = -1;
+    draggedEl = null;
+    // Restore placeholder
+    if (!slot.querySelector('.dropped-chip')) {
+      slot.classList.remove('filled');
+      slot.innerHTML = `<span class="drop-label">✔</span><span class="drop-placeholder">Drop your answer here…</span>`;
+      reattachSlotDrop(slot, pool, q);
+    }
+    document.getElementById('btnCheckDrag').style.display = 'none';
+  });
+
+  // Shuffle options
+  const indices = [0,1,2,3].sort(() => Math.random()-0.5);
+  indices.forEach((idx, delay) => {
+    const chip = document.createElement('div');
+    chip.className = 'draggable-opt';
+    chip.dataset.idx = idx;
+    chip.style.animationDelay = (delay * 0.1) + 's';
+    chip.textContent = q.opts[idx];
+    chip.draggable = true;
+    attachDragHandlers(chip);
+    pool.appendChild(chip);
+  });
+}
+
+function attachDragHandlers(el) {
+  el.addEventListener('dragstart', e => {
+    draggedEl = el;
+    el.classList.add('dragging');
+    setTimeout(() => el.style.opacity = '0.4', 0);
+  });
+  el.addEventListener('dragend', () => {
+    el.classList.remove('dragging');
+    el.style.opacity = '';
+    draggedEl = null;
+  });
+}
+
+function reattachSlotDrop(slot, pool, q) {
+  slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('drag-over'); });
+  slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
+  slot.addEventListener('drop', e => {
+    e.preventDefault();
+    slot.classList.remove('drag-over');
+    if (!draggedEl) return;
+    dragAnswer = parseInt(draggedEl.dataset.idx);
+    draggedEl.classList.remove('draggable-opt');
+    draggedEl.classList.add('dropped-chip');
+    slot.querySelector('.drop-placeholder') && slot.querySelector('.drop-placeholder').remove();
+    slot.classList.add('filled');
+    slot.appendChild(draggedEl);
+    draggedEl = null;
+    document.getElementById('btnCheckDrag').style.display = 'block';
+  });
+}
+
+function checkDragAnswer() {
+  const q = questions[current];
+  const fb = document.getElementById('feedback');
+  const slot = document.getElementById('dragZone').querySelector('.drop-target');
+  const chip = slot.querySelector('.dropped-chip');
+
+  document.getElementById('btnCheckDrag').style.display = 'none';
+  document.querySelectorAll('.draggable-opt').forEach(el => el.draggable = false);
+  if (chip) chip.draggable = false;
+
+  if (dragAnswer === q.ans) {
+    chip.style.background = 'linear-gradient(135deg,#27AE60,#1e8a4b)';
+    slot.style.borderColor = '#27AE60';
+    slot.style.background = '#e8fce8';
+    fb.className = 'feedback good';
+    fb.textContent = '✅ ' + q.exp;
+    score++;
+    document.getElementById('scoreVal').textContent = score;
+    spawnParticles(slot);
+  } else {
+    if (chip) {
+      chip.style.background = 'linear-gradient(135deg,#E74C3C,#c0392b)';
+    }
+    slot.style.borderColor = '#E74C3C';
+    slot.style.background = '#fff0f0';
+    fb.className = 'feedback bad';
+    fb.textContent = '❌ ' + q.exp;
+    // Highlight correct in pool
+    document.querySelectorAll('.draggable-opt').forEach(el => {
+      if (parseInt(el.dataset.idx) === q.ans) {
+        el.style.background = 'linear-gradient(135deg,#C8F7DC,#a8f0cc)';
+        el.style.borderColor = '#27AE60';
+        el.style.color = '#1B5E20';
+      }
+    });
+  }
+  document.getElementById('nextBtn').style.display = 'inline-block';
+}
+
+/* ─────────── PARTICLES ON CORRECT ─────────── */
+function spawnParticles(el) {
+  const rect = el.getBoundingClientRect();
+  const cx = rect.left + rect.width/2, cy = rect.top + rect.height/2;
+  const colors = ['#27AE60','#F5C842','#2E86AB','#E07B39','#fff'];
+  for (let i = 0; i < 16; i++) {
+    const p = document.createElement('div');
+    const angle = (i/16)*Math.PI*2;
+    const dist = 40 + Math.random()*60;
+    p.style.cssText = `
+      position:fixed;width:8px;height:8px;border-radius:50%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      left:${cx}px;top:${cy}px;pointer-events:none;z-index:1000;
+      transition:transform 0.6s cubic-bezier(.34,1.56,.64,1), opacity 0.6s;
+      opacity:1;
+    `;
+    document.body.appendChild(p);
+    requestAnimationFrame(() => {
+      p.style.transform = `translate(${Math.cos(angle)*dist}px,${Math.sin(angle)*dist}px) scale(0)`;
+      p.style.opacity = '0';
+    });
+    setTimeout(() => p.remove(), 700);
+  }
+}
+
+/* ─────────── NEXT / RESULT ─────────── */
+function nextQ() {
+  current++;
+  if (current < questions.length) loadQ();
+  else showResult();
+}
+
+function showResult() {
+  document.getElementById('gameArea').style.display = 'none';
+  const rs = document.getElementById('resultScreen');
+  rs.style.display = 'block';
+  document.getElementById('resScore').textContent = score + '/8';
+  document.getElementById('progressBar').style.width = '100%';
+  document.getElementById('pctLabel').textContent = '100%';
+  if (score >= 7) {
+    document.getElementById('resEmoji').textContent = '🏆';
+    document.getElementById('resTitle').textContent = 'Digital Champion!';
+    document.getElementById('resSub').textContent = 'Outstanding! You are a true digital citizen!';
+    document.getElementById('stars').textContent = '⭐⭐⭐⭐⭐';
+    showConfetti();
+  } else if (score >= 5) {
+    document.getElementById('resEmoji').textContent = '🎉';
+    document.getElementById('resTitle').textContent = 'Great Work!';
+    document.getElementById('resSub').textContent = 'You are almost a digital champion!';
+    document.getElementById('stars').textContent = '⭐⭐⭐⭐';
+  } else {
+    document.getElementById('resEmoji').textContent = '💡';
+    document.getElementById('resTitle').textContent = 'Keep Learning!';
+    document.getElementById('resSub').textContent = 'Review the slides and try again — you can do it!';
+    document.getElementById('stars').textContent = '⭐⭐⭐';
+  }
+}
+
+function showConfetti() {
+  const c = document.getElementById('confetti');
+  c.style.display = 'block';
+  const colors = ['#27AE60','#2E86AB','#E07B39','#F5C842','#7B4FBF','#E74C3C'];
+  for (let i = 0; i < 80; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.cssText = `
+      left:${Math.random()*100}vw;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      animation-duration:${Math.random()*2+2}s;
+      animation-delay:${Math.random()*1.5}s;
+      width:${6+Math.random()*10}px;height:${6+Math.random()*10}px;
+      transform:rotate(${Math.random()*360}deg);
+    `;
+    c.appendChild(piece);
+  }
+  setTimeout(() => { c.style.display = 'none'; c.innerHTML = ''; }, 5000);
+}
+
+function restart() {
+  current = 0; score = 0; dragAnswer = -1;
+  document.getElementById('scoreVal').textContent = 0;
+  document.getElementById('gameArea').style.display = 'block';
+  document.getElementById('resultScreen').style.display = 'none';
+  document.getElementById('progressBar').style.width = '0%';
+  loadQ();
+}
+
+/* ─────────── INIT ─────────── */
+initBackground();
+loadQ();
+</script>
+</body>
+</html>

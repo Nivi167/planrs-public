@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Internet True/False Rapid Fire!</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Baloo+2:wght@600;700;800&display=swap');
+
+:root {
+  --green: #00D67F;
+  --red: #FF4E6A;
+  --blue: #3B7BFF;
+  --yellow: #FFD000;
+  --purple: #A855F7;
+  --orange: #FF8C00;
+  --pink: #FF5EBD;
+  --bg: #0D0B2B;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ── Starry animated background ── */
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── Floating emoji objects ── */
+.floater {
+  position: fixed;
+  font-size: 2rem;
+  animation: floatUp linear infinite;
+  pointer-events: none;
+  z-index: 1;
+  user-select: none;
+}
+@keyframes floatUp {
+  0%   { transform: translateY(110vh) rotate(0deg) scale(1); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateY(-20vh) rotate(360deg) scale(1.2); opacity: 0; }
+}
+
+/* ── Logo ── */
+.planrs-logo {
+  position: fixed; top: 12px; right: 16px;
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 14px; font-weight: 800; color: #fff;
+  background: linear-gradient(135deg, #3B7BFF, #A855F7);
+  padding: 5px 14px; border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(59,123,255,0.5);
+  z-index: 100;
+}
+
+/* ── Title ── */
+h1 {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: clamp(24px,5vw,38px);
+  font-weight: 800;
+  background: linear-gradient(90deg, #FFD000, #FF5EBD, #3B7BFF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 52px 0 4px;
+  text-align: center;
+  position: relative; z-index: 2;
+  animation: titlePop 0.6s cubic-bezier(0.34,1.56,0.64,1);
+  filter: drop-shadow(0 0 20px rgba(255,208,0,0.4));
+}
+@keyframes titlePop { from{transform:scale(0.5) rotate(-5deg);opacity:0} to{transform:scale(1) rotate(0deg);opacity:1} }
+
+.subtitle {
+  color: rgba(255,255,255,0.65);
+  font-size: 15px; margin-bottom: 20px;
+  text-align: center; position: relative; z-index: 2;
+  letter-spacing: 1px;
+}
+
+/* ── Stats ── */
+.stats-row {
+  display: flex; gap: 14px; margin-bottom: 18px;
+  flex-wrap: wrap; justify-content: center;
+  position: relative; z-index: 2;
+}
+.stat-box {
+  background: rgba(255,255,255,0.07);
+  border: 2px solid rgba(255,255,255,0.12);
+  border-radius: 18px; padding: 12px 22px;
+  text-align: center; min-width: 90px;
+  backdrop-filter: blur(10px);
+  transition: transform 0.2s;
+}
+.stat-box:hover { transform: scale(1.06); }
+.stat-num { font-size: 28px; font-weight: 900; }
+.stat-lbl { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px; text-transform: uppercase; letter-spacing: 1px; }
+.stat-box.score .stat-num { color: var(--green); text-shadow: 0 0 20px var(--green); }
+.stat-box.progress .stat-num { color: var(--blue); text-shadow: 0 0 20px var(--blue); }
+.stat-box.streak .stat-num { color: var(--yellow); text-shadow: 0 0 20px var(--yellow); }
+
+/* ── Progress bar ── */
+.progress-bar-wrap {
+  width: 100%; max-width: 560px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 12px; height: 12px;
+  margin-bottom: 22px; position: relative; z-index: 2;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 12px; border-radius: 12px;
+  background: linear-gradient(90deg, #FFD000, #FF5EBD, #3B7BFF);
+  background-size: 200% 100%;
+  transition: width 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  animation: shimmer 2s linear infinite;
+}
+@keyframes shimmer { 0%{background-position:0% 0%} 100%{background-position:200% 0%} }
+
+/* ── Question card ── */
+.card-area {
+  width: 100%; max-width: 580px;
+  position: relative; z-index: 2;
+  margin-bottom: 22px;
+}
+.question-card {
+  background: rgba(255,255,255,0.06);
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 28px; padding: 36px 28px;
+  text-align: center;
+  backdrop-filter: blur(16px);
+  min-height: 180px;
+  display: flex; flex-direction: column; justify-content: center;
+  animation: cardSlide 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+  position: relative; overflow: hidden;
+}
+.question-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 30% 0%, rgba(59,123,255,0.15) 0%, transparent 60%),
+              radial-gradient(circle at 80% 100%, rgba(168,85,247,0.12) 0%, transparent 60%);
+  pointer-events: none;
+}
+@keyframes cardSlide { from{opacity:0;transform:translateY(30px) scale(0.95)} to{opacity:1;transform:translateY(0) scale(1)} }
+
+.q-number { font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 14px; letter-spacing: 2px; text-transform: uppercase; }
+.q-text { font-size: clamp(16px,3vw,21px); color: #fff; line-height: 1.55; font-weight: 800; }
+
+/* ── DRAG & DROP ZONE ── */
+.drag-instruction {
+  color: rgba(255,255,255,0.5);
+  font-size: 13px; text-align: center;
+  margin-bottom: 10px; position: relative; z-index: 2;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:0.5} 50%{opacity:1} }
+
+.drop-zones {
+  display: flex; gap: 20px; justify-content: center;
+  max-width: 580px; width: 100%;
+  position: relative; z-index: 2;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.drop-zone {
+  flex: 1; min-width: 140px; max-width: 220px;
+  height: 110px;
+  border-radius: 24px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 6px;
+  font-size: 22px; font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative; overflow: hidden;
+  user-select: none;
+  border: 3px dashed rgba(255,255,255,0.3);
+}
+.drop-zone .zone-emoji { font-size: 32px; transition: transform 0.2s; }
+.drop-zone .zone-label { font-size: 16px; font-weight: 900; letter-spacing: 1px; }
+.drop-zone.true-zone {
+  background: linear-gradient(135deg, rgba(0,214,127,0.15), rgba(0,214,127,0.05));
+  border-color: var(--green);
+  color: var(--green);
+  box-shadow: 0 0 20px rgba(0,214,127,0.2);
+}
+.drop-zone.false-zone {
+  background: linear-gradient(135deg, rgba(255,78,106,0.15), rgba(255,78,106,0.05));
+  border-color: var(--red);
+  color: var(--red);
+  box-shadow: 0 0 20px rgba(255,78,106,0.2);
+}
+.drop-zone:hover, .drop-zone.drag-over {
+  transform: scale(1.07);
+  border-style: solid;
+}
+.drop-zone.true-zone:hover, .drop-zone.true-zone.drag-over {
+  box-shadow: 0 0 40px rgba(0,214,127,0.5);
+  background: rgba(0,214,127,0.2);
+}
+.drop-zone.false-zone:hover, .drop-zone.false-zone.drag-over {
+  box-shadow: 0 0 40px rgba(255,78,106,0.5);
+  background: rgba(255,78,106,0.2);
+}
+.drop-zone:hover .zone-emoji { transform: scale(1.3) rotate(-10deg); }
+.drop-zone:disabled, .drop-zone.answered { opacity: 0.45; pointer-events: none; }
+
+/* Draggable card */
+.drag-card-wrap {
+  position: relative; z-index: 2;
+  display: flex; justify-content: center;
+  margin-bottom: 16px;
+}
+.drag-card {
+  background: linear-gradient(135deg, #FFD000, #FF8C00);
+  color: #1a0a00;
+  border-radius: 20px;
+  padding: 18px 34px;
+  font-size: 18px; font-weight: 900;
+  cursor: grab;
+  box-shadow: 0 8px 30px rgba(255,208,0,0.4), 0 2px 0 rgba(0,0,0,0.3);
+  user-select: none;
+  animation: cardBob 2.5s ease-in-out infinite;
+  transition: transform 0.15s, box-shadow 0.15s;
+  position: relative;
+  letter-spacing: 0.5px;
+}
+.drag-card::before {
+  content: '✋ DRAG ME!';
+  position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
+  font-size: 10px; color: rgba(255,255,255,0.5);
+  letter-spacing: 2px; white-space: nowrap;
+}
+.drag-card:active { cursor: grabbing; transform: scale(1.08) rotate(2deg); box-shadow: 0 16px 50px rgba(255,208,0,0.6); }
+@keyframes cardBob { 0%,100%{transform:translateY(0) rotate(-1deg)} 50%{transform:translateY(-8px) rotate(1deg)} }
+.drag-card.dragging { opacity: 0.4; }
+
+/* Or tap buttons */
+.or-divider {
+  color: rgba(255,255,255,0.35); text-align: center;
+  font-size: 13px; margin-bottom: 12px;
+  position: relative; z-index: 2;
+  letter-spacing: 2px;
+}
+.tap-btns {
+  display: flex; gap: 12px; justify-content: center;
+  position: relative; z-index: 2;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.tap-btn {
+  padding: 12px 28px;
+  border: none; border-radius: 50px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px; font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  letter-spacing: 0.5px;
+}
+.tap-btn:hover { transform: scale(1.08); }
+.tap-btn.true-tap {
+  background: var(--green); color: #fff;
+  box-shadow: 0 6px 20px rgba(0,214,127,0.4);
+}
+.tap-btn.false-tap {
+  background: var(--red); color: #fff;
+  box-shadow: 0 6px 20px rgba(255,78,106,0.4);
+}
+.tap-btn:disabled { opacity: 0.4; cursor: default; transform: none; }
+
+/* ── Feedback ── */
+.feedback-card {
+  border-radius: 20px; padding: 18px 22px;
+  text-align: center; max-width: 560px; width: 100%;
+  font-size: 15px; line-height: 1.55; font-weight: 700;
+  display: none;
+  position: relative; z-index: 2;
+  margin-bottom: 14px;
+  animation: popBounce 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+.feedback-card.correct {
+  background: linear-gradient(135deg, rgba(0,214,127,0.2), rgba(0,214,127,0.1));
+  border: 2px solid var(--green); color: #00ffaa;
+  box-shadow: 0 0 30px rgba(0,214,127,0.3);
+  display: block;
+}
+.feedback-card.wrong {
+  background: linear-gradient(135deg, rgba(255,78,106,0.2), rgba(255,78,106,0.1));
+  border: 2px solid var(--red); color: #ff8fa0;
+  box-shadow: 0 0 30px rgba(255,78,106,0.3);
+  display: block;
+}
+@keyframes popBounce { 0%{transform:scale(0.7) rotate(-3deg);opacity:0} 60%{transform:scale(1.06) rotate(1deg)} 100%{transform:scale(1) rotate(0deg);opacity:1} }
+
+/* ── Next button ── */
+.next-btn {
+  background: linear-gradient(135deg, #3B7BFF, #A855F7);
+  color: #fff; border: none; border-radius: 50px;
+  padding: 14px 36px; font-size: 16px; font-weight: 900;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer; display: none;
+  position: relative; z-index: 2;
+  margin-bottom: 20px;
+  box-shadow: 0 6px 25px rgba(59,123,255,0.4);
+  animation: nextPop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  transition: transform 0.15s;
+  letter-spacing: 0.5px;
+}
+.next-btn:hover { transform: scale(1.08); }
+@keyframes nextPop { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
+
+/* ── Result panel ── */
+.result-panel {
+  display: none; text-align: center;
+  background: rgba(255,255,255,0.06);
+  border: 2px solid rgba(255,255,255,0.12);
+  border-radius: 30px; padding: 44px 28px;
+  max-width: 500px; width: 100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  position: relative; z-index: 2;
+  margin-top: 16px;
+  backdrop-filter: blur(20px);
+}
+.result-panel.show { display: block; animation: resultIn 0.6s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes resultIn { from{transform:scale(0.6) rotate(-5deg);opacity:0} to{transform:scale(1) rotate(0);opacity:1} }
+.result-emoji { font-size: 72px; margin-bottom: 14px; animation: spin 1.5s ease-out; }
+@keyframes spin { 0%{transform:rotate(-30deg) scale(0.5)} 60%{transform:rotate(10deg) scale(1.2)} 100%{transform:rotate(0) scale(1)} }
+.result-title { font-family: 'Baloo 2', sans-serif; font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+.result-sub { font-size: 15px; color: rgba(255,255,255,0.65); margin-bottom: 28px; line-height: 1.5; }
+.btn-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.btn {
+  padding: 13px 28px; border: none; border-radius: 50px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px; font-weight: 900;
+  cursor: pointer; transition: transform 0.15s;
+}
+.btn:hover { transform: scale(1.08); }
+.btn-retry { background: var(--yellow); color: #1a0a00; box-shadow: 0 4px 20px rgba(255,208,0,0.4); }
+.btn-next { background: var(--green); color: #fff; box-shadow: 0 4px 20px rgba(0,214,127,0.4); }
+
+/* ── Confetti burst ── */
+.confetti-piece {
+  position: fixed;
+  width: 10px; height: 10px;
+  border-radius: 2px;
+  animation: confettiFall 1.2s ease-out forwards;
+  pointer-events: none;
+  z-index: 999;
+}
+@keyframes confettiFall {
+  0%   { transform: translate(0,0) rotate(0deg) scale(1); opacity: 1; }
+  100% { transform: translate(var(--tx),var(--ty)) rotate(var(--rot)) scale(0.3); opacity: 0; }
+}
+
+/* ── Wrong shake ── */
+.shake { animation: shake 0.5s cubic-bezier(0.36,0.07,0.19,0.97); }
+@keyframes shake {
+  10%,90%{transform:translate3d(-3px,0,0)}
+  20%,80%{transform:translate3d(4px,0,0)}
+  30%,50%,70%{transform:translate3d(-6px,0,0)}
+  40%,60%{transform:translate3d(6px,0,0)}
+}
+
+/* ── Score pop animation ── */
+.score-pop { animation: scorePop 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes scorePop { 0%{transform:scale(1.5);color:#FFD000} 100%{transform:scale(1)} }
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<div class="planrs-logo">⭐ Planrs</div>
+
+<h1>⚡ Internet True or False?</h1>
+<p class="subtitle">Section 1 — Rapid Fire Challenge! 🚀</p>
+
+<div class="stats-row">
+  <div class="stat-box score"><div class="stat-num" id="scoreVal">0</div><div class="stat-lbl">Score</div></div>
+  <div class="stat-box progress"><div class="stat-num" id="qNum">1/10</div><div class="stat-lbl">Question</div></div>
+  <div class="stat-box streak"><div class="stat-num" id="streakVal">🔥 0</div><div class="stat-lbl">Streak</div></div>
+</div>
+
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar" style="width:0%"></div></div>
+
+<div class="card-area">
+  <div class="question-card" id="questionCard">
+    <div class="q-number" id="qNumberText">QUESTION 1 OF 10</div>
+    <div class="q-text" id="qText">Loading...</div>
+  </div>
+</div>
+
+<p class="drag-instruction">👆 Tap a button — or drag the card below to your answer!</p>
+
+<!-- Draggable card -->
+<div class="drag-card-wrap">
+  <div class="drag-card" id="dragCard" draggable="true">🃏 MY ANSWER</div>
+</div>
+
+<!-- Drop zones -->
+<div class="drop-zones">
+  <div class="drop-zone true-zone" id="trueZone">
+    <span class="zone-emoji">✅</span>
+    <span class="zone-label">TRUE</span>
+  </div>
+  <div class="drop-zone false-zone" id="falseZone">
+    <span class="zone-emoji">❌</span>
+    <span class="zone-label">FALSE</span>
+  </div>
+</div>
+
+<div class="or-divider">— OR TAP —</div>
+
+<!-- Tap buttons -->
+<div class="tap-btns">
+  <button class="tap-btn true-tap" id="trueBtn" onclick="answer(true)">✅ TRUE</button>
+  <button class="tap-btn false-tap" id="falseBtn" onclick="answer(false)">❌ FALSE</button>
+</div>
+
+<div class="feedback-card" id="feedbackCard"></div>
+<button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next Question ➡️</button>
+
+<div class="result-panel" id="resultPanel">
+  <div class="result-emoji" id="resultEmoji"></div>
+  <div class="result-title" id="resultTitle"></div>
+  <div class="result-sub" id="resultSub"></div>
+  <div class="btn-row">
+    <button class="btn btn-retry" onclick="resetGame()">🔄 Try Again</button>
+    <button class="btn btn-next" onclick="alert('Great work! Move on to the next activity! 🎉')">➡️ Next Activity</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════ ANIMATED BACKGROUND ═══════════════════════════ */
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let stars = [], nebulas = [], W, H;
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// Stars
+for (let i = 0; i < 200; i++) {
+  stars.push({
+    x: Math.random(), y: Math.random(),
+    r: Math.random() * 1.8 + 0.3,
+    speed: Math.random() * 0.0003 + 0.0001,
+    hue: Math.random() * 360,
+    phase: Math.random() * Math.PI * 2
+  });
+}
+
+// Nebula blobs
+const nebulaColors = ['rgba(59,123,255,0.06)','rgba(168,85,247,0.06)','rgba(255,94,189,0.05)','rgba(0,214,127,0.04)'];
+for (let i = 0; i < 6; i++) {
+  nebulas.push({
+    x: Math.random(), y: Math.random(),
+    r: Math.random() * 300 + 150,
+    color: nebulaColors[i % nebulaColors.length],
+    speedX: (Math.random() - 0.5) * 0.00015,
+    speedY: (Math.random() - 0.5) * 0.00015,
+  });
+}
+
+let frame = 0;
+function drawBg() {
+  ctx.clearRect(0, 0, W, H);
+  // Background
+  const grad = ctx.createLinearGradient(0, 0, W, H);
+  grad.addColorStop(0, '#0D0B2B');
+  grad.addColorStop(0.5, '#110D35');
+  grad.addColorStop(1, '#0A1225');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Nebulas
+  nebulas.forEach(n => {
+    n.x += n.speedX; n.y += n.speedY;
+    if (n.x < -0.3) n.x = 1.3;
+    if (n.x > 1.3) n.x = -0.3;
+    if (n.y < -0.3) n.y = 1.3;
+    if (n.y > 1.3) n.y = -0.3;
+    const g = ctx.createRadialGradient(n.x*W, n.y*H, 0, n.x*W, n.y*H, n.r);
+    g.addColorStop(0, n.color);
+    g.addColorStop(1, 'transparent');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(n.x*W, n.y*H, n.r, 0, Math.PI*2);
+    ctx.fill();
+  });
+
+  // Stars
+  stars.forEach(s => {
+    const flicker = 0.5 + 0.5 * Math.sin(frame * s.speed * 100 + s.phase);
+    const alpha = 0.4 + 0.6 * flicker;
+    ctx.beginPath();
+    ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `hsla(${s.hue}, 80%, 90%, ${alpha})`;
+    ctx.fill();
+    // Glow on brighter stars
+    if (s.r > 1.4 && flicker > 0.8) {
+      const g2 = ctx.createRadialGradient(s.x*W, s.y*H, 0, s.x*W, s.y*H, s.r*5);
+      g2.addColorStop(0, `hsla(${s.hue},100%,80%,0.3)`);
+      g2.addColorStop(1, 'transparent');
+      ctx.fillStyle = g2;
+      ctx.beginPath();
+      ctx.arc(s.x*W, s.y*H, s.r*5, 0, Math.PI*2);
+      ctx.fill();
+    }
+  });
+
+  frame++;
+  requestAnimationFrame(drawBg);
+}
+drawBg();
+
+/* ═══════════════════════════ FLOATING EMOJIS ═══════════════════════════ */
+const floatEmojis = ['🌐','💻','📱','🛜','🔌','💡','🚀','⭐','🌟','🎮','📡','🔋','🖥️','📶','✨','🌈','🎯','💫'];
+function spawnFloater() {
+  const el = document.createElement('div');
+  el.className = 'floater';
+  el.textContent = floatEmojis[Math.floor(Math.random() * floatEmojis.length)];
+  el.style.left = (Math.random() * 100) + 'vw';
+  el.style.fontSize = (1.2 + Math.random() * 1.8) + 'rem';
+  const dur = 8 + Math.random() * 12;
+  el.style.animationDuration = dur + 's';
+  el.style.animationDelay = (Math.random() * -dur) + 's';
+  el.style.opacity = (0.2 + Math.random() * 0.3).toString();
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), (dur + 5) * 1000);
+}
+for (let i = 0; i < 18; i++) spawnFloater();
+setInterval(spawnFloater, 2000);
+
+/* ═══════════════════════════ CONFETTI ═══════════════════════════ */
+const confettiColors = ['#FFD000','#FF5EBD','#00D67F','#3B7BFF','#A855F7','#FF8C00','#FF4E6A'];
+function burst(x, y, count = 24) {
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    const angle = (Math.PI * 2 / count) * i + Math.random() * 0.5;
+    const dist = 80 + Math.random() * 120;
+    el.style.cssText = `
+      left:${x}px; top:${y}px;
+      background:${confettiColors[i % confettiColors.length]};
+      --tx:${Math.cos(angle)*dist}px;
+      --ty:${Math.sin(angle)*dist - 60}px;
+      --rot:${Math.random()*720 - 360}deg;
+      border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
+      width:${6+Math.random()*8}px;
+      height:${6+Math.random()*8}px;
+    `;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1300);
+  }
+}
+
+/* ═══════════════════════════ GAME LOGIC ═══════════════════════════ */
+const questions = [
+  { q: "The Internet is a single giant computer that stores all the world's information.", ans: false, explain: "The Internet is a NETWORK of millions of computers connected together — not just one computer!" },
+  { q: "India has one of the cheapest Internet data rates in the world.", ans: true, explain: "Thanks to companies like Jio, India has some of the most affordable mobile data globally." },
+  { q: "Data packets always travel by the same route from sender to receiver.", ans: false, explain: "Data packets can take different routes — like different roads on a city map — and reassemble at the destination." },
+  { q: "You need expensive equipment to start an online mini business.", ans: false, explain: "A basic smartphone with Internet access is enough to start a mini business on WhatsApp or Instagram!" },
+  { q: "WiFi and mobile data (4G) are both ways to connect to the Internet.", ans: true, explain: "WiFi uses a router wirelessly, while mobile data uses your SIM card — both give you Internet access." },
+  { q: "A web browser is the same as the Internet.", ans: false, explain: "A browser (like Chrome or Firefox) is just an APP you use to access the Internet — the Internet itself is the network." },
+  { q: "A server is a powerful computer that stores websites and sends them to your device.", ans: true, explain: "When you visit a website, the server sends all the files to your device almost instantly." },
+  { q: "The Internet was invented in India.", ans: false, explain: "The Internet was developed in the USA in the 1960s as a military project called ARPANET — but India uses it a LOT now!" },
+  { q: "WhatsApp, Instagram, and YouTube all work using the Internet.", ans: true, explain: "All apps that connect you with others or show online content require the Internet to function." },
+  { q: "Even people in small Indian towns and villages can access the Internet today.", ans: true, explain: "With affordable mobile data plans and expanding 4G/5G networks, Internet access is reaching every corner of India." },
+];
+
+let current = 0, score = 0, streak = 0, answered = false;
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+let shuffled = shuffle(questions);
+
+function loadQ() {
+  if (current >= shuffled.length) { showResult(); return; }
+  answered = false;
+  const q = shuffled[current];
+  document.getElementById('qText').textContent = q.q;
+  document.getElementById('qNumberText').textContent = 'QUESTION ' + (current+1) + ' OF ' + shuffled.length;
+  document.getElementById('qNum').textContent = (current+1) + '/' + shuffled.length;
+  document.getElementById('progressBar').style.width = ((current / shuffled.length) * 100) + '%';
+  document.getElementById('feedbackCard').className = 'feedback-card';
+  document.getElementById('nextBtn').style.display = 'none';
+  document.getElementById('trueBtn').disabled = false;
+  document.getElementById('falseBtn').disabled = false;
+  document.getElementById('trueZone').classList.remove('answered');
+  document.getElementById('falseZone').classList.remove('answered');
+  document.getElementById('dragCard').classList.remove('dragging');
+  document.getElementById('dragCard').style.opacity = '1';
+  // Re-animate card
+  const card = document.getElementById('questionCard');
+  card.style.animation = 'none';
+  requestAnimationFrame(() => card.style.animation = 'cardSlide 0.4s cubic-bezier(0.34,1.56,0.64,1)');
+}
+
+function answer(val) {
+  if (answered) return;
+  answered = true;
+  const q = shuffled[current];
+  const fb = document.getElementById('feedbackCard');
+  document.getElementById('trueBtn').disabled = true;
+  document.getElementById('falseBtn').disabled = true;
+  document.getElementById('trueZone').classList.add('answered');
+  document.getElementById('falseZone').classList.add('answered');
+
+  if (val === q.ans) {
+    score += 10; streak++;
+    const prefixes = ['🌟 Correct! ', '⭐ Amazing! ', '🎉 Brilliant! ', '🏆 Superstar! '];
+    fb.className = 'feedback-card correct';
+    fb.textContent = prefixes[Math.floor(Math.random()*prefixes.length)] + q.explain;
+    // Confetti burst from center of screen
+    burst(window.innerWidth/2, window.innerHeight*0.4, 30);
+    // Highlight correct zone
+    const zone = val ? document.getElementById('trueZone') : document.getElementById('falseZone');
+    zone.style.transform = 'scale(1.15)';
+    zone.style.borderStyle = 'solid';
+    setTimeout(() => zone.style.transform = '', 600);
+  } else {
+    streak = 0;
+    fb.className = 'feedback-card wrong';
+    fb.textContent = '❌ Not quite! ' + q.explain;
+    // Shake the card
+    const card = document.getElementById('questionCard');
+    card.classList.add('shake');
+    setTimeout(() => card.classList.remove('shake'), 600);
+  }
+
+  // Animate score
+  const sv = document.getElementById('scoreVal');
+  sv.textContent = score;
+  sv.classList.add('score-pop');
+  setTimeout(() => sv.classList.remove('score-pop'), 400);
+  document.getElementById('streakVal').textContent = '🔥 ' + streak;
+  document.getElementById('nextBtn').style.display = 'inline-block';
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= shuffled.length) showResult();
+  else loadQ();
+}
+
+function showResult() {
+  document.querySelector('.card-area').style.display = 'none';
+  document.querySelector('.drag-card-wrap').style.display = 'none';
+  document.querySelector('.drop-zones').style.display = 'none';
+  document.querySelector('.tap-btns').style.display = 'none';
+  document.querySelector('.drag-instruction').style.display = 'none';
+  document.querySelector('.or-divider').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'none';
+  document.getElementById('feedbackCard').className = 'feedback-card';
+  const pct = Math.round((score / (shuffled.length * 10)) * 100);
+  const p = document.getElementById('resultPanel');
+  p.classList.add('show');
+  const emojis   = pct >= 80 ? '🏆' : pct >= 60 ? '😊' : '📚';
+  const titles   = pct >= 80 ? "You're an Internet Expert!" : pct >= 60 ? 'Good Job!' : 'Keep Practising!';
+  const subs     = pct >= 80 ? `Fantastic score of ${score}/${shuffled.length*10}! You know the Internet inside out!`
+                 : pct >= 60 ? `Score: ${score}/${shuffled.length*10}. You're getting there — try again to improve!`
+                 : `Score: ${score}/${shuffled.length*10}. Review the section and try again — you've got this!`;
+  document.getElementById('resultEmoji').textContent = emojis;
+  document.getElementById('resultTitle').textContent = titles;
+  document.getElementById('resultSub').textContent = subs;
+  if (pct >= 60) burst(window.innerWidth/2, window.innerHeight/2, 50);
+}
+
+function resetGame() {
+  current = 0; score = 0; streak = 0; answered = false;
+  shuffled = shuffle(questions);
+  document.getElementById('scoreVal').textContent = 0;
+  document.getElementById('streakVal').textContent = '🔥 0';
+  document.getElementById('resultPanel').classList.remove('show');
+  document.querySelector('.card-area').style.display = 'block';
+  document.querySelector('.drag-card-wrap').style.display = 'flex';
+  document.querySelector('.drop-zones').style.display = 'flex';
+  document.querySelector('.tap-btns').style.display = 'flex';
+  document.querySelector('.drag-instruction').style.display = 'block';
+  document.querySelector('.or-divider').style.display = 'block';
+  loadQ();
+}
+
+/* ═══════════════════════════ DRAG & DROP ═══════════════════════════ */
+const dragCard = document.getElementById('dragCard');
+const trueZone = document.getElementById('trueZone');
+const falseZone = document.getElementById('falseZone');
+
+// Desktop drag-and-drop
+dragCard.addEventListener('dragstart', e => {
+  e.dataTransfer.setData('text/plain', 'answer');
+  setTimeout(() => dragCard.classList.add('dragging'), 0);
+});
+dragCard.addEventListener('dragend', () => {
+  dragCard.classList.remove('dragging');
+  dragCard.style.opacity = '1';
+});
+
+[trueZone, falseZone].forEach(zone => {
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    if (!answered) answer(zone === trueZone);
+  });
+  // Also allow click on zones
+  zone.addEventListener('click', () => { if (!answered) answer(zone === trueZone); });
+});
+
+// Touch drag-and-drop (mobile)
+let touchActive = false;
+let ghost = null;
+
+dragCard.addEventListener('touchstart', e => {
+  if (answered) return;
+  touchActive = true;
+  const touch = e.touches[0];
+  ghost = dragCard.cloneNode(true);
+  ghost.style.cssText = `
+    position:fixed; z-index:9999; pointer-events:none;
+    left:${touch.clientX - 60}px; top:${touch.clientY - 25}px;
+    opacity:0.85; transform:rotate(5deg) scale(1.08);
+    transition:none; animation:none;
+    background:linear-gradient(135deg,#FFD000,#FF8C00);
+    color:#1a0a00; border-radius:16px;
+    padding:14px 28px; font-size:16px; font-weight:900;
+    font-family:'Nunito',sans-serif;
+    box-shadow:0 12px 40px rgba(255,208,0,0.5);
+  `;
+  document.body.appendChild(ghost);
+  dragCard.style.opacity = '0.3';
+  e.preventDefault();
+}, { passive: false });
+
+document.addEventListener('touchmove', e => {
+  if (!touchActive || !ghost) return;
+  const touch = e.touches[0];
+  ghost.style.left = (touch.clientX - 60) + 'px';
+  ghost.style.top  = (touch.clientY - 25) + 'px';
+  // Highlight zones
+  const el = document.elementFromPoint(touch.clientX, touch.clientY);
+  [trueZone, falseZone].forEach(z => z.classList.remove('drag-over'));
+  const zone = el?.closest('.drop-zone');
+  if (zone) zone.classList.add('drag-over');
+  e.preventDefault();
+}, { passive: false });
+
+document.addEventListener('touchend', e => {
+  if (!touchActive || !ghost) return;
+  touchActive = false;
+  const touch = e.changedTouches[0];
+  if (ghost) { ghost.remove(); ghost = null; }
+  dragCard.style.opacity = '1';
+  [trueZone, falseZone].forEach(z => z.classList.remove('drag-over'));
+  const el = document.elementFromPoint(touch.clientX, touch.clientY);
+  const zone = el?.closest('.drop-zone');
+  if (zone && !answered) answer(zone === trueZone);
+});
+
+loadQ();
+</script>
+</body>
+</html>

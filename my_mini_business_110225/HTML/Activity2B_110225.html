@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Match Game!</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Poppins:wght@500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 16px 50px;
+  overflow-x: hidden;
+  background: #0f1b35;
+}
+
+/* ── MOVING BACKGROUND ── */
+.bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; background: linear-gradient(135deg,#0f1b35,#1a103d,#0d2240); }
+.bubble { position: absolute; border-radius: 50%; opacity: 0.18; animation: drift linear infinite; }
+@keyframes drift {
+  0%   { transform: translateY(110vh); opacity: 0; }
+  10%  { opacity: 0.18; }
+  90%  { opacity: 0.15; }
+  100% { transform: translateY(-20vh); opacity: 0; }
+}
+.star { position: absolute; background: #fff; border-radius: 50%; animation: twinkle ease-in-out infinite alternate; }
+@keyframes twinkle { from { opacity:0.1; } to { opacity:0.7; } }
+
+/* ── LOGO ── */
+.logo { position:fixed; top:12px; right:14px; z-index:50; font-family:'Baloo 2',cursive; font-size:14px; color:#fff; background:rgba(99,102,241,0.85); padding:4px 14px; border-radius:20px; box-shadow:0 2px 12px rgba(99,102,241,0.5); }
+
+/* ── HEADER ── */
+.header { position:relative; z-index:2; text-align:center; margin-top:44px; margin-bottom:6px; }
+h1 { font-family:'Baloo 2',cursive; font-size:clamp(22px,5vw,36px); color:#fff; text-shadow:0 0 40px rgba(167,139,250,0.7); }
+.subtitle { color:rgba(255,255,255,0.5); font-size:13px; margin-top:2px; }
+
+/* ── SCORE BAR ── */
+.score-bar { position:relative; z-index:2; display:flex; gap:12px; margin:14px 0 12px; flex-wrap:wrap; justify-content:center; }
+.score-pill { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); border-radius:50px; padding:8px 20px; display:flex; align-items:center; gap:8px; }
+.score-pill .num { font-family:'Baloo 2',cursive; font-size:22px; color:#fbbf24; line-height:1; }
+.score-pill .lbl { font-size:12px; color:rgba(255,255,255,0.5); }
+
+/* ── HINT ── */
+.hint { position:relative; z-index:2; background:rgba(251,191,36,0.1); border:1px solid rgba(251,191,36,0.35); border-radius:14px; padding:10px 18px; font-size:13px; color:rgba(255,255,255,0.85); text-align:center; max-width:500px; margin-bottom:20px; line-height:1.6; }
+.hint strong { color:#fbbf24; }
+
+/* ── TWO COLUMNS ── */
+.columns {
+  position: relative; z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  max-width: 600px;
+  width: 100%;
+}
+@media (max-width: 500px) { .columns { gap: 10px; } }
+
+.col-title {
+  font-family: 'Baloo 2', cursive;
+  font-size: 15px;
+  color: rgba(255,255,255,0.7);
+  text-align: center;
+  margin-bottom: 10px;
+  letter-spacing: 0.3px;
+}
+
+/* ── ICON CARDS ── */
+.icon-col { display: flex; flex-direction: column; gap: 10px; }
+.icon-card {
+  background: linear-gradient(145deg,#4f46e5,#7c3aed);
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 18px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  cursor: pointer;
+  transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+  box-shadow: 0 4px 16px rgba(79,70,229,0.3);
+  animation: popIn 0.4s ease backwards;
+  user-select: none;
+}
+.icon-card:hover { transform: scale(1.06); box-shadow: 0 6px 24px rgba(167,139,250,0.5); }
+.icon-card.selected {
+  border-color: #fbbf24;
+  box-shadow: 0 0 0 3px rgba(251,191,36,0.5), 0 6px 20px rgba(251,191,36,0.3);
+  transform: scale(1.08);
+}
+.icon-card.matched {
+  background: linear-gradient(145deg,#059669,#10b981);
+  border-color: #34d399;
+  cursor: default;
+  animation: matchPop 0.4s ease forwards;
+}
+.icon-card.wrong {
+  border-color: #f87171;
+  animation: wrongShake 0.38s ease;
+}
+
+/* ── DESC CARDS ── */
+.desc-col { display: flex; flex-direction: column; gap: 10px; }
+.desc-card {
+  background: rgba(255,255,255,0.07);
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 18px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+  text-align: center;
+  cursor: pointer;
+  line-height: 1.4;
+  transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s, background 0.18s;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  animation: popIn 0.4s ease backwards;
+  user-select: none;
+}
+@media (max-width:400px) { .desc-card { font-size:10px; padding:0 10px; } }
+.desc-card:hover { background:rgba(255,255,255,0.12); transform:scale(1.03); }
+.desc-card.selected {
+  border-color: #fbbf24;
+  background: rgba(251,191,36,0.1);
+  box-shadow: 0 0 0 3px rgba(251,191,36,0.4);
+  transform: scale(1.04);
+}
+.desc-card.matched {
+  background: rgba(16,185,129,0.2);
+  border-color: #34d399;
+  color: #a7f3d0;
+  cursor: default;
+  animation: matchPop 0.4s ease forwards;
+}
+.desc-card.wrong {
+  border-color: #f87171;
+  background: rgba(248,113,113,0.1);
+  animation: wrongShake 0.38s ease;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes popIn { from{opacity:0;transform:scale(0.6)} to{opacity:1;transform:scale(1)} }
+@keyframes matchPop { 0%{transform:scale(1)} 40%{transform:scale(1.12)} 70%{transform:scale(0.96)} 100%{transform:scale(1)} }
+@keyframes wrongShake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-7px)} 75%{transform:translateX(7px)} }
+
+/* ── FEEDBACK ── */
+.feedback { position:relative; z-index:2; font-family:'Baloo 2',cursive; font-size:20px; text-align:center; min-height:32px; margin:16px 0 4px; transition:opacity 0.3s; }
+
+/* ── BUTTON ── */
+.btn-row { position:relative; z-index:2; margin-top:16px; }
+.btn { font-family:'Baloo 2',cursive; font-size:16px; padding:12px 32px; border:none; border-radius:50px; cursor:pointer; background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff; box-shadow:0 4px 18px rgba(245,158,11,0.4); transition:transform 0.15s; }
+.btn:hover { transform:scale(1.07); }
+.btn:active { transform:scale(0.96); }
+
+/* ── WIN PANEL ── */
+.win-panel { display:none; position:relative; z-index:2; background:rgba(255,255,255,0.08); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,0.2); border-radius:26px; padding:34px 28px; text-align:center; max-width:400px; width:100%; margin-top:24px; animation:panelSlide 0.5s ease; }
+@keyframes panelSlide { from{opacity:0;transform:translateY(30px) scale(0.9)} to{opacity:1;transform:translateY(0) scale(1)} }
+.win-panel.show { display:block; }
+.win-emoji { font-size:64px; animation:wiggleWin 1s ease infinite alternate; }
+@keyframes wiggleWin { from{transform:rotate(-8deg)} to{transform:rotate(8deg)} }
+.win-title { font-family:'Baloo 2',cursive; font-size:28px; color:#fbbf24; margin:10px 0 6px; text-shadow:0 0 20px rgba(251,191,36,0.5); }
+.win-sub { color:rgba(255,255,255,0.75); font-size:14px; line-height:1.6; }
+.win-btns { display:flex; gap:10px; justify-content:center; margin-top:18px; flex-wrap:wrap; }
+.btn-green { font-family:'Baloo 2',cursive; font-size:15px; padding:11px 26px; border:none; border-radius:50px; color:#fff; cursor:pointer; background:linear-gradient(135deg,#10b981,#059669); box-shadow:0 4px 16px rgba(16,185,129,0.4); transition:transform 0.15s; }
+.btn-green:hover { transform:scale(1.07); }
+
+/* ── CONFETTI ── */
+.confetti-wrap { position:fixed; inset:0; pointer-events:none; z-index:999; }
+.dot { position:absolute; top:0; animation:fall linear forwards; opacity:0; }
+@keyframes fall { 0%{opacity:1;transform:translateY(0) rotate(0deg)} 100%{opacity:0;transform:translateY(105vh) rotate(540deg)} }
+</style>
+</head>
+<body>
+
+<div class="bg" id="bg"></div>
+<div class="confetti-wrap" id="confetti"></div>
+<div class="logo">⭐ Planrs</div>
+
+<div class="header">
+  <h1>🎯 Business Match!</h1>
+  <p class="subtitle">Section 2 — Match emoji to description</p>
+</div>
+
+<div class="score-bar">
+  <div class="score-pill"><span class="num" id="movNum">0</span><span class="lbl">Tries</span></div>
+  <div class="score-pill"><span class="num" id="matNum">0/8</span><span class="lbl">Matched</span></div>
+  <div class="score-pill"><span class="num" id="scrNum">0</span><span class="lbl">Score</span></div>
+</div>
+
+<div class="hint">👆 <strong>Step 1:</strong> Tap an emoji on the left &nbsp;→&nbsp; <strong>Step 2:</strong> Tap its matching description on the right!</div>
+
+<div class="columns">
+  <div>
+    <div class="col-title">🎯 Tap Emoji</div>
+    <div class="icon-col" id="iconCol"></div>
+  </div>
+  <div>
+    <div class="col-title">📋 Tap Description</div>
+    <div class="desc-col" id="descCol"></div>
+  </div>
+</div>
+
+<div class="feedback" id="feedback"></div>
+
+<div class="btn-row">
+  <button class="btn" onclick="startGame()">🔄 New Game</button>
+</div>
+
+<div class="win-panel" id="winPanel">
+  <div class="win-emoji">🏆</div>
+  <div class="win-title">You Won!</div>
+  <div class="win-sub" id="winSub"></div>
+  <div class="win-btns">
+    <button class="btn" onclick="startGame()">🔄 Play Again</button>
+    <button class="btn-green" onclick="alert('Great job! Move to Section 3! 🚀')">➡️ Next</button>
+  </div>
+</div>
+
+<script>
+const PAIRS = [
+  { icon:'💬', text:'Message customers & share product photos' },
+  { icon:'📸', text:'Post photos & reach new customers with reels' },
+  { icon:'📲', text:'India\'s instant digital payment — scan QR' },
+  { icon:'🛡️', text:'Use strong passwords & stay safe online' },
+  { icon:'🏪', text:'Resell products in India without stocking any' },
+  { icon:'⭐', text:'Customer feedback that builds your trust' },
+  { icon:'📦', text:'List of products with photos & prices' },
+  { icon:'🔍', text:'Find business ideas & research competitors' },
+];
+
+let selIcon = null, matched = 0, tries = 0, score = 0, busy = false;
+
+/* ── BG ── */
+(function(){
+  const bg = document.getElementById('bg');
+  const cols=['#6366f1','#8b5cf6','#3b82f6','#f59e0b','#10b981','#ec4899'];
+  for(let i=0;i<10;i++){
+    const d=document.createElement('div'); d.className='bubble';
+    const s=80+Math.random()*200;
+    d.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${10+Math.random()*18}s;animation-delay:${Math.random()*14}s;`;
+    bg.appendChild(d);
+  }
+  for(let i=0;i<50;i++){
+    const s=document.createElement('div'); s.className='star';
+    const sz=1.5+Math.random()*2.5;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${1.5+Math.random()*3}s;animation-delay:${Math.random()*4}s;`;
+    bg.appendChild(s);
+  }
+})();
+
+function shuffle(arr){ return [...arr].sort(()=>Math.random()-0.5); }
+
+function startGame(){
+  selIcon=null; matched=0; tries=0; score=0; busy=false;
+  setStats(); setFeedback('','');
+  document.getElementById('winPanel').classList.remove('show');
+
+  const iconCol = document.getElementById('iconCol');
+  const descCol = document.getElementById('descCol');
+  iconCol.innerHTML=''; descCol.innerHTML='';
+
+  const shuffledIcons = shuffle(PAIRS);
+  const shuffledDescs = shuffle(PAIRS);
+
+  shuffledIcons.forEach((p,i)=>{
+    const el=document.createElement('div');
+    el.className='icon-card';
+    el.textContent=p.icon;
+    el.dataset.id=PAIRS.indexOf(p);
+    el.style.animationDelay=(i*0.07)+'s';
+    el.addEventListener('click',()=>clickIcon(el));
+    iconCol.appendChild(el);
+  });
+
+  shuffledDescs.forEach((p,i)=>{
+    const el=document.createElement('div');
+    el.className='desc-card';
+    el.textContent=p.text;
+    el.dataset.id=PAIRS.indexOf(p);
+    el.style.animationDelay=(i*0.07)+'s';
+    el.addEventListener('click',()=>clickDesc(el));
+    descCol.appendChild(el);
+  });
+}
+
+function clickIcon(el){
+  if(busy || el.classList.contains('matched')) return;
+  // deselect previous
+  document.querySelectorAll('.icon-card.selected').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected');
+  selIcon = el;
+  setFeedback('Now tap the matching description! 👉','#a78bfa');
+}
+
+function clickDesc(el){
+  if(busy || el.classList.contains('matched')) return;
+  if(!selIcon){ setFeedback('Tap an emoji first! 👈','#fbbf24'); return; }
+
+  busy=true; tries++;
+  const iconId = parseInt(selIcon.dataset.id);
+  const descId = parseInt(el.dataset.id);
+
+  if(iconId===descId){
+    // ✅ Match
+    selIcon.classList.remove('selected');
+    selIcon.classList.add('matched');
+    el.classList.add('matched');
+    matched++; score+=20; setStats();
+    const msgs=['Great match! 🌟','Perfect! ⭐','Awesome! 🎉','Yes! 💡'];
+    setFeedback(msgs[Math.floor(Math.random()*msgs.length)],'#86efac');
+    selIcon=null; busy=false;
+    if(matched===PAIRS.length) setTimeout(showWin,500);
+  } else {
+    // ❌ Wrong
+    selIcon.classList.add('wrong');
+    el.classList.add('wrong');
+    setFeedback('Oops! Try again 🤔','#fca5a5');
+    setTimeout(()=>{
+      selIcon.classList.remove('selected','wrong');
+      el.classList.remove('wrong');
+      selIcon=null; busy=false;
+    }, 700);
+  }
+  setStats();
+}
+
+function setStats(){
+  document.getElementById('movNum').textContent=tries;
+  document.getElementById('matNum').textContent=matched+'/8';
+  document.getElementById('scrNum').textContent=score;
+}
+
+let fbT;
+function setFeedback(msg,color){
+  const el=document.getElementById('feedback');
+  el.textContent=msg; el.style.color=color; el.style.opacity=1;
+  clearTimeout(fbT);
+  if(msg) fbT=setTimeout(()=>el.style.opacity=0,2200);
+}
+
+function showWin(){
+  confetti();
+  document.getElementById('winSub').textContent=`You matched all 8 pairs in ${tries} tries! Score: ${score} 🚀`;
+  document.getElementById('winPanel').classList.add('show');
+}
+
+function confetti(){
+  const wrap=document.getElementById('confetti'); wrap.innerHTML='';
+  const cols=['#fbbf24','#a78bfa','#34d399','#60a5fa','#f87171','#fff','#f59e0b'];
+  for(let i=0;i<80;i++){
+    const d=document.createElement('div'); d.className='dot';
+    const sz=7+Math.random()*9;
+    d.style.cssText=`left:${Math.random()*100}%;width:${sz}px;height:${sz}px;border-radius:${Math.random()>.4?'50%':'3px'};background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${1.4+Math.random()*2}s;animation-delay:${Math.random()*1.2}s;`;
+    wrap.appendChild(d);
+  }
+  setTimeout(()=>wrap.innerHTML='',4000);
+}
+
+startGame();
+</script>
+</body>
+</html>

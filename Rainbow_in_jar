@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rainbow in a Jar — Pour Activity</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#07102a;
+  --card:rgba(255,255,255,0.07);
+  --border:rgba(255,255,255,0.14);
+}
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--bg);
+  min-height:100vh;
+  color:#fff;
+  overflow-x:hidden;
+  user-select:none;
+}
+
+/* ── STARFIELD ── */
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.orb{position:fixed;border-radius:50%;filter:blur(80px);opacity:.15;pointer-events:none;z-index:0;animation:driftOrb ease-in-out infinite;}
+@keyframes driftOrb{0%,100%{transform:translateY(0)}50%{transform:translateY(-28px)}}
+
+/* ── LAYOUT ── */
+.app{position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:24px 16px 60px;}
+
+/* ── HEADER ── */
+.header{text-align:center;margin-bottom:22px;animation:fadeDown .6s ease both;}
+.badge{display:inline-block;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:20px;padding:5px 18px;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:10px;}
+h1{font-family:'Fredoka One',cursive;font-size:clamp(32px,6vw,60px);line-height:1;background:linear-gradient(120deg,#f87171,#fb923c,#fde047,#4ade80,#60a5fa,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200%;animation:shiftGrad 5s linear infinite;}
+@keyframes shiftGrad{0%{background-position:0%}100%{background-position:200%}}
+.subtitle{font-size:15px;color:rgba(255,255,255,0.5);margin-top:6px;}
+
+@keyframes fadeDown{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+
+/* ── INSTRUCTION BAR ── */
+.instr{
+  background:rgba(255,255,255,0.07);border:1px solid var(--border);border-radius:16px;
+  padding:12px 20px;text-align:center;font-size:15px;font-weight:700;
+  color:rgba(255,255,255,0.8);margin-bottom:22px;min-height:48px;
+  transition:background .4s;animation:fadeDown .6s .1s ease both;
+}
+.instr.correct{background:rgba(74,222,128,.15);border-color:#4ade80;}
+.instr.wrong{background:rgba(248,113,113,.15);border-color:#f87171;animation:shake .4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+/* ── MAIN STAGE ── */
+.stage{
+  display:grid;
+  grid-template-columns:1fr 200px;
+  gap:20px;
+  align-items:start;
+}
+@media(max-width:640px){.stage{grid-template-columns:1fr;}}
+
+/* ── CUPS AREA ── */
+.cups-section{
+  background:var(--card);border:1px solid var(--border);border-radius:24px;
+  padding:24px;backdrop-filter:blur(12px);
+}
+.cups-section h3{font-family:'Fredoka One',cursive;font-size:17px;color:rgba(255,255,255,0.7);margin-bottom:18px;text-align:center;}
+.cups-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+}
+@media(max-width:480px){.cups-grid{grid-template-columns:repeat(2,1fr);}}
+
+/* ── SINGLE CUP ── */
+.cup-item{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  cursor:grab;
+  transition:transform .2s,opacity .3s;
+  position:relative;
+}
+.cup-item:active{cursor:grabbing;}
+.cup-item.used{opacity:.25;cursor:default;pointer-events:none;}
+.cup-item:not(.used):hover{transform:translateY(-4px);}
+.cup-item:not(.used):hover .cup-svg{filter:drop-shadow(0 8px 20px var(--glow));}
+
+.cup-label{font-size:13px;font-weight:800;color:rgba(255,255,255,0.8);}
+.cup-salt{font-size:11px;color:rgba(255,255,255,0.4);font-weight:700;}
+
+/* pour button */
+.pour-btn{
+  margin-top:4px;
+  padding:6px 14px;
+  border-radius:20px;
+  border:1.5px solid rgba(255,255,255,0.2);
+  background:rgba(255,255,255,0.08);
+  color:#fff;
+  font-family:'Nunito',sans-serif;
+  font-weight:800;
+  font-size:12px;
+  cursor:pointer;
+  transition:all .2s;
+  display:flex;align-items:center;gap:5px;
+}
+.pour-btn:hover{background:rgba(255,255,255,0.18);transform:scale(1.05);}
+.pour-btn:active{transform:scale(.96);}
+
+/* ── JAR PANEL ── */
+.jar-panel{
+  background:var(--card);border:1px solid var(--border);border-radius:24px;
+  padding:20px 16px;backdrop-filter:blur(12px);
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+  position:sticky;top:16px;
+}
+.jar-panel h3{font-family:'Fredoka One',cursive;font-size:17px;color:rgba(255,255,255,0.7);}
+
+/* ── JAR SVG WRAPPER ── */
+.jar-svg-wrap{position:relative;width:150px;height:260px;}
+#jar-svg{position:absolute;top:0;left:0;overflow:visible;}
+
+/* ── POUR ANIMATION ── */
+.pour-anim{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  width:18px;
+  border-radius:6px;
+  transform-origin:top;
+  pointer-events:none;
+  z-index:20;
+}
+@keyframes pourDrop{
+  0%{top:-70px;height:0;opacity:1;transform:translateX(-50%) scaleX(1);}
+  40%{height:80px;opacity:1;}
+  80%{top:30px;height:100px;opacity:.7;}
+  100%{top:50px;height:0;opacity:0;}
+}
+
+/* Ripple in jar */
+.ripple{
+  position:absolute;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,0.5);
+  pointer-events:none;
+  z-index:21;
+  animation:rippleOut .6s ease forwards;
+}
+@keyframes rippleOut{from{width:10px;height:10px;opacity:.8;margin-left:-5px;}to{width:80px;height:20px;opacity:0;margin-left:-40px;}}
+
+/* Floating drops */
+.fdrop{
+  position:absolute;
+  border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
+  pointer-events:none;
+  animation:floatDrop ease-in-out infinite;
+}
+@keyframes floatDrop{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-12px) rotate(8deg)}}
+
+/* Sparkle */
+.sparkle-item{position:absolute;pointer-events:none;animation:sparkleAnim ease-in-out infinite;}
+@keyframes sparkleAnim{0%,100%{opacity:0;transform:scale(.2)}50%{opacity:1;transform:scale(1)}}
+
+/* ── LAYER LABELS ── */
+.llabels{width:100%;}
+.lrow{
+  display:flex;align-items:center;gap:7px;padding:3px 0;
+  font-size:12px;font-weight:800;
+  opacity:.2;transition:opacity .5s,transform .5s;
+  transform:translateX(-6px);
+}
+.lrow.on{opacity:1;transform:none;}
+.lsw{width:11px;height:11px;border-radius:3px;flex-shrink:0;}
+.lsalt{font-size:10px;color:rgba(255,255,255,0.38);font-weight:700;margin-left:auto;}
+
+/* ── RESET BTN ── */
+.reset-wrap{text-align:center;margin-top:20px;}
+.reset-btn{
+  padding:11px 28px;border-radius:14px;
+  border:1.5px solid rgba(255,255,255,0.18);
+  background:rgba(255,255,255,0.07);
+  color:#fff;font-family:'Nunito',sans-serif;font-weight:800;font-size:14px;
+  cursor:pointer;transition:all .2s;
+}
+.reset-btn:hover{background:rgba(255,255,255,0.14);transform:translateY(-2px);}
+
+/* ── CELEBRATION ── */
+.celeb{
+  display:none;text-align:center;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:24px;padding:28px 20px;margin-top:20px;
+  backdrop-filter:blur(12px);
+}
+.celeb.on{display:block;animation:popIn .7s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes popIn{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
+.celeb h2{font-family:'Fredoka One',cursive;font-size:30px;background:linear-gradient(120deg,#f87171,#fde047,#4ade80,#60a5fa,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;}
+.celeb p{font-size:14px;color:rgba(255,255,255,0.6);line-height:1.7;}
+.celeb .fact{display:inline-block;background:rgba(253,224,71,.12);border:1px solid rgba(253,224,71,.3);border-radius:12px;padding:10px 16px;margin-top:12px;font-size:13px;color:#fde047;font-weight:700;}
+
+/* Confetti */
+.cf{position:fixed;pointer-events:none;z-index:999;border-radius:3px;animation:cfFall linear forwards;}
+@keyframes cfFall{0%{opacity:1;transform:translateY(-10px) rotate(0)}100%{opacity:0;transform:translateY(105vh) rotate(720deg)}}
+
+/* Bubbles */
+@keyframes riseUp{0%{transform:translateY(0);opacity:.7}100%{transform:translateY(-170px);opacity:0}}
+
+/* Fill layer */
+@keyframes fillLayer{from{transform:scaleY(0);opacity:0;transform-origin:bottom}to{transform:scaleY(1);opacity:.92;transform-origin:bottom}}
+</style>
+</head>
+<body>
+
+<!-- BACKGROUND -->
+<div class="stars" id="stars"></div>
+<div class="orb" style="width:350px;height:350px;background:#7c3aed;top:-80px;left:-80px;animation-duration:7s;"></div>
+<div class="orb" style="width:280px;height:280px;background:#2563eb;bottom:-60px;right:-60px;animation-duration:9s;animation-delay:-3s;"></div>
+<div class="orb" style="width:200px;height:200px;background:#16a34a;top:45%;left:55%;animation-duration:6s;animation-delay:-1s;"></div>
+
+<div class="app">
+  <div class="header">
+    <div class="badge">✦ Science Activity ✦</div>
+    <h1>Rainbow in a Jar</h1>
+    <p class="subtitle">Pour each colour in the right order to build your rainbow!</p>
+  </div>
+
+  <div class="instr" id="instr">Start with the <strong style="color:#c084fc">Violet</strong> cup — it has the most salt and must go in first!</div>
+
+  <div class="stage">
+    <!-- CUPS -->
+    <div>
+      <div class="cups-section">
+        <h3>Your Cups — Click to Pour!</h3>
+        <div class="cups-grid" id="cups-grid"></div>
+      </div>
+      <div class="reset-wrap">
+        <button class="reset-btn" onclick="resetAll()">↺ Start Again</button>
+      </div>
+      <div class="celeb" id="celeb">
+        <h2>🌈 Amazing Science!</h2>
+        <p>You built a perfect rainbow! Each layer stays in place because of <strong style="color:#fde047">density</strong> — the more salt dissolved in water, the heavier and denser it becomes.</p>
+        <div class="fact">More salt = denser water = sinks lower in the jar!</div>
+      </div>
+    </div>
+
+    <!-- JAR -->
+    <div class="jar-panel">
+      <h3>Your Jar</h3>
+      <div class="jar-svg-wrap" id="jar-wrap">
+        <svg id="jar-svg" width="150" height="260" viewBox="0 0 150 260"></svg>
+      </div>
+      <div class="llabels" id="llabels"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const LAYERS=[
+  {label:'Violet', salt:'5 tsp', fill:'#8B35C8', light:'#c084fc', glow:'rgba(139,53,200,.5)'},
+  {label:'Blue',   salt:'4 tsp', fill:'#2563EB', light:'#60a5fa', glow:'rgba(37,99,235,.5)'},
+  {label:'Green',  salt:'3 tsp', fill:'#16A34A', light:'#4ade80', glow:'rgba(22,163,74,.5)'},
+  {label:'Yellow', salt:'2 tsp', fill:'#D97706', light:'#fde047', glow:'rgba(217,119,6,.5)'},
+  {label:'Orange', salt:'1 tsp', fill:'#EA580C', light:'#fb923c', glow:'rgba(234,88,12,.5)'},
+  {label:'Red',    salt:'none',  fill:'#DC2626', light:'#f87171', glow:'rgba(220,38,38,.5)'},
+];
+
+const MESSAGES=[
+  {ok:'Violet is in! Now pour <strong style="color:#60a5fa">Blue</strong> — 4 teaspoons of salt.',wrong:'Start with <strong style="color:#c084fc">Violet</strong> first — it has the most salt!'},
+  {ok:'Blue settled perfectly! Now pour <strong style="color:#4ade80">Green</strong> — 3 teaspoons.',wrong:'Pour <strong style="color:#60a5fa">Blue</strong> next — it is the second heaviest!'},
+  {ok:'Green is in! Now pour <strong style="color:#fde047">Yellow</strong> — 2 teaspoons.',wrong:'Pour <strong style="color:#4ade80">Green</strong> next — 3 teaspoons of salt!'},
+  {ok:'Yellow looks beautiful! Now pour <strong style="color:#fb923c">Orange</strong> — 1 teaspoon.',wrong:'Pour <strong style="color:#fde047">Yellow</strong> next — 2 teaspoons of salt!'},
+  {ok:'Orange is in! Last one — pour <strong style="color:#f87171">Red</strong> — no salt at all!',wrong:'Pour <strong style="color:#fb923c">Orange</strong> next — just 1 teaspoon!'},
+  {ok:'',wrong:'Pour <strong style="color:#f87171">Red</strong> last — it has no salt and floats on top!'},
+];
+
+let poured=[];
+let bubbleTimer=null;
+let shuffleOrder=[];
+
+function shuffleCups(){
+  shuffleOrder=[0,1,2,3,4,5];
+  for(let i=shuffleOrder.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [shuffleOrder[i],shuffleOrder[j]]=[shuffleOrder[j],shuffleOrder[i]];
+  }
+}
+
+/* ── STARS + SHOOTING STARS + SATELLITES ── */
+const starsEl=document.getElementById('stars');
+const ks=document.createElement('style');
+ks.textContent=`
+@keyframes twinkle{0%,100%{opacity:.08}50%{opacity:1}}
+@keyframes shootStar{
+  0%{transform:translate(0,0) rotate(var(--angle));opacity:1;width:0}
+  30%{width:120px;opacity:1}
+  100%{transform:translate(var(--tx),var(--ty)) rotate(var(--angle));opacity:0;width:60px}
+}
+@keyframes satellite{
+  0%{transform:translate(0,0)}
+  25%{transform:translate(40px,18px)}
+  50%{transform:translate(80px,0px)}
+  75%{transform:translate(40px,-18px)}
+  100%{transform:translate(0,0)}
+}
+@keyframes satBlink{0%,100%{opacity:.9}50%{opacity:.25}}
+`;
+document.head.appendChild(ks);
+
+for(let i=0;i<140;i++){
+  const s=document.createElement('div');
+  const sz=Math.random()*2.2+.4;
+  s.style.cssText=`position:absolute;width:${sz}px;height:${sz}px;border-radius:50%;background:white;top:${Math.random()*100}%;left:${Math.random()*100}%;animation:twinkle ${1.5+Math.random()*3}s ease-in-out ${-Math.random()*5}s infinite;`;
+  starsEl.appendChild(s);
+}
+
+function launchShootingStar(){
+  const el=document.createElement('div');
+  const angle=-20-Math.random()*30;
+  const startX=Math.random()*80+10;
+  const startY=Math.random()*40;
+  const dist=200+Math.random()*200;
+  const tx=Math.cos(angle*Math.PI/180)*dist;
+  const ty=Math.sin(angle*Math.PI/180)*dist;
+  const cols=['#fff','#fde047','#c084fc','#60a5fa','#f87171','#4ade80'];
+  const col=cols[Math.floor(Math.random()*cols.length)];
+  el.style.cssText=`position:absolute;height:2px;width:0;border-radius:2px;background:linear-gradient(90deg,${col},transparent);top:${startY}%;left:${startX}%;--angle:${angle}deg;--tx:${tx}px;--ty:${ty}px;box-shadow:0 0 6px ${col};animation:shootStar ${.6+Math.random()*.5}s ease-out forwards;pointer-events:none;`;
+  starsEl.appendChild(el);
+  setTimeout(()=>el.remove(),1200);
+}
+setInterval(launchShootingStar,900);
+setInterval(launchShootingStar,1700);
+setInterval(launchShootingStar,2600);
+
+const satColors=['#60a5fa','#c084fc','#fde047','#4ade80'];
+for(let i=0;i<4;i++){
+  const sat=document.createElement('div');
+  const startX=10+Math.random()*80;
+  const startY=5+Math.random()*45;
+  const dur=14+Math.random()*16;
+  const col=satColors[i%4];
+  sat.style.cssText=`position:absolute;top:${startY}%;left:${startX}%;animation:satellite ${dur}s linear ${-Math.random()*dur}s infinite,satBlink ${2+Math.random()}s ease-in-out infinite;pointer-events:none;`;
+  sat.innerHTML=`<svg width="22" height="10" viewBox="0 0 22 10"><rect x="7" y="3" width="8" height="5" rx="1" fill="${col}" opacity=".9"/><rect x="0" y="4" width="6" height="3" rx="1" fill="${col}" opacity=".5"/><rect x="16" y="4" width="6" height="3" rx="1" fill="${col}" opacity=".5"/><circle cx="11" cy="5" r="1" fill="white" opacity=".8"/></svg>`;
+  starsEl.appendChild(sat);
+}
+
+/* ── BUILD CUPS (shuffled) ── */
+function buildCups(){
+  const grid=document.getElementById('cups-grid');
+  grid.innerHTML='';
+  shuffleOrder.forEach((i)=>{
+    const l=LAYERS[i];
+    const used=poured.includes(i);
+    const item=document.createElement('div');
+    item.className='cup-item'+(used?' used':'');
+    item.style.setProperty('--glow',l.glow);
+    item.innerHTML=`
+      <svg class="cup-svg" width="70" height="80" viewBox="0 0 70 80">
+        <defs>
+          <clipPath id="cup-clip-${i}"><polygon points="8,8 62,8 56,78 14,78"/></clipPath>
+        </defs>
+        <polygon points="8,8 62,8 56,78 14,78" fill="${l.fill}22" stroke="${l.light}" stroke-width="2" stroke-linejoin="round"/>
+        <rect x="14" y="42" width="42" height="36" fill="${l.fill}" opacity=".85" clip-path="url(#cup-clip-${i})"/>
+        <line x1="8" y1="8" x2="62" y2="8" stroke="${l.light}" stroke-width="3" stroke-linecap="round"/>
+        <rect x="20" y="48" width="8" height="24" rx="4" fill="rgba(255,255,255,0.12)" clip-path="url(#cup-clip-${i})"/>
+        <text x="35" y="30" text-anchor="middle" font-family="Nunito,sans-serif" font-size="10" font-weight="900" fill="${l.light}">${l.salt}</text>
+      </svg>
+      <span class="cup-label" style="color:${l.light}">${l.label}</span>
+      ${used?'<span class="cup-salt" style="color:#4ade80">✓ Poured!</span>':`<button class="pour-btn" style="border-color:${l.light}44;color:${l.light}" onclick="tryPour(${i})">Pour ↓</button>`}
+    `;
+    grid.appendChild(item);
+  });
+}
+
+/* ── POUR ── */
+function tryPour(i){
+  const expected=poured.length;
+  if(i!==expected){
+    showWrong(MESSAGES[expected]?.wrong||'');
+    shakeCup(i);
+    return;
+  }
+  doPour(i);
+}
+
+function shakeCup(i){
+  const items=document.querySelectorAll('.cup-item');
+  const el=items[i];
+  if(!el)return;
+  el.style.animation='shake .4s ease';
+  setTimeout(()=>el.style.animation='',500);
+}
+
+function doPour(i){
+  // animate pour stream on jar
+  const wrap=document.getElementById('jar-wrap');
+  const l=LAYERS[i];
+  const jh=170,jy=50,lh=jh/6;
+  const targetY=jy+jh-(poured.length+1)*lh;
+
+  // create pour stream
+  const stream=document.createElement('div');
+  stream.className='pour-anim';
+  stream.style.cssText=`background:${l.fill};top:-70px;left:50%;transform:translateX(-50%);width:14px;border-radius:5px;opacity:0;position:absolute;pointer-events:none;z-index:20;`;
+  wrap.appendChild(stream);
+
+  // animate stream falling
+  let startTime=null;
+  const streamDur=700;
+  function animStream(ts){
+    if(!startTime)startTime=ts;
+    const p=Math.min((ts-startTime)/streamDur,1);
+    const ease=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
+    // stream grows downward
+    const topEnd=targetY-20;
+    const top=-70+(topEnd+70)*ease;
+    const height=Math.min(p*200,topEnd+70+20);
+    stream.style.top=(-70)+'px';
+    stream.style.height=height+'px';
+    stream.style.opacity=p<.1?p*10:p>.85?(1-p)*6.7:1;
+    stream.style.background=l.fill;
+    if(p<1){requestAnimationFrame(animStream);}
+    else{
+      stream.remove();
+      // add ripple
+      const ripple=document.createElement('div');
+      ripple.className='ripple';
+      ripple.style.cssText=`left:50%;top:${targetY+lh/2}px;border-color:${l.light};`;
+      wrap.appendChild(ripple);
+      setTimeout(()=>ripple.remove(),700);
+      // commit layer
+      poured.push(i);
+      drawJar(true);
+      buildLabels();
+      buildCups();
+      updateInstr(i);
+      if(poured.length===6)celebrate();
+    }
+  }
+  requestAnimationFrame(animStream);
+}
+
+function updateInstr(justPoured){
+  const instr=document.getElementById('instr');
+  if(poured.length===6){
+    instr.innerHTML='<strong style="color:#4ade80">🌈 Your rainbow is complete! Look at those beautiful layers!</strong>';
+    instr.className='instr correct';
+    return;
+  }
+  const msg=MESSAGES[justPoured]?.ok||'';
+  instr.innerHTML=msg;
+  instr.className='instr correct';
+}
+
+function showWrong(msg){
+  const instr=document.getElementById('instr');
+  instr.innerHTML=msg;
+  instr.className='instr wrong';
+  setTimeout(()=>{
+    instr.className='instr';
+    instr.innerHTML=getNextHint();
+  },1800);
+}
+
+function getNextHint(){
+  const n=poured.length;
+  const l=LAYERS[n];
+  if(n===0)return `Start with <strong style="color:${l.light}">${l.label}</strong> — it has the most salt and goes in first!`;
+  return `Pour <strong style="color:${l.light}">${l.label}</strong> next — ${l.salt} of salt.`;
+}
+
+/* ── JAR ── */
+function drawJar(animate=false){
+  const svg=document.getElementById('jar-svg');
+  const jx=25,jy=50,jw=100,jh=170;
+  const lh=jh/6;
+  let h='';
+  h+=`<defs>
+    <clipPath id="jclip"><rect x="${jx}" y="${jy}" width="${jw}" height="${jh}" rx="16"/></clipPath>
+  </defs>`;
+  // glass bg
+  h+=`<rect x="${jx}" y="${jy}" width="${jw}" height="${jh}" rx="16" fill="rgba(200,230,255,0.04)"/>`;
+  // layers
+  for(let i=0;i<poured.length;i++){
+    const l=LAYERS[poured[i]];
+    const ly=jy+jh-(i+1)*lh;
+    const isNew=animate&&i===poured.length-1;
+    const anim=isNew?`style="animation:fillLayer .55s cubic-bezier(.34,1.56,.64,1) both;"`:''
+    h+=`<rect clip-path="url(#jclip)" ${anim} x="${jx}" y="${ly}" width="${jw}" height="${lh}" fill="${l.fill}" opacity=".92"/>`;
+    // shimmer line between layers
+    if(i>0)h+=`<rect clip-path="url(#jclip)" x="${jx}" y="${ly+lh}" width="${jw}" height="2.5" fill="rgba(255,255,255,0.2)"/>`;
+  }
+  // shine
+  h+=`<rect x="${jx+9}" y="${jy+10}" width="13" height="${jh-20}" rx="6" fill="rgba(255,255,255,0.09)" clip-path="url(#jclip)"/>`;
+  h+=`<rect x="${jx+26}" y="${jy+16}" width="5" height="${jh*.5}" rx="3" fill="rgba(255,255,255,0.05)" clip-path="url(#jclip)"/>`;
+  // jar wall
+  h+=`<rect x="${jx}" y="${jy}" width="${jw}" height="${jh}" rx="16" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="2.5"/>`;
+  // rim
+  h+=`<rect x="${jx-8}" y="${jy-14}" width="${jw+16}" height="16" rx="7" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.22)" stroke-width="2"/>`;
+  // handle
+  h+=`<path d="M${jx+jw} ${jy+28} Q${jx+jw+26} ${jy+55} ${jx+jw} ${jy+82}" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="5" stroke-linecap="round"/>`;
+  // sparkles if complete
+  if(poured.length===6){
+    const pts=[[jx-8,jy+15],[jx+jw+10,jy+35],[jx+jw/2,jy-18],[jx-6,jy+90],[jx+jw+8,jy+100]];
+    pts.forEach(([sx,sy],si)=>{
+      const c=LAYERS[si%6].light;
+      const d=si*.28;
+      h+=`<g style="animation:sparkleAnim 1.3s ease-in-out ${d}s infinite">
+        <line x1="${sx}" y1="${sy-7}" x2="${sx}" y2="${sy+7}" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="${sx-7}" y1="${sy}" x2="${sx+7}" y2="${sy}" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="${sx-5}" y1="${sy-5}" x2="${sx+5}" y2="${sy+5}" stroke="${c}" stroke-width="1.5" stroke-linecap="round" opacity=".5"/>
+        <line x1="${sx+5}" y1="${sy-5}" x2="${sx-5}" y2="${sy+5}" stroke="${c}" stroke-width="1.5" stroke-linecap="round" opacity=".5"/>
+      </g>`;
+    });
+  }
+  svg.innerHTML=h;
+
+  // floating drops around jar
+  const wrap=document.getElementById('jar-wrap');
+  wrap.querySelectorAll('.fdrop').forEach(e=>e.remove());
+  if(poured.length>0){
+    poured.forEach((li,i)=>{
+      const l=LAYERS[li];
+      const angle=(i/poured.length)*360;
+      const r=88,cx=75,cy=140;
+      const x=cx+Math.cos(angle*Math.PI/180)*r-9;
+      const y=cy+Math.sin(angle*Math.PI/180)*r-11;
+      const d=document.createElement('div');
+      d.className='fdrop';
+      d.style.cssText=`width:18px;height:22px;background:${l.light};left:${x}px;top:${y}px;animation-delay:-${i*.4}s;animation-duration:${2.2+i*.25}s;box-shadow:0 0 12px ${l.light}88;`;
+      wrap.appendChild(d);
+    });
+  }
+
+  // bubbles
+  clearInterval(bubbleTimer);
+  if(poured.length>0){
+    bubbleTimer=setInterval(()=>{
+      const svg2=document.getElementById('jar-svg');
+      if(!svg2)return;
+      const b=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      const jx2=25,jy2=50,jh2=170,lh2=jh2/6;
+      const maxY=jy2+jh2-poured.length*lh2;
+      b.setAttribute('cx',35+Math.random()*80);
+      b.setAttribute('cy',jy2+jh2-Math.random()*poured.length*lh2);
+      b.setAttribute('r',2+Math.random()*3);
+      b.setAttribute('fill','rgba(255,255,255,0.28)');
+      b.setAttribute('clip-path','url(#jclip)');
+      b.style.animation=`riseUp ${1+Math.random()*.8}s ease forwards`;
+      svg2.appendChild(b);
+      setTimeout(()=>b.remove(),1800);
+    },500);
+  }
+}
+
+/* ── LABELS ── */
+function buildLabels(){
+  const el=document.getElementById('llabels');
+  el.innerHTML=[...LAYERS].reverse().map((l,i)=>{
+    const idx=LAYERS.length-1-i;
+    const on=poured.includes(idx);
+    return `<div class="lrow${on?' on':''}">
+      <div class="lsw" style="background:${l.fill}"></div>
+      <span class="lname" style="color:${on?l.light:'rgba(255,255,255,0.5)'}">${l.label}</span>
+      <span class="lsalt">${l.salt}</span>
+    </div>`;
+  }).join('');
+}
+
+/* ── CELEBRATE ── */
+function celebrate(){
+  document.getElementById('celeb').classList.add('on');
+  confetti();
+}
+
+function confetti(){
+  const cols=['#f87171','#fb923c','#fde047','#4ade80','#60a5fa','#c084fc','#fff'];
+  for(let i=0;i<90;i++){
+    const c=document.createElement('div');
+    c.className='cf';
+    const sz=5+Math.random()*9;
+    c.style.cssText=`left:${Math.random()*100}vw;background:${cols[i%7]};width:${sz}px;height:${sz}px;animation-duration:${1.8+Math.random()*2}s;animation-delay:${Math.random()*.8}s;border-radius:${Math.random()>.5?'50%':'3px'}`;
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),4000);
+  }
+}
+
+/* ── RESET ── */
+function resetAll(){
+  poured=[];
+  clearInterval(bubbleTimer);
+  shuffleCups();
+  document.getElementById('celeb').classList.remove('on');
+  document.getElementById('instr').className='instr';
+  document.getElementById('instr').innerHTML=`Cups are shuffled! Find and pour <strong style="color:#c084fc">Violet</strong> first — it has the most salt!`;
+  drawJar(false);
+  buildLabels();
+  buildCups();
+}
+
+/* keyframe inject */
+const ks2=document.createElement('style');
+ks2.textContent=`
+@keyframes fillLayer{from{transform:scaleY(0);opacity:0;transform-origin:bottom}to{transform:scaleY(1);opacity:.92;transform-origin:bottom}}
+@keyframes riseUp{0%{transform:translateY(0);opacity:.7}100%{transform:translateY(-180px);opacity:0}}
+@keyframes sparkleAnim{0%,100%{opacity:0;transform:scale(.2)}50%{opacity:1;transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+`;
+document.head.appendChild(ks2);
+
+/* INIT */
+shuffleCups();
+drawJar(false);
+buildLabels();
+buildCups();
+</script>
+</body>
+</html>

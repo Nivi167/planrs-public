@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 2 – Sort: Public or Private?</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ===== BACKGROUND SCENE ===== */
+#scene {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+#sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #0EA5E9 0%, #38BDF8 35%, #7DD3FC 60%, #BAE6FD 80%, #E0F2FE 100%);
+}
+
+/* Sun */
+#sun {
+  position: absolute;
+  top: 40px;
+  right: 100px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #FFF176 30%, #FFEE58 55%, #FDD835 75%, #F9A825 100%);
+  box-shadow: 0 0 60px 30px rgba(255,236,64,0.5), 0 0 120px 60px rgba(255,200,0,0.2);
+  animation: sunPulse 4s ease-in-out infinite;
+}
+
+@keyframes sunPulse {
+  0%,100% { box-shadow: 0 0 60px 30px rgba(255,236,64,0.5), 0 0 120px 60px rgba(255,200,0,0.2); }
+  50% { box-shadow: 0 0 85px 45px rgba(255,236,64,0.65), 0 0 160px 85px rgba(255,200,0,0.3); }
+}
+
+.ray {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 140px; height: 4px;
+  background: linear-gradient(90deg, rgba(255,235,59,0.7), transparent);
+  transform-origin: 0 50%;
+  border-radius: 4px;
+}
+
+#sun-rays { animation: rayRotate 10s linear infinite; position: absolute; inset: 0; }
+@keyframes rayRotate { 100% { transform: rotate(360deg); } }
+
+/* Rainbow */
+#rainbow {
+  position: absolute;
+  top: 60px; left: -100px;
+  width: 750px; height: 375px;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  background: transparent;
+  border-top: 24px solid rgba(248,113,113,0.65);
+  box-shadow:
+    0 -24px 0 rgba(251,146,60,0.6),
+    0 -48px 0 rgba(250,204,21,0.65),
+    0 -72px 0 rgba(74,222,128,0.6),
+    0 -96px 0 rgba(56,189,248,0.65),
+    0 -120px 0 rgba(167,139,250,0.6);
+  animation: rainbowGlow 5s ease-in-out infinite;
+}
+
+@keyframes rainbowGlow {
+  0%,100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+/* Clouds */
+.cloud {
+  position: absolute;
+  animation: cloudDrift linear infinite;
+}
+
+.cloud-inner {
+  position: relative;
+  background: #fff;
+  border-radius: 60px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+.cloud-inner::before,
+.cloud-inner::after {
+  content: '';
+  position: absolute;
+  background: #fff;
+  border-radius: 50%;
+}
+
+.cloud-lg .cloud-inner { width: 140px; height: 50px; top: 22px; }
+.cloud-lg .cloud-inner::before { width: 72px; height: 72px; top: -36px; left: 18px; }
+.cloud-lg .cloud-inner::after { width: 55px; height: 55px; top: -26px; left: 60px; }
+
+.cloud-md .cloud-inner { width: 100px; height: 36px; top: 16px; }
+.cloud-md .cloud-inner::before { width: 52px; height: 52px; top: -26px; left: 12px; }
+.cloud-md .cloud-inner::after { width: 40px; height: 40px; top: -20px; left: 44px; }
+
+.cloud-sm .cloud-inner { width: 72px; height: 26px; top: 10px; }
+.cloud-sm .cloud-inner::before { width: 38px; height: 38px; top: -18px; left: 8px; }
+.cloud-sm .cloud-inner::after { width: 30px; height: 30px; top: -14px; left: 32px; }
+
+@keyframes cloudDrift {
+  from { transform: translateX(-220px); }
+  to { transform: translateX(110vw); }
+}
+
+/* Hot air balloon */
+#balloon {
+  position: absolute;
+  top: 120px; left: 55px;
+  animation: balloonFloat 6s ease-in-out infinite;
+  z-index: 3;
+}
+
+@keyframes balloonFloat {
+  0%,100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-24px) rotate(2deg); }
+}
+
+.balloon-globe {
+  width: 72px; height: 90px;
+  border-radius: 50% 50% 44% 44%;
+  background: linear-gradient(160deg, #F87171 0%, #FB923C 28%, #FBBF24 52%, #A3E635 74%, #34D399 100%);
+  position: relative; overflow: hidden;
+  border: 2.5px solid rgba(0,0,0,0.1);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+
+.balloon-stripe {
+  position: absolute;
+  width: 13px; height: 100%;
+  background: rgba(255,255,255,0.28);
+  border-radius: 6px;
+}
+
+.balloon-rim {
+  width: 72px; height: 10px;
+  background: rgba(0,0,0,0.15);
+  border-radius: 0 0 50% 50%;
+}
+
+.balloon-ropes {
+  display: flex; justify-content: space-between;
+  padding: 0 12px;
+  height: 10px;
+}
+
+.balloon-rope {
+  width: 1.5px;
+  height: 10px;
+  background: #92400E;
+}
+
+.balloon-basket {
+  width: 36px; height: 24px;
+  background: linear-gradient(180deg, #B45309, #92400E);
+  border-radius: 4px 4px 6px 6px;
+  margin: 0 auto;
+  border: 2px solid #78350F;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.basket-grid {
+  width: 28px; height: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  grid-template-rows: 1fr 1px 1fr;
+}
+
+.basket-grid span {
+  display: block; background: #78350F;
+}
+
+/* Kite */
+#kite {
+  position: absolute;
+  top: 170px; right: 180px;
+  animation: kiteFloat 5s ease-in-out infinite;
+  z-index: 3;
+}
+
+@keyframes kiteFloat {
+  0%,100% { transform: translateY(0) rotate(8deg); }
+  50% { transform: translateY(-20px) rotate(-5deg); }
+}
+
+.kite-diamond {
+  width: 54px; height: 68px;
+  position: relative;
+}
+
+.kite-diamond svg { width: 100%; height: 100%; overflow: visible; }
+
+.kite-string {
+  position: absolute;
+  top: 64px; left: 27px;
+  width: 2px; height: 90px;
+  background: repeating-linear-gradient(#F472B6 0, #F472B6 10px, #E879F9 10px, #E879F9 18px);
+  transform-origin: top center;
+  transform: rotate(12deg);
+  border-radius: 1px;
+}
+
+/* Birds */
+.bird {
+  position: absolute;
+  animation: birdFly linear infinite;
+  font-size: 20px;
+  opacity: 0.8;
+}
+
+@keyframes birdFly {
+  from { transform: translateX(-60px) translateY(0); }
+  40% { transform: translateX(40vw) translateY(-25px); }
+  to { transform: translateX(110vw) translateY(8px); }
+}
+
+/* Green hills */
+#hills {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 40%;
+}
+
+.hill {
+  position: absolute;
+  border-radius: 50%;
+  bottom: -20px;
+}
+
+.hill-1 {
+  width: 920px; height: 370px;
+  background: radial-gradient(ellipse at 50% 40%, #4ADE80, #22C55E 50%, #16A34A);
+  left: -150px;
+  box-shadow: inset 0 -20px 40px rgba(0,0,0,0.1);
+}
+
+.hill-2 {
+  width: 820px; height: 310px;
+  background: radial-gradient(ellipse at 50% 40%, #86EFAC, #4ADE80 50%, #22C55E);
+  right: -120px;
+}
+
+.hill-3 {
+  width: 520px; height: 220px;
+  background: radial-gradient(ellipse at 50% 40%, #BBF7D0, #6EE7B7 50%, #34D399);
+  left: 28%;
+  bottom: -5px;
+}
+
+#ground {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 65px;
+  background: linear-gradient(180deg, #16A34A 0%, #15803D 50%, #14532D 100%);
+  box-shadow: inset 0 10px 20px rgba(0,0,0,0.15);
+}
+
+/* Flowers */
+.flower {
+  position: absolute;
+  bottom: 50px;
+  font-size: 22px;
+  animation: sway 3s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+@keyframes sway {
+  0%,100% { transform: rotate(-7deg); }
+  50% { transform: rotate(7deg); }
+}
+
+/* Trees */
+.tree {
+  position: absolute;
+  bottom: 58px;
+  display: flex; flex-direction: column; align-items: center;
+  filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.2));
+}
+
+.tree-canopy {
+  position: relative;
+  width: 0; height: 0;
+  border-left: 32px solid transparent;
+  border-right: 32px solid transparent;
+  border-bottom: 68px solid #15803D;
+}
+
+.tree-canopy::before {
+  content: '';
+  position: absolute;
+  top: 16px; left: -26px;
+  width: 0; height: 0;
+  border-left: 26px solid transparent;
+  border-right: 26px solid transparent;
+  border-bottom: 56px solid #22C55E;
+}
+
+.tree-canopy::after {
+  content: '';
+  position: absolute;
+  top: 30px; left: -20px;
+  width: 0; height: 0;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-bottom: 44px solid #4ADE80;
+}
+
+.tree-trunk {
+  width: 14px; height: 28px;
+  background: linear-gradient(180deg, #92400E, #78350F);
+  border-radius: 2px;
+  box-shadow: inset 2px 0 4px rgba(0,0,0,0.2);
+}
+
+/* Stars */
+.star-deco {
+  position: absolute;
+  font-size: 16px;
+  animation: starTwinkle 2.5s ease-in-out infinite;
+}
+
+@keyframes starTwinkle {
+  0%,100% { opacity: 0.4; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+/* Butterflies */
+.butterfly {
+  position: absolute;
+  font-size: 18px;
+  animation: butterflyWander 8s ease-in-out infinite;
+}
+
+@keyframes butterflyWander {
+  0%,100% { transform: translate(0,0) rotate(-4deg); }
+  20% { transform: translate(22px,-18px) rotate(4deg); }
+  45% { transform: translate(50px,6px) rotate(-3deg); }
+  70% { transform: translate(14px,22px) rotate(5deg); }
+}
+
+/* ===== GAME UI ===== */
+.wrapper {
+  position: relative;
+  z-index: 10;
+  max-width: 840px;
+  margin: 0 auto;
+  padding: 14px 14px 44px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255,255,255,0.84);
+  backdrop-filter: blur(14px);
+  border: 2.5px solid rgba(255,255,255,0.98);
+  border-radius: 22px;
+  padding: 10px 22px;
+  margin-bottom: 14px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.14);
+}
+
+.logo {
+  font-family: 'Fredoka One', cursive;
+  font-size: 20px;
+  color: #059669;
+}
+
+.score-box {
+  background: linear-gradient(135deg, #FCD34D, #F59E0B);
+  border-radius: 24px;
+  padding: 6px 18px;
+  font-size: 15px;
+  font-weight: 900;
+  color: #78350F;
+  box-shadow: 0 4px 14px rgba(245,158,11,0.45);
+}
+
+.title-section { text-align: center; margin-bottom: 14px; }
+
+h1 {
+  font-family: 'Fredoka One', cursive;
+  font-size: 33px;
+  color: #fff;
+  text-shadow: 0 3px 0 rgba(0,0,0,0.22), 0 0 20px rgba(0,100,200,0.2);
+  animation: titleBounce 0.55s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+@keyframes titleBounce {
+  from { transform: scale(0.65) translateY(-18px); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.subtitle {
+  color: rgba(255,255,255,0.97);
+  font-size: 15px;
+  font-weight: 800;
+  text-shadow: 0 1px 5px rgba(0,0,0,0.3);
+  margin-top: 4px;
+}
+
+.hint-pill {
+  display: inline-block;
+  margin-top: 8px;
+  background: rgba(255,255,255,0.9);
+  color: #0369A1;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 5px 16px;
+  border-radius: 20px;
+  border: 2px solid rgba(255,255,255,1);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.14);
+  animation: hintBounce 2s ease-in-out infinite;
+}
+
+@keyframes hintBounce {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.card-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  justify-content: center;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(14px);
+  border: 2.5px solid rgba(255,255,255,0.98);
+  border-radius: 22px;
+  padding: 16px;
+  margin-bottom: 14px;
+  min-height: 88px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.13);
+}
+
+.info-card {
+  background: linear-gradient(135deg, #EFF6FF, #DBEAFE);
+  border: 2.5px solid #93C5FD;
+  border-radius: 16px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #1E40AF;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s;
+  animation: cardPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+@keyframes cardPop {
+  from { transform: scale(0) rotate(-12deg); opacity: 0; }
+  to { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+.info-card:hover {
+  transform: scale(1.09) translateY(-4px) rotate(1.5deg);
+  box-shadow: 0 12px 28px rgba(59,130,246,0.35);
+  border-color: #3B82F6;
+}
+
+.info-card.selected {
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  border-color: #F59E0B;
+  color: #92400E;
+  box-shadow: 0 14px 36px rgba(245,158,11,0.45);
+  animation: cardWiggle 0.45s ease both;
+}
+
+@keyframes cardWiggle {
+  0%,100% { transform: scale(1.1) rotate(-1.5deg); }
+  30% { transform: scale(1.1) rotate(2.5deg); }
+  70% { transform: scale(1.1) rotate(-2.5deg); }
+}
+
+.info-card.placed-out {
+  opacity: 0.2; pointer-events: none; transform: scale(0.82); filter: grayscale(0.5);
+}
+
+.info-card.dragging-active { opacity: 0.06; pointer-events: none; }
+
+#drag-ghost {
+  position: fixed; pointer-events: none; z-index: 9999;
+  font-size: 13px; font-weight: 900;
+  font-family: 'Nunito', sans-serif;
+  background: linear-gradient(135deg, #FCD34D, #F97316);
+  color: #431407;
+  border-radius: 14px; padding: 10px 16px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+  transform: rotate(-5deg) scale(1.1);
+  display: none;
+  border: 2.5px solid rgba(255,255,255,0.6);
+  white-space: nowrap;
+}
+
+.sort-area {
+  display: flex; gap: 14px;
+  flex-wrap: wrap; justify-content: center; margin-bottom: 18px;
+}
+
+.bin {
+  flex: 1; min-width: 268px;
+  border-radius: 24px; padding: 16px;
+  min-height: 200px;
+  transition: transform 0.2s, box-shadow 0.25s;
+  position: relative;
+}
+
+.bin-public {
+  background: rgba(240,253,244,0.9);
+  border: 3px dashed #22C55E;
+  box-shadow: 0 8px 28px rgba(34,197,94,0.22);
+  backdrop-filter: blur(10px);
+}
+
+.bin-private {
+  background: rgba(255,241,242,0.9);
+  border: 3px dashed #F43F5E;
+  box-shadow: 0 8px 28px rgba(244,63,94,0.22);
+  backdrop-filter: blur(10px);
+}
+
+.bin.drag-over { transform: scale(1.03); }
+.bin-public.drag-over { background: rgba(220,252,231,0.97); border-color: #16A34A; box-shadow: 0 12px 44px rgba(34,197,94,0.5); }
+.bin-private.drag-over { background: rgba(255,228,230,0.97); border-color: #E11D48; box-shadow: 0 12px 44px rgba(244,63,94,0.5); }
+
+.bin-title {
+  text-align: center;
+  font-family: 'Fredoka One', cursive;
+  font-size: 21px;
+  margin-bottom: 12px;
+}
+
+.bin-icon {
+  font-size: 40px; display: block;
+  margin-bottom: 2px;
+  animation: binIconBob 2.5s ease-in-out infinite;
+}
+
+@keyframes binIconBob {
+  0%,100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-8px) scale(1.08); }
+}
+
+.bin-public .bin-title { color: #15803D; }
+.bin-private .bin-title { color: #BE123C; }
+
+.bin-tag {
+  display: block; font-family: 'Nunito', sans-serif;
+  font-size: 11px; font-weight: 800; opacity: 0.65; margin-top: 2px;
+}
+
+.bin-items { display: flex; flex-wrap: wrap; gap: 7px; min-height: 80px; }
+
+.bin-item {
+  border-radius: 12px; padding: 8px 13px;
+  font-size: 13px; font-weight: 800; cursor: pointer;
+  animation: itemLand 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+  transition: transform 0.15s;
+}
+
+.bin-item:hover { transform: scale(1.06); }
+
+@keyframes itemLand {
+  from { transform: scale(0) translateY(-16px) rotate(-8deg); opacity: 0; }
+  to { transform: scale(1) translateY(0) rotate(0); opacity: 1; }
+}
+
+.bin-public .bin-item { background: #DCFCE7; color: #14532D; border: 1.5px solid #86EFAC; }
+.bin-private .bin-item { background: #FFE4E6; color: #881337; border: 1.5px solid #FCA5A5; }
+
+.bin-item.correct {
+  background: #BBF7D0 !important; color: #14532D !important; border-color: #22C55E !important;
+  animation: correctBounce 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+.bin-item.wrong {
+  background: #FEE2E2 !important; color: #7F1D1D !important; border-color: #F87171 !important;
+  animation: wrongJolt 0.5s ease both;
+}
+
+@keyframes correctBounce {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.22) rotate(4deg); }
+}
+
+@keyframes wrongJolt {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-9px); }
+  40% { transform: translateX(9px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+
+.btn-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 14px; }
+
+.btn {
+  padding: 12px 28px; border: none;
+  border-radius: 28px; font-size: 15px;
+  font-weight: 900; font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s;
+  position: relative; overflow: hidden;
+}
+
+.btn::after {
+  content: ''; position: absolute; inset: 0; left: -100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.4s;
+}
+
+.btn:hover::after { left: 100%; }
+.btn:hover { transform: scale(1.07) translateY(-2px); }
+.btn:active { transform: scale(0.96); }
+
+.btn-check { background: linear-gradient(135deg, #22C55E, #15803D); color: #fff; box-shadow: 0 6px 20px rgba(34,197,94,0.45); }
+.btn-retry { background: linear-gradient(135deg, #FB923C, #EA580C); color: #fff; box-shadow: 0 6px 20px rgba(251,146,60,0.45); }
+.btn-next { background: linear-gradient(135deg, #38BDF8, #0284C7); color: #fff; box-shadow: 0 6px 20px rgba(56,189,248,0.45); }
+
+.result-area {
+  display: none;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(20px);
+  border: 3px solid rgba(255,255,255,1);
+  border-radius: 28px; padding: 30px 22px;
+  text-align: center;
+  box-shadow: 0 16px 56px rgba(0,0,0,0.18);
+  animation: resultSlideUp 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
+  margin-top: 4px;
+}
+
+@keyframes resultSlideUp {
+  from { transform: translateY(40px) scale(0.85); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.result-emoji {
+  font-size: 68px; display: block;
+  animation: emojiBounce 0.7s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+@keyframes emojiBounce {
+  from { transform: scale(0) rotate(-20deg); opacity: 0; }
+  to { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+.result-msg { font-family: 'Fredoka One', cursive; font-size: 26px; color: #065F46; margin: 8px 0 4px; }
+.result-score {
+  font-family: 'Fredoka One', cursive; font-size: 52px;
+  background: linear-gradient(135deg, #F59E0B, #EF4444);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.result-sub { color: #374151; font-size: 15px; font-weight: 700; margin-top: 6px; }
+
+.confetti-bit {
+  position: fixed; pointer-events: none; z-index: 9999;
+  border-radius: 3px; animation: confettiFall linear forwards;
+}
+
+@keyframes confettiFall {
+  0% { transform: translateY(-30px) rotate(0); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+.sparkle-pop {
+  position: fixed; pointer-events: none; z-index: 9998;
+  font-size: 22px; animation: sparklePop 0.65s ease-out forwards;
+}
+
+@keyframes sparklePop {
+  0% { transform: translate(-50%,-50%) scale(0); opacity: 1; }
+  60% { transform: translate(-50%,-50%) scale(1.4); opacity: 1; }
+  100% { transform: translate(-50%,-60%) scale(0.9); opacity: 0; }
+}
+
+@media(max-width:600px) {
+  .sort-area { flex-direction: column; }
+  h1 { font-size: 26px; }
+  #balloon, #kite { display: none; }
+  .tree { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== RICH BACKGROUND SCENE ===== -->
+<div id="scene">
+  <div id="sky"></div>
+
+  <!-- Rainbow arc -->
+  <div id="rainbow"></div>
+
+  <!-- Sun with rotating rays -->
+  <div id="sun">
+    <div id="sun-rays">
+      <div class="ray" style="transform:rotate(0deg)"></div>
+      <div class="ray" style="transform:rotate(30deg)"></div>
+      <div class="ray" style="transform:rotate(60deg)"></div>
+      <div class="ray" style="transform:rotate(90deg)"></div>
+      <div class="ray" style="transform:rotate(120deg)"></div>
+      <div class="ray" style="transform:rotate(150deg)"></div>
+      <div class="ray" style="transform:rotate(180deg)"></div>
+      <div class="ray" style="transform:rotate(210deg)"></div>
+      <div class="ray" style="transform:rotate(240deg)"></div>
+      <div class="ray" style="transform:rotate(270deg)"></div>
+      <div class="ray" style="transform:rotate(300deg)"></div>
+      <div class="ray" style="transform:rotate(330deg)"></div>
+    </div>
+  </div>
+
+  <!-- Clouds drifting across -->
+  <div class="cloud cloud-lg" style="top:50px; animation-duration:30s; animation-delay:-6s;"><div class="cloud-inner"></div></div>
+  <div class="cloud cloud-md" style="top:100px; animation-duration:24s; animation-delay:-12s;"><div class="cloud-inner"></div></div>
+  <div class="cloud cloud-sm" style="top:38px; animation-duration:18s; animation-delay:-4s;"><div class="cloud-inner"></div></div>
+  <div class="cloud cloud-lg" style="top:155px; animation-duration:36s; animation-delay:-20s;"><div class="cloud-inner"></div></div>
+  <div class="cloud cloud-md" style="top:72px; animation-duration:22s; animation-delay:-9s;"><div class="cloud-inner"></div></div>
+  <div class="cloud cloud-sm" style="top:185px; animation-duration:20s; animation-delay:-16s;"><div class="cloud-inner"></div></div>
+
+  <!-- Hot air balloon -->
+  <div id="balloon">
+    <div class="balloon-globe">
+      <div class="balloon-stripe" style="left:14px"></div>
+      <div class="balloon-stripe" style="left:42px"></div>
+    </div>
+    <div class="balloon-rim"></div>
+    <div class="balloon-ropes">
+      <div class="balloon-rope"></div>
+      <div class="balloon-rope"></div>
+      <div class="balloon-rope"></div>
+    </div>
+    <div class="balloon-basket">
+      <div style="display:flex; gap:4px; align-items:center; justify-content:center;">
+        <div style="width:1.5px;height:16px;background:#78350F;"></div>
+        <div style="width:1.5px;height:16px;background:#78350F;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kite -->
+  <div id="kite">
+    <div class="kite-diamond">
+      <svg viewBox="0 0 54 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="27,2 52,30 27,66 2,30" fill="#F472B6" stroke="#DB2777" stroke-width="2"/>
+        <polygon points="27,2 52,30 27,66 2,30" fill="url(#kg)" />
+        <line x1="27" y1="2" x2="27" y2="66" stroke="#DB2777" stroke-width="1.5"/>
+        <line x1="2" y1="30" x2="52" y2="30" stroke="#DB2777" stroke-width="1.5"/>
+        <defs>
+          <linearGradient id="kg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#E879F9" stop-opacity="0.4"/>
+            <stop offset="100%" stop-color="#A855F7" stop-opacity="0.2"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <div class="kite-string"></div>
+  </div>
+
+  <!-- Birds flying -->
+  <div class="bird" style="top:88px; animation-duration:17s; animation-delay:-4s;">🐦</div>
+  <div class="bird" style="top:118px; animation-duration:23s; animation-delay:-11s; font-size:15px;">🐦</div>
+  <div class="bird" style="top:66px; animation-duration:20s; animation-delay:-16s; font-size:17px;">🐦</div>
+
+  <!-- Decorative twinkles -->
+  <div class="star-deco" style="top:28px;left:20%">⭐</div>
+  <div class="star-deco" style="top:12px;left:46%; animation-delay:0.9s">✨</div>
+  <div class="star-deco" style="top:48px;right:24%; animation-delay:1.6s">⭐</div>
+  <div class="star-deco" style="top:20px;right:40%; animation-delay:0.4s">💫</div>
+
+  <!-- Green hills layered -->
+  <div id="hills">
+    <div class="hill hill-1"></div>
+    <div class="hill hill-3"></div>
+    <div class="hill hill-2"></div>
+  </div>
+
+  <!-- Ground strip -->
+  <div id="ground"></div>
+
+  <!-- Flowers swaying -->
+  <div class="flower" style="left:6%; animation-delay:0s">🌸</div>
+  <div class="flower" style="left:13%; animation-delay:0.6s">🌼</div>
+  <div class="flower" style="left:21%; animation-delay:1.1s">🌺</div>
+  <div class="flower" style="left:31%; animation-delay:0.3s">🌻</div>
+  <div class="flower" style="left:41%; animation-delay:0.8s">🌹</div>
+  <div class="flower" style="left:53%; animation-delay:1.4s">🌸</div>
+  <div class="flower" style="left:63%; animation-delay:0.2s">🌼</div>
+  <div class="flower" style="left:73%; animation-delay:0.7s">🌷</div>
+  <div class="flower" style="left:83%; animation-delay:1.0s">🌺</div>
+  <div class="flower" style="left:91%; animation-delay:0.5s">🌻</div>
+
+  <!-- Trees -->
+  <div class="tree" style="left:3%"><div class="tree-canopy"></div><div class="tree-trunk"></div></div>
+  <div class="tree" style="left:22%"><div class="tree-canopy"></div><div class="tree-trunk"></div></div>
+  <div class="tree" style="left:48%"><div class="tree-canopy"></div><div class="tree-trunk"></div></div>
+  <div class="tree" style="right:18%"><div class="tree-canopy"></div><div class="tree-trunk"></div></div>
+  <div class="tree" style="right:2%"><div class="tree-canopy"></div><div class="tree-trunk"></div></div>
+
+  <!-- Butterflies -->
+  <div class="butterfly" style="top:56%;left:18%; animation-delay:0s">🦋</div>
+  <div class="butterfly" style="top:63%;right:15%; animation-delay:2.5s">🦋</div>
+  <div class="butterfly" style="top:50%;left:54%; animation-delay:4.5s">🦋</div>
+</div>
+
+<!-- Drag ghost -->
+<div id="drag-ghost"></div>
+
+<!-- ===== GAME UI ===== -->
+<div class="wrapper">
+  <header>
+    <div class="logo">⭐ Planrs</div>
+    <div class="score-box">⭐ Score: <span id="scoreVal">0</span>/10</div>
+  </header>
+
+  <div class="title-section">
+    <h1>🔒 Public or Private?</h1>
+    <p class="subtitle">Sort each card into the right bin to stay safe online!</p>
+    <span class="hint-pill">💡 Drag cards — or tap a card, then tap a bin!</span>
+  </div>
+
+  <div class="card-pool" id="cardPool">
+    <div class="info-card" data-id="1" data-answer="private">🏠 Home Address</div>
+    <div class="info-card" data-id="2" data-answer="public">⚽ Favourite Sport</div>
+    <div class="info-card" data-id="3" data-answer="private">📱 Phone Number</div>
+    <div class="info-card" data-id="4" data-answer="public">🎨 Favourite Colour</div>
+    <div class="info-card" data-id="5" data-answer="private">🏫 School Name</div>
+    <div class="info-card" data-id="6" data-answer="public">😊 First Name Only</div>
+    <div class="info-card" data-id="7" data-answer="private">🔑 Password</div>
+    <div class="info-card" data-id="8" data-answer="public">📚 Favourite Subject</div>
+    <div class="info-card" data-id="9" data-answer="private">💳 Bank Details</div>
+    <div class="info-card" data-id="10" data-answer="private">📸 Personal Photos</div>
+  </div>
+
+  <div class="sort-area">
+    <div class="bin bin-public" id="bin-public">
+      <div class="bin-title">
+        <span class="bin-icon">✅</span>
+        PUBLIC
+        <span class="bin-tag">Safe to share online</span>
+      </div>
+      <div class="bin-items" id="publicBin"></div>
+    </div>
+    <div class="bin bin-private" id="bin-private">
+      <div class="bin-title">
+        <span class="bin-icon">🔒</span>
+        PRIVATE
+        <span class="bin-tag">Never share online</span>
+      </div>
+      <div class="bin-items" id="privateBin"></div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-check" onclick="checkAnswers()">✅ Check Answers</button>
+    <button class="btn btn-retry" onclick="resetGame()">🔄 Try Again</button>
+  </div>
+
+  <div class="result-area" id="resultArea">
+    <span class="result-emoji" id="resEmoji">🎉</span>
+    <div class="result-msg" id="resMsg">Excellent!</div>
+    <div class="result-score" id="resScore">10/10</div>
+    <p class="result-sub" id="resSub">You know exactly what to keep private!</p>
+    <div class="btn-row" style="margin-top:18px">
+      <button class="btn btn-retry" onclick="resetGame()">🔄 Try Again</button>
+      <button class="btn btn-next" onclick="nextSection()">➡️ Next Section</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.info-card').forEach((c,i) => {
+  c.style.animationDelay = (i * 0.07) + 's';
+});
+
+let selectedCard = null, placed = {}, dragging = null;
+const ghost = document.getElementById('drag-ghost');
+
+// Tap select
+document.querySelectorAll('.info-card').forEach(card => {
+  card.addEventListener('click', () => {
+    if (card.classList.contains('placed-out')) return;
+    if (selectedCard === card) { card.classList.remove('selected'); selectedCard = null; return; }
+    document.querySelectorAll('.info-card').forEach(c => c.classList.remove('selected'));
+    selectedCard = card; card.classList.add('selected');
+  });
+});
+
+// Tap bins
+document.getElementById('bin-public').addEventListener('click', () => { if (selectedCard) { dropCard(selectedCard,'public'); selectedCard = null; }});
+document.getElementById('bin-private').addEventListener('click', () => { if (selectedCard) { dropCard(selectedCard,'private'); selectedCard = null; }});
+
+// Mouse drag
+document.querySelectorAll('.info-card').forEach(card => {
+  card.addEventListener('mousedown', e => {
+    if (card.classList.contains('placed-out')) return;
+    dragging = card;
+    ghost.textContent = card.textContent;
+    ghost.style.display = 'block';
+    moveGhost(e.clientX, e.clientY);
+    card.classList.add('dragging-active');
+    document.querySelectorAll('.info-card').forEach(c => c.classList.remove('selected'));
+    e.preventDefault();
+  });
+});
+
+document.addEventListener('mousemove', e => {
+  if (!dragging) return;
+  moveGhost(e.clientX, e.clientY);
+  highlightBins(e.clientX, e.clientY);
+});
+
+document.addEventListener('mouseup', e => {
+  if (!dragging) return;
+  ghost.style.display = 'none';
+  dragging.classList.remove('dragging-active');
+  clearBins();
+  dropAtPoint(e.clientX, e.clientY, dragging);
+  dragging = null;
+});
+
+// Touch drag
+document.querySelectorAll('.info-card').forEach(card => {
+  card.addEventListener('touchstart', e => {
+    if (card.classList.contains('placed-out')) return;
+    dragging = card;
+    const t = e.touches[0];
+    ghost.textContent = card.textContent;
+    ghost.style.display = 'block';
+    moveGhost(t.clientX, t.clientY);
+    card.classList.add('dragging-active');
+    e.preventDefault();
+  }, { passive: false });
+});
+
+document.addEventListener('touchmove', e => {
+  if (!dragging) return;
+  const t = e.touches[0];
+  moveGhost(t.clientX, t.clientY);
+  highlightBins(t.clientX, t.clientY);
+  e.preventDefault();
+}, { passive: false });
+
+document.addEventListener('touchend', e => {
+  if (!dragging) return;
+  ghost.style.display = 'none';
+  dragging.classList.remove('dragging-active');
+  clearBins();
+  const t = e.changedTouches[0];
+  dropAtPoint(t.clientX, t.clientY, dragging);
+  dragging = null;
+});
+
+function moveGhost(x, y) {
+  ghost.style.left = (x - ghost.offsetWidth / 2) + 'px';
+  ghost.style.top = (y - ghost.offsetHeight / 2) + 'px';
+}
+
+function highlightBins(x, y) {
+  document.querySelectorAll('.bin').forEach(b => {
+    const r = b.getBoundingClientRect();
+    b.classList.toggle('drag-over', x > r.left && x < r.right && y > r.top && y < r.bottom);
+  });
+}
+
+function clearBins() { document.querySelectorAll('.bin').forEach(b => b.classList.remove('drag-over')); }
+
+function dropAtPoint(x, y, card) {
+  document.querySelectorAll('.bin').forEach(b => {
+    const r = b.getBoundingClientRect();
+    if (x > r.left && x < r.right && y > r.top && y < r.bottom) {
+      dropCard(card, b.id === 'bin-public' ? 'public' : 'private');
+    }
+  });
+}
+
+function dropCard(card, bin) {
+  if (card.classList.contains('placed-out')) return;
+  if (placed[card.dataset.id]) {
+    document.getElementById(placed[card.dataset.id] + 'Bin').querySelectorAll('.bin-item').forEach(i => {
+      if (i.dataset.id === card.dataset.id) i.remove();
+    });
+  }
+  const binEl = document.getElementById(bin + 'Bin');
+  const item = document.createElement('div');
+  item.className = 'bin-item';
+  item.textContent = card.textContent;
+  item.dataset.id = card.dataset.id;
+  item.dataset.answer = card.dataset.answer;
+  item.title = 'Tap to return';
+  item.addEventListener('click', () => {
+    item.remove(); delete placed[card.dataset.id]; card.classList.remove('placed-out');
+  });
+  binEl.appendChild(item);
+  card.classList.add('placed-out');
+  card.classList.remove('selected');
+  placed[card.dataset.id] = bin;
+  spawnSparkle(item);
+}
+
+function checkAnswers() {
+  let score = 0;
+  ['publicBin','privateBin'].forEach(binId => {
+    const type = binId === 'publicBin' ? 'public' : 'private';
+    document.getElementById(binId).querySelectorAll('.bin-item').forEach(item => {
+      if (item.dataset.answer === type) { item.classList.add('correct'); item.textContent = '✓ ' + item.textContent; score++; }
+      else { item.classList.add('wrong'); item.textContent = '✗ ' + item.textContent; }
+    });
+  });
+  document.getElementById('scoreVal').textContent = score;
+  showResult(score);
+  if (score >= 7) launchConfetti();
+}
+
+function showResult(score) {
+  const ra = document.getElementById('resultArea');
+  ra.style.display = 'block';
+  document.getElementById('resScore').textContent = score + '/10';
+  if (score === 10) {
+    document.getElementById('resEmoji').textContent = '🏆';
+    document.getElementById('resMsg').textContent = 'Perfect! You are a Privacy Pro!';
+    document.getElementById('resSub').textContent = 'Amazing! You know exactly what to keep private!';
+  } else if (score >= 7) {
+    document.getElementById('resEmoji').textContent = '🎉';
+    document.getElementById('resMsg').textContent = 'Great job! Almost perfect!';
+    document.getElementById('resSub').textContent = 'So close! Try again for a perfect score!';
+  } else {
+    document.getElementById('resEmoji').textContent = '💡';
+    document.getElementById('resMsg').textContent = 'Good try! Keep learning!';
+    document.getElementById('resSub').textContent = 'Review and try again — you\'ve got this!';
+  }
+  ra.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function launchConfetti() {
+  const colors = ['#FCD34D','#22C55E','#38BDF8','#FB923C','#A78BFA','#F43F5E','#fff','#86EFAC'];
+  for (let i = 0; i < 100; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'confetti-bit';
+      el.style.left = (8 + Math.random() * 84) + 'vw';
+      el.style.top = '5vh';
+      el.style.width = (7 + Math.random() * 9) + 'px';
+      el.style.height = (9 + Math.random() * 11) + 'px';
+      el.style.background = colors[Math.floor(Math.random() * colors.length)];
+      el.style.animationDuration = (1.6 + Math.random() * 2.2) + 's';
+      el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 4500);
+    }, i * 22);
+  }
+}
+
+function spawnSparkle(target) {
+  const r = target.getBoundingClientRect();
+  const items = ['✨','⭐','💫','🌟','🎉'];
+  const el = document.createElement('div');
+  el.className = 'sparkle-pop';
+  el.textContent = items[Math.floor(Math.random() * items.length)];
+  el.style.left = (r.left + r.width / 2) + 'px';
+  el.style.top = (r.top + r.height / 2) + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 750);
+}
+
+function resetGame() {
+  document.querySelectorAll('.info-card').forEach(c => c.classList.remove('placed-out','selected','dragging-active'));
+  document.getElementById('publicBin').innerHTML = '';
+  document.getElementById('privateBin').innerHTML = '';
+  document.getElementById('scoreVal').textContent = 0;
+  document.getElementById('resultArea').style.display = 'none';
+  placed = {}; selectedCard = null;
+}
+
+function nextSection() { alert('🚀 Moving to Section 3! Great work!'); }
+</script>
+</body>
+</html>

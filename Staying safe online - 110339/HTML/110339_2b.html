@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 1 – Internet Safety: Match the Terms</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ══════════ VIOLET ANIMATED BACKGROUND ══════════ */
+  body {
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background: #1a0533;
+    position: relative;
+  }
+
+  /* Deep violet gradient base that slowly rotates hues */
+  .bg-violet {
+    position: fixed; inset: 0; z-index: 0;
+    background: radial-gradient(ellipse at 20% 20%, #3d0f6b 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 10%, #1a0a4a 0%, transparent 45%),
+                radial-gradient(ellipse at 50% 80%, #2d0859 0%, transparent 55%),
+                linear-gradient(135deg, #0d001f 0%, #1a0533 40%, #0a0020 100%);
+    animation: bgPulse 6s ease-in-out infinite alternate;
+  }
+  @keyframes bgPulse {
+    0%   { filter: hue-rotate(0deg) brightness(1); }
+    50%  { filter: hue-rotate(20deg) brightness(1.08); }
+    100% { filter: hue-rotate(-10deg) brightness(0.95); }
+  }
+
+  /* ══════════ LIGHT BALL CANVAS ══════════ */
+  #ballCanvas {
+    position: fixed; inset: 0; z-index: 1;
+    pointer-events: none;
+  }
+
+  /* Star field */
+  .stars {
+    position: fixed; inset: 0; z-index: 2; pointer-events: none;
+    overflow: hidden;
+  }
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: #fff;
+    animation: twinkle ease-in-out infinite alternate;
+  }
+  @keyframes twinkle {
+    from { opacity: 0.1; transform: scale(0.6); }
+    to   { opacity: 0.9; transform: scale(1.2); }
+  }
+
+  /* ══════════ LAYOUT ══════════ */
+  .wrapper { position: relative; z-index: 10; padding: 16px; max-width: 860px; margin: 0 auto; }
+
+  /* ══════════ HEADER ══════════ */
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(80, 20, 140, 0.45);
+    backdrop-filter: blur(18px);
+    border-radius: 24px;
+    padding: 12px 22px;
+    margin-bottom: 18px;
+    border: 1.5px solid rgba(180, 100, 255, 0.35);
+    box-shadow: 0 4px 30px rgba(140, 50, 255, 0.25), inset 0 1px 0 rgba(255,255,255,0.08);
+    animation: slideDown 0.6s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  @keyframes slideDown { from { transform: translateY(-40px); opacity: 0; } }
+
+  .logo {
+    font-family: 'Fredoka One', cursive;
+    font-size: 22px;
+    background: linear-gradient(135deg, #c084fc, #f0abfc, #fb923c);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: 1px;
+  }
+  .score-box {
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    border-radius: 50px;
+    padding: 6px 18px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 17px;
+    color: #fff;
+    box-shadow: 0 3px 15px rgba(168, 85, 247, 0.5), 0 0 20px rgba(168, 85, 247, 0.2);
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: transform 0.3s;
+  }
+  .score-box.bump { animation: scoreBump 0.4s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes scoreBump { 0%,100%{transform:scale(1)} 50%{transform:scale(1.28)} }
+
+  /* ══════════ TITLE ══════════ */
+  h1 {
+    font-family: 'Fredoka One', cursive;
+    text-align: center;
+    font-size: 30px;
+    background: linear-gradient(90deg, #f0abfc, #c084fc, #818cf8, #38bdf8, #34d399, #fbbf24, #f0abfc);
+    background-size: 300% auto;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    animation: rainbowText 4s linear infinite, slideDown 0.7s 0.1s cubic-bezier(.34,1.56,.64,1) both;
+    margin-bottom: 6px;
+    text-shadow: none;
+    filter: drop-shadow(0 0 18px rgba(192,132,252,0.6));
+  }
+  @keyframes rainbowText { 0%{background-position:0%} 100%{background-position:300%} }
+
+  .subtitle {
+    text-align: center;
+    color: rgba(220, 180, 255, 0.85);
+    font-size: 14px; font-weight: 700;
+    margin-bottom: 18px;
+    animation: slideDown 0.7s 0.2s cubic-bezier(.34,1.56,.64,1) both;
+    text-shadow: 0 0 12px rgba(192,132,252,0.5);
+  }
+
+  /* ══════════ PROGRESS ══════════ */
+  .progress {
+    height: 14px;
+    background: rgba(80, 20, 140, 0.4);
+    border-radius: 20px;
+    margin-bottom: 22px;
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.3), 0 0 10px rgba(168,85,247,0.15);
+    animation: slideDown 0.7s 0.3s cubic-bezier(.34,1.56,.64,1) both;
+    overflow: visible;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #c084fc, #818cf8, #38bdf8, #34d399);
+    border-radius: 20px;
+    transition: width 0.7s cubic-bezier(.34,1.56,.64,1);
+    position: relative;
+    box-shadow: 0 0 16px rgba(192,132,252,0.7), 0 0 6px rgba(255,255,255,0.3);
+    overflow: visible;
+  }
+  .progress-bar::after {
+    content: '🚀';
+    position: absolute; right: -14px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    animation: rocketBob 1s ease-in-out infinite alternate;
+    filter: drop-shadow(0 0 8px rgba(255,200,100,0.8));
+  }
+  @keyframes rocketBob { from{transform:translateY(-50%) rotate(-5deg)} to{transform:translateY(-50%) rotate(5deg)} }
+
+  /* ══════════ GAME AREA ══════════ */
+  .game-area { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+  .terms-col, .defs-col { flex: 1; min-width: 280px; }
+  .col-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 15px; text-align: center;
+    margin-bottom: 12px; letter-spacing: 1.5px;
+    padding: 9px 16px; border-radius: 50px;
+    display: inline-block; width: 100%;
+  }
+  .terms-col .col-title {
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(124,58,237,0.5), 0 0 30px rgba(168,85,247,0.2);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .defs-col .col-title {
+    background: linear-gradient(135deg, #0e7490, #06b6d4);
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(6,182,212,0.4), 0 0 30px rgba(6,182,212,0.15);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+
+  /* ══════════ TERM CARDS ══════════ */
+  .term-card {
+    background: rgba(100, 30, 180, 0.35);
+    backdrop-filter: blur(12px);
+    border-radius: 18px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 16px;
+    color: #f0e6ff;
+    cursor: grab;
+    text-align: center;
+    user-select: none;
+    border: 1.5px solid rgba(180, 100, 255, 0.4);
+    position: relative;
+    transition: transform 0.2s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s, opacity 0.3s;
+    animation: cardIn 0.5s cubic-bezier(.34,1.56,.64,1) both;
+    touch-action: none;
+    overflow: hidden;
+  }
+  /* Shimmer overlay on cards */
+  .term-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%);
+    background-size: 200% 100%;
+    animation: shimmer 3s linear infinite;
+    border-radius: inherit;
+  }
+  @keyframes shimmer { from{background-position:200% 0} to{background-position:-200% 0} }
+
+  .term-card:nth-child(1){ animation-delay:0.1s; box-shadow: 0 0 15px rgba(240,107,252,0.25); border-color: rgba(240,107,252,0.5); }
+  .term-card:nth-child(2){ animation-delay:0.2s; box-shadow: 0 0 15px rgba(251,191,36,0.2); border-color: rgba(251,191,36,0.4); }
+  .term-card:nth-child(3){ animation-delay:0.3s; box-shadow: 0 0 15px rgba(52,211,153,0.2); border-color: rgba(52,211,153,0.4); }
+  .term-card:nth-child(4){ animation-delay:0.4s; box-shadow: 0 0 15px rgba(56,189,248,0.2); border-color: rgba(56,189,248,0.4); }
+  .term-card:nth-child(5){ animation-delay:0.5s; box-shadow: 0 0 15px rgba(251,146,60,0.2); border-color: rgba(251,146,60,0.4); }
+  .term-card:nth-child(6){ animation-delay:0.6s; box-shadow: 0 0 15px rgba(192,132,252,0.2); border-color: rgba(192,132,252,0.4); }
+
+  @keyframes cardIn {
+    from { transform: translateX(-50px) rotate(-5deg); opacity: 0; }
+    to   { transform: translateX(0) rotate(0deg); opacity: 1; }
+  }
+  .term-card:hover {
+    transform: scale(1.07) rotate(-1.5deg) translateY(-4px);
+    box-shadow: 0 10px 35px rgba(168,85,247,0.5), 0 0 25px rgba(168,85,247,0.3);
+    z-index: 100;
+    background: rgba(120, 50, 200, 0.55);
+  }
+  .term-card.dragging { opacity: 0.3; transform: scale(0.88); cursor: grabbing; }
+  .term-card.placed   { opacity: 0.25; pointer-events: none; }
+
+  /* ══════════ DRAG GHOST ══════════ */
+  .drag-ghost {
+    position: fixed;
+    pointer-events: none; z-index: 9999;
+    font-family: 'Fredoka One', cursive;
+    font-size: 15px;
+    background: rgba(100, 30, 180, 0.85);
+    backdrop-filter: blur(20px);
+    border-radius: 18px;
+    padding: 12px 20px;
+    color: #f0e6ff;
+    border: 2px solid rgba(192,132,252,0.8);
+    box-shadow: 0 0 30px rgba(168,85,247,0.7), 0 0 60px rgba(168,85,247,0.3), 0 12px 40px rgba(0,0,0,0.5);
+    transform: rotate(4deg) scale(1.08);
+    white-space: nowrap;
+    animation: ghostAppear 0.15s ease both;
+  }
+  @keyframes ghostAppear { from{transform:rotate(0deg) scale(0.7); opacity:0} to{transform:rotate(4deg) scale(1.08); opacity:1} }
+
+  /* ══════════ DEF SLOTS ══════════ */
+  .def-slot {
+    background: rgba(6, 30, 70, 0.5);
+    backdrop-filter: blur(12px);
+    border: 2px dashed rgba(6,182,212,0.4);
+    border-radius: 18px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    min-height: 70px;
+    font-size: 13.5px; font-weight: 700;
+    color: rgba(186,230,253,0.9);
+    transition: background 0.25s, border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+    position: relative;
+    animation: slotIn 0.5s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  .def-slot:nth-child(2){ animation-delay:0.15s; }
+  .def-slot:nth-child(3){ animation-delay:0.25s; }
+  .def-slot:nth-child(4){ animation-delay:0.35s; }
+  .def-slot:nth-child(5){ animation-delay:0.45s; }
+  .def-slot:nth-child(6){ animation-delay:0.55s; }
+  .def-slot:nth-child(7){ animation-delay:0.65s; }
+  @keyframes slotIn {
+    from { transform: translateX(50px) rotate(2deg); opacity: 0; }
+    to   { transform: translateX(0) rotate(0); opacity: 1; }
+  }
+  .def-slot.drag-over {
+    background: rgba(6,182,212,0.2);
+    border-color: #06b6d4;
+    border-style: solid;
+    transform: scale(1.04);
+    box-shadow: 0 0 25px rgba(6,182,212,0.4), 0 0 50px rgba(6,182,212,0.15);
+  }
+  .def-slot .def-text { font-size: 13px; color: rgba(186,230,253,0.8); font-weight: 700; line-height: 1.5; }
+  .def-slot .dropped-term {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    color: #fff;
+    border-radius: 50px;
+    padding: 5px 14px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 14px;
+    margin-top: 8px;
+    box-shadow: 0 0 20px rgba(168,85,247,0.6), 0 3px 10px rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.2);
+    animation: dropPop 0.4s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  @keyframes dropPop {
+    from { transform: scale(0) rotate(-10deg); opacity: 0; }
+    to   { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+  .def-slot.correct {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: #10b981; border-style: solid;
+    box-shadow: 0 0 20px rgba(16,185,129,0.3), 0 0 40px rgba(16,185,129,0.1);
+    animation: correctPulse 0.6s ease both;
+  }
+  @keyframes correctPulse { 0%,100%{transform:scale(1)} 30%{transform:scale(1.04)} 60%{transform:scale(0.99)} }
+  .def-slot.wrong {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: #ef4444; border-style: solid;
+    box-shadow: 0 0 20px rgba(239,68,68,0.3);
+    animation: wrongShake 0.5s ease both;
+  }
+  @keyframes wrongShake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-10px)} 40%{transform:translateX(10px)} 60%{transform:translateX(-6px)} 80%{transform:translateX(6px)} }
+  .checkmark, .crossmark {
+    position: absolute; right: 12px; top: 12px; font-size: 20px;
+    animation: markIn 0.4s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  @keyframes markIn { from{transform:scale(0) rotate(-180deg)} to{transform:scale(1) rotate(0)} }
+
+  /* ══════════ BUTTONS ══════════ */
+  .btn-row { display: flex; gap: 12px; justify-content: center; margin-top: 22px; flex-wrap: wrap; }
+  .btn {
+    padding: 13px 30px; border: none; border-radius: 50px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 16px; cursor: pointer;
+    transition: transform 0.2s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s;
+    position: relative; overflow: hidden;
+    letter-spacing: 0.5px; border: 1.5px solid rgba(255,255,255,0.15);
+  }
+  .btn::before {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(255,255,255,0.12);
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+  }
+  .btn:hover::before { transform: translateX(0); }
+  .btn:hover { transform: scale(1.08) translateY(-2px); }
+  .btn:active { transform: scale(0.96); }
+
+  .btn-check { background: linear-gradient(135deg, #059669, #10b981); color: #fff; box-shadow: 0 6px 25px rgba(16,185,129,0.5), 0 0 30px rgba(16,185,129,0.2); }
+  .btn-retry { background: linear-gradient(135deg, #b45309, #f59e0b); color: #fff; box-shadow: 0 6px 25px rgba(245,158,11,0.45), 0 0 30px rgba(245,158,11,0.2); }
+  .btn-next  { background: linear-gradient(135deg, #7c3aed, #a855f7); color: #fff; box-shadow: 0 6px 25px rgba(168,85,247,0.5), 0 0 30px rgba(168,85,247,0.2); }
+
+  /* ══════════ RESULT BOX ══════════ */
+  .result-box {
+    display: none; text-align: center;
+    background: rgba(60, 10, 110, 0.7);
+    backdrop-filter: blur(20px);
+    border-radius: 28px;
+    padding: 32px 24px; margin-top: 22px;
+    border: 1.5px solid rgba(180, 100, 255, 0.4);
+    box-shadow: 0 8px 50px rgba(140,50,255,0.3), 0 0 80px rgba(140,50,255,0.1);
+    animation: resultIn 0.6s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  @keyframes resultIn { from{transform:scale(0.7) translateY(30px);opacity:0} }
+  .result-emoji { font-size: 70px; margin-bottom: 12px; display: block; animation: emojiSpin 0.8s cubic-bezier(.34,1.56,.64,1) both; }
+  @keyframes emojiSpin { from{transform:scale(0) rotate(-180deg)} to{transform:scale(1) rotate(0)} }
+  .result-msg { font-family: 'Fredoka One', cursive; font-size: 26px; background: linear-gradient(135deg, #f0abfc, #818cf8); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom: 8px; filter: drop-shadow(0 0 12px rgba(192,132,252,0.5)); }
+  .result-sub { font-size: 16px; font-weight: 800; color: rgba(220,180,255,0.9); }
+
+  /* ══════════ CONFETTI ══════════ */
+  .confetti-piece {
+    position: fixed; width: 10px; height: 10px;
+    pointer-events: none; z-index: 9998;
+    border-radius: 2px;
+  }
+
+  @media(max-width:600px){
+    h1 { font-size: 22px; }
+    .game-area { flex-direction: column; }
+    .term-card { font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Violet animated background -->
+<div class="bg-violet"></div>
+
+<!-- Canvas for light balls -->
+<canvas id="ballCanvas"></canvas>
+
+<!-- Star field -->
+<div class="stars" id="stars"></div>
+
+<div class="wrapper">
+  <header>
+    <div class="logo">⭐ Planrs</div>
+    <div class="score-box" id="scoreBox">Score: <span id="scoreVal">0</span>/6</div>
+  </header>
+
+  <h1>🌐 Internet Safety: Match the Terms!</h1>
+  <p class="subtitle">✨ Drag each term and drop it onto the correct definition ✨</p>
+
+  <div class="progress">
+    <div class="progress-bar" id="progressBar" style="width:0%"></div>
+  </div>
+
+  <div class="game-area">
+    <div class="terms-col">
+      <div class="col-title">🏷️ Terms</div>
+      <div class="term-card" id="t1" data-term="Internet">🌐 Internet</div>
+      <div class="term-card" id="t2" data-term="Privacy">🔒 Privacy</div>
+      <div class="term-card" id="t3" data-term="Cyberbullying">😢 Cyberbullying</div>
+      <div class="term-card" id="t4" data-term="Password">🔑 Password</div>
+      <div class="term-card" id="t5" data-term="Stranger">⚠️ Stranger Danger</div>
+      <div class="term-card" id="t6" data-term="Footprint">👣 Digital Footprint</div>
+    </div>
+    <div class="defs-col">
+      <div class="col-title">📖 Definitions</div>
+      <div class="def-slot" id="d1" data-answer="Internet">
+        <div class="def-text">A global system of connected computers that allows sharing of information worldwide</div>
+      </div>
+      <div class="def-slot" id="d2" data-answer="Privacy">
+        <div class="def-text">Keeping your personal information safe and only sharing with people you trust</div>
+      </div>
+      <div class="def-slot" id="d3" data-answer="Cyberbullying">
+        <div class="def-text">Using technology to hurt, threaten, or embarrass another person repeatedly</div>
+      </div>
+      <div class="def-slot" id="d4" data-answer="Password">
+        <div class="def-text">A secret combination of letters, numbers and symbols to protect your account</div>
+      </div>
+      <div class="def-slot" id="d5" data-answer="Stranger">
+        <div class="def-text">Someone you do not know in real life, even if they seem friendly online</div>
+      </div>
+      <div class="def-slot" id="d6" data-answer="Footprint">
+        <div class="def-text">The trail of data you leave behind every time you use the internet</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-check" onclick="checkAnswers()">✅ Check Answers</button>
+    <button class="btn btn-retry" onclick="resetGame()">🔄 Try Again</button>
+  </div>
+
+  <div class="result-box" id="resultBox">
+    <span class="result-emoji" id="resultEmoji">🎉</span>
+    <div class="result-msg" id="resultMsg">Amazing!</div>
+    <div class="result-sub" id="resultSub">You got 6/6 correct!</div>
+    <div class="btn-row" style="margin-top:18px">
+      <button class="btn btn-retry" onclick="resetGame()">🔄 Try Again</button>
+      <button class="btn btn-next" onclick="alert('Move to Section 2 activity!')">➡️ Next Section</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════ STAR FIELD ══════════ */
+(function spawnStars() {
+  const container = document.getElementById('stars');
+  for (let i = 0; i < 80; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = 1 + Math.random() * 2.5;
+    s.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}vw;
+      top:${Math.random()*100}vh;
+      animation-delay:${Math.random()*4}s;
+      animation-duration:${1.5+Math.random()*3}s;
+      opacity:${0.2+Math.random()*0.6};
+    `;
+    container.appendChild(s);
+  }
+})();
+
+/* ══════════ LIGHT BALLS (Canvas) ══════════ */
+(function initBalls() {
+  const canvas = document.getElementById('ballCanvas');
+  const ctx    = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const BALL_COUNT = 14;
+  const balls = [];
+
+  /* Color palette: violet, purple, cyan, magenta, pink, amber */
+  const palettes = [
+    { r:168, g:85,  b:247 },   /* violet */
+    { r:124, g:58,  b:237 },   /* deep purple */
+    { r:6,   g:182, b:212 },   /* cyan */
+    { r:236, g:72,  b:153 },   /* hot pink */
+    { r:240, g:107, b:252 },   /* magenta */
+    { r:251, g:191, b:36  },   /* amber */
+    { r:52,  g:211, b:153 },   /* emerald */
+    { r:99,  g:102, b:241 },   /* indigo */
+  ];
+
+  for (let i = 0; i < BALL_COUNT; i++) {
+    const c = palettes[i % palettes.length];
+    const r = 25 + Math.random() * 55;
+    balls.push({
+      x:   Math.random() * window.innerWidth,
+      y:   Math.random() * window.innerHeight,
+      vx:  (Math.random() - 0.5) * 1.2,
+      vy:  (Math.random() - 0.5) * 1.2,
+      r,
+      cr: c.r, cg: c.g, cb: c.b,
+      alpha:    0.55 + Math.random() * 0.35,
+      pulseT:   Math.random() * Math.PI * 2,
+      pulseSpd: 0.01 + Math.random() * 0.025,
+      trailX: [], trailY: [],
+    });
+  }
+
+  function draw(ts) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    balls.forEach(b => {
+      /* Move */
+      b.x += b.vx;
+      b.y += b.vy;
+      if (b.x < -b.r * 2) b.x = canvas.width  + b.r;
+      if (b.x > canvas.width  + b.r * 2) b.x = -b.r;
+      if (b.y < -b.r * 2) b.y = canvas.height + b.r;
+      if (b.y > canvas.height + b.r * 2) b.y = -b.r;
+
+      /* Pulse size */
+      b.pulseT += b.pulseSpd;
+      const pulse = 1 + 0.15 * Math.sin(b.pulseT);
+      const radius = b.r * pulse;
+
+      /* Trail */
+      b.trailX.push(b.x); b.trailY.push(b.y);
+      if (b.trailX.length > 18) { b.trailX.shift(); b.trailY.shift(); }
+
+      /* Draw trail */
+      for (let t = 0; t < b.trailX.length; t++) {
+        const progress = t / b.trailX.length;
+        const tr = radius * progress * 0.7;
+        const ta = b.alpha * progress * 0.25;
+        ctx.beginPath();
+        ctx.arc(b.trailX[t], b.trailY[t], tr, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${b.cr},${b.cg},${b.cb},${ta})`;
+        ctx.fill();
+      }
+
+      /* Outer soft glow ring */
+      const outerGlow = ctx.createRadialGradient(b.x, b.y, radius * 0.5, b.x, b.y, radius * 3.5);
+      outerGlow.addColorStop(0,   `rgba(${b.cr},${b.cg},${b.cb},${b.alpha * 0.35})`);
+      outerGlow.addColorStop(0.4, `rgba(${b.cr},${b.cg},${b.cb},${b.alpha * 0.1})`);
+      outerGlow.addColorStop(1,   `rgba(${b.cr},${b.cg},${b.cb},0)`);
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, radius * 3.5, 0, Math.PI * 2);
+      ctx.fillStyle = outerGlow;
+      ctx.fill();
+
+      /* Core gradient ball */
+      const grad = ctx.createRadialGradient(
+        b.x - radius * 0.3, b.y - radius * 0.35, radius * 0.05,
+        b.x, b.y, radius
+      );
+      grad.addColorStop(0,   `rgba(255,255,255,${b.alpha * 0.85})`);
+      grad.addColorStop(0.2, `rgba(${b.cr},${b.cg},${b.cb},${b.alpha})`);
+      grad.addColorStop(0.7, `rgba(${b.cr},${b.cg},${b.cb},${b.alpha * 0.6})`);
+      grad.addColorStop(1,   `rgba(${Math.max(0,b.cr-60)},${Math.max(0,b.cg-60)},${Math.max(0,b.cb-30)},0)`);
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, radius, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      /* Specular highlight */
+      const spec = ctx.createRadialGradient(
+        b.x - radius * 0.28, b.y - radius * 0.3, 0,
+        b.x - radius * 0.28, b.y - radius * 0.3, radius * 0.5
+      );
+      spec.addColorStop(0, `rgba(255,255,255,0.7)`);
+      spec.addColorStop(1, `rgba(255,255,255,0)`);
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, radius, 0, Math.PI * 2);
+      ctx.fillStyle = spec;
+      ctx.fill();
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  requestAnimationFrame(draw);
+})();
+
+/* ══════════ CONFETTI ══════════ */
+function launchConfetti(x, y, count = 25) {
+  const colors = ['#c084fc','#f0abfc','#38bdf8','#34d399','#fbbf24','#fb923c','#818cf8','#06b6d4'];
+  for (let i = 0; i < count; i++) {
+    const el  = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left   = (x + (Math.random() - 0.5) * 100) + 'px';
+    el.style.top    = (y - 20) + 'px';
+    el.style.background = colors[Math.floor(Math.random() * colors.length)];
+    if (Math.random() > 0.4) el.style.borderRadius = '50%';
+    el.style.boxShadow = `0 0 8px ${colors[Math.floor(Math.random() * colors.length)]}`;
+    document.body.appendChild(el);
+    const dx = (Math.random() - 0.5) * 320;
+    el.animate([
+      { transform: `translate(0,0) rotate(0deg) scale(1)`, opacity: 1 },
+      { transform: `translate(${dx}px,80vh) rotate(${Math.random()*720}deg) scale(0.3)`, opacity: 0 }
+    ], { duration: 1400 + Math.random() * 1000, easing: 'ease-out', fill: 'forwards' })
+      .onfinish = () => el.remove();
+  }
+}
+
+/* ══════════ GHOST CARD ══════════ */
+let ghost = null;
+function createGhost(text) {
+  ghost = document.createElement('div');
+  ghost.className = 'drag-ghost';
+  ghost.textContent = text;
+  document.body.appendChild(ghost);
+}
+function moveGhost(x, y) {
+  if (!ghost) return;
+  ghost.style.left = (x - ghost.offsetWidth / 2) + 'px';
+  ghost.style.top  = (y - ghost.offsetHeight / 2) + 'px';
+}
+function removeGhost() { if (ghost) { ghost.remove(); ghost = null; } }
+
+/* ══════════ DRAG & DROP ══════════ */
+let draggedTerm = null;
+let score = 0;
+
+function initDrag() {
+  document.querySelectorAll('.term-card').forEach(card => {
+    card.addEventListener('mousedown', e => {
+      if (card.classList.contains('placed')) return;
+      draggedTerm = card;
+      card.classList.add('dragging');
+      createGhost(card.textContent.trim());
+      moveGhost(e.clientX, e.clientY);
+    });
+    card.addEventListener('touchstart', e => {
+      if (card.classList.contains('placed')) return;
+      draggedTerm = card;
+      card.classList.add('dragging');
+      createGhost(card.textContent.trim());
+      moveGhost(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
+    card.addEventListener('touchmove', e => {
+      e.preventDefault();
+      moveGhost(e.touches[0].clientX, e.touches[0].clientY);
+      highlightSlotUnder(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: false });
+    card.addEventListener('touchend', e => {
+      const touch = e.changedTouches[0];
+      removeGhost(); clearDragOver(); card.classList.remove('dragging');
+      const el   = document.elementFromPoint(touch.clientX, touch.clientY);
+      const slot = el ? el.closest('.def-slot') : null;
+      if (slot && !slot.dataset.filled) dropOnSlot(slot, touch.clientX, touch.clientY);
+      else draggedTerm = null;
+    });
+  });
+
+  document.addEventListener('mousemove', e => {
+    if (!draggedTerm) return;
+    moveGhost(e.clientX, e.clientY);
+    highlightSlotUnder(e.clientX, e.clientY);
+  });
+  document.addEventListener('mouseup', e => {
+    if (!draggedTerm) return;
+    removeGhost(); clearDragOver(); draggedTerm.classList.remove('dragging');
+    const el   = document.elementFromPoint(e.clientX, e.clientY);
+    const slot = el ? el.closest('.def-slot') : null;
+    if (slot && !slot.dataset.filled) dropOnSlot(slot, e.clientX, e.clientY);
+    draggedTerm = null;
+  });
+  document.querySelectorAll('.def-slot').forEach(slot => {
+    slot.addEventListener('mouseenter', () => { if (draggedTerm && !slot.dataset.filled) slot.classList.add('drag-over'); });
+    slot.addEventListener('mouseleave', () => slot.classList.remove('drag-over'));
+  });
+}
+
+function highlightSlotUnder(x, y) {
+  clearDragOver();
+  const el = document.elementFromPoint(x, y);
+  const slot = el ? el.closest('.def-slot') : null;
+  if (slot && !slot.dataset.filled) slot.classList.add('drag-over');
+}
+function clearDragOver() {
+  document.querySelectorAll('.def-slot.drag-over').forEach(s => s.classList.remove('drag-over'));
+}
+function dropOnSlot(slot, dropX, dropY) {
+  if (slot.dataset.filled) return;
+  slot.dataset.filled = 'true';
+  const prev = slot.querySelector('.dropped-term');
+  if (prev) prev.remove();
+  const tag = document.createElement('div');
+  tag.className = 'dropped-term';
+  tag.textContent = draggedTerm.textContent.trim();
+  tag.dataset.term = draggedTerm.dataset.term;
+  slot.appendChild(tag);
+  draggedTerm.classList.add('placed');
+  draggedTerm.setAttribute('data-placed', slot.id);
+  launchConfetti(dropX, dropY, 10);
+}
+
+/* ══════════ CHECK ══════════ */
+function checkAnswers() {
+  score = 0;
+  document.querySelectorAll('.def-slot').forEach(slot => {
+    const dropped  = slot.querySelector('.dropped-term');
+    const existing = slot.querySelector('.checkmark, .crossmark');
+    if (existing) existing.remove();
+    slot.classList.remove('correct', 'wrong');
+    if (dropped) {
+      const mark = document.createElement('span');
+      if (dropped.dataset.term === slot.dataset.answer) {
+        slot.classList.add('correct'); mark.className = 'checkmark'; mark.textContent = '✓'; score++;
+      } else {
+        slot.classList.add('wrong'); mark.className = 'crossmark'; mark.textContent = '✗';
+      }
+      slot.appendChild(mark);
+    }
+  });
+  const sb = document.getElementById('scoreBox');
+  document.getElementById('scoreVal').textContent = score;
+  sb.classList.remove('bump'); void sb.offsetWidth; sb.classList.add('bump');
+  document.getElementById('progressBar').style.width = (score / 6 * 100) + '%';
+  if (score === 6) {
+    for (let i = 0; i < 6; i++) {
+      setTimeout(() => launchConfetti(window.innerWidth * Math.random(), window.innerHeight * 0.3, 22), i * 180);
+    }
+  }
+  showResult();
+}
+
+function showResult() {
+  const box = document.getElementById('resultBox');
+  box.style.display = 'block';
+  box.style.animation = 'none'; void box.offsetWidth; box.style.animation = '';
+  const emoji = document.getElementById('resultEmoji');
+  const msg   = document.getElementById('resultMsg');
+  const sub   = document.getElementById('resultSub');
+  sub.textContent = 'You got ' + score + '/6 correct! 🎊';
+  if (score === 6)      { emoji.textContent = '🏆'; msg.textContent = 'Perfect! You are a STAR! 🌟'; }
+  else if (score >= 4)  { emoji.textContent = '😊'; msg.textContent = 'Amazing effort! Keep going!'; }
+  else if (score >= 2)  { emoji.textContent = '💪'; msg.textContent = 'Good try! Review and retry!'; }
+  else                  { emoji.textContent = '🤔'; msg.textContent = 'Keep learning, you can do it!'; }
+}
+
+/* ══════════ RESET ══════════ */
+function resetGame() {
+  document.querySelectorAll('.def-slot').forEach(slot => {
+    const drop = slot.querySelector('.dropped-term');
+    const mark = slot.querySelector('.checkmark, .crossmark');
+    if (drop) drop.remove(); if (mark) mark.remove();
+    slot.classList.remove('correct', 'wrong');
+    delete slot.dataset.filled;
+  });
+  document.querySelectorAll('.term-card').forEach(card => {
+    card.classList.remove('placed', 'dragging');
+    card.removeAttribute('data-placed');
+    card.style.visibility = '';
+  });
+  score = 0;
+  document.getElementById('scoreVal').textContent = 0;
+  document.getElementById('progressBar').style.width = '0%';
+  document.getElementById('resultBox').style.display = 'none';
+  draggedTerm = null; removeGhost();
+}
+
+initDrag();
+</script>
+</body>
+</html>

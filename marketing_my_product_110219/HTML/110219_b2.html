@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 2 Activity B — Memory Match! | Planrs</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --pink: #E91E63;
+    --pink-light: #F48FB1;
+    --pink-pale: #FCE4EC;
+    --deep: #880E4F;
+    --gold: #FFD600;
+    --green: #00E676;
+    --red: #FF1744;
+    --bg: #0a0020;
+  }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    padding: 16px;
+    overflow-x: hidden;
+  }
+
+  /* ===== SPACE BACKGROUND ===== */
+  #space-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ===== PLANETS ===== */
+  .planet {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .planet-1 {
+    width: 120px; height: 120px;
+    background: radial-gradient(circle at 35% 35%, #ff9a9e, #c0392b 60%, #6a0828);
+    top: 8%; right: 6%;
+    box-shadow: 0 0 40px rgba(255,100,100,0.4), inset -10px -10px 20px rgba(0,0,0,0.5);
+    animation: floatPlanet 14s ease-in-out infinite;
+  }
+  .planet-1::after {
+    content: '';
+    position: absolute;
+    width: 160%; height: 28%;
+    border: 8px solid rgba(255,150,100,0.35);
+    border-radius: 50%;
+    top: 36%; left: -30%;
+    transform: rotateX(70deg);
+    box-shadow: 0 0 15px rgba(255,150,100,0.2);
+  }
+  .planet-2 {
+    width: 70px; height: 70px;
+    background: radial-gradient(circle at 40% 30%, #a8edea, #1a6b8a 60%, #0d3347);
+    bottom: 12%; left: 4%;
+    box-shadow: 0 0 30px rgba(100,200,255,0.35), inset -8px -8px 15px rgba(0,0,0,0.4);
+    animation: floatPlanet 10s ease-in-out infinite reverse;
+  }
+  .planet-3 {
+    width: 45px; height: 45px;
+    background: radial-gradient(circle at 35% 35%, #ffecd2, #fcb69f 50%, #a04020);
+    top: 35%; left: 2%;
+    box-shadow: 0 0 20px rgba(255,180,100,0.3);
+    animation: floatPlanet 18s ease-in-out infinite 3s;
+  }
+  @keyframes floatPlanet {
+    0%,100% { transform: translateY(0) rotate(0deg); }
+    33% { transform: translateY(-18px) rotate(3deg); }
+    66% { transform: translateY(10px) rotate(-2deg); }
+  }
+
+  /* ===== SHOOTING STARS ===== */
+  .shooting-star {
+    position: fixed;
+    width: 3px;
+    height: 3px;
+    background: white;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0;
+  }
+  .shooting-star::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 80px; height: 1px;
+    background: linear-gradient(to left, white, transparent);
+    transform-origin: right center;
+  }
+
+  /* ===== LAYOUT ===== */
+  .planrs-badge {
+    position: fixed; top: 10px; left: 12px;
+    background: linear-gradient(135deg, #FFD600, #FF9800);
+    border-radius: 20px; padding: 5px 14px;
+    font-size: 13px; font-weight: 800; color: white;
+    z-index: 200;
+    font-family: 'Fredoka One', cursive;
+    box-shadow: 0 3px 12px rgba(255,200,0,0.5);
+    letter-spacing: 1px;
+  }
+
+  .top-bar {
+    display: flex; justify-content: flex-end; gap: 10px;
+    position: fixed; top: 8px; right: 12px; z-index: 200;
+  }
+  .stat-chip {
+    background: rgba(255,255,255,0.12);
+    border: 2px solid rgba(244,143,177,0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 20px; padding: 5px 14px;
+    font-size: 14px; font-weight: 800; color: #F48FB1;
+  }
+
+  .main-content { position: relative; z-index: 10; }
+
+  h1 {
+    text-align: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(22px, 5vw, 32px);
+    margin: 60px 0 6px;
+    background: linear-gradient(135deg, #ff9a9e, #fecfef, #ffd700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    filter: drop-shadow(0 0 20px rgba(255,150,200,0.5));
+  }
+
+  .subtitle {
+    text-align: center;
+    color: rgba(255,255,255,0.6);
+    font-size: 15px; margin-bottom: 14px;
+  }
+
+  .instruction {
+    background: rgba(233,30,99,0.15);
+    border: 1px solid rgba(244,143,177,0.4);
+    backdrop-filter: blur(10px);
+    border-radius: 14px; padding: 12px 18px;
+    margin: 0 auto 20px; max-width: 700px;
+    color: #fce4ec; font-size: 14px;
+  }
+
+  /* ===== MODE TABS ===== */
+  .mode-tabs {
+    display: flex; gap: 10px; justify-content: center; margin-bottom: 18px;
+  }
+  .mode-tab {
+    padding: 8px 20px; border-radius: 25px; border: 2px solid rgba(244,143,177,0.5);
+    background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6);
+    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px;
+    cursor: pointer; transition: all 0.25s;
+  }
+  .mode-tab.active, .mode-tab:hover {
+    background: var(--pink); border-color: var(--pink);
+    color: white; box-shadow: 0 4px 18px rgba(233,30,99,0.4);
+  }
+
+  /* ===== FLIP CARD GRID ===== */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px; max-width: 700px; margin: 0 auto;
+  }
+
+  .card {
+    aspect-ratio: 1;
+    perspective: 700px;
+    cursor: pointer;
+  }
+  .card-inner {
+    width: 100%; height: 100%; position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(.4,2,.55,1);
+    border-radius: 16px;
+  }
+  .card.flipped .card-inner { transform: rotateY(180deg); }
+  .card-front, .card-back {
+    position: absolute; width: 100%; height: 100%;
+    backface-visibility: hidden; border-radius: 16px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 8px;
+  }
+  .card-front {
+    background: linear-gradient(135deg, #6a0050, #c2185b, #e91e63);
+    color: white; font-size: 26px;
+    box-shadow: 0 4px 20px rgba(233,30,99,0.5), inset 0 1px 0 rgba(255,255,255,0.15);
+  }
+  .card-front .star-sparkle { font-size: 9px; opacity: 0.7; margin-top: 4px; letter-spacing: 2px; }
+  .card-back {
+    background: rgba(255,255,255,0.95);
+    transform: rotateY(180deg);
+    border: 3px solid #F48FB1;
+    text-align: center; font-size: 12px;
+    font-weight: 700; color: #333;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+  .card-back .card-emoji { font-size: 24px; display: block; margin-bottom: 4px; }
+  .card.matched .card-inner { animation: matchPop 0.45s ease forwards; }
+  .card.matched .card-back { background: #e8f5e9; border-color: #4CAF50; }
+  .card.wrong-flash .card-inner { animation: wrongShake 0.45s ease; }
+
+  @keyframes matchPop {
+    0%{transform:rotateY(180deg) scale(1)}
+    40%{transform:rotateY(180deg) scale(1.14)}
+    70%{transform:rotateY(180deg) scale(0.97)}
+    100%{transform:rotateY(180deg) scale(1)}
+  }
+  @keyframes wrongShake {
+    0%,100%{transform:rotateY(180deg) translateX(0)}
+    20%{transform:rotateY(180deg) translateX(-7px)}
+    50%{transform:rotateY(180deg) translateX(7px)}
+    80%{transform:rotateY(180deg) translateX(-4px)}
+  }
+
+  /* ===== DRAG & DROP MODE ===== */
+  #dragDropSection { display: none; max-width: 820px; margin: 0 auto; }
+
+  .dnd-columns {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  }
+
+  .dnd-col-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 17px; color: #F48FB1;
+    text-align: center; margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+
+  .drag-card {
+    background: linear-gradient(135deg, #6a0050, #c2185b);
+    border: 2px solid rgba(244,143,177,0.5);
+    border-radius: 14px; padding: 12px 14px;
+    display: flex; align-items: center; gap: 10px;
+    color: white; font-size: 13px; font-weight: 700;
+    cursor: grab; margin-bottom: 8px;
+    transition: transform 0.18s, box-shadow 0.18s, opacity 0.18s;
+    user-select: none;
+    box-shadow: 0 3px 14px rgba(233,30,99,0.3);
+    position: relative; z-index: 20;
+  }
+  .drag-card:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 8px 25px rgba(233,30,99,0.5); }
+  .drag-card.dragging { opacity: 0.4; transform: scale(0.96); cursor: grabbing; }
+  .drag-card .de { font-size: 22px; }
+  .drag-card.dnd-matched {
+    background: linear-gradient(135deg, #1b5e20, #4caf50);
+    border-color: #81c784; pointer-events: none;
+    animation: matchPulse 0.5s ease;
+  }
+  @keyframes matchPulse {
+    0%{transform:scale(1)} 40%{transform:scale(1.1)} 100%{transform:scale(1)}
+  }
+  .drag-card.dnd-wrong {
+    animation: dndWrong 0.5s ease;
+    border-color: var(--red);
+  }
+  @keyframes dndWrong {
+    0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)}
+  }
+
+  .drop-zone {
+    border: 2.5px dashed rgba(244,143,177,0.45);
+    border-radius: 14px; padding: 12px 14px;
+    display: flex; align-items: center; gap: 10px;
+    color: rgba(255,255,255,0.6); font-size: 13px; font-weight: 700;
+    margin-bottom: 8px; min-height: 56px;
+    transition: all 0.2s; position: relative;
+    background: rgba(255,255,255,0.04);
+  }
+  .drop-zone.drag-over {
+    border-color: var(--gold);
+    background: rgba(255,214,0,0.1);
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(255,214,0,0.3);
+  }
+  .drop-zone.dz-matched {
+    border-color: #4CAF50; border-style: solid;
+    background: rgba(76,175,80,0.12);
+    color: #a5d6a7;
+  }
+  .drop-zone .dz-emoji { font-size: 22px; }
+
+  /* flying ghost card */
+  #ghost-card {
+    position: fixed; pointer-events: none; z-index: 9999;
+    background: linear-gradient(135deg, #6a0050cc, #c2185bcc);
+    border: 2px solid rgba(244,143,177,0.8);
+    border-radius: 14px; padding: 10px 14px;
+    display: flex; align-items: center; gap: 10px;
+    color: white; font-size: 13px; font-weight: 700;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 10px 35px rgba(233,30,99,0.6);
+    opacity: 0; transform: scale(1.05) rotate(-2deg);
+    transition: opacity 0.1s;
+  }
+
+  /* ===== PARTICLE BURST ===== */
+  .particle {
+    position: fixed; width: 8px; height: 8px;
+    border-radius: 50%; pointer-events: none;
+    z-index: 999;
+  }
+
+  /* ===== FEEDBACK & CONTROLS ===== */
+  .feedback-area {
+    text-align: center; font-size: 17px; font-weight: 800;
+    min-height: 28px; margin: 14px auto 8px;
+    font-family: 'Fredoka One', cursive; letter-spacing: 0.5px;
+  }
+
+  .btn-row { display: flex; gap: 12px; justify-content: center; margin-top: 12px; }
+  .btn {
+    padding: 11px 24px; border: none; border-radius: 25px;
+    font-size: 15px; font-weight: 800; cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    font-family: 'Nunito', sans-serif;
+  }
+  .btn:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(0,0,0,0.3); }
+  .btn-try { background: linear-gradient(135deg, #FF9800, #F44336); color: white; }
+  .btn-next { background: linear-gradient(135deg, #4CAF50, #1B5E20); color: white; }
+
+  .result-panel {
+    display: none;
+    background: rgba(10,0,30,0.9);
+    border: 2px solid rgba(244,143,177,0.5);
+    backdrop-filter: blur(20px);
+    border-radius: 24px; padding: 28px 24px;
+    text-align: center; max-width: 480px; margin: 20px auto;
+  }
+  .result-panel h2 {
+    font-family: 'Fredoka One', cursive;
+    font-size: 26px;
+    background: linear-gradient(135deg, #ff9a9e, #ffd700);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .result-panel p { color: rgba(255,255,255,0.75); margin-top: 10px; }
+  .stars { font-size: 34px; margin: 10px 0; }
+
+  @media(max-width:480px) {
+    .grid { gap: 6px; }
+    .card-back { font-size: 10px; }
+    .dnd-columns { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Space Canvas -->
+<canvas id="space-canvas"></canvas>
+
+<!-- Floating Planets -->
+<div class="planet planet-1"></div>
+<div class="planet planet-2"></div>
+<div class="planet planet-3"></div>
+
+<!-- Ghost drag card -->
+<div id="ghost-card"><span id="ghost-emoji" style="font-size:22px"></span><span id="ghost-label"></span></div>
+
+<div class="planrs-badge">⭐ Planrs</div>
+<div class="top-bar">
+  <div class="stat-chip" id="pairsChip">Pairs: 0/8</div>
+  <div class="stat-chip" id="triesChip">Tries: 0</div>
+</div>
+
+<div class="main-content">
+  <h1>🃏 Marketing Memory Match!</h1>
+  <p class="subtitle">Section 2 Activity B — Match each product with its target customer</p>
+
+  <div class="instruction">
+    🎮 <strong>Flip Mode:</strong> Flip two cards to match product + customer. &nbsp;|&nbsp;
+    🖱️ <strong>Drag Mode:</strong> Drag product cards onto the correct customer drop zones. Find all 8 pairs!
+  </div>
+
+  <!-- Mode Tabs -->
+  <div class="mode-tabs">
+    <button class="mode-tab active" id="tabFlip" onclick="switchMode('flip')">🃏 Flip Mode</button>
+    <button class="mode-tab" id="tabDrag" onclick="switchMode('drag')">🖱️ Drag & Drop Mode</button>
+  </div>
+
+  <!-- FLIP MODE -->
+  <div id="flipSection">
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <!-- DRAG & DROP MODE -->
+  <div id="dragDropSection">
+    <div class="dnd-columns">
+      <div>
+        <div class="dnd-col-title">🛍️ Products (Drag Me!)</div>
+        <div id="dndProducts"></div>
+      </div>
+      <div>
+        <div class="dnd-col-title">👤 Customers (Drop Here!)</div>
+        <div id="dndDropZones"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feedback-area" id="feedback"></div>
+  <div class="btn-row">
+    <button class="btn btn-try" onclick="restartCurrent()">🔄 Shuffle & Restart</button>
+  </div>
+
+  <div class="result-panel" id="resultPanel">
+    <div class="stars" id="resultStars">⭐⭐⭐</div>
+    <h2 id="resultTitle">Memory Champion!</h2>
+    <p id="resultMsg"></p>
+    <div class="btn-row" style="justify-content:center;margin-top:16px">
+      <button class="btn btn-try" onclick="restartCurrent()">🔄 Play Again</button>
+      <button class="btn btn-next" onclick="alert('Move to Section 3!')">➡️ Next Section</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ========== DATA ========== */
+const pairs = [
+  { emoji:'🍪', product:'Parle-G Biscuits',    customerEmoji:'👦', customer:'Children & Families',     id:1 },
+  { emoji:'👓', product:'Reading Glasses',      customerEmoji:'👴', customer:'Senior Citizens',         id:2 },
+  { emoji:'🎮', product:'Video Game Console',   customerEmoji:'🧑', customer:'Teenagers',               id:3 },
+  { emoji:'🚗', product:'Car Loan Service',     customerEmoji:'👨‍💼', customer:'Working Adults',          id:4 },
+  { emoji:'✏️', product:'Geometry Box',          customerEmoji:'🎒', customer:'School Students',         id:5 },
+  { emoji:'🧴', product:'Pain Relief Oil',      customerEmoji:'🏡', customer:'Elderly at Home',         id:6 },
+  { emoji:'📱', product:'Exam Study App',        customerEmoji:'📖', customer:'Students (Age 13–18)',    id:7 },
+  { emoji:'🛒', product:'Monthly Grocery Kit',  customerEmoji:'👩‍🍳', customer:'Homemakers & Parents',   id:8 },
+];
+
+let currentMode = 'flip';
+let flipped=[], matched=[], tries=0, canFlip=true;
+let dndMatched=[], dndTries=0;
+
+/* ========== MODE SWITCH ========== */
+function switchMode(mode) {
+  currentMode = mode;
+  document.getElementById('tabFlip').classList.toggle('active', mode==='flip');
+  document.getElementById('tabDrag').classList.toggle('active', mode==='drag');
+  document.getElementById('flipSection').style.display = mode==='flip'?'block':'none';
+  document.getElementById('dragDropSection').style.display = mode==='drag'?'block':'none';
+  document.getElementById('resultPanel').style.display = 'none';
+  document.getElementById('feedback').textContent = '';
+  if(mode==='flip') initFlip(); else initDnD();
+}
+
+function restartCurrent() {
+  document.getElementById('resultPanel').style.display='none';
+  if(currentMode==='flip') initFlip(); else initDnD();
+}
+
+/* ========== SPACE CANVAS ========== */
+const canvas = document.getElementById('space-canvas');
+const ctx = canvas.getContext('2d');
+let stars=[], nebulae=[];
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+function initSpace() {
+  resizeCanvas();
+  stars = [];
+  nebulae = [];
+  for(let i=0;i<220;i++){
+    stars.push({
+      x: Math.random()*canvas.width,
+      y: Math.random()*canvas.height,
+      r: Math.random()*1.8+0.3,
+      speed: Math.random()*0.4+0.05,
+      twinkleSpeed: Math.random()*0.04+0.01,
+      twinklePhase: Math.random()*Math.PI*2,
+      color: ['#ffffff','#ffe5e5','#e5f0ff','#fff5cc'][Math.floor(Math.random()*4)]
+    });
+  }
+  for(let i=0;i<5;i++){
+    nebulae.push({
+      x: Math.random()*canvas.width,
+      y: Math.random()*canvas.height,
+      rx: 120+Math.random()*150,
+      ry: 80+Math.random()*100,
+      hue: [300,260,200,340,180][i],
+      alpha: 0.04+Math.random()*0.06,
+      drift: (Math.random()-0.5)*0.15
+    });
+  }
+}
+
+function drawSpace(t) {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // Background gradient
+  const grad = ctx.createLinearGradient(0,0,canvas.width,canvas.height);
+  grad.addColorStop(0,'#050015');
+  grad.addColorStop(0.5,'#0a0025');
+  grad.addColorStop(1,'#100030');
+  ctx.fillStyle=grad;
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  // Nebulae
+  nebulae.forEach(n=>{
+    n.x += n.drift;
+    if(n.x>canvas.width+200) n.x=-200;
+    const g=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.rx);
+    g.addColorStop(0,`hsla(${n.hue},80%,60%,${n.alpha})`);
+    g.addColorStop(1,'transparent');
+    ctx.beginPath();
+    ctx.ellipse(n.x,n.y,n.rx,n.ry,0,0,Math.PI*2);
+    ctx.fillStyle=g; ctx.fill();
+  });
+
+  // Stars
+  stars.forEach(s=>{
+    s.y += s.speed;
+    if(s.y > canvas.height) { s.y=-5; s.x=Math.random()*canvas.width; }
+    s.twinklePhase += s.twinkleSpeed;
+    const alpha = 0.5 + 0.5*Math.sin(s.twinklePhase);
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.shadowBlur = s.r > 1.2 ? 6 : 0;
+    ctx.shadowColor = s.color;
+    ctx.beginPath();
+    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle=s.color;
+    ctx.fill();
+    ctx.restore();
+  });
+
+  requestAnimationFrame(drawSpace);
+}
+
+/* ========== SHOOTING STARS ========== */
+function launchShootingStar() {
+  const el = document.createElement('div');
+  el.className='shooting-star';
+  const y = Math.random()*50+'vh';
+  const x = Math.random()*60+20+'vw';
+  el.style.cssText=`top:${y};left:${x};opacity:0;`;
+  document.body.appendChild(el);
+  let angle = 30+Math.random()*20;
+  let dist = 200+Math.random()*200;
+  el.animate([
+    {opacity:0,transform:`translate(0,0) rotate(${angle}deg)`},
+    {opacity:1,transform:`translate(${dist*0.1}px,${dist*0.05}px) rotate(${angle}deg)`},
+    {opacity:0,transform:`translate(${dist}px,${dist*0.5}px) rotate(${angle}deg)`}
+  ],{duration:700+Math.random()*400,easing:'ease-in'}).onfinish=()=>el.remove();
+}
+setInterval(launchShootingStar, 2200);
+
+/* ========== PARTICLE BURST ========== */
+function burst(x,y,color='#FFD600') {
+  for(let i=0;i<16;i++){
+    const p=document.createElement('div');
+    p.className='particle';
+    const angle=Math.random()*360, dist=50+Math.random()*80;
+    const rad=angle*Math.PI/180;
+    p.style.cssText=`left:${x}px;top:${y}px;background:${color};`;
+    document.body.appendChild(p);
+    p.animate([
+      {opacity:1,transform:'scale(1) translate(0,0)'},
+      {opacity:0,transform:`scale(0.2) translate(${Math.cos(rad)*dist}px,${Math.sin(rad)*dist}px)`}
+    ],{duration:600+Math.random()*300,easing:'ease-out'}).onfinish=()=>p.remove();
+  }
+}
+
+/* ========== FLIP MODE ========== */
+function initFlip() {
+  flipped=[]; matched=[]; tries=0; canFlip=true;
+  updateChips();
+  document.getElementById('feedback').textContent='';
+  const cards=[];
+  pairs.forEach(p=>{
+    cards.push({type:'product',id:p.id,emoji:p.emoji,label:p.product});
+    cards.push({type:'customer',id:p.id,emoji:p.customerEmoji,label:'Customer: '+p.customer});
+  });
+  shuffle(cards);
+  const grid=document.getElementById('grid');
+  grid.innerHTML='';
+  cards.forEach((card,i)=>{
+    const div=document.createElement('div');
+    div.className='card';
+    div.dataset.id=card.id; div.dataset.type=card.type; div.dataset.index=i;
+    div.innerHTML=`<div class="card-inner">
+      <div class="card-front"><div style="font-size:28px">🎴</div><div class="star-sparkle">✦ ✦ ✦</div></div>
+      <div class="card-back"><span class="card-emoji">${card.emoji}</span><span>${card.label}</span></div>
+    </div>`;
+    div.addEventListener('click',()=>flipCard(div));
+    grid.appendChild(div);
+  });
+}
+
+function flipCard(card) {
+  if(!canFlip||card.classList.contains('flipped')||card.classList.contains('matched')) return;
+  card.classList.add('flipped'); flipped.push(card);
+  if(flipped.length===2){
+    tries++; updateChips(); canFlip=false;
+    setTimeout(checkFlipMatch,900);
+  }
+}
+
+function checkFlipMatch(){
+  const [a,b]=flipped;
+  if(a.dataset.id===b.dataset.id && a.dataset.type!==b.dataset.type){
+    a.classList.add('matched'); b.classList.add('matched');
+    matched.push(a.dataset.id);
+    updateChips();
+    const rect=b.getBoundingClientRect();
+    burst(rect.left+rect.width/2, rect.top+rect.height/2, '#4CAF50');
+    showFeedback(['🌟 Great match!','⭐ Brilliant!','💡 Spot on!','🎉 Amazing!','🔥 On fire!'],'#00E676');
+    if(matched.length===8) setTimeout(showResult,500);
+  } else {
+    a.classList.add('wrong-flash'); b.classList.add('wrong-flash');
+    showFeedback('❌ Not a match — try again!','#FF5252');
+    setTimeout(()=>{ a.classList.remove('flipped','wrong-flash'); b.classList.remove('flipped','wrong-flash'); },650);
+  }
+  flipped=[]; canFlip=true;
+}
+
+/* ========== DRAG & DROP MODE ========== */
+let dragItem=null, dragId=null;
+const ghost=document.getElementById('ghost-card');
+
+function initDnD() {
+  dndMatched=[]; dndTries=0; canFlip=true;
+  updateChips(true);
+  document.getElementById('feedback').textContent='';
+
+  const shuffledPairs=[...pairs]; shuffle(shuffledPairs);
+  const shuffledZones=[...pairs]; shuffle(shuffledZones);
+
+  const prodCol=document.getElementById('dndProducts');
+  const dropCol=document.getElementById('dndDropZones');
+  prodCol.innerHTML=''; dropCol.innerHTML='';
+
+  shuffledPairs.forEach(p=>{
+    const d=document.createElement('div');
+    d.className='drag-card';
+    d.dataset.id=p.id;
+    d.innerHTML=`<span class="de">${p.emoji}</span><span>${p.product}</span>`;
+    d.addEventListener('mousedown',e=>startDrag(e,d,p.emoji,p.product));
+    d.addEventListener('touchstart',e=>startDrag(e,d,p.emoji,p.product),{passive:false});
+    prodCol.appendChild(d);
+  });
+
+  shuffledZones.forEach(p=>{
+    const z=document.createElement('div');
+    z.className='drop-zone';
+    z.dataset.id=p.id;
+    z.innerHTML=`<span class="dz-emoji">${p.customerEmoji}</span><span>${p.customer}</span>`;
+    dropCol.appendChild(z);
+  });
+
+  document.addEventListener('mousemove',onDragMove);
+  document.addEventListener('mouseup',onDragEnd);
+  document.addEventListener('touchmove',onDragMove,{passive:false});
+  document.addEventListener('touchend',onDragEnd);
+}
+
+function startDrag(e,el,emoji,label){
+  e.preventDefault();
+  if(el.classList.contains('dnd-matched')) return;
+  dragItem=el; dragId=el.dataset.id;
+  el.classList.add('dragging');
+  document.getElementById('ghost-emoji').textContent=emoji;
+  document.getElementById('ghost-label').textContent=label;
+  ghost.style.opacity='1';
+  moveGhost(e);
+  // highlight drop zones
+  document.querySelectorAll('.drop-zone').forEach(z=>{ if(!z.classList.contains('dz-matched')) z.style.borderColor='rgba(255,214,0,0.5)'; });
+}
+
+function moveGhost(e){
+  const x=e.touches?e.touches[0].clientX:e.clientX;
+  const y=e.touches?e.touches[0].clientY:e.clientY;
+  ghost.style.left=(x+14)+'px';
+  ghost.style.top=(y-24)+'px';
+
+  // hover highlight
+  document.querySelectorAll('.drop-zone').forEach(z=>{
+    if(z.classList.contains('dz-matched')) return;
+    const r=z.getBoundingClientRect();
+    if(x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom) z.classList.add('drag-over');
+    else z.classList.remove('drag-over');
+  });
+}
+
+function onDragMove(e){ if(!dragItem) return; e.preventDefault(); moveGhost(e); }
+
+function onDragEnd(e){
+  if(!dragItem) return;
+  ghost.style.opacity='0';
+  const x=e.changedTouches?e.changedTouches[0].clientX:e.clientX;
+  const y=e.changedTouches?e.changedTouches[0].clientY:e.clientY;
+
+  let dropped=null;
+  document.querySelectorAll('.drop-zone').forEach(z=>{
+    z.classList.remove('drag-over');
+    if(z.classList.contains('dz-matched')) return;
+    const r=z.getBoundingClientRect();
+    if(x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom) dropped=z;
+    z.style.borderColor='';
+  });
+
+  dragItem.classList.remove('dragging');
+  dndTries++;
+  updateChips(true);
+
+  if(dropped && dropped.dataset.id===dragId){
+    dragItem.classList.add('dnd-matched');
+    dropped.classList.add('dz-matched');
+    dndMatched.push(dragId);
+    updateChips(true);
+    burst(x,y,'#00E676');
+    showFeedback(['🌟 Perfect Drop!','⭐ Nailed it!','💡 Brilliant Match!','🎉 Yes!'],'#00E676');
+    if(dndMatched.length===8) setTimeout(showResult,500);
+  } else if(dropped){
+    dragItem.classList.add('dnd-wrong');
+    setTimeout(()=>dragItem.classList.remove('dnd-wrong'),500);
+    burst(x,y,'#FF1744');
+    showFeedback('❌ Wrong customer — try again!','#FF5252');
+  } else {
+    showFeedback('💨 Dropped outside — try a zone!','#FF9800');
+  }
+
+  dragItem=null; dragId=null;
+}
+
+/* ========== HELPERS ========== */
+function shuffle(arr){ for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];} }
+
+function updateChips(isDnd=false){
+  const m=isDnd?dndMatched.length:matched.length;
+  const t=isDnd?dndTries:tries;
+  document.getElementById('pairsChip').textContent=`Pairs: ${m}/8`;
+  document.getElementById('triesChip').textContent=`Tries: ${t}`;
+}
+
+const feedbackMsgs=['🌟 Great match!','⭐ You found a pair!','💡 Brilliant!','🎉 Spot on!','🔥 On fire!'];
+function showFeedback(msg,color){
+  const fb=document.getElementById('feedback');
+  fb.textContent=Array.isArray(msg)?msg[Math.floor(Math.random()*msg.length)]:msg;
+  fb.style.color=color;
+}
+
+function showResult(){
+  const t=currentMode==='flip'?tries:dndTries;
+  const panel=document.getElementById('resultPanel');
+  panel.style.display='block';
+  const rating=t<=10?3:t<=16?2:1;
+  document.getElementById('resultStars').textContent='⭐'.repeat(rating);
+  document.getElementById('resultTitle').textContent=rating===3?'🏆 Memory Champion!':rating===2?'🎉 Well Done!':'👍 Good Effort!';
+  document.getElementById('resultMsg').textContent=`You matched all 8 pairs in ${t} tries! ${rating===3?'Incredible memory!':'Try again to beat your score!'}`;
+  panel.scrollIntoView({behavior:'smooth'});
+  // big burst at center
+  burst(window.innerWidth/2,window.innerHeight/2,'#FFD600');
+  setTimeout(()=>burst(window.innerWidth/2,window.innerHeight/2,'#ff9a9e'),250);
+  setTimeout(()=>burst(window.innerWidth/2,window.innerHeight/2,'#4CAF50'),500);
+}
+
+/* ========== INIT ========== */
+window.addEventListener('resize',()=>{ resizeCanvas(); });
+initSpace();
+requestAnimationFrame(drawSpace);
+initFlip();
+</script>
+</body>
+</html>

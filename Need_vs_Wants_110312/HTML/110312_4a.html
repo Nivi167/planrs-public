@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌟 Needs & Wants Final Quiz | ⭐ Planrs</title>
+<link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --pink:#FF6B9D; --yellow:#FFD93D; --teal:#00D2C8; --purple:#9B59FF;
+  --orange:#FF8C42; --green:#2ECC71; --blue:#4D96FF; --coral:#FF6B5B;
+  --lime:#A8FF3E; --hot:#FF0099; --sky:#00BFFF;
+  --white:#FFFFFF; --dark:#1A0533;
+}
+
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Nunito',sans-serif;
+  min-height:100vh; overflow-x:hidden;
+
+  background:#0a0020;
+}
+
+/* ══════════ CANVAS BACKGROUND ══════════ */
+#bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+
+/* ══════════ NEON GLOW LAYER ══════════ */
+.neon-bg{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 80% 60% at 20% 30%, rgba(155,89,255,0.25) 0%,transparent 60%),
+             radial-gradient(ellipse 70% 50% at 80% 70%, rgba(255,107,157,0.2) 0%,transparent 60%),
+             radial-gradient(ellipse 60% 40% at 50% 50%, rgba(0,210,200,0.15) 0%,transparent 60%);
+  animation:neonPulse 4s ease-in-out infinite alternate;
+}
+@keyframes neonPulse{
+  0%{opacity:0.7; filter:hue-rotate(0deg);}
+  100%{opacity:1; filter:hue-rotate(30deg);}
+}
+
+/* ══════════ FLOATING BUBBLE OBJECTS ══════════ */
+.bubble{
+  position:fixed;z-index:1;pointer-events:none;
+  font-size:clamp(1.6rem,3vw,2.8rem);
+  filter:drop-shadow(0 0 12px rgba(255,255,255,0.5));
+  animation:bubbleFloat linear infinite;
+}
+@keyframes bubbleFloat{
+  0%{transform:translateY(110vh) rotate(0deg) scale(0.8);}
+  100%{transform:translateY(-15vh) rotate(360deg) scale(1.1);}
+}
+
+/* ══════════ SPARKLE PARTICLES ══════════ */
+.sparkle{
+  position:fixed;z-index:2;pointer-events:none;
+  width:8px;height:8px;border-radius:50%;
+  animation:sparkleFly 1.5s ease-out forwards;
+}
+@keyframes sparkleFly{
+  0%{transform:scale(1);opacity:1;}
+  100%{transform:scale(0) translate(var(--tx),var(--ty));opacity:0;}
+}
+
+/* ══════════ CONFETTI ══════════ */
+.conf{
+  position:fixed;z-index:999;pointer-events:none;
+  animation:confDrop var(--dur) ease-out forwards;
+  animation-delay:var(--delay);
+}
+@keyframes confDrop{
+  0%{transform:translateY(-30px) rotate(0deg) scaleX(1);opacity:1;}
+  50%{scaleX:-1;}
+  100%{transform:translateY(110vh) rotate(var(--rot)) scaleX(1);opacity:0;}
+}
+
+/* ══════════ PLANRS BADGE ══════════ */
+.planrs-badge{
+  position:fixed;top:14px;left:16px;z-index:200;
+  background:linear-gradient(135deg,#9B59FF,#FF6B9D);
+  border-radius:50px;padding:7px 18px;
+  font-family:'Boogaloo',cursive;font-size:18px;color:#fff;
+  box-shadow:0 0 20px rgba(155,89,255,0.8),0 4px 0 rgba(0,0,0,0.3);
+  animation:badgePop 2s ease-in-out infinite alternate;
+}
+@keyframes badgePop{
+  0%{transform:rotate(-3deg) scale(1);}
+  100%{transform:rotate(3deg) scale(1.06);}
+}
+
+/* ══════════ SCORE BADGE ══════════ */
+.score-badge{
+  position:fixed;top:14px;right:16px;z-index:200;
+  background:linear-gradient(135deg,#2ECC71,#00D2C8);
+  border-radius:50px;padding:7px 20px;
+  font-family:'Boogaloo',cursive;font-size:18px;color:#fff;
+  box-shadow:0 0 20px rgba(46,204,113,0.8),0 4px 0 rgba(0,0,0,0.3);
+  transition:all 0.3s;
+}
+.score-badge.bump{animation:scoreBump 0.5s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes scoreBump{
+  0%{transform:scale(1);}50%{transform:scale(1.4) rotate(-8deg);}100%{transform:scale(1);}
+}
+
+/* ══════════ MAIN CONTAINER ══════════ */
+.container{
+  position:relative;z-index:10;
+  max-width:680px;margin:0 auto;padding:80px 16px 60px;
+}
+
+/* ══════════ TITLE ══════════ */
+.title-block{text-align:center;margin-bottom:20px;}
+.title-emoji{
+  font-size:clamp(3rem,8vw,5rem);
+  display:block;margin-bottom:8px;
+  animation:emojiOrbit 3s ease-in-out infinite;
+  filter:drop-shadow(0 0 20px rgba(255,215,61,0.9));
+}
+@keyframes emojiOrbit{
+  0%,100%{transform:translateY(0) scale(1);}
+  50%{transform:translateY(-16px) scale(1.1);}
+}
+h1{
+  font-family:'Boogaloo',cursive;
+  font-size:clamp(26px,6vw,48px);
+  line-height:1.1;
+  background:linear-gradient(90deg,#FFD93D,#FF6B9D,#9B59FF,#00D2C8,#A8FF3E,#FFD93D);
+  background-size:300% 100%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:titleRainbow 3s linear infinite;
+  filter:drop-shadow(0 0 30px rgba(255,215,61,0.4));
+  letter-spacing:1px;
+}
+@keyframes titleRainbow{
+  0%{background-position:0% 50%;}100%{background-position:300% 50%;}
+}
+.subtitle{
+  color:rgba(255,255,255,0.7);font-size:15px;font-weight:800;
+  margin-top:8px;letter-spacing:1px;
+}
+
+/* ══════════ MASCOT ══════════ */
+.mascot{
+  position:fixed;bottom:20px;right:20px;z-index:150;
+  font-size:clamp(2.5rem,5vw,4rem);
+  animation:mascotBob 2s ease-in-out infinite;
+  cursor:pointer;
+  filter:drop-shadow(0 0 15px rgba(255,215,61,0.8));
+  transition:transform 0.2s;
+}
+.mascot:hover{transform:scale(1.3) rotate(15deg)!important;}
+@keyframes mascotBob{
+  0%,100%{transform:translateY(0) rotate(-5deg);}
+  50%{transform:translateY(-12px) rotate(5deg);}
+}
+.mascot-bubble{
+  position:fixed;bottom:85px;right:20px;z-index:150;
+  background:white;border-radius:16px 16px 4px 16px;
+  padding:10px 14px;font-size:13px;font-weight:800;
+  color:var(--dark);max-width:180px;text-align:center;
+  box-shadow:0 0 20px rgba(155,89,255,0.5);
+  animation:bubblePop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  border:2px solid var(--purple);
+}
+@keyframes bubblePop{from{transform:scale(0) translateY(20px);}to{transform:scale(1) translateY(0);}}
+
+/* ══════════ PROGRESS ══════════ */
+.progress-wrap{margin-bottom:20px;}
+.prog-label{
+  display:flex;justify-content:space-between;
+  font-size:13px;font-weight:900;margin-bottom:8px;
+  color:rgba(255,255,255,0.9);letter-spacing:0.5px;
+}
+.progress-track{
+  background:rgba(255,255,255,0.15);border-radius:50px;height:20px;
+  overflow:visible;position:relative;
+  border:2px solid rgba(255,255,255,0.2);
+  box-shadow:0 0 15px rgba(155,89,255,0.4);
+}
+.progress-fill{
+  background:linear-gradient(90deg,#FFD93D,#FF6B9D,#9B59FF,#00D2C8);
+  background-size:300% 100%;
+  height:100%;border-radius:50px;
+  transition:width 0.8s cubic-bezier(0.34,1.56,0.64,1);
+  animation:progressRainbow 2s linear infinite;
+  width:0%;position:relative;
+  box-shadow:0 0 15px rgba(255,107,157,0.8);
+}
+@keyframes progressRainbow{0%{background-position:0% 50%;}100%{background-position:300% 50%;}}
+.progress-fill::after{
+  content:'🚀';position:absolute;right:-14px;top:-10px;
+  font-size:26px;animation:rocketWiggle 0.5s ease-in-out infinite alternate;
+}
+@keyframes rocketWiggle{0%{transform:rotate(-10deg);}100%{transform:rotate(10deg);}}
+
+/* ══════════ QUIZ CARD ══════════ */
+.quiz-card{
+  background:rgba(255,255,255,0.07);
+  backdrop-filter:blur(20px);
+  border:2px solid rgba(255,255,255,0.2);
+  border-radius:28px;padding:28px 28px 22px;
+  box-shadow:0 0 40px rgba(155,89,255,0.3),0 20px 60px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.1);
+  position:relative;overflow:hidden;
+  animation:cardSlide 0.6s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes cardSlide{
+  from{transform:translateX(60px) rotate(3deg) scale(0.92);opacity:0;}
+  to{transform:translateX(0) rotate(0deg) scale(1);opacity:1;}
+}
+.quiz-card::before{
+  content:'';position:absolute;inset:0;border-radius:28px;
+  background:linear-gradient(135deg,rgba(155,89,255,0.1),rgba(255,107,157,0.05),rgba(0,210,200,0.08));
+  pointer-events:none;
+}
+.quiz-card::after{
+  content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+  background:conic-gradient(transparent,rgba(155,89,255,0.15),transparent,rgba(255,107,157,0.1),transparent);
+  animation:cardSpin 8s linear infinite;pointer-events:none;border-radius:50%;
+}
+@keyframes cardSpin{to{transform:rotate(360deg);}}
+
+.q-num{
+  font-family:'Boogaloo',cursive;font-size:14px;
+  color:var(--yellow);margin-bottom:12px;
+  display:flex;align-items:center;gap:8px;letter-spacing:1px;
+}
+.q-num .dot{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--yellow);
+  box-shadow:0 0 10px var(--yellow);
+  animation:dotGlow 1s ease-in-out infinite alternate;
+}
+@keyframes dotGlow{0%{box-shadow:0 0 5px var(--yellow);}100%{box-shadow:0 0 20px var(--yellow),0 0 30px rgba(255,215,61,0.5);}}
+
+.q-text{
+  font-size:clamp(15px,2.5vw,19px);
+  color:#fff;font-weight:800;line-height:1.55;margin-bottom:22px;
+  text-shadow:0 2px 10px rgba(0,0,0,0.3);position:relative;z-index:2;
+}
+
+/* ══════════ OPTIONS ══════════ */
+.options{display:flex;flex-direction:column;gap:10px;position:relative;z-index:2;}
+.option{
+  padding:14px 20px;border-radius:18px;
+  border:2px solid rgba(255,255,255,0.15);
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(10px);
+  font-size:15px;font-weight:800;cursor:pointer;
+  transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  text-align:left;font-family:'Nunito',sans-serif;
+  color:rgba(255,255,255,0.9);
+  position:relative;overflow:hidden;
+  animation:optionPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+.option::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent);
+  transform:translateX(-100%);transition:transform 0.4s;
+}
+.option:hover:not(:disabled){
+  border-color:var(--yellow);
+  background:rgba(255,215,61,0.15);
+  transform:translateX(10px) scale(1.02);
+  box-shadow:0 0 20px rgba(255,215,61,0.4),-4px 0 0 var(--yellow);
+  color:#fff;
+}
+.option:hover:not(:disabled)::before{transform:translateX(100%);}
+.option.correct{
+  background:linear-gradient(135deg,rgba(46,204,113,0.3),rgba(0,210,200,0.2));
+  border-color:var(--green);color:#A8FF3E;
+  box-shadow:0 0 30px rgba(46,204,113,0.6),0 0 60px rgba(46,204,113,0.2);
+  animation:correctExplode 0.6s cubic-bezier(0.34,1.56,0.64,1);
+  transform:translateX(10px);
+}
+.option.wrong{
+  background:linear-gradient(135deg,rgba(255,107,91,0.3),rgba(255,0,0,0.1));
+  border-color:var(--coral);color:#FFB3AD;
+  box-shadow:0 0 20px rgba(255,107,91,0.5);
+  animation:wrongShake 0.5s ease;
+}
+.option.reveal{
+  background:linear-gradient(135deg,rgba(46,204,113,0.2),rgba(0,210,200,0.15));
+  border-color:var(--green);color:#A8FF3E;
+  animation:revealGlow 0.8s ease infinite alternate;
+}
+@keyframes correctExplode{
+  0%{transform:scale(0.95);}40%{transform:scale(1.05) translateX(12px);}100%{transform:scale(1) translateX(10px);}
+}
+@keyframes wrongShake{
+  0%,100%{transform:translateX(0);}15%{transform:translateX(-12px);}30%{transform:translateX(12px);}
+  45%{transform:translateX(-8px);}60%{transform:translateX(8px);}75%{transform:translateX(-4px);}
+}
+@keyframes revealGlow{
+  0%{box-shadow:0 0 10px rgba(46,204,113,0.4);}100%{box-shadow:0 0 30px rgba(46,204,113,0.8);}
+}
+@keyframes optionPop{
+  from{transform:translateX(30px);opacity:0;}to{transform:translateX(0);opacity:1;}
+}
+
+/* ══════════ EXPLANATION ══════════ */
+.explanation{
+  background:linear-gradient(135deg,rgba(155,89,255,0.2),rgba(0,210,200,0.1));
+  border:1.5px solid rgba(155,89,255,0.5);
+  border-radius:16px;padding:14px 18px;
+  font-size:14px;font-weight:700;color:rgba(255,255,255,0.9);
+  margin-top:14px;display:none;line-height:1.6;
+  box-shadow:0 0 20px rgba(155,89,255,0.2);
+  animation:explainSlide 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  position:relative;z-index:2;
+}
+@keyframes explainSlide{
+  from{transform:translateY(-15px) scale(0.97);opacity:0;}
+  to{transform:translateY(0) scale(1);opacity:1;}
+}
+
+/* ══════════ FEEDBACK ══════════ */
+.feedback-msg{
+  text-align:center;font-family:'Boogaloo',cursive;
+  font-size:clamp(22px,5vw,34px);min-height:48px;
+  margin:12px auto;
+  text-shadow:0 0 30px currentColor;
+  animation:feedbackZoom 0.5s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes feedbackZoom{
+  from{transform:scale(0) rotate(-10deg);opacity:0;}
+  to{transform:scale(1) rotate(0deg);opacity:1;}
+}
+
+/* ══════════ NEXT BUTTON ══════════ */
+.center{text-align:center;}
+.next-btn{
+  display:none;padding:15px 40px;border-radius:50px;
+  background:linear-gradient(135deg,#9B59FF,#FF6B9D,#FFD93D);
+  background-size:200% 100%;
+  color:white;border:none;cursor:pointer;
+  font-family:'Boogaloo',cursive;font-size:22px;
+  box-shadow:0 0 30px rgba(155,89,255,0.6),0 8px 0 rgba(0,0,0,0.3);
+  transition:all 0.25s;margin-top:12px;
+  animation:btnAppear 0.5s cubic-bezier(0.34,1.56,0.64,1),btnGradient 3s linear infinite;
+  letter-spacing:1px;
+}
+@keyframes btnAppear{from{transform:scale(0) rotate(-8deg);}to{transform:scale(1) rotate(0deg);}}
+@keyframes btnGradient{0%{background-position:0% 50%;}100%{background-position:200% 50%;}}
+.next-btn:hover{transform:translateY(-5px) scale(1.06);box-shadow:0 0 50px rgba(155,89,255,0.9),0 12px 0 rgba(0,0,0,0.3);}
+
+/* ══════════ DRAG & DROP ══════════ */
+.dnd-card{
+  background:rgba(255,255,255,0.07);
+  backdrop-filter:blur(20px);
+  border:2px solid rgba(0,210,200,0.4);
+  border-radius:28px;padding:24px;
+  box-shadow:0 0 40px rgba(0,210,200,0.2),0 20px 60px rgba(0,0,0,0.4);
+  position:relative;overflow:hidden;
+  animation:cardSlide 0.6s cubic-bezier(0.34,1.56,0.64,1);
+  margin-bottom:18px;
+}
+.dnd-card::after{
+  content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+  background:conic-gradient(transparent,rgba(0,210,200,0.1),transparent);
+  animation:cardSpin 10s linear infinite;pointer-events:none;border-radius:50%;
+}
+.dnd-title{
+  font-family:'Boogaloo',cursive;font-size:22px;
+  background:linear-gradient(90deg,var(--teal),var(--lime));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  text-align:center;margin-bottom:6px;
+  filter:drop-shadow(0 0 10px rgba(0,210,200,0.5));
+}
+.dnd-subtitle{text-align:center;font-size:13px;color:rgba(255,255,255,0.6);font-weight:800;margin-bottom:16px;}
+.dnd-items{
+  display:flex;flex-wrap:wrap;gap:10px;
+  justify-content:center;margin-bottom:18px;min-height:56px;
+}
+.drag-chip{
+  padding:10px 18px;border-radius:50px;
+  border:2px solid rgba(155,89,255,0.6);
+  background:rgba(155,89,255,0.15);
+  font-size:14px;font-weight:800;cursor:grab;
+  transition:all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow:0 0 15px rgba(155,89,255,0.3);
+  user-select:none;font-family:'Nunito',sans-serif;
+  color:rgba(255,255,255,0.9);position:relative;z-index:2;
+}
+.drag-chip:hover{transform:scale(1.1) rotate(-3deg);background:rgba(155,89,255,0.35);box-shadow:0 0 25px rgba(155,89,255,0.6);}
+.drag-chip.dragging{opacity:0.4;cursor:grabbing;transform:scale(1.15) rotate(6deg);}
+.drag-chip.placed{opacity:0.3;pointer-events:none;}
+.dnd-zones{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.drop-zone{
+  min-height:110px;border-radius:20px;padding:12px;
+  border:2.5px dashed rgba(255,255,255,0.2);
+  background:rgba(255,255,255,0.04);
+  transition:all 0.3s;
+  display:flex;flex-direction:column;align-items:center;
+  position:relative;z-index:2;
+}
+.drop-zone.need-zone{border-color:rgba(46,204,113,0.5);background:rgba(46,204,113,0.07);}
+.drop-zone.want-zone{border-color:rgba(255,140,66,0.5);background:rgba(255,140,66,0.07);}
+.drop-zone.drag-over{
+  transform:scale(1.05);
+  box-shadow:0 0 30px rgba(255,215,61,0.5);
+  border-color:var(--yellow);background:rgba(255,215,61,0.1);
+}
+.zone-label{font-family:'Boogaloo',cursive;font-size:20px;margin-bottom:8px;}
+.need-zone .zone-label{color:var(--green);text-shadow:0 0 10px rgba(46,204,113,0.8);}
+.want-zone .zone-label{color:var(--orange);text-shadow:0 0 10px rgba(255,140,66,0.8);}
+.placed-chip{
+  padding:7px 14px;border-radius:50px;
+  font-size:13px;font-weight:800;margin:3px;
+  cursor:pointer;transition:all 0.2s;
+  font-family:'Nunito',sans-serif;
+}
+.placed-chip:hover{transform:scale(1.08);}
+.need-zone .placed-chip{background:rgba(46,204,113,0.25);border:2px solid var(--green);color:var(--lime);}
+.want-zone .placed-chip{background:rgba(255,140,66,0.25);border:2px solid var(--orange);color:#FFDCB5;}
+.dnd-check-btn{
+  display:block;width:fit-content;margin:16px auto 0;
+  padding:13px 32px;border-radius:50px;
+  background:linear-gradient(135deg,var(--teal),var(--blue));
+  color:white;border:none;cursor:pointer;
+  font-family:'Boogaloo',cursive;font-size:20px;
+  box-shadow:0 0 25px rgba(0,210,200,0.5),0 6px 0 rgba(0,0,0,0.3);
+  transition:all 0.2s;position:relative;z-index:2;
+}
+.dnd-check-btn:hover{transform:translateY(-4px) scale(1.05);box-shadow:0 0 40px rgba(0,210,200,0.8),0 10px 0 rgba(0,0,0,0.3);}
+.dnd-result{text-align:center;font-size:17px;font-weight:800;margin-top:12px;min-height:28px;font-family:'Boogaloo',cursive;position:relative;z-index:2;}
+
+/* ══════════ RESULT PANEL ══════════ */
+.result-panel{
+  background:rgba(255,255,255,0.06);
+  backdrop-filter:blur(20px);
+  border:2px solid rgba(155,89,255,0.4);
+  border-radius:32px;padding:40px 28px;max-width:540px;
+  margin:28px auto;display:none;text-align:center;
+  box-shadow:0 0 60px rgba(155,89,255,0.3),0 30px 80px rgba(0,0,0,0.5);
+  position:relative;overflow:hidden;
+  animation:cardSlide 0.7s cubic-bezier(0.34,1.56,0.64,1);
+}
+.result-panel::after{
+  content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+  background:conic-gradient(transparent,rgba(155,89,255,0.08),transparent,rgba(255,215,61,0.05),transparent);
+  animation:cardSpin 6s linear infinite;pointer-events:none;border-radius:50%;
+}
+.trophy{font-size:80px;margin-bottom:8px;animation:trophySpin 1s cubic-bezier(0.34,1.56,0.64,1);filter:drop-shadow(0 0 30px rgba(255,215,61,0.9));}
+@keyframes trophySpin{
+  0%{transform:scale(0) rotate(-30deg);}60%{transform:scale(1.3) rotate(8deg);}100%{transform:scale(1) rotate(0);}
+}
+.final-score{
+  font-family:'Boogaloo',cursive;font-size:90px;line-height:1;
+  background:linear-gradient(90deg,#FFD93D,#FF6B9D,#9B59FF,#00D2C8);
+  background-size:200% 100%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:titleRainbow 2s linear infinite;
+  filter:drop-shadow(0 0 30px rgba(155,89,255,0.5));
+}
+.out-of{font-size:18px;color:rgba(255,255,255,0.5);font-weight:800;margin-bottom:12px;}
+.result-title{
+  font-family:'Boogaloo',cursive;font-size:36px;
+  background:linear-gradient(90deg,var(--yellow),var(--pink));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:8px;position:relative;z-index:2;
+}
+.result-msg{font-size:15px;color:rgba(255,255,255,0.75);font-weight:700;margin-bottom:22px;line-height:1.6;position:relative;z-index:2;}
+.stars{font-size:42px;margin-bottom:12px;animation:starsAppear 0.9s ease;position:relative;z-index:2;}
+@keyframes starsAppear{
+  0%{transform:scale(0) rotate(-40deg);opacity:0;}60%{transform:scale(1.2) rotate(5deg);}100%{transform:scale(1) rotate(0);}
+}
+.score-breakdown{
+  background:rgba(155,89,255,0.15);border:1.5px solid rgba(155,89,255,0.3);
+  border-radius:14px;padding:14px;margin-bottom:20px;
+  font-size:15px;font-weight:800;color:var(--yellow);
+  letter-spacing:2px;position:relative;z-index:2;
+}
+.btn{
+  display:inline-block;padding:13px 28px;border-radius:50px;
+  border:none;cursor:pointer;font-family:'Boogaloo',cursive;
+  font-size:19px;margin:6px;transition:all 0.2s;
+  box-shadow:0 6px 0 rgba(0,0,0,0.3);position:relative;z-index:2;
+}
+.btn-coral{background:linear-gradient(135deg,var(--coral),var(--orange));color:white;box-shadow:0 0 20px rgba(255,107,91,0.4),0 6px 0 rgba(0,0,0,0.3);}
+.btn-purple{background:linear-gradient(135deg,var(--purple),var(--blue));color:white;box-shadow:0 0 20px rgba(155,89,255,0.4),0 6px 0 rgba(0,0,0,0.3);}
+.btn:hover{transform:translateY(-4px) scale(1.05);}
+
+/* ══════════ LASER SWEEP ══════════ */
+.laser{
+  position:fixed;top:0;bottom:0;width:3px;z-index:3;pointer-events:none;
+  background:linear-gradient(180deg,transparent,var(--purple),var(--pink),var(--yellow),transparent);
+  box-shadow:0 0 20px var(--purple),0 0 40px var(--pink);
+  animation:laserSweep 6s linear infinite;opacity:0.4;
+}
+@keyframes laserSweep{
+  0%{left:-5px;opacity:0;}5%{opacity:0.4;}
+  50%{left:100vw;opacity:0.3;}55%{opacity:0;}100%{left:100vw;opacity:0;}
+}
+.laser2{animation-delay:3s;background:linear-gradient(180deg,transparent,var(--teal),var(--lime),var(--blue),transparent);
+  box-shadow:0 0 20px var(--teal);}
+
+/* ══════════ STAR TRAIL ══════════ */
+.star-trail{
+  position:fixed;z-index:5;pointer-events:none;
+  font-size:1.2rem;
+  animation:trailFade 1s ease-out forwards;
+}
+@keyframes trailFade{0%{opacity:1;transform:scale(1);}100%{opacity:0;transform:scale(0.3) translateY(-20px);}}
+
+/* ══════════ LEVEL UP FLASH ══════════ */
+.level-flash{
+  position:fixed;inset:0;z-index:500;pointer-events:none;
+  background:radial-gradient(circle,rgba(255,215,61,0.3),transparent 70%);
+  animation:flashFade 0.6s ease-out forwards;
+}
+@keyframes flashFade{0%{opacity:1;}100%{opacity:0;}}
+
+@media(max-width:480px){
+  .dnd-zones{grid-template-columns:1fr;}
+  .quiz-card,.dnd-card{padding:18px 14px;}
+  .mascot{bottom:10px;right:10px;}
+}
+</style>
+</head>
+<body>
+
+<!-- Background Canvas -->
+<canvas id="bgCanvas"></canvas>
+<div class="neon-bg"></div>
+
+<!-- Laser sweeps -->
+<div class="laser"></div>
+<div class="laser laser2"></div>
+
+<!-- Badges -->
+<div class="planrs-badge">⭐ Planrs</div>
+<div class="score-badge" id="scoreBadge">✅ 0 / 0</div>
+
+<!-- Mascot -->
+<div class="mascot" id="mascot" onclick="mascotTalk()">🦉</div>
+<div class="mascot-bubble" id="mascotBubble" style="display:none;"></div>
+
+<div class="container">
+
+  <!-- Title -->
+  <div class="title-block">
+    <span class="title-emoji">🎓</span>
+    <h1>Final Quiz: Needs &amp; Wants!</h1>
+    <p class="subtitle">Section 4 · 8 Questions + Drag &amp; Drop Challenge!</p>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-wrap">
+    <div class="prog-label"><span id="progLeft">Warm-Up First!</span><span id="progRight">0% complete</span></div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <!-- DRAG & DROP -->
+  <div id="dndSection">
+    <div class="dnd-card">
+      <div class="dnd-title">🎯 Sort It Out! Warm-Up Activity</div>
+      <div class="dnd-subtitle">Drag each item into the correct box — NEED or WANT?</div>
+      <div class="dnd-items" id="dndItems"></div>
+      <div class="dnd-zones">
+        <div class="drop-zone need-zone" id="needZone"
+          ondragover="dragOver(event,'need')" ondrop="drop(event,'need')" ondragleave="dragLeave(event)">
+          <div class="zone-label">🏥 NEED</div>
+          <div id="needPlaced" style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px;"></div>
+        </div>
+        <div class="drop-zone want-zone" id="wantZone"
+          ondragover="dragOver(event,'want')" ondrop="drop(event,'want')" ondragleave="dragLeave(event)">
+          <div class="zone-label">🎁 WANT</div>
+          <div id="wantPlaced" style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px;"></div>
+        </div>
+      </div>
+      <div class="dnd-result" id="dndResult"></div>
+      <button class="dnd-check-btn" onclick="checkDnd()">🔍 Check My Answers!</button>
+    </div>
+  </div>
+
+  <!-- QUIZ AREA -->
+  <div id="quizArea" style="display:none;">
+    <div class="quiz-card" id="quizCard">
+      <div class="q-num"><div class="dot"></div><span id="qNum">Question 1 of 8</span></div>
+      <div class="q-text" id="qText"></div>
+      <div class="options" id="options"></div>
+      <div class="explanation" id="explanation"></div>
+    </div>
+    <div class="feedback-msg" id="feedbackMsg"></div>
+    <div class="center"><button class="next-btn" id="nextBtn" onclick="next()">Next ➡️</button></div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="result-panel" id="resultPanel">
+    <div class="trophy" id="trophyIcon"></div>
+    <div class="result-title" id="resultTitle"></div>
+    <div class="stars" id="starsRow"></div>
+    <div class="final-score" id="finalScore"></div>
+    <div class="out-of">out of 8</div>
+    <div class="score-breakdown" id="breakdown"></div>
+    <div class="result-msg" id="resultMsg"></div>
+    <button class="btn btn-coral" onclick="resetQuiz()">🔄 Play Again!</button>
+    <button class="btn btn-purple" onclick="finishLesson()">🎉 Finish!</button>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+/* ══════════ CANVAS PARTICLE SYSTEM ══════════ */
+const canvas=document.getElementById('bgCanvas');
+const ctx=canvas.getContext('2d');
+let W,H,particles=[];
+function resizeCanvas(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+resizeCanvas();window.addEventListener('resize',resizeCanvas);
+
+const COLORS=['#9B59FF','#FF6B9D','#00D2C8','#FFD93D','#A8FF3E','#FF8C42','#4D96FF','#FF0099'];
+const EMOJIS=['⭐','💰','📚','🎒','🏠','💊','🍎','🎮','💎','🌈','🎯','🔮'];
+
+class Particle{
+  constructor(){this.reset(true);}
+  reset(init=false){
+    this.x=Math.random()*W;
+    this.y=init?Math.random()*H:H+20;
+    this.vx=(Math.random()-0.5)*0.6;
+    this.vy=-(0.3+Math.random()*0.8);
+    this.r=1.5+Math.random()*3;
+    this.color=COLORS[Math.floor(Math.random()*COLORS.length)];
+    this.alpha=0.4+Math.random()*0.5;
+    this.life=0;this.maxLife=300+Math.random()*400;
+    this.glow=Math.random()>0.6;
+  }
+  update(){
+    this.x+=this.vx;this.y+=this.vy;
+    this.vx+=Math.sin(this.life*0.03)*0.02;
+    this.life++;
+    if(this.y<-10)this.reset();
+  }
+  draw(){
+    ctx.save();ctx.globalAlpha=this.alpha*(1-this.life/this.maxLife);
+    if(this.glow){ctx.shadowBlur=10;ctx.shadowColor=this.color;}
+    ctx.fillStyle=this.color;ctx.beginPath();
+    ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+  }
+}
+
+class EmojiFloater{
+  constructor(){this.reset(true);}
+  reset(init=false){
+    this.x=Math.random()*W;
+    this.y=init?Math.random()*H:H+60;
+    this.vy=-(0.2+Math.random()*0.5);
+    this.vx=(Math.random()-0.5)*0.4;
+    this.size=16+Math.random()*20;
+    this.rot=Math.random()*Math.PI*2;
+    this.rotV=(Math.random()-0.5)*0.03;
+    this.alpha=0.35+Math.random()*0.4;
+    this.emoji=EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
+    this.oscPhase=Math.random()*Math.PI*2;
+  }
+  update(){
+    this.x+=this.vx+Math.sin(Date.now()*0.001+this.oscPhase)*0.3;
+    this.y+=this.vy;this.rot+=this.rotV;
+    if(this.y<-60)this.reset();
+  }
+  draw(){
+    ctx.save();ctx.globalAlpha=this.alpha;
+    ctx.font=this.size+'px serif';ctx.textAlign='center';
+    ctx.translate(this.x,this.y);ctx.rotate(this.rot);
+    ctx.fillText(this.emoji,0,0);ctx.restore();
+  }
+}
+
+// Create particles
+for(let i=0;i<120;i++)particles.push(new Particle());
+for(let i=0;i<18;i++)particles.push(new EmojiFloater());
+
+// Animated rings
+const rings=Array.from({length:5},(_,i)=>({x:Math.random()*W,y:Math.random()*H,r:20,maxR:80+Math.random()*60,alpha:0.3,color:COLORS[i],phase:i*0.8}));
+
+function drawRings(t){
+  rings.forEach(ring=>{
+    const r=((Math.sin(t*0.5+ring.phase)+1)/2)*(ring.maxR-ring.r)+ring.r;
+    ctx.save();ctx.globalAlpha=0.15*(1-r/ring.maxR);
+    ctx.strokeStyle=ring.color;ctx.lineWidth=2;
+    ctx.shadowBlur=8;ctx.shadowColor=ring.color;
+    ctx.beginPath();ctx.arc(ring.x,ring.y,r,0,Math.PI*2);ctx.stroke();
+    ctx.restore();
+  });
+}
+
+function animate(t=0){
+  ctx.clearRect(0,0,W,H);
+  // Dark gradient base
+  const grad=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*0.8);
+  grad.addColorStop(0,'rgba(20,0,50,0.97)');grad.addColorStop(1,'rgba(5,0,15,1)');
+  ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+  drawRings(t*0.001);
+  particles.forEach(p=>{p.update();p.draw();});
+  requestAnimationFrame(ts=>animate(ts));
+}
+animate();
+
+
+
+/* ══════════ CONFETTI ══════════ */
+function spawnConfetti(count=50){
+  const colors=['#FF6B9D','#FFD93D','#9B59FF','#00D2C8','#A8FF3E','#FF8C42','#4D96FF','#FF0099'];
+  for(let i=0;i<count;i++){
+    setTimeout(()=>{
+      const p=document.createElement('div');
+      p.className='conf';
+      const size=6+Math.random()*10;
+      const color=colors[Math.floor(Math.random()*colors.length)];
+      const rot=(Math.random()>0.5?1:-1)*(300+Math.random()*400)+'deg';
+      const dur=(1.5+Math.random()*1.5)+'s';
+      const delay=(Math.random()*0.5)+'s';
+      p.style.cssText=`left:${Math.random()*100}vw;top:-20px;width:${size}px;height:${size}px;
+        background:${color};border-radius:${Math.random()>0.5?'50%':'3px'};
+        --rot:${rot};--dur:${dur};--delay:${delay};`;
+      document.body.appendChild(p);
+      setTimeout(()=>p.remove(),3000);
+    },i*20);
+  }
+}
+
+/* ══════════ SPARKLE BURST ══════════ */
+function spawnSparkles(x,y,count=12){
+  for(let i=0;i<count;i++){
+    const s=document.createElement('div');
+    s.className='sparkle';
+    const angle=(i/count)*Math.PI*2;
+    const dist=60+Math.random()*80;
+    const tx=Math.cos(angle)*dist+'px';const ty=Math.sin(angle)*dist+'px';
+    s.style.cssText=`left:${x}px;top:${y}px;background:${['#FFD93D','#FF6B9D','#9B59FF','#00D2C8','#A8FF3E'][i%5]};
+      --tx:${tx};--ty:${ty};`;
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),1500);
+  }
+}
+
+/* ══════════ LEVEL FLASH ══════════ */
+function levelFlash(){
+  const f=document.createElement('div');f.className='level-flash';
+  document.body.appendChild(f);setTimeout(()=>f.remove(),700);
+}
+
+/* ══════════ MASCOT ══════════ */
+const mascotLines=[
+  "You're doing amazing! 🌟","Needs vs Wants — you got this! 💪",
+  "Every rupee counts! 💰","Keep going, Finance Champion! 🏆",
+  "Smart choices = Happy future! 😊","Savings first, wants later! 🎯",
+  "You're a money genius! 🧠","Almost there — go go go! 🚀",
+];
+let mascotShowing=false;
+function mascotTalk(msg){
+  const b=document.getElementById('mascotBubble');
+  const text=msg||mascotLines[Math.floor(Math.random()*mascotLines.length)];
+  b.textContent=text;b.style.display='block';
+  b.style.animation='none';void b.offsetWidth;b.style.animation='bubblePop 0.4s cubic-bezier(0.34,1.56,0.64,1)';
+  if(mascotShowing)clearTimeout(mascotShowing);
+  mascotShowing=setTimeout(()=>{b.style.display='none';mascotShowing=false;},3000);
+}
+setTimeout(()=>mascotTalk("Ready to test your skills? Let's go! 🚀"),1200);
+setInterval(()=>{ if(!mascotShowing) mascotTalk(); },12000);
+
+/* ══════════ DRAG & DROP ══════════ */
+const dndData=[
+  {text:'🍞 Food',correct:'need'},{text:'🎮 Video Game',correct:'want'},
+  {text:'💊 Medicine',correct:'need'},{text:'👟 Brand Shoes',correct:'want'},
+  {text:'🏠 Shelter',correct:'need'},{text:'🍦 Ice Cream',correct:'want'},
+  {text:'📚 Textbooks',correct:'need'},{text:'💄 Makeup',correct:'want'},
+];
+const placements={};let draggedId=null;
+
+function initDnd(){
+  const c=document.getElementById('dndItems');c.innerHTML='';
+  document.getElementById('needPlaced').innerHTML='';
+  document.getElementById('wantPlaced').innerHTML='';
+  document.getElementById('dndResult').textContent='';
+  Object.keys(placements).forEach(k=>delete placements[k]);
+  dndData.forEach((item,i)=>{
+    const chip=document.createElement('div');
+    chip.className='drag-chip';chip.id='chip_'+i;chip.textContent=item.text;
+    chip.draggable=true;
+    chip.style.animationDelay=(i*0.08)+'s';
+    chip.style.animation=`optionPop 0.4s ${i*0.08}s cubic-bezier(0.34,1.56,0.64,1) both`;
+    chip.addEventListener('dragstart',e=>{draggedId=chip.id;chip.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
+    chip.addEventListener('dragend',()=>chip.classList.remove('dragging'));
+    chip.addEventListener('touchstart',touchStart,{passive:true});
+    chip.addEventListener('touchmove',touchMove,{passive:false});
+    chip.addEventListener('touchend',touchEnd);
+    c.appendChild(chip);
+  });
+}
+let touchChip=null,touchClone=null;
+function touchStart(e){
+  touchChip=e.currentTarget;draggedId=touchChip.id;
+  const rect=touchChip.getBoundingClientRect();
+  touchClone=touchChip.cloneNode(true);
+  touchClone.style.cssText=`position:fixed;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;pointer-events:none;z-index:9999;opacity:0.9;transform:scale(1.15) rotate(5deg);transition:none;`;
+  document.body.appendChild(touchClone);
+}
+function touchMove(e){
+  e.preventDefault();const touch=e.touches[0];
+  if(touchClone){touchClone.style.left=(touch.clientX-50)+'px';touchClone.style.top=(touch.clientY-25)+'px';}
+}
+function touchEnd(e){
+  if(touchClone){document.body.removeChild(touchClone);touchClone=null;}
+  const touch=e.changedTouches[0];
+  const el=document.elementFromPoint(touch.clientX,touch.clientY);
+  const zone=el?.closest('.drop-zone');
+  if(zone){placeChip(draggedId,zone.id==='needZone'?'need':'want');}
+  draggedId=null;
+}
+function dragOver(e,z){e.preventDefault();e.currentTarget.classList.add('drag-over');}
+function dragLeave(e){e.currentTarget.classList.remove('drag-over');}
+function drop(e,z){e.preventDefault();e.currentTarget.classList.remove('drag-over');if(draggedId)placeChip(draggedId,z);}
+
+function placeChip(chipId,zone){
+  const chip=document.getElementById(chipId);if(!chip)return;
+  const idx=parseInt(chipId.split('_')[1]);
+  if(placements[chipId]){
+    const old=document.getElementById(placements[chipId]+'Placed').querySelector(`[data-id="${chipId}"]`);
+    if(old)old.remove();
+  }
+  chip.classList.add('placed');placements[chipId]=zone;
+  const placed=document.createElement('div');
+  placed.className='placed-chip';placed.dataset.id=chipId;
+  placed.textContent=dndData[idx].text;placed.title='Click to remove';
+  placed.onclick=()=>{placed.remove();delete placements[chipId];chip.classList.remove('placed');}
+  document.getElementById(zone+'Placed').appendChild(placed);
+  document.getElementById('dndResult').textContent='';
+  spawnSparkles(chip.getBoundingClientRect().left+30,chip.getBoundingClientRect().top+20,8);
+}
+
+function checkDnd(){
+  let correct=0;
+  dndData.forEach((_,i)=>{const id='chip_'+i;if(placements[id]&&placements[id]===dndData[i].correct)correct++;});
+  const total=Object.keys(placements).length;
+  const res=document.getElementById('dndResult');
+  if(total<dndData.length){res.textContent=`⚠️ Place all ${dndData.length} items first!`;res.style.color='#FFD93D';return;}
+  if(correct===dndData.length){
+    res.textContent='🏆 PERFECT! All 8 correct! Starting quiz...';res.style.color='#A8FF3E';
+    spawnConfetti(80);levelFlash();mascotTalk('Incredible! Perfect warm-up! 🔥');
+    setTimeout(startQuiz,2000);
+  }else{
+    res.textContent=`You got ${correct}/${dndData.length}. Try again!`;res.style.color='#FF6B9D';
+    dndData.forEach((_,i)=>{const id='chip_'+i;if(placements[id]&&placements[id]!==dndData[i].correct){
+      const el=document.querySelector(`[data-id="${id}"]`);
+      if(el){el.style.background='rgba(255,107,91,0.3)';el.style.borderColor='var(--coral)';el.style.animation='wrongShake 0.5s ease';}
+    }});
+  }
+}
+
+function startQuiz(){
+  document.getElementById('dndSection').style.display='none';
+  document.getElementById('quizArea').style.display='block';
+  mascotTalk('Quiz time! You can do it! ⭐');
+  render();
+}
+
+/* ══════════ QUIZ ══════════ */
+const questions=[
+  {text:'Riya has Rs. 500. Her school needs new notebooks (Rs. 150). She also wants a new sticker book (Rs. 200). What should she buy FIRST?',options:["The sticker book — it's more fun!",'The notebooks — they are a need for school','Save all the money and buy nothing','Ask parents for more money'],correct:1,explanation:'✅ Notebooks are a school need — they directly help Riya learn. The sticker book is a want. Needs always come first!'},
+  {text:'Which is the BEST definition of a "want"?',options:['Something you must have to survive','Something that keeps you healthy','Something you would like but can live without','Something your teacher tells you to buy'],correct:2,explanation:'✅ A want is enjoyable but NOT essential for survival. Life goes on without it!'},
+  {text:'The Sharma family earns Rs. 30,000 per month. Their needs cost Rs. 20,000. How much is left for savings and wants?',options:['Rs. 5,000','Rs. 10,000','Rs. 15,000','Rs. 20,000'],correct:1,explanation:'✅ 30,000 − 20,000 = Rs. 10,000 remaining. Split between savings and wants!'},
+  {text:'Arjun saves Rs. 20 every day instead of buying chips. How much will he save in ONE month (30 days)?',options:['Rs. 200','Rs. 400','Rs. 600','Rs. 1,000'],correct:2,explanation:'✅ Rs. 20 × 30 = Rs. 600 per month! Small daily savings add up FAST!'},
+  {text:'A community NEEDS hospitals and schools. A community WANTS fancy fountains. This is an example of:',options:['Personal finance','Public finance','Community gossip','Investment strategy'],correct:1,explanation:'✅ Governments choosing needs over wants = PUBLIC FINANCE — same concept at a bigger scale!'},
+  {text:'Which is the CORRECT order for spending your money smartly?',options:['Wants → Needs → Savings','Savings → Wants → Needs','Needs → Savings → Wants','Wants → Savings → Needs'],correct:2,explanation:'✅ Golden rule: NEEDS → SAVINGS → WANTS. This keeps families safe and happy!'},
+  {text:'Priya already has working chappals. She wants branded Rs. 3,000 sneakers. Which is TRUE?',options:['Sneakers are a NEED — feet need protection','Sneakers are a WANT — basic footwear exists','Branded shoes are always a need','All shoes are wants'],correct:1,explanation:'✅ Basic footwear available = branded upgrade is a WANT. Function is need; brand is want!'},
+  {text:'Why is understanding needs vs wants important for YOUR future?',options:['Helps you win at cricket','Teaches you which movies to watch','Builds habits: more savings, less debt, financial freedom','No importance — parents handle money'],correct:2,explanation:'✅ Start now! Understanding needs vs wants = lifelong money wisdom, savings, and freedom!'},
+];
+
+let current=0,score=0,answered=false;
+const correctHistory=[];
+
+function render(){
+  const q=questions[current];
+  const card=document.getElementById('quizCard');
+  card.style.animation='none';void card.offsetWidth;card.style.animation='cardSlide 0.6s cubic-bezier(0.34,1.56,0.64,1)';
+  document.getElementById('qNum').querySelector('span').textContent=`Question ${current+1} of ${questions.length}`;
+  document.getElementById('qText').textContent=q.text;
+  document.getElementById('explanation').style.display='none';
+  document.getElementById('feedbackMsg').textContent='';
+  document.getElementById('nextBtn').style.display='none';
+  answered=false;
+  const pct=Math.round((current/questions.length)*100);
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('progLeft').textContent=`Question ${current+1} / ${questions.length}`;
+  document.getElementById('progRight').textContent=pct+'% done';
+  const opts=document.getElementById('options');opts.innerHTML='';
+  q.options.forEach((opt,idx)=>{
+    const btn=document.createElement('button');btn.className='option';
+    btn.textContent=['A) ','B) ','C) ','D) '][idx]+opt;
+    btn.style.animationDelay=(idx*0.09)+'s';
+    btn.onclick=e=>select(idx,btn,q,e);
+    opts.appendChild(btn);
+  });
+  updateBadge();
+}
+
+function select(idx,btn,q,e){
+  if(answered)return;answered=true;
+  const correct=idx===q.correct;
+  if(correct){
+    score++;btn.classList.add('correct');
+    showFeedback('🎉 '+getMsg(),'#A8FF3E');
+    spawnConfetti(45);levelFlash();
+    spawnSparkles(e.clientX,e.clientY,16);
+    mascotTalk(getMascotWin());
+  }else{
+    btn.classList.add('wrong');
+    document.querySelectorAll('.option')[q.correct].classList.add('reveal');
+    showFeedback('❌ Not quite! Check the explanation below!','#FF6B9D');
+    mascotTalk("That's okay! Read why and learn! 📖");
+  }
+  correctHistory.push(correct);
+  document.querySelectorAll('.option').forEach(b=>b.disabled=true);
+  document.getElementById('explanation').textContent=q.explanation;
+  document.getElementById('explanation').style.display='block';
+  const nb=document.getElementById('nextBtn');
+  nb.style.display='inline-block';
+  nb.textContent=current<questions.length-1?'Next Question ➡️':'🎓 See My Results!';
+  updateBadge();
+}
+
+function showFeedback(msg,color){
+  const el=document.getElementById('feedbackMsg');
+  el.textContent=msg;el.style.color=color;
+  el.style.textShadow=`0 0 30px ${color}`;
+  el.style.animation='none';void el.offsetWidth;el.style.animation='feedbackZoom 0.5s cubic-bezier(0.34,1.56,0.64,1)';
+}
+
+const winMsgs=['AMAZING! 🔥','BRILLIANT! ⚡','YOU\'RE A STAR! 🌟','EXCELLENT! 💎','FINANCE CHAMP! 🏆','OUTSTANDING! 🚀','SUPER SMART! 🧠','WOW WOW WOW! 🎆'];
+const mascotWins=["Nailed it! You're unstoppable! 🚀","That's my student! 🦉⭐","Perfect answer! So proud! 🏆","You're a natural! Keep going! 💰","Finance genius alert! 🧠🔥"];
+function getMsg(){return winMsgs[Math.floor(Math.random()*winMsgs.length)];}
+function getMascotWin(){return mascotWins[Math.floor(Math.random()*mascotWins.length)];}
+
+function updateBadge(){
+  const b=document.getElementById('scoreBadge');
+  b.textContent=`✅ ${score} / ${correctHistory.length}`;
+  b.classList.remove('bump');void b.offsetWidth;b.classList.add('bump');
+}
+
+function next(){
+  current++;if(current>=questions.length){showResult();return;}render();
+}
+
+function showResult(){
+  document.getElementById('progressFill').style.width='100%';
+  document.getElementById('progLeft').textContent='Complete! 🎊';
+  document.getElementById('progRight').textContent='100% 🎉';
+  document.getElementById('quizArea').style.display='none';
+  const rp=document.getElementById('resultPanel');rp.style.display='block';
+  rp.style.animation='none';void rp.offsetWidth;rp.style.animation='cardSlide 0.7s cubic-bezier(0.34,1.56,0.64,1)';
+  document.getElementById('finalScore').textContent=score;
+  const pct=(score/questions.length)*100;
+  let trophy,title,stars,msg;
+  if(pct===100){trophy='🏆';title='PERFECT SCORE!';stars='⭐⭐⭐';msg='Absolutely flawless! All 8 correct! True Finance Champion — tell your family!';}
+  else if(pct>=87){trophy='🥇';title='Outstanding!';stars='⭐⭐⭐';msg=`${score}/8 — Incredible! You've mastered needs vs wants! Review the one you missed.`;}
+  else if(pct>=62){trophy='🥈';title='Great Job!';stars='⭐⭐';msg=`${score}/8 — You understand most concepts! Review Sections 3 & 4 and retake!`;}
+  else{trophy='💪';title='Keep Learning!';stars='⭐';msg=`${score}/8 — Don't give up! Review all 4 sections. You CAN do this!`;}
+  document.getElementById('trophyIcon').textContent=trophy;
+  document.getElementById('resultTitle').textContent=title;
+  document.getElementById('starsRow').textContent=stars;
+  document.getElementById('resultMsg').textContent=msg;
+  const bd=correctHistory.map((c,i)=>`Q${i+1}:${c?'✅':'❌'}`).join('  ');
+  document.getElementById('breakdown').textContent='Your answers: '+bd;
+  spawnConfetti(120);levelFlash();
+  setTimeout(()=>levelFlash(),400);setTimeout(()=>levelFlash(),800);
+  mascotTalk(pct===100?'PERFECT SCORE! You are INCREDIBLE! 🏆🔥':'Amazing effort! You should be so proud! ⭐');
+}
+
+function resetQuiz(){
+  current=0;score=0;answered=false;correctHistory.length=0;
+  document.getElementById('resultPanel').style.display='none';
+  document.getElementById('dndSection').style.display='block';
+  document.getElementById('quizArea').style.display='none';
+  document.getElementById('progressFill').style.width='0%';
+  document.getElementById('progLeft').textContent='Warm-Up First!';
+  document.getElementById('progRight').textContent='0% complete';
+  updateBadge();initDnd();
+  mascotTalk("Let's go again! You'll do even better! 🚀");
+}
+
+function finishLesson(){
+  spawnConfetti(150);levelFlash();
+  setTimeout(()=>levelFlash(),300);setTimeout(()=>levelFlash(),600);
+  mascotTalk('LESSON COMPLETE! Share with your family! 🎉🏆');
+  setTimeout(()=>alert('🏆 Fantastic! You completed the Needs & Wants Quiz!\n\nShare what you learned with your family tonight! 💰⭐'),500);
+}
+
+initDnd();
+</script>
+</body>
+</html>

@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⭐ Planrs | Scammer Safari Match!</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  font-family:'Nunito',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+  background:#060018;
+}
+
+/* ════════════════════════════════════
+   🌈 ULTRA VIVID ANIMATED BACKGROUND
+════════════════════════════════════ */
+#bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+
+/* Spinning aurora mesh */
+.aurora{position:absolute;inset:-60%;animation:auroraSpín 18s linear infinite;}
+.aurora-layer{position:absolute;inset:0;border-radius:60%;mix-blend-mode:screen;filter:blur(55px);}
+.al1{background:radial-gradient(ellipse 80% 60% at 20% 30%,#ff00cc 0%,transparent 70%);animation:morphA 6s ease-in-out infinite alternate;}
+.al2{background:radial-gradient(ellipse 70% 80% at 80% 20%,#00ffff 0%,transparent 70%);animation:morphB 7s ease-in-out infinite alternate;}
+.al3{background:radial-gradient(ellipse 90% 50% at 50% 80%,#ffff00 0%,transparent 70%);animation:morphC 5s ease-in-out infinite alternate;}
+.al4{background:radial-gradient(ellipse 60% 90% at 70% 60%,#ff6600 0%,transparent 70%);animation:morphD 8s ease-in-out infinite alternate;}
+.al5{background:radial-gradient(ellipse 75% 65% at 30% 70%,#00ff88 0%,transparent 70%);animation:morphE 9s ease-in-out infinite alternate;}
+.al6{background:radial-gradient(ellipse 85% 55% at 60% 30%,#aa00ff 0%,transparent 70%);animation:morphF 6.5s ease-in-out infinite alternate;}
+@keyframes auroraSpín{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+@keyframes morphA{0%{transform:scale(1) translate(0,0);}100%{transform:scale(1.3) translate(8%,-8%);}}
+@keyframes morphB{0%{transform:scale(1.1) translate(0,0);}100%{transform:scale(0.85) translate(-10%,10%);}}
+@keyframes morphC{0%{transform:scale(1) translate(0,0);}100%{transform:scale(1.2) translate(12%,5%);}}
+@keyframes morphD{0%{transform:scale(0.9) translate(0,0);}100%{transform:scale(1.15) translate(-6%,-12%);}}
+@keyframes morphE{0%{transform:scale(1.05) translate(0,0);}100%{transform:scale(0.8) translate(9%,8%);}}
+@keyframes morphF{0%{transform:scale(1) translate(0,0);}100%{transform:scale(1.25) translate(-8%,6%);}}
+
+/* Translucent overlay so text stays legible */
+.bg-darken{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(0,0,30,.38) 0%,rgba(0,0,18,.6) 100%);}
+
+/* Star canvas */
+#starCanvas{position:absolute;inset:0;width:100%;height:100%;}
+
+/* Shooting stars */
+.shoot{position:absolute;height:3px;border-radius:2px;background:linear-gradient(90deg,#fff,transparent);animation:shootAcross linear infinite;opacity:0;}
+@keyframes shootAcross{0%{opacity:0;transform:translate(0,0);}5%{opacity:1;}40%{opacity:.9;}100%{opacity:0;transform:translate(600px,300px);}}
+
+/* Twinkle stars */
+.twinkle{position:absolute;font-size:18px;animation:twinkleAnim ease-in-out infinite;}
+@keyframes twinkleAnim{0%,100%{opacity:1;transform:scale(1) rotate(0);}50%{opacity:.1;transform:scale(.4) rotate(30deg);}}
+
+/* Floating fun emojis */
+.float-emoji{position:absolute;font-size:34px;animation:floatEmoji ease-in-out infinite;filter:drop-shadow(0 0 10px rgba(255,200,0,.7));}
+@keyframes floatEmoji{0%,100%{transform:translateY(0) rotate(-5deg);}50%{transform:translateY(-22px) rotate(5deg);}}
+
+/* Neon bubbles */
+.neon-bub{position:absolute;border-radius:50%;animation:neonFloat linear infinite,neonPulse 3s ease-in-out infinite alternate;opacity:.65;}
+@keyframes neonFloat{0%{transform:translateY(110vh) scale(.4);}100%{transform:translateY(-15vh) scale(1.2);}}
+@keyframes neonPulse{0%{filter:brightness(1) blur(1px);}100%{filter:brightness(1.7) blur(3px);}}
+
+/* Rainbow arc */
+.rainbow-arc{
+  position:absolute;bottom:42px;left:50%;transform:translateX(-50%);
+  width:660px;height:330px;
+  border-radius:330px 330px 0 0;
+  background:conic-gradient(from 180deg at 50% 100%,
+    transparent 0deg,
+    rgba(255,0,0,.55) 10deg,rgba(255,165,0,.55) 28deg,
+    rgba(255,255,0,.55) 46deg,rgba(0,255,0,.55) 64deg,
+    rgba(0,0,255,.55) 82deg,rgba(148,0,211,.55) 100deg,
+    transparent 115deg,transparent 180deg);
+  animation:rainbowGlow 5s ease-in-out infinite alternate;
+  filter:blur(4px);
+}
+@keyframes rainbowGlow{0%{opacity:.5;transform:translateX(-50%) scaleX(1);}100%{opacity:1;transform:translateX(-50%) scaleX(1.12);}}
+
+/* Neon ground */
+.ground-neon{
+  position:absolute;bottom:0;left:0;right:0;height:100px;
+  animation:groundShift 4s ease-in-out infinite;
+  filter:blur(2px);
+}
+@keyframes groundShift{
+  0%{background:linear-gradient(0deg,#00ff88 0%,#00cc66 30%,transparent 100%);}
+  25%{background:linear-gradient(0deg,#ffff00 0%,#ff9900 30%,transparent 100%);}
+  50%{background:linear-gradient(0deg,#ff00cc 0%,#aa00ff 30%,transparent 100%);}
+  75%{background:linear-gradient(0deg,#00ffff 0%,#0066ff 30%,transparent 100%);}
+  100%{background:linear-gradient(0deg,#00ff88 0%,#00cc66 30%,transparent 100%);}
+}
+.ground-solid{position:absolute;bottom:0;left:0;right:0;height:54px;background:linear-gradient(180deg,#00aa44 0%,#005522 100%);border-radius:50% 50% 0 0/22px 22px 0 0;}
+
+/* Ground emojis / kids */
+.ground-emoji{position:absolute;bottom:54px;font-size:46px;filter:drop-shadow(0 0 12px rgba(255,255,100,.85));}
+.kid-bounce{animation:kidBounce 1.4s ease-in-out infinite;}
+.kid-bounce2{animation:kidBounce 1.8s ease-in-out infinite;animation-delay:.4s;}
+@keyframes kidBounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-18px);}}
+
+.kid-run{position:absolute;bottom:56px;font-size:46px;animation:runAcross linear infinite;filter:drop-shadow(0 0 14px rgba(0,255,200,.7));}
+@keyframes runAcross{
+  0%{left:-70px;transform:scaleX(1);}
+  49.9%{left:calc(100vw + 70px);transform:scaleX(1);}
+  50%{left:calc(100vw + 70px);transform:scaleX(-1);}
+  99.9%{left:-70px;transform:scaleX(-1);}
+  100%{left:-70px;transform:scaleX(1);}
+}
+
+/* ════════════════════════════════════
+   GAME UI
+════════════════════════════════════ */
+.game-wrap{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:14px 14px 130px;}
+
+/* Top bar */
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+.logo{
+  font-family:'Fredoka One',cursive;font-size:18px;color:#fff;
+  background:linear-gradient(135deg,#ff0080,#ff6600);
+  padding:9px 20px;border-radius:40px;
+  box-shadow:0 0 0 3px rgba(255,50,150,.3),0 0 30px rgba(255,0,150,.55),0 4px 0 rgba(0,0,0,.4);
+  text-shadow:0 0 12px rgba(255,180,255,.9);
+  letter-spacing:.5px;
+}
+.score-box{
+  font-family:'Fredoka One',cursive;font-size:16px;color:#fff;
+  background:linear-gradient(135deg,#00ffff,#0055ff);
+  padding:9px 22px;border-radius:40px;
+  box-shadow:0 0 0 3px rgba(0,200,255,.3),0 0 30px rgba(0,150,255,.55),0 4px 0 rgba(0,0,0,.4);
+  text-shadow:0 0 10px rgba(100,220,255,.9);
+}
+
+/* Title */
+.title{text-align:center;margin-bottom:8px;}
+.section-badge{
+  display:inline-block;
+  background:linear-gradient(90deg,#ff00cc,#ffcc00,#00ffcc,#ff00cc);
+  background-size:300%;
+  color:#fff;font-size:12px;font-weight:900;
+  padding:6px 20px;border-radius:40px;margin-bottom:8px;
+  box-shadow:0 0 20px rgba(255,0,200,.6),0 0 40px rgba(0,255,200,.3),0 3px 0 rgba(0,0,0,.3);
+  animation:badgeShimmer 3s linear infinite,badgeBob 2s ease-in-out infinite;
+  letter-spacing:.5px;
+}
+@keyframes badgeShimmer{0%{background-position:0%;}100%{background-position:300%;}}
+@keyframes badgeBob{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-5px) scale(1.04);}}
+
+.title h1{
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(26px,5vw,44px);
+  background:linear-gradient(90deg,#ff00cc,#ff9900,#ffff00,#00ff88,#00ffff,#aa00ff,#ff00cc);
+  background-size:300%;
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  animation:rainbowText 4s linear infinite;
+  filter:drop-shadow(0 0 18px rgba(255,100,255,.7));
+  letter-spacing:1px;
+}
+@keyframes rainbowText{0%{background-position:0%;}100%{background-position:300%;}}
+.title p{font-size:14px;color:rgba(255,255,200,.95);margin-top:4px;font-weight:800;text-shadow:0 0 12px rgba(255,255,100,.7);}
+
+/* Progress */
+.progress-bar-wrap{background:rgba(255,255,255,.1);border-radius:20px;height:16px;margin-bottom:14px;overflow:hidden;border:2px solid rgba(255,255,255,.2);box-shadow:0 0 20px rgba(0,255,255,.2);}
+.progress-bar{
+  height:100%;
+  background:linear-gradient(90deg,#ff00cc,#ffcc00,#00ffcc,#0099ff,#ff00cc);
+  background-size:400%;
+  border-radius:20px;
+  transition:width .6s cubic-bezier(.34,1.56,.64,1);
+  animation:pRainbow 2s linear infinite;
+  position:relative;overflow:hidden;
+  box-shadow:0 0 18px rgba(255,100,255,.8);
+}
+.progress-bar::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);animation:shimmer 1.2s linear infinite;}
+@keyframes pRainbow{0%{background-position:0%;}100%{background-position:400%;}}
+@keyframes shimmer{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
+
+/* Instruction */
+.instruction{
+  background:rgba(255,255,255,.09);border:2px solid rgba(255,220,0,.55);
+  border-radius:20px;padding:12px 20px;text-align:center;font-size:13px;
+  color:rgba(255,255,200,.95);margin-bottom:18px;font-weight:800;
+  box-shadow:0 0 22px rgba(255,200,0,.22),inset 0 1px 0 rgba(255,255,255,.12);
+  backdrop-filter:blur(10px);
+}
+.instruction strong{color:#ffff55;text-shadow:0 0 10px rgba(255,255,100,.8);}
+
+/* Drag pool */
+.drag-pool{
+  display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
+  margin-bottom:20px;min-height:70px;padding:14px;
+  background:rgba(255,255,255,.07);
+  border-radius:24px;border:2px dashed rgba(255,255,255,.22);
+  box-shadow:0 0 30px rgba(0,255,255,.1),inset 0 1px 0 rgba(255,255,255,.08);
+  backdrop-filter:blur(12px);
+}
+
+/* Drag cards */
+.drag-card{
+  color:#fff;font-family:'Fredoka One',cursive;font-size:14px;letter-spacing:.3px;
+  padding:11px 20px;border-radius:50px;
+  cursor:grab;user-select:none;touch-action:none;
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s,filter .2s;
+  position:relative;overflow:hidden;
+  animation:cardIn .55s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes cardIn{0%{transform:scale(0) rotate(-15deg);opacity:0;}70%{transform:scale(1.12) rotate(2deg);}100%{transform:scale(1) rotate(0);opacity:1;}}
+.drag-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.3),transparent);border-radius:inherit;pointer-events:none;}
+.drag-card:hover{transform:translateY(-8px) scale(1.1) rotate(-2deg);filter:brightness(1.2);}
+.drag-card.dragging{opacity:.25;transform:scale(.87);}
+.drag-card.placed{opacity:.18;pointer-events:none;filter:grayscale(80%);}
+
+/* Neon card colours */
+.c1{background:linear-gradient(135deg,#ff0080,#ff6600);box-shadow:0 0 0 2px rgba(255,80,50,.35),0 6px 0 rgba(160,0,50,.8),0 0 28px rgba(255,0,120,.65);}
+.c2{background:linear-gradient(135deg,#7700ff,#ff00cc);box-shadow:0 0 0 2px rgba(140,80,255,.35),0 6px 0 rgba(60,0,160,.8),0 0 28px rgba(180,0,255,.65);}
+.c3{background:linear-gradient(135deg,#00ff88,#00ccff);box-shadow:0 0 0 2px rgba(0,255,150,.35),0 6px 0 rgba(0,110,90,.8),0 0 28px rgba(0,255,150,.55);}
+.c4{background:linear-gradient(135deg,#ff9900,#ffff00);box-shadow:0 0 0 2px rgba(255,200,0,.35),0 6px 0 rgba(160,80,0,.8),0 0 28px rgba(255,180,0,.65);}
+.c5{background:linear-gradient(135deg,#ff2200,#ff6644);box-shadow:0 0 0 2px rgba(255,80,40,.35),0 6px 0 rgba(130,0,0,.8),0 0 28px rgba(255,50,0,.65);}
+.c6{background:linear-gradient(135deg,#ff0099,#ff66cc);box-shadow:0 0 0 2px rgba(255,80,200,.35),0 6px 0 rgba(160,0,90,.8),0 0 28px rgba(255,0,180,.65);}
+.c7{background:linear-gradient(135deg,#00ccff,#0055ff);box-shadow:0 0 0 2px rgba(0,180,255,.35),0 6px 0 rgba(0,40,160,.8),0 0 28px rgba(0,180,255,.65);}
+.c8{background:linear-gradient(135deg,#cc00ff,#6600cc);box-shadow:0 0 0 2px rgba(190,80,255,.35),0 6px 0 rgba(70,0,130,.8),0 0 28px rgba(180,0,255,.65);}
+
+/* Drop zones */
+.drops-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-bottom:20px;}
+.drop-zone{
+  background:rgba(255,255,255,.07);
+  border:2px dashed rgba(255,255,255,.28);
+  border-radius:22px;padding:15px 13px;min-height:130px;
+  transition:all .25s cubic-bezier(.34,1.56,.64,1);
+  position:relative;overflow:hidden;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 4px 20px rgba(0,0,0,.25);
+  backdrop-filter:blur(10px);
+}
+.drop-zone::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.07),transparent);pointer-events:none;border-radius:inherit;}
+.drop-zone.over{border-color:#00ffcc;border-style:solid;background:rgba(0,255,200,.12);transform:scale(1.04) translateY(-4px);box-shadow:0 0 0 3px rgba(0,255,200,.4),0 0 40px rgba(0,255,200,.3);}
+.drop-zone.correct{border-color:#00ff88;border-style:solid;background:rgba(0,255,100,.1);animation:correctNeon .6s cubic-bezier(.34,1.56,.64,1);box-shadow:0 0 0 3px rgba(0,255,100,.5),0 0 40px rgba(0,255,100,.3);}
+@keyframes correctNeon{0%{transform:scale(1);}30%{transform:scale(1.08);}60%{transform:scale(.97);}100%{transform:scale(1);}}
+.drop-zone.wrong{animation:hardShake .45s ease;box-shadow:0 0 0 3px rgba(255,0,80,.6),0 0 30px rgba(255,0,80,.3);}
+@keyframes hardShake{0%,100%{transform:translateX(0);}15%{transform:translateX(-12px);}30%{transform:translateX(12px);}45%{transform:translateX(-8px);}60%{transform:translateX(8px);}75%{transform:translateX(-4px);}90%{transform:translateX(4px);}}
+
+.drop-zone-label{font-family:'Fredoka One',cursive;font-size:12px;color:#fff;background:linear-gradient(135deg,#7700ff,#ff00cc);padding:5px 14px;border-radius:30px;margin-bottom:8px;display:inline-block;box-shadow:0 0 14px rgba(180,0,255,.5),0 3px 0 rgba(40,0,110,.6);letter-spacing:.3px;}
+.drop-zone-emoji{font-size:30px;display:block;margin-bottom:6px;animation:emojiBob ease-in-out infinite;}
+@keyframes emojiBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
+.drop-zone-desc{font-size:11.5px;color:rgba(255,255,220,.88);line-height:1.5;font-weight:700;}
+.drop-zone-answer{
+  margin-top:9px;padding:9px 14px;
+  background:linear-gradient(135deg,#00ff88,#00ccff);
+  color:#002211;border-radius:14px;font-size:12px;font-weight:900;
+  font-family:'Fredoka One',cursive;letter-spacing:.3px;
+  display:none;animation:answerPop .4s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 0 20px rgba(0,255,150,.6),0 3px 0 rgba(0,90,50,.6);
+}
+@keyframes answerPop{0%{transform:scale(0) rotate(-5deg);opacity:0;}70%{transform:scale(1.1) rotate(1deg);}100%{transform:scale(1);opacity:1;}}
+
+/* Ghost */
+.drag-ghost{position:fixed;pointer-events:none;z-index:9999;transform:scale(1.15) rotate(-5deg)!important;opacity:.95;filter:brightness(1.35) drop-shadow(0 0 22px rgba(255,255,100,.9));}
+
+/* Overlay */
+.overlay{position:fixed;inset:0;background:rgba(0,0,30,.5);z-index:99;display:none;backdrop-filter:blur(4px);}
+.overlay.show{display:block;}
+
+/* Feedback */
+.feedback-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);border-radius:30px;padding:28px 40px;text-align:center;z-index:100;transition:transform .35s cubic-bezier(.34,1.56,.64,1);min-width:250px;backdrop-filter:blur(20px);}
+.feedback-popup.show{transform:translate(-50%,-50%) scale(1);}
+.feedback-popup.correct-fb{background:linear-gradient(135deg,rgba(0,50,30,.95),rgba(0,30,50,.95));border:3px solid #00ff88;box-shadow:0 0 0 6px rgba(0,255,100,.2),0 0 60px rgba(0,255,100,.4),0 20px 60px rgba(0,0,0,.5);}
+.feedback-popup.wrong-fb{background:linear-gradient(135deg,rgba(50,0,20,.95),rgba(40,0,0,.95));border:3px solid #ff0066;box-shadow:0 0 0 6px rgba(255,0,100,.2),0 0 60px rgba(255,0,100,.4),0 20px 60px rgba(0,0,0,.5);}
+.feedback-emoji{font-size:60px;margin-bottom:10px;animation:feedbackPop .4s ease;}
+@keyframes feedbackPop{0%{transform:scale(0) rotate(-15deg);}60%{transform:scale(1.25) rotate(5deg);}100%{transform:scale(1);}}
+.feedback-text{font-family:'Fredoka One',cursive;font-size:20px;color:#fff;letter-spacing:.5px;text-shadow:0 0 20px rgba(255,255,100,.7);}
+
+/* Final screen */
+.final-screen{display:none;text-align:center;background:rgba(5,0,30,.9);border-radius:30px;padding:36px;margin-top:16px;box-shadow:0 0 0 3px rgba(255,200,0,.6),0 0 60px rgba(255,180,0,.3),0 20px 60px rgba(0,0,0,.4);backdrop-filter:blur(16px);}
+.final-screen.show{display:block;animation:finalIn .6s cubic-bezier(.34,1.56,.64,1);}
+@keyframes finalIn{0%{transform:scale(.4) rotate(-5deg);opacity:0;}100%{transform:scale(1);opacity:1;}}
+.final-emoji{font-size:80px;animation:superBounce .9s ease-in-out infinite;}
+@keyframes superBounce{0%,100%{transform:translateY(0);}40%{transform:translateY(-22px) rotate(-6deg);}60%{transform:translateY(-22px) rotate(6deg);}}
+.final-score{font-family:'Fredoka One',cursive;font-size:38px;margin:14px 0;background:linear-gradient(90deg,#ffff00,#ff00cc,#00ffcc);background-size:200%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:rainbowText 2s linear infinite;}
+.final-msg{font-size:16px;color:rgba(255,255,200,.92);margin-bottom:24px;font-weight:800;}
+.btn-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+.btn{padding:13px 30px;border:none;border-radius:50px;font-family:'Fredoka One',cursive;font-size:16px;cursor:pointer;transition:all .2s cubic-bezier(.34,1.56,.64,1);letter-spacing:.3px;color:#fff;}
+.btn-retry{background:linear-gradient(135deg,#ff0080,#ff6600);box-shadow:0 0 0 2px rgba(255,80,0,.4),0 5px 0 rgba(140,0,40,.8),0 0 30px rgba(255,0,100,.5);}
+.btn-next{background:linear-gradient(135deg,#00ff88,#00ccff);color:#002211;box-shadow:0 0 0 2px rgba(0,255,150,.4),0 5px 0 rgba(0,90,50,.8),0 0 30px rgba(0,255,150,.5);}
+.btn:hover{transform:translateY(-5px) scale(1.07);}
+.btn:active{transform:translateY(1px);}
+
+/* Confetti */
+.confetti-piece{position:fixed;pointer-events:none;z-index:200;animation:confettiFall ease-in forwards;}
+@keyframes confettiFall{0%{transform:translateY(-30px) rotate(0);opacity:1;}100%{transform:translateY(105vh) rotate(900deg);opacity:0;}}
+
+/* Score particle */
+.score-particle{position:fixed;font-family:'Fredoka One',cursive;font-size:24px;color:#ffff00;text-shadow:0 0 20px rgba(255,255,0,.9);pointer-events:none;z-index:300;animation:scoreFloat 1.4s ease-out forwards;}
+@keyframes scoreFloat{0%{transform:translateY(0) scale(1);opacity:1;}100%{transform:translateY(-100px) scale(1.5);opacity:0;}}
+</style>
+</head>
+<body>
+
+<!-- ══ ULTRA VIVID BACKGROUND ══ -->
+<div id="bg">
+  <div class="aurora">
+    <div class="aurora-layer al1"></div>
+    <div class="aurora-layer al2"></div>
+    <div class="aurora-layer al3"></div>
+    <div class="aurora-layer al4"></div>
+    <div class="aurora-layer al5"></div>
+    <div class="aurora-layer al6"></div>
+  </div>
+  <div class="bg-darken"></div>
+  <canvas id="starCanvas"></canvas>
+
+  <!-- Shooting stars -->
+  <div class="shoot" style="width:120px;top:8%;left:8%;animation-duration:4s;animation-delay:0s;transform:rotate(25deg);"></div>
+  <div class="shoot" style="width:90px;top:20%;left:58%;animation-duration:6s;animation-delay:2s;transform:rotate(30deg);"></div>
+  <div class="shoot" style="width:150px;top:4%;left:28%;animation-duration:5s;animation-delay:3.5s;transform:rotate(20deg);"></div>
+  <div class="shoot" style="width:70px;top:35%;left:75%;animation-duration:7s;animation-delay:1.5s;transform:rotate(35deg);"></div>
+
+  <!-- Twinkle stars -->
+  <div class="twinkle" style="top:6%;left:7%;animation-duration:1.8s;">⭐</div>
+  <div class="twinkle" style="top:3%;left:24%;animation-duration:2.3s;animation-delay:.5s;">✨</div>
+  <div class="twinkle" style="top:11%;left:44%;animation-duration:1.5s;animation-delay:1s;">🌟</div>
+  <div class="twinkle" style="top:5%;left:66%;animation-duration:2.8s;animation-delay:.3s;">⭐</div>
+  <div class="twinkle" style="top:15%;left:84%;animation-duration:2s;animation-delay:.8s;">✨</div>
+  <div class="twinkle" style="top:20%;left:14%;animation-duration:2.5s;animation-delay:1.3s;">🌟</div>
+  <div class="twinkle" style="top:28%;left:92%;animation-duration:1.7s;animation-delay:.2s;">⭐</div>
+
+  <!-- Floating emojis -->
+  <div class="float-emoji" style="left:1%;top:24%;animation-duration:3.2s;">🎈</div>
+  <div class="float-emoji" style="left:87%;top:17%;animation-duration:2.8s;animation-delay:1s;">🎊</div>
+  <div class="float-emoji" style="left:4%;top:44%;animation-duration:4s;animation-delay:.5s;">🎀</div>
+  <div class="float-emoji" style="left:91%;top:37%;animation-duration:3.5s;animation-delay:1.5s;">🦋</div>
+  <div class="float-emoji" style="left:49%;top:2%;animation-duration:2.4s;animation-delay:.8s;">🌈</div>
+  <div class="float-emoji" style="left:74%;top:7%;animation-duration:3.8s;animation-delay:.2s;">🎆</div>
+  <div class="float-emoji" style="left:33%;top:10%;font-size:26px;animation-duration:3s;animation-delay:.6s;">🎉</div>
+
+  <!-- Rainbow -->
+  <div class="rainbow-arc"></div>
+
+  <!-- Ground -->
+  <div class="ground-neon"></div>
+  <div class="ground-solid"></div>
+
+  <!-- Flowers & trees -->
+  <div class="ground-emoji kid-bounce" style="left:1%;">🌺</div>
+  <div class="ground-emoji kid-bounce2" style="left:8%;">🌸</div>
+  <div class="ground-emoji kid-bounce" style="left:17%;font-size:62px;animation-delay:.3s;">🌳</div>
+  <div class="ground-emoji kid-bounce2" style="left:23%;">🌼</div>
+  <div class="ground-emoji kid-bounce" style="left:29%;">🌻</div>
+  <div class="ground-emoji kid-bounce2" style="left:39%;font-size:42px;">🦋</div>
+  <div class="ground-emoji kid-bounce" style="left:47%;font-size:42px;animation-delay:.6s;">🐝</div>
+  <div class="ground-emoji kid-bounce2" style="left:55%;">🌸</div>
+  <div class="ground-emoji kid-bounce" style="left:63%;font-size:58px;">🌲</div>
+  <div class="ground-emoji kid-bounce2" style="left:70%;">🌺</div>
+  <div class="ground-emoji kid-bounce" style="left:77%;">🌼</div>
+  <div class="ground-emoji kid-bounce2" style="left:84%;font-size:52px;">🌳</div>
+  <div class="ground-emoji kid-bounce" style="left:92%;">🌸</div>
+
+  <!-- Playing kids -->
+  <div class="ground-emoji kid-bounce" style="left:34%;font-size:54px;animation-duration:1.3s;filter:drop-shadow(0 0 20px rgba(255,200,0,.95));">🧒</div>
+  <div class="ground-emoji kid-bounce2" style="left:42%;font-size:54px;filter:drop-shadow(0 0 20px rgba(0,255,200,.95));">👧</div>
+
+  <!-- Running kid & dog -->
+  <div class="kid-run" style="animation-duration:8s;">🏃</div>
+  <div class="kid-run" style="animation-duration:11s;animation-delay:-3.5s;font-size:38px;bottom:58px;filter:drop-shadow(0 0 14px rgba(255,200,0,.8));">🐕</div>
+</div>
+
+<!-- OVERLAY + FEEDBACK -->
+<div class="overlay" id="overlay"></div>
+<div class="feedback-popup" id="feedbackPopup">
+  <div class="feedback-emoji" id="feedbackEmoji"></div>
+  <div class="feedback-text" id="feedbackText"></div>
+</div>
+
+<!-- ══ GAME ══ -->
+<div class="game-wrap">
+  <div class="top-bar">
+    <div class="logo">⭐ Planrs</div>
+    <div class="score-box">🏅 Score: <span id="scoreVal">0</span> / 8</div>
+  </div>
+
+  <div class="title">
+    <div class="section-badge">🎮 Section 1 · Activity A</div>
+    <h1>🦁 Scammer Safari Match!</h1>
+    <p>🕹️ Drag each scammer name to their correct trick description!</p>
+  </div>
+
+  <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+
+  <div class="instruction">
+    🌈 <strong>How to play:</strong> Grab the glowing cards below and DROP them onto the matching description box! Get it right to earn points! 🎯
+  </div>
+
+  <div class="drag-pool" id="dragPool">
+    <div class="drag-card c1" draggable="true" data-id="prize"   id="card-prize"   style="animation-delay:.05s">🏆 Fake Prize Scammer</div>
+    <div class="drag-card c2" draggable="true" data-id="phish"   id="card-phish"   style="animation-delay:.12s">🎣 Phishing Scammer</div>
+    <div class="drag-card c3" draggable="true" data-id="friend"  id="card-friend"  style="animation-delay:.19s">💬 Friendship Scammer</div>
+    <div class="drag-card c4" draggable="true" data-id="tech"    id="card-tech"    style="animation-delay:.26s">💻 Tech Support Scammer</div>
+    <div class="drag-card c5" draggable="true" data-id="imper"   id="card-imper"   style="animation-delay:.33s">🎭 Impersonator Scammer</div>
+    <div class="drag-card c6" draggable="true" data-id="rom"     id="card-rom"     style="animation-delay:.40s">💝 Romance Scammer</div>
+    <div class="drag-card c7" draggable="true" data-id="job"     id="card-job"     style="animation-delay:.47s">💼 Fake Job Scammer</div>
+    <div class="drag-card c8" draggable="true" data-id="malware" id="card-malware" style="animation-delay:.54s">🦠 Malware Scammer</div>
+  </div>
+
+  <div class="drops-grid">
+    <div class="drop-zone" data-accept="prize">
+      <span class="drop-zone-emoji" style="animation-duration:2.4s;">📱</span>
+      <span class="drop-zone-label">Trick #1</span>
+      <div class="drop-zone-desc">"Congratulations! You won a free iPhone! Click here to claim NOW!" — creates fake excitement</div>
+      <div class="drop-zone-answer" id="ans-prize">✅ 🏆 Fake Prize Scammer</div>
+    </div>
+    <div class="drop-zone" data-accept="phish">
+      <span class="drop-zone-emoji" style="animation-duration:2.8s;">🔗</span>
+      <span class="drop-zone-label">Trick #2</span>
+      <div class="drop-zone-desc">Sends fake links that look like real bank or govt websites to steal your password</div>
+      <div class="drop-zone-answer" id="ans-phish">✅ 🎣 Phishing Scammer</div>
+    </div>
+    <div class="drop-zone" data-accept="friend">
+      <span class="drop-zone-emoji" style="animation-duration:2.2s;">💬</span>
+      <span class="drop-zone-label">Trick #3</span>
+      <div class="drop-zone-desc">Builds a fake friendship online over weeks, then asks you to send money for an "emergency"</div>
+      <div class="drop-zone-answer" id="ans-friend">✅ 💬 Friendship Scammer</div>
+    </div>
+    <div class="drop-zone" data-accept="tech">
+      <span class="drop-zone-emoji" style="animation-duration:3s;">💻</span>
+      <span class="drop-zone-label">Trick #4</span>
+      <div class="drop-zone-desc">"Your computer has a VIRUS! Call us immediately!" — wants remote access to your device</div>
+      <div class="drop-zone-answer" id="ans-tech">✅ 💻 Tech Support Scammer</div>
+    </div>
+    <div class="drop-zone" data-accept="imper">
+      <span class="drop-zone-emoji" style="animation-duration:2.6s;">👮</span>
+      <span class="drop-zone-label">Trick #5</span>
+      <div class="drop-zone-desc">Pretends to be a bank officer or police officer and demands your OTP or Aadhaar number</div>
+      <div class="drop-zone-answer" id="ans-imper">✅ 🎭 Impersonator Scammer</div>
+    </div>
+    <div class="drop-zone" data-accept="rom">
+      <span class="drop-zone-emoji" style="animation-duration:2s;">💕</span>
+      <span class="drop-zone-label">Trick #6</span>
+      <div class="drop-zone-desc">Creates a fake romantic relationship online, then claims they need you to transfer money</div>
+      <div class="drop-zone-answer" id="ans-rom">✅ 💝 Romance Scammer</div>
+    </div>
+    <div class="drop-zone" data-accept="job">
+      <span class="drop-zone-emoji" style="animation-duration:3.2s;">📋</span>
+      <span class="drop-zone-label">Trick #7</span>
+      <div class="drop-zone-desc">"Work from home, earn ₹50,000/month! Pay a small registration fee to start!" — job doesn't exist</div>
+      <div class="drop-zone-answer" id="ans-job">✅ 💼 Fake Job Scammer</div>
+    </div>
+    <div class="drop-zone" data-accept="malware">
+      <span class="drop-zone-emoji" style="animation-duration:2.5s;">📥</span>
+      <span class="drop-zone-label">Trick #8</span>
+      <div class="drop-zone-desc">Tricks you into downloading a fake app that secretly steals your data or locks your phone</div>
+      <div class="drop-zone-answer" id="ans-malware">✅ 🦠 Malware Scammer</div>
+    </div>
+  </div>
+
+  <div class="final-screen" id="finalScreen">
+    <div class="final-emoji">🏆</div>
+    <div class="final-score" id="finalScore"></div>
+    <div class="final-msg" id="finalMsg"></div>
+    <div class="btn-row">
+      <button class="btn btn-retry" onclick="resetGame()">🔄 Try Again</button>
+      <button class="btn btn-next" onclick="alert('🎉 Brilliant! Move on to Section 2!')">➡️ Next Section</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── STAR CANVAS ── */
+const canvas=document.getElementById('starCanvas');
+const ctx=canvas.getContext('2d');
+function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+resizeCanvas();window.addEventListener('resize',resizeCanvas);
+const stars=Array.from({length:220},()=>({
+  x:Math.random()*window.innerWidth,
+  y:Math.random()*window.innerHeight*.88,
+  r:Math.random()*1.9+.3,
+  alpha:Math.random(),
+  dAlpha:(Math.random()*.018+.005)*(Math.random()<.5?1:-1),
+  hue:Math.random()*360
+}));
+function animateStars(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  stars.forEach(s=>{
+    s.alpha+=s.dAlpha;if(s.alpha>1||s.alpha<0)s.dAlpha*=-1;
+    s.hue=(s.hue+.6)%360;
+    ctx.save();ctx.globalAlpha=Math.max(0,Math.min(1,s.alpha));
+    ctx.fillStyle=`hsl(${s.hue},100%,85%)`;
+    ctx.shadowBlur=10;ctx.shadowColor=`hsl(${s.hue},100%,80%)`;
+    ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+  });
+  requestAnimationFrame(animateStars);
+}
+animateStars();
+
+/* ── NEON BUBBLES ── */
+const bgEl=document.getElementById('bg');
+const bCols=['#ff00cc','#00ffff','#ffff00','#00ff88','#ff6600','#aa00ff','#ff0066','#00ccff','#ff99ff','#66ffcc'];
+for(let i=0;i<24;i++){
+  const b=document.createElement('div');b.className='neon-bub';
+  const sz=Math.random()*72+16,col=bCols[Math.floor(Math.random()*bCols.length)];
+  b.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*98}%;background:${col};box-shadow:0 0 ${sz*.5}px ${sz*.25}px ${col};animation-duration:${Math.random()*13+9}s;animation-delay:-${Math.random()*22}s;`;
+  bgEl.insertBefore(b,bgEl.querySelector('.rainbow-arc'));
+}
+
+/* ── GAME ── */
+let score=0,total=8,draggedId=null,draggedEl=null;
+const correctMsgs=["🎉 Amazing! Scammer Expert!","🌟 Brilliant! You got it!","🔥 On fire! Keep going!","⭐ Superstar! Correct!","🦸 Hero! That's right!","🥳 YESSS! Nailed it!","💪 YOU ROCK!","🎊 Awesome! Spot on!"];
+const wrongMsgs=["😅 Almost! Think again...","💪 Don't give up!","🤔 Not quite! Try again!","📚 Good try!","🌈 So close! Once more!"];
+
+function showFeedback(ok){
+  const pop=document.getElementById('feedbackPopup'),ov=document.getElementById('overlay');
+  const arr=ok?correctMsgs:wrongMsgs;
+  document.getElementById('feedbackEmoji').textContent=ok?'✅':'❌';
+  document.getElementById('feedbackText').textContent=arr[Math.floor(Math.random()*arr.length)];
+  pop.className='feedback-popup '+(ok?'correct-fb':'wrong-fb')+' show';
+  ov.className='overlay show';
+  setTimeout(()=>{pop.className='feedback-popup';ov.className='overlay';},1500);
+}
+function spawnParticle(x,y){
+  const p=document.createElement('div');p.className='score-particle';p.textContent='+1 ⭐';
+  p.style.cssText=`left:${x-20}px;top:${y-20}px;`;document.body.appendChild(p);setTimeout(()=>p.remove(),1500);
+}
+
+/* Desktop drag */
+document.querySelectorAll('.drag-card').forEach(c=>{
+  c.addEventListener('dragstart',e=>{draggedId=c.dataset.id;draggedEl=c;setTimeout(()=>c.classList.add('dragging'),0);e.dataTransfer.effectAllowed='move';});
+  c.addEventListener('dragend',()=>c.classList.remove('dragging'));
+});
+document.querySelectorAll('.drop-zone').forEach(z=>{
+  z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('over');});
+  z.addEventListener('dragleave',e=>{if(!z.contains(e.relatedTarget))z.classList.remove('over');});
+  z.addEventListener('drop',e=>{e.preventDefault();z.classList.remove('over');if(draggedId)handleDrop(z,e.clientX,e.clientY);});
+});
+
+function handleDrop(zone,cx,cy){
+  if(zone.dataset.accept===draggedId){
+    score++;document.getElementById('scoreVal').textContent=score;
+    document.getElementById('progressBar').style.width=(score/total*100)+'%';
+    zone.classList.add('correct');
+    document.getElementById('ans-'+draggedId).style.display='block';
+    draggedEl.classList.add('placed');
+    spawnParticle(cx,cy);showFeedback(true);
+    if(score===total)setTimeout(showFinal,1900);
+  }else{zone.classList.add('wrong');showFeedback(false);setTimeout(()=>zone.classList.remove('wrong'),500);}
+  draggedId=null;draggedEl=null;
+}
+
+/* Touch drag */
+let ghostEl=null;
+document.querySelectorAll('.drag-card').forEach(c=>{
+  c.addEventListener('touchstart',e=>{
+    e.preventDefault();draggedId=c.dataset.id;draggedEl=c;c.classList.add('dragging');
+    ghostEl=c.cloneNode(true);ghostEl.className=c.className+' drag-ghost';ghostEl.style.width=c.offsetWidth+'px';
+    const r=c.getBoundingClientRect();ghostEl.style.left=r.left+'px';ghostEl.style.top=r.top+'px';document.body.appendChild(ghostEl);
+  },{passive:false});
+  c.addEventListener('touchmove',e=>{
+    e.preventDefault();const t=e.touches[0];
+    if(ghostEl){ghostEl.style.left=(t.clientX-ghostEl.offsetWidth/2)+'px';ghostEl.style.top=(t.clientY-ghostEl.offsetHeight/2)+'px';}
+    document.querySelectorAll('.drop-zone').forEach(z=>z.classList.remove('over'));
+    const zone=document.elementFromPoint(t.clientX,t.clientY)?.closest('.drop-zone');if(zone)zone.classList.add('over');
+  },{passive:false});
+  c.addEventListener('touchend',e=>{
+    e.preventDefault();c.classList.remove('dragging');if(ghostEl){ghostEl.remove();ghostEl=null;}
+    const t=e.changedTouches[0];
+    const zone=document.elementFromPoint(t.clientX,t.clientY)?.closest('.drop-zone');
+    document.querySelectorAll('.drop-zone').forEach(z=>z.classList.remove('over'));
+    if(zone&&draggedId)handleDrop(zone,t.clientX,t.clientY);else{draggedId=null;draggedEl=null;}
+  },{passive:false});
+});
+
+/* Confetti */
+function spawnConfetti(){
+  const cols=['#ff00cc','#ffff00','#00ffcc','#ff6600','#00ffff','#ff0066','#aa00ff','#00ff88','#ffcc00','#ffffff','#ff99ff'];
+  for(let i=0;i<100;i++){
+    const c=document.createElement('div');c.className='confetti-piece';
+    const sz=Math.random()*14+5;
+    c.style.cssText=`left:${Math.random()*100}vw;top:-25px;background:${cols[Math.floor(Math.random()*cols.length)]};animation-delay:${Math.random()*2}s;animation-duration:${Math.random()*1.2+1.5}s;border-radius:${Math.random()>.5?'50%':'3px'};width:${sz}px;height:${sz}px;box-shadow:0 0 8px currentColor;`;
+    document.body.appendChild(c);setTimeout(()=>c.remove(),4200);
+  }
+}
+
+/* Final screen */
+function showFinal(){
+  spawnConfetti();setTimeout(spawnConfetti,600);setTimeout(spawnConfetti,1200);
+  const fs=document.getElementById('finalScreen');fs.className='final-screen show';
+  const pct=Math.round(score/total*100);
+  document.getElementById('finalScore').textContent=score+' / '+total+' Correct! ('+pct+'%)';
+  const msgs=['🌱 Keep practising — you can do it!','📚 Good effort! Review and try again!','🎯 Well done! You know your scammers!','🌟 Excellent! Almost perfect!','🏆 PERFECT SCORE! You are the Champion!'];
+  document.getElementById('finalMsg').textContent=msgs[Math.min(4,Math.floor(pct/21))];
+  document.querySelector('.final-emoji').textContent=pct===100?'🥇':'🏆';
+}
+
+/* Reset */
+function resetGame(){
+  score=0;document.getElementById('scoreVal').textContent='0';document.getElementById('progressBar').style.width='0%';
+  document.getElementById('finalScreen').className='final-screen';
+  document.querySelectorAll('.drag-card').forEach(c=>c.classList.remove('placed','dragging'));
+  document.querySelectorAll('.drop-zone').forEach(z=>z.classList.remove('correct','wrong','over'));
+  document.querySelectorAll('.drop-zone-answer').forEach(a=>a.style.display='none');
+}
+</script>
+</body>
+</html>

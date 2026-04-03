@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎉 Word Scramble & Scenarios | ⭐ Planrs</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --pink: #FF6B9D;
+  --yellow: #FFD93D;
+  --cyan: #4ECDC4;
+  --purple: #A855F7;
+  --orange: #FF9F43;
+  --green: #6BCB77;
+  --blue: #4D96FF;
+  --red: #FF6B6B;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: #0a0a2e;
+}
+
+/* ===== ANIMATED BACKGROUND ===== */
+.bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(135deg, #0a0a2e 0%, #1a1a4e 25%, #0d2b4e 50%, #1a0a3e 75%, #0a1a2e 100%);
+  background-size: 400% 400%;
+  animation: bgShift 10s ease infinite;
+}
+
+@keyframes bgShift {
+  0%,100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Floating emoji objects */
+.floater {
+  position: fixed;
+  font-size: 2rem;
+  pointer-events: none;
+  z-index: 1;
+  animation: floatUp linear infinite;
+  opacity: 0.7;
+}
+@keyframes floatUp {
+  0% { transform: translateY(110vh) rotate(0deg) scale(0.8); opacity: 0; }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.8; }
+  100% { transform: translateY(-10vh) rotate(360deg) scale(1.2); opacity: 0; }
+}
+
+/* Stars twinkling */
+.star {
+  position: fixed;
+  width: 4px;
+  height: 4px;
+  background: white;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  animation: twinkle ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%,100% { opacity: 0.1; transform: scale(0.5); }
+  50% { opacity: 1; transform: scale(1.5); }
+}
+
+/* Color burst orbs */
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  filter: blur(60px);
+  animation: orbDrift ease-in-out infinite;
+  opacity: 0.25;
+}
+@keyframes orbDrift {
+  0%,100% { transform: translate(0,0) scale(1); }
+  33% { transform: translate(30px,-40px) scale(1.1); }
+  66% { transform: translate(-20px,30px) scale(0.9); }
+}
+
+/* ===== LAYOUT ===== */
+.wrapper {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  padding: 16px;
+}
+
+/* ===== HEADER ===== */
+.planrs-badge {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  background: linear-gradient(135deg, #FFD93D, #FF9F43);
+  border-radius: 50px;
+  padding: 6px 16px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 15px;
+  color: #fff;
+  z-index: 200;
+  box-shadow: 0 4px 20px rgba(255,159,67,0.5);
+  animation: badgePulse 2s ease-in-out infinite;
+}
+@keyframes badgePulse {
+  0%,100% { box-shadow: 0 4px 20px rgba(255,159,67,0.5); }
+  50% { box-shadow: 0 4px 40px rgba(255,159,67,0.9), 0 0 0 4px rgba(255,159,67,0.2); }
+}
+
+.score-badge {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  background: linear-gradient(135deg, #6BCB77, #4ECDC4);
+  border-radius: 50px;
+  padding: 6px 18px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 16px;
+  color: #fff;
+  z-index: 200;
+  box-shadow: 0 4px 20px rgba(78,205,196,0.5);
+  transition: transform 0.3s;
+}
+.score-badge.pop {
+  animation: scorePop 0.4s ease;
+}
+@keyframes scorePop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4) rotate(-5deg); }
+  100% { transform: scale(1); }
+}
+
+h1 {
+  text-align: center;
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(24px, 5vw, 42px);
+  margin: 70px 0 6px;
+  background: linear-gradient(90deg, #FFD93D, #FF6B9D, #4ECDC4, #A855F7, #FFD93D);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: rainbowText 4s linear infinite;
+  text-shadow: none;
+  filter: drop-shadow(0 2px 8px rgba(255,107,157,0.4));
+}
+@keyframes rainbowText {
+  0% { background-position: 0% center; }
+  100% { background-position: 300% center; }
+}
+
+.subtitle {
+  text-align: center;
+  color: rgba(255,255,255,0.7);
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+/* ===== TABS ===== */
+.tab-bar {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 12px 28px;
+  border-radius: 50px;
+  border: 3px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  font-family: 'Fredoka One', cursive;
+  font-size: 16px;
+  color: rgba(255,255,255,0.8);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.tab.active {
+  background: linear-gradient(135deg, var(--orange), var(--pink));
+  border-color: transparent;
+  color: white;
+  box-shadow: 0 6px 25px rgba(255,107,157,0.5);
+  transform: translateY(-2px);
+}
+.tab:hover:not(.active) {
+  background: rgba(255,255,255,0.2);
+  transform: translateY(-2px);
+  color: white;
+}
+
+/* ===== SECTIONS ===== */
+.section { display: none; max-width: 780px; margin: 0 auto; }
+.section.active { display: block; }
+
+.score-row {
+  text-align: center;
+  font-family: 'Fredoka One', cursive;
+  font-size: 18px;
+  color: var(--yellow);
+  margin-bottom: 20px;
+  text-shadow: 0 2px 8px rgba(255,217,61,0.4);
+}
+
+/* ===== SCRAMBLE CARDS ===== */
+.scramble-card {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(12px);
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 24px;
+  padding: 22px;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  transition: transform 0.3s, box-shadow 0.3s;
+  animation: cardSlideIn 0.5s ease both;
+}
+.scramble-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+}
+@keyframes cardSlideIn {
+  from { opacity: 0; transform: translateY(30px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.hint-text {
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.scrambled {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(26px, 5vw, 40px);
+  color: var(--yellow);
+  letter-spacing: 6px;
+  text-align: center;
+  padding: 14px;
+  background: rgba(255,217,61,0.1);
+  border: 2px dashed rgba(255,217,61,0.4);
+  border-radius: 14px;
+  margin: 10px 0;
+  text-shadow: 0 0 20px rgba(255,217,61,0.5);
+  animation: letterBounce 3s ease-in-out infinite;
+}
+@keyframes letterBounce {
+  0%,100% { letter-spacing: 6px; }
+  50% { letter-spacing: 10px; }
+}
+
+/* ===== DRAG & DROP LETTER TILES ===== */
+.drag-area {
+  margin: 12px 0;
+}
+.drag-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  font-weight: 700;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.letter-bank {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  min-height: 52px;
+  padding: 8px;
+  background: rgba(255,255,255,0.05);
+  border: 2px dashed rgba(255,255,255,0.2);
+  border-radius: 14px;
+  transition: all 0.2s;
+}
+.letter-bank.drag-over {
+  background: rgba(78,205,196,0.15);
+  border-color: var(--cyan);
+  box-shadow: 0 0 20px rgba(78,205,196,0.3);
+}
+.answer-zone {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  min-height: 52px;
+  padding: 8px;
+  background: rgba(107,203,119,0.1);
+  border: 2px dashed rgba(107,203,119,0.4);
+  border-radius: 14px;
+  transition: all 0.2s;
+}
+.answer-zone.drag-over {
+  background: rgba(107,203,119,0.2);
+  border-color: var(--green);
+  box-shadow: 0 0 20px rgba(107,203,119,0.3);
+}
+.answer-zone.correct-zone {
+  background: rgba(107,203,119,0.25);
+  border-color: var(--green);
+  border-style: solid;
+}
+.answer-zone.wrong-zone {
+  background: rgba(255,107,107,0.2);
+  border-color: var(--red);
+  border-style: solid;
+  animation: shakeZone 0.4s ease;
+}
+@keyframes shakeZone {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+
+.letter-tile {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 20px;
+  cursor: grab;
+  user-select: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+  position: relative;
+}
+.letter-tile:active { cursor: grabbing; }
+.letter-tile.dragging {
+  opacity: 0.5;
+  transform: scale(0.9);
+}
+.letter-tile.tile-drop {
+  animation: tilePop 0.3s ease;
+}
+@keyframes tilePop {
+  0% { transform: scale(0.5) rotate(-10deg); }
+  70% { transform: scale(1.2) rotate(3deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+/* Colorful tile palettes */
+.tile-0 { background: linear-gradient(135deg, #FF6B9D, #FF8C69); color: white; box-shadow: 0 4px 12px rgba(255,107,157,0.4); }
+.tile-1 { background: linear-gradient(135deg, #FFD93D, #FFAA3D); color: #333; box-shadow: 0 4px 12px rgba(255,217,61,0.4); }
+.tile-2 { background: linear-gradient(135deg, #4ECDC4, #45B7D1); color: white; box-shadow: 0 4px 12px rgba(78,205,196,0.4); }
+.tile-3 { background: linear-gradient(135deg, #A855F7, #7C3AED); color: white; box-shadow: 0 4px 12px rgba(168,85,247,0.4); }
+.tile-4 { background: linear-gradient(135deg, #FF9F43, #FECA57); color: white; box-shadow: 0 4px 12px rgba(255,159,67,0.4); }
+.tile-5 { background: linear-gradient(135deg, #6BCB77, #26de81); color: white; box-shadow: 0 4px 12px rgba(107,203,119,0.4); }
+.tile-6 { background: linear-gradient(135deg, #4D96FF, #2980b9); color: white; box-shadow: 0 4px 12px rgba(77,150,255,0.4); }
+
+.letter-tile:hover:not(.dragging) {
+  transform: translateY(-4px) scale(1.1);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+.answer-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 14px;
+}
+.answer-input {
+  flex: 1;
+  padding: 10px 16px;
+  border: 2px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.1);
+  border-radius: 12px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 18px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  outline: none;
+  color: white;
+  transition: all 0.3s;
+}
+.answer-input::placeholder { color: rgba(255,255,255,0.3); font-family: 'Nunito', sans-serif; font-size: 14px; letter-spacing: 0; }
+.answer-input:focus { border-color: var(--cyan); background: rgba(78,205,196,0.1); box-shadow: 0 0 0 4px rgba(78,205,196,0.15); }
+.answer-input.correct { border-color: var(--green); background: rgba(107,203,119,0.2); animation: correctPop 0.5s ease; }
+.answer-input.wrong { border-color: var(--red); background: rgba(255,107,107,0.15); animation: shake 0.4s ease; }
+
+@keyframes correctPop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.check-btn {
+  padding: 10px 20px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--orange), var(--pink));
+  color: white;
+  border: none;
+  font-family: 'Fredoka One', cursive;
+  font-size: 15px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+  box-shadow: 0 4px 15px rgba(255,107,157,0.4);
+}
+.check-btn:hover { transform: translateY(-2px) scale(1.05); box-shadow: 0 8px 25px rgba(255,107,157,0.5); }
+
+.word-def {
+  font-size: 13px;
+  color: rgba(255,255,255,0.8);
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: rgba(107,203,119,0.15);
+  border-left: 4px solid var(--green);
+  border-radius: 10px;
+  display: none;
+  animation: defSlide 0.3s ease;
+}
+@keyframes defSlide {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== SCENARIO CARDS ===== */
+.scenario-card {
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(12px);
+  border: 2px solid rgba(255,255,255,0.12);
+  border-radius: 24px;
+  padding: 22px;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  animation: cardSlideIn 0.5s ease both;
+  transition: transform 0.3s;
+}
+.scenario-card:hover { transform: translateY(-3px); }
+
+.scenario-num {
+  font-family: 'Fredoka One', cursive;
+  font-size: 13px;
+  color: var(--cyan);
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.scenario-text {
+  font-size: 15px;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 14px;
+  line-height: 1.7;
+  background: rgba(78,205,196,0.08);
+  padding: 14px;
+  border-radius: 12px;
+  border-left: 4px solid var(--cyan);
+}
+.scenario-q {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--yellow);
+  margin-bottom: 14px;
+}
+.s-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.s-btn {
+  padding: 10px 16px;
+  border-radius: 14px;
+  border: 2px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.08);
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  cursor: pointer;
+  transition: all 0.25s;
+  text-align: left;
+  line-height: 1.4;
+}
+.s-btn:hover:not(:disabled) {
+  background: rgba(255,255,255,0.18);
+  transform: translateY(-3px);
+  border-color: var(--cyan);
+  box-shadow: 0 6px 20px rgba(78,205,196,0.2);
+  color: white;
+}
+.s-btn.correct {
+  background: rgba(107,203,119,0.3);
+  border-color: var(--green);
+  color: #a8f0b0;
+  animation: correctPop 0.4s ease;
+}
+.s-btn.wrong {
+  background: rgba(255,107,107,0.25);
+  border-color: var(--red);
+  color: #ffaaaa;
+  animation: shake 0.4s ease;
+}
+.s-btn.reveal {
+  background: rgba(107,203,119,0.15);
+  border-color: var(--green);
+  color: #a8f0b0;
+}
+.s-explain {
+  font-size: 13px;
+  color: rgba(255,255,255,0.8);
+  background: rgba(107,203,119,0.12);
+  border-left: 4px solid var(--green);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-top: 12px;
+  display: none;
+  animation: defSlide 0.3s ease;
+}
+
+/* ===== FEEDBACK ===== */
+.feedback-msg {
+  text-align: center;
+  font-family: 'Fredoka One', cursive;
+  font-size: 22px;
+  min-height: 36px;
+  margin: 12px 0;
+  animation: feedbackBounce 0.4s ease;
+}
+@keyframes feedbackBounce {
+  0% { transform: scale(0.5); opacity: 0; }
+  70% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: inline-block;
+  padding: 13px 30px;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Fredoka One', cursive;
+  font-size: 16px;
+  margin: 6px;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+.btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255,255,255,0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.4s, height 0.4s;
+}
+.btn:active::after { width: 200px; height: 200px; opacity: 0; }
+.btn-orange { background: linear-gradient(135deg, #FF9F43, #FECA57); color: white; box-shadow: 0 5px 20px rgba(255,159,67,0.4); }
+.btn-coral { background: linear-gradient(135deg, #FF6B9D, #FF6B6B); color: white; box-shadow: 0 5px 20px rgba(255,107,157,0.4); }
+.btn-orange:hover, .btn-coral:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+.center { text-align: center; margin-top: 20px; padding-bottom: 40px; }
+
+/* ===== CONFETTI ===== */
+.confetti-piece {
+  position: fixed;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 9999;
+  animation: confettiFall 1.5s ease forwards;
+}
+@keyframes confettiFall {
+  0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* ===== CORRECT STAMP ===== */
+.stamp-correct {
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  font-size: 2.5rem;
+  pointer-events: none;
+  animation: stampIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+  z-index: 5;
+}
+@keyframes stampIn {
+  0% { transform: translateY(-50%) scale(3); opacity: 0; }
+  100% { transform: translateY(-50%) scale(1); opacity: 1; }
+}
+
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-7px)} 75%{transform:translateX(7px)} }
+</style>
+</head>
+<body>
+
+<!-- Animated background -->
+<div class="bg-canvas"></div>
+
+<!-- Color orbs -->
+<div class="orb" style="width:300px;height:300px;background:#FF6B9D;top:10%;left:5%;animation-duration:8s;"></div>
+<div class="orb" style="width:250px;height:250px;background:#4ECDC4;top:50%;right:5%;animation-duration:11s;animation-delay:-3s;"></div>
+<div class="orb" style="width:200px;height:200px;background:#A855F7;bottom:10%;left:20%;animation-duration:9s;animation-delay:-5s;"></div>
+<div class="orb" style="width:180px;height:180px;background:#FFD93D;top:30%;left:40%;animation-duration:13s;animation-delay:-2s;"></div>
+
+<div class="wrapper">
+  <div class="planrs-badge">⭐ Planrs</div>
+  <div class="score-badge" id="scoreBadge">🏆 Score: 0</div>
+
+  <h1>🎉 Word Scramble & Scenarios!</h1>
+  <p class="subtitle">Section 4 Activity — Unscramble finance words & solve real-life situations</p>
+
+  <div class="tab-bar">
+    <button class="tab active" onclick="switchTab('scramble', this)">🔤 Part 1: Word Scramble</button>
+    <button class="tab" onclick="switchTab('scenarios', this)">💡 Part 2: Scenario Challenge</button>
+  </div>
+
+  <!-- WORD SCRAMBLE SECTION -->
+  <div class="section active" id="tab-scramble">
+    <div class="score-row">🌟 Drag, drop & unscramble all 8 finance words!</div>
+    <div id="scrambleCards"></div>
+    <div class="center">
+      <button class="btn btn-coral" onclick="revealAll()">👀 Reveal All Answers</button>
+      <button class="btn btn-orange" onclick="resetScramble()">🔄 Reset Scramble</button>
+    </div>
+  </div>
+
+  <!-- SCENARIO SECTION -->
+  <div class="section" id="tab-scenarios">
+    <div class="score-row" id="scenScore">🧠 Answer all 6 scenarios!</div>
+    <div id="scenarioCards"></div>
+    <div class="feedback-msg" id="scenFeedback"></div>
+    <div class="center">
+      <button class="btn btn-orange" onclick="resetScenarios()">🔄 Reset Scenarios</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const scrambleWords = [
+  { word: 'BUDGET', hint: 'A plan for how to spend money each month', def: 'A BUDGET is a monthly plan that lists all income and expenses, helping you spend wisely.' },
+  { word: 'SAVINGS', hint: 'Money set aside for emergencies or future goals', def: 'SAVINGS is money you keep aside instead of spending — it grows over time and helps in emergencies.' },
+  { word: 'FINANCE', hint: 'The management of money', def: 'FINANCE is the science and art of managing money — earning, spending, saving, and investing.' },
+  { word: 'NEED', hint: 'Essential for survival — like food and shelter', def: 'A NEED is something essential for basic survival and health, like food, clothing, and shelter.' },
+  { word: 'WANT', hint: 'Something nice to have but not essential', def: 'A WANT is something you desire but can live without — like the latest gadget or branded clothes.' },
+  { word: 'INCOME', hint: 'Money earned from work or a business', def: 'INCOME is money you receive — from a job, business, or other source. Budgeting starts with knowing your income.' },
+  { word: 'INVEST', hint: 'To put money into something to earn more money back', def: 'To INVEST means to put your savings into assets (like stocks or land) so they grow in value over time.' },
+  { word: 'DEBT', hint: 'Money owed to someone else', def: 'DEBT is money you borrow and must repay. Spending on wants before needs can lead to unnecessary debt.' },
+];
+
+const scenarios = [
+  {
+    text: 'Kavitha has Rs. 200. She needs to refill her school bus pass (Rs. 150). She also wants to buy a mango kulfi (Rs. 30). Her friend says "Just skip the bus pass and walk!" What should she do?',
+    q: 'What is the SMARTEST financial decision for Kavitha?',
+    options: ['Skip the bus pass, buy the kulfi', 'Buy the bus pass (need), then the kulfi with Rs. 20 change + Rs. 20 she saves elsewhere', 'Spend all Rs. 200 on kulfis', 'Do not spend any money'],
+    correct: 1,
+    explain: '✅ Pay for the bus pass (need) first — Rs. 150. She has Rs. 50 left. She can buy the kulfi (Rs. 30) with remaining money. Needs first, then treats!'
+  },
+  {
+    text: 'The Sharma family has Rs. 10,000 left after paying needs. Papa wants to put Rs. 3,000 in a savings account. Amma wants to use all Rs. 10,000 for a new sofa. Who is making the better financial decision?',
+    q: 'Whose approach follows smart money management?',
+    options: ['Amma — the sofa is a good investment', 'Papa — saving first before spending on wants is the golden rule', 'Both are equally smart', 'Neither — save all Rs. 10,000'],
+    correct: 1,
+    explain: '✅ Papa follows the golden rule: Needs first (done), then SAVE some, then spend on wants. The sofa is a want and can wait or be purchased with remaining money.'
+  },
+  {
+    text: 'Ravi\'s entire class is buying branded ₹2,000 sneakers. Ravi\'s family budget only allows for ₹400 school shoes this month. Ravi feels embarrassed. What advice would you give?',
+    q: 'What is the RIGHT approach here?',
+    options: ['Tell Ravi to demand the branded shoes — peer pressure is a valid reason', 'Ravi should buy the ₹400 shoes this month and save toward branded ones later if he genuinely wants them', 'Skip buying shoes altogether', 'Ask a friend to lend money for branded shoes'],
+    correct: 1,
+    explain: '✅ The ₹400 shoes meet the NEED (foot protection). Branded shoes are a WANT. Ravi can save toward them over time without hurting the family budget or borrowing money.'
+  },
+  {
+    text: 'Priya\'s town needs a new public school. The local government wants to build a Rs. 50 crore decorative fountain in the park instead. Parents are protesting.',
+    q: 'Who is making the correct decision based on public finance principles?',
+    options: ['The government — fountains attract tourism', 'The protesting parents — a school is a community NEED, the fountain is a WANT', 'Both are equally important', 'Neither — money should be saved'],
+    correct: 1,
+    explain: '✅ Communities also have needs (schools, hospitals, roads) and wants (luxury infrastructure). Good governance prioritises community NEEDS first — this is public finance!'
+  },
+  {
+    text: 'Arjun saves Rs. 600/month for 12 months. He wants to buy a Rs. 5,000 cricket bat. How many months will he need to save?',
+    q: 'How many months does Arjun need to save at Rs. 600/month?',
+    options: ['6 months', 'About 8–9 months', '12 months', '20 months'],
+    correct: 1,
+    explain: '✅ Rs. 5,000 ÷ Rs. 600/month ≈ 8.3 months. So about 8–9 months! This is the power of saving — Arjun gets his WANT without borrowing or hurting family needs.'
+  },
+  {
+    text: 'Every morning, Sneha spends Rs. 40 on a fancy coffee from a café. She could make simple chai at home for Rs. 5. She says "but coffee is a need — I need energy for school!"',
+    q: 'Is Sneha\'s fancy café coffee a NEED or a WANT?',
+    options: ['Need — she needs caffeine for energy', 'Want — home chai gives the same energy for much less money', 'Need — it is food and food is always a need', 'Depends — it is different for everyone'],
+    correct: 1,
+    explain: '✅ The FUNCTION (energy, hydration) is a need. But the fancy Rs. 40 café coffee when Rs. 5 home chai does the same job? The extra Rs. 35 is a WANT. Basic function = need; upgrade = want!'
+  },
+];
+
+let scrambleScore = 0, scenScore = 0;
+let dragSrcEl = null, dragSrcZone = null;
+
+// ===== BACKGROUND DECORATIONS =====
+const emojis = ['💰','🌟','🎯','🚀','🎉','💡','🏆','⭐','🌈','🎊','🎁','🍀','✨','🦋','🌸','🎈'];
+const starColors = ['#FFD93D','#FF6B9D','#4ECDC4','#A855F7','#6BCB77','#4D96FF','#FF9F43'];
+
+function initBackground() {
+  // Stars
+  for (let i = 0; i < 80; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.cssText = `
+      left: ${Math.random()*100}%;
+      top: ${Math.random()*100}%;
+      width: ${Math.random()*4+2}px;
+      height: ${Math.random()*4+2}px;
+      background: ${starColors[Math.floor(Math.random()*starColors.length)]};
+      animation-duration: ${Math.random()*3+1}s;
+      animation-delay: ${Math.random()*3}s;
+    `;
+    document.body.appendChild(star);
+  }
+
+  // Floating emojis
+  function spawnFloater() {
+    const f = document.createElement('div');
+    f.className = 'floater';
+    f.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    f.style.cssText = `
+      left: ${Math.random()*100}%;
+      font-size: ${Math.random()*20+16}px;
+      animation-duration: ${Math.random()*8+6}s;
+      animation-delay: 0s;
+    `;
+    document.body.appendChild(f);
+    setTimeout(() => f.remove(), 16000);
+  }
+
+  for (let i = 0; i < 8; i++) setTimeout(spawnFloater, i * 1000);
+  setInterval(spawnFloater, 2000);
+}
+
+// ===== SCRAMBLE =====
+function scramble(word) {
+  let arr = word.split('');
+  do { arr.sort(() => Math.random() - 0.5); } while (arr.join('') === word);
+  return arr.join('');
+}
+
+function buildScramble() {
+  const container = document.getElementById('scrambleCards');
+  container.innerHTML = '';
+  scrambleWords.forEach((w, idx) => {
+    const scrambled = scramble(w.word);
+    const card = document.createElement('div');
+    card.className = 'scramble-card';
+    card.style.animationDelay = (idx * 0.07) + 's';
+
+    // Create letter tiles HTML for the bank
+    const bankTiles = scrambled.split('').map((letter, li) => {
+      const tileClass = `tile-${li % 7}`;
+      return `<div class="letter-tile ${tileClass}" draggable="true" data-letter="${letter}" data-idx="${idx}" data-pos="${li}">${letter}</div>`;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="hint-text">💡 Hint: ${w.hint}</div>
+      <div class="scrambled" id="sc_${idx}">${scrambled}</div>
+      <div class="drag-area">
+        <div class="drag-label">📦 Letter Bank — drag letters to answer zone</div>
+        <div class="letter-bank" id="bank_${idx}" data-zone="bank" data-idx="${idx}">${bankTiles}</div>
+        <div class="drag-label" style="margin-top:10px;">✏️ Your Answer Zone</div>
+        <div class="answer-zone" id="zone_${idx}" data-zone="answer" data-idx="${idx}"></div>
+      </div>
+      <div class="answer-row">
+        <input class="answer-input" id="inp_${idx}" placeholder="Or type here..." maxlength="${w.word.length}" oninput="this.value=this.value.toUpperCase(); syncFromInput(${idx})">
+        <button class="check-btn" onclick="checkScramble(${idx})">Check ✅</button>
+      </div>
+      <div class="word-def" id="def_${idx}">${w.def}</div>`;
+    container.appendChild(card);
+  });
+
+  // Attach drag events after DOM is built
+  document.querySelectorAll('.letter-tile').forEach(tile => attachTileDrag(tile));
+  document.querySelectorAll('.letter-bank, .answer-zone').forEach(zone => attachZoneDrop(zone));
+}
+
+function attachTileDrag(tile) {
+  tile.addEventListener('dragstart', e => {
+    dragSrcEl = tile;
+    dragSrcZone = tile.parentElement;
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', tile.dataset.letter);
+    setTimeout(() => tile.classList.add('dragging'), 0);
+  });
+  tile.addEventListener('dragend', () => {
+    tile.classList.remove('dragging');
+    document.querySelectorAll('.letter-bank, .answer-zone').forEach(z => z.classList.remove('drag-over'));
+    syncAnswerZoneToInput(parseInt(tile.dataset.idx));
+  });
+  // Touch support
+  tile.addEventListener('touchstart', handleTouchStart, { passive: true });
+  tile.addEventListener('touchmove', handleTouchMove, { passive: false });
+  tile.addEventListener('touchend', handleTouchEnd);
+}
+
+// Touch drag state
+let touchTile = null, touchClone = null, touchOffsetX = 0, touchOffsetY = 0;
+
+function handleTouchStart(e) {
+  touchTile = e.currentTarget;
+  const touch = e.touches[0];
+  const rect = touchTile.getBoundingClientRect();
+  touchOffsetX = touch.clientX - rect.left;
+  touchOffsetY = touch.clientY - rect.top;
+
+  touchClone = touchTile.cloneNode(true);
+  touchClone.style.cssText = `
+    position: fixed; pointer-events: none; z-index: 9999;
+    width: ${rect.width}px; height: ${rect.height}px;
+    opacity: 0.9; transform: scale(1.15);
+    left: ${touch.clientX - touchOffsetX}px;
+    top: ${touch.clientY - touchOffsetY}px;
+  `;
+  document.body.appendChild(touchClone);
+  touchTile.style.opacity = '0.3';
+}
+
+function handleTouchMove(e) {
+  e.preventDefault();
+  if (!touchClone) return;
+  const touch = e.touches[0];
+  touchClone.style.left = (touch.clientX - touchOffsetX) + 'px';
+  touchClone.style.top = (touch.clientY - touchOffsetY) + 'px';
+
+  // Highlight drop zone
+  document.querySelectorAll('.letter-bank, .answer-zone').forEach(z => z.classList.remove('drag-over'));
+  const el = document.elementFromPoint(touch.clientX, touch.clientY);
+  const zone = el ? el.closest('.letter-bank, .answer-zone') : null;
+  if (zone) zone.classList.add('drag-over');
+}
+
+function handleTouchEnd(e) {
+  if (!touchTile || !touchClone) return;
+  const touch = e.changedTouches[0];
+  document.querySelectorAll('.letter-bank, .answer-zone').forEach(z => z.classList.remove('drag-over'));
+
+  const el = document.elementFromPoint(touch.clientX, touch.clientY);
+  const targetZone = el ? el.closest('.letter-bank, .answer-zone') : null;
+
+  if (targetZone && targetZone !== touchTile.parentElement) {
+    targetZone.appendChild(touchTile);
+    touchTile.classList.add('tile-drop');
+    setTimeout(() => touchTile.classList.remove('tile-drop'), 300);
+    syncAnswerZoneToInput(parseInt(touchTile.dataset.idx));
+  }
+
+  touchTile.style.opacity = '';
+  touchClone.remove();
+  touchClone = null;
+  touchTile = null;
+}
+
+function attachZoneDrop(zone) {
+  zone.addEventListener('dragover', e => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    zone.classList.add('drag-over');
+  });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    if (dragSrcEl && zone !== dragSrcZone) {
+      zone.appendChild(dragSrcEl);
+      dragSrcEl.classList.add('tile-drop');
+      setTimeout(() => dragSrcEl.classList.remove('tile-drop'), 300);
+      syncAnswerZoneToInput(parseInt(dragSrcEl.dataset.idx));
+    }
+  });
+}
+
+function syncAnswerZoneToInput(idx) {
+  const zone = document.getElementById('zone_' + idx);
+  const tiles = zone.querySelectorAll('.letter-tile');
+  const word = Array.from(tiles).map(t => t.dataset.letter).join('');
+  const inp = document.getElementById('inp_' + idx);
+  if (!inp.disabled) {
+    inp.value = word;
+    inp.classList.remove('correct','wrong');
+  }
+}
+
+function syncFromInput(idx) {
+  const inp = document.getElementById('inp_' + idx);
+  const val = inp.value.toUpperCase();
+  const bank = document.getElementById('bank_' + idx);
+  const zone = document.getElementById('zone_' + idx);
+  // Move all tiles to bank first
+  zone.querySelectorAll('.letter-tile').forEach(t => bank.appendChild(t));
+  // Then move matching letters to zone
+  val.split('').forEach(letter => {
+    const tile = Array.from(bank.querySelectorAll('.letter-tile')).find(t => t.dataset.letter === letter);
+    if (tile) zone.appendChild(tile);
+  });
+}
+
+function checkScramble(idx) {
+  const inp = document.getElementById('inp_' + idx);
+  const zone = document.getElementById('zone_' + idx);
+  const val = inp.value.trim().toUpperCase();
+  inp.classList.remove('correct','wrong');
+  zone.classList.remove('correct-zone','wrong-zone');
+
+  if (val === scrambleWords[idx].word) {
+    inp.classList.add('correct');
+    zone.classList.add('correct-zone');
+    document.getElementById('def_' + idx).style.display = 'block';
+    inp.disabled = true;
+    document.querySelectorAll(`#bank_${idx} .letter-tile, #zone_${idx} .letter-tile`).forEach(t => {
+      t.draggable = false;
+      t.style.cursor = 'default';
+    });
+    scrambleScore++;
+    updateBadge();
+    spawnConfetti();
+    // Add stamp
+    const card = inp.closest('.scramble-card');
+    card.style.position = 'relative';
+    const stamp = document.createElement('div');
+    stamp.className = 'stamp-correct';
+    stamp.textContent = '✅';
+    card.appendChild(stamp);
+  } else {
+    inp.classList.add('wrong');
+    zone.classList.add('wrong-zone');
+    setTimeout(() => { inp.classList.remove('wrong'); zone.classList.remove('wrong-zone'); }, 600);
+  }
+}
+
+function revealAll() {
+  scrambleWords.forEach((w, idx) => {
+    const inp = document.getElementById('inp_' + idx);
+    if (!inp.disabled) {
+      inp.value = w.word;
+      inp.classList.add('correct');
+      inp.disabled = true;
+      document.getElementById('def_' + idx).style.display = 'block';
+    }
+  });
+}
+
+function resetScramble() {
+  scrambleScore = 0;
+  updateBadge();
+  buildScramble();
+}
+
+// ===== SCENARIOS =====
+function buildScenarios() {
+  const container = document.getElementById('scenarioCards');
+  container.innerHTML = '';
+  scenarios.forEach((s, idx) => {
+    const card = document.createElement('div');
+    card.className = 'scenario-card';
+    card.style.animationDelay = (idx * 0.08) + 's';
+    card.innerHTML = `
+      <div class="scenario-num">🌟 Scenario ${idx+1} of ${scenarios.length}</div>
+      <div class="scenario-text">${s.text}</div>
+      <div class="scenario-q">❓ ${s.q}</div>
+      <div class="s-options" id="sopt_${idx}">
+        ${s.options.map((opt, oi) => `<button class="s-btn" onclick="answerScenario(${idx},${oi},this)">${['🅐','🅑','🅒','🅓'][oi]} ${opt}</button>`).join('')}
+      </div>
+      <div class="s-explain" id="sexpl_${idx}"></div>`;
+    container.appendChild(card);
+  });
+}
+
+function answerScenario(sIdx, oIdx, btn) {
+  const s = scenarios[sIdx];
+  const allBtns = document.querySelectorAll(`#sopt_${sIdx} .s-btn`);
+  allBtns.forEach(b => b.disabled = true);
+  if (oIdx === s.correct) {
+    btn.classList.add('correct');
+    scenScore++;
+    const msgs = ['🎉 Amazing!','🌟 Brilliant!','⭐ You\'re a star!','🚀 Finance genius!','💡 Great thinking!','🏆 Outstanding!'];
+    const fb = document.getElementById('scenFeedback');
+    fb.textContent = msgs[Math.floor(Math.random()*msgs.length)];
+    fb.style.color = '#6BCB77';
+    spawnConfetti();
+  } else {
+    btn.classList.add('wrong');
+    allBtns[s.correct].classList.add('reveal');
+    const fb = document.getElementById('scenFeedback');
+    fb.textContent = '❌ Not quite — see the explanation!';
+    fb.style.color = '#FF6B6B';
+  }
+  document.getElementById('sexpl_' + sIdx).textContent = s.explain;
+  document.getElementById('sexpl_' + sIdx).style.display = 'block';
+  document.getElementById('scenScore').textContent = `⭐ Scenarios correct: ${scenScore} / ${scenarios.length}`;
+  updateBadge();
+  setTimeout(() => { document.getElementById('scenFeedback').textContent = ''; }, 3000);
+}
+
+function resetScenarios() {
+  scenScore = 0;
+  updateBadge();
+  buildScenarios();
+  document.getElementById('scenScore').textContent = '🧠 Answer all 6 scenarios!';
+}
+
+// ===== UTILS =====
+function updateBadge() {
+  const badge = document.getElementById('scoreBadge');
+  badge.textContent = `🏆 Score: ${scrambleScore + scenScore}`;
+  badge.classList.remove('pop');
+  void badge.offsetWidth;
+  badge.classList.add('pop');
+}
+
+function spawnConfetti() {
+  const colors = ['#FFD93D','#FF6B9D','#4ECDC4','#A855F7','#6BCB77','#4D96FF','#FF9F43','#FF6B6B'];
+  for (let i = 0; i < 30; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    c.style.cssText = `
+      left: ${20 + Math.random()*60}%;
+      top: -20px;
+      background: ${colors[Math.floor(Math.random()*colors.length)]};
+      width: ${Math.random()*10+6}px;
+      height: ${Math.random()*10+6}px;
+      border-radius: ${Math.random()>0.5 ? '50%' : '3px'};
+      animation-duration: ${Math.random()*1+1}s;
+      animation-delay: ${Math.random()*0.5}s;
+    `;
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 2500);
+  }
+}
+
+function switchTab(id, tabEl) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  tabEl.classList.add('active');
+  document.getElementById('tab-' + id).classList.add('active');
+}
+
+// ===== INIT =====
+initBackground();
+buildScramble();
+buildScenarios();
+</script>
+</body>
+</html>

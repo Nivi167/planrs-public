@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 4 Activity B — My Marketing Plan! | Planrs</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(160deg, #F5F0FF 0%, #FFF9F0 100%); min-height: 100vh; padding: 16px; }
+  .planrs-badge { position: fixed; top: 10px; left: 12px; background: #FFF3CD; border: 2px solid #FFC107; border-radius: 20px; padding: 4px 12px; font-size: 13px; font-weight: bold; color: #E67E22; z-index: 100; }
+  h1 { text-align: center; color: #D35400; font-size: clamp(20px, 4vw, 28px); margin: 54px 0 4px; }
+  .subtitle { text-align: center; color: #666; font-size: 15px; margin-bottom: 20px; }
+  .plan-wrap { max-width: 720px; margin: 0 auto; }
+  .step-card { background: white; border-radius: 18px; padding: 22px; margin-bottom: 16px; border: 3px solid #ddd; transition: border-color 0.3s; }
+  .step-card.active-step { border-color: #F39C12; box-shadow: 0 4px 20px rgba(243,156,18,0.18); }
+  .step-card.done-step { border-color: #27AE60; }
+  .step-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .step-number { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; flex-shrink: 0; }
+  .step-number.pending { background: #F5F5F5; color: #999; }
+  .step-number.active { background: #F39C12; color: white; }
+  .step-number.done { background: #27AE60; color: white; }
+  .step-title { font-size: 16px; font-weight: bold; color: #333; }
+  .step-title .step-emoji { font-size: 18px; margin-right: 6px; }
+  label { display: block; font-size: 13px; font-weight: bold; color: #666; margin-bottom: 5px; margin-top: 12px; }
+  input[type="text"], textarea, select { width: 100%; border: 2px solid #E8D5F5; border-radius: 10px; padding: 10px 14px; font-size: 15px; font-family: inherit; color: #333; outline: none; background: #FAFAFA; transition: border-color 0.2s; resize: vertical; }
+  input[type="text"]:focus, textarea:focus, select:focus { border-color: #8E44AD; background: white; }
+  .price-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .price-row > div { flex: 1; min-width: 140px; }
+  .profit-display { background: #E8F5E9; border: 2px solid #27AE60; border-radius: 10px; padding: 10px 14px; font-size: 15px; font-weight: bold; color: #1E8449; margin-top: 8px; text-align: center; min-height: 42px; }
+  .tool-options { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .tool-option { background: #F5EEF8; border: 2px solid #D7BDE2; border-radius: 20px; padding: 7px 16px; font-size: 13px; font-weight: 600; color: #6C3483; cursor: pointer; transition: all 0.2s; }
+  .tool-option:hover { background: #EDE7F6; }
+  .tool-option.selected-tool { background: #8E44AD; color: white; border-color: #8E44AD; }
+  .proceed-btn { background: linear-gradient(135deg, #F39C12, #E67E22); color: white; border: none; border-radius: 25px; padding: 12px 30px; font-size: 15px; font-weight: bold; cursor: pointer; display: block; margin: 14px auto 0; transition: transform 0.15s; }
+  .proceed-btn:hover { transform: scale(1.05); }
+  .validation-msg { font-size: 13px; color: #C0392B; margin-top: 8px; min-height: 18px; text-align: center; }
+  .plan-preview { display: none; background: linear-gradient(135deg, #FFF9F0, #F0FFF4); border-radius: 20px; padding: 28px 24px; border: 3px solid #F39C12; margin-top: 20px; }
+  .plan-preview h2 { text-align: center; color: #D35400; font-size: 22px; margin-bottom: 18px; }
+  .plan-table { width: 100%; border-collapse: collapse; }
+  .plan-table td { padding: 10px 14px; border-bottom: 1px solid #FDE8C8; font-size: 14px; }
+  .plan-table td:first-child { font-weight: bold; color: #7D3C98; width: 40%; }
+  .plan-table td:last-child { color: #333; }
+  .ad-box { background: white; border: 3px solid #27AE60; border-radius: 14px; padding: 18px; margin-top: 18px; }
+  .ad-box h3 { color: #1E8449; font-size: 16px; margin-bottom: 12px; text-align: center; }
+  .ad-display { font-size: 18px; font-weight: bold; color: #E74C3C; text-align: center; line-height: 1.6; }
+  .ad-sub { font-size: 14px; color: #555; text-align: center; margin-top: 8px; }
+  .certificate-section { background: #FFF3CD; border: 3px dashed #F39C12; border-radius: 16px; padding: 20px; margin-top: 18px; text-align: center; }
+  .certificate-section h3 { color: #D35400; font-size: 18px; }
+  .certificate-section p { color: #555; font-size: 14px; margin-top: 6px; }
+  .btn-row { display: flex; gap: 12px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+  .btn { padding: 11px 24px; border: none; border-radius: 25px; font-size: 15px; font-weight: bold; cursor: pointer; }
+  .btn-try { background: #F39C12; color: white; }
+  .btn-print { background: #8E44AD; color: white; }
+</style>
+</head>
+<body>
+<div class="planrs-badge">⭐ Planrs</div>
+
+<h1>📋 Build My Marketing Plan!</h1>
+<p class="subtitle">Section 4 Activity B — Create your very own mini marketing plan step by step</p>
+
+<div class="plan-wrap">
+
+  <!-- Step 1: Product -->
+  <div class="step-card active-step" id="step1">
+    <div class="step-header">
+      <div class="step-number active" id="num1">1</div>
+      <div class="step-title"><span class="step-emoji">🛍️</span> Step 1: Choose Your Product</div>
+    </div>
+    <label for="productName">What is your product? (e.g., Homemade cookies, Lemonade, Handmade cards)</label>
+    <input type="text" id="productName" placeholder="My product is...">
+    <label for="productDesc">Describe it in one sentence — what makes it special?</label>
+    <input type="text" id="productDesc" placeholder="It is special because...">
+    <div class="validation-msg" id="v1"></div>
+    <button class="proceed-btn" onclick="proceedStep(1)">Next Step ➡️</button>
+  </div>
+
+  <!-- Step 2: Customer -->
+  <div class="step-card" id="step2">
+    <div class="step-header">
+      <div class="step-number pending" id="num2">2</div>
+      <div class="step-title"><span class="step-emoji">👤</span> Step 2: Know Your Customer</div>
+    </div>
+    <label for="customerGroup">Who is your target customer?</label>
+    <select id="customerGroup">
+      <option value="">-- Choose a group --</option>
+      <option>Children (Age 5-12)</option>
+      <option>Teenagers (Age 13-18)</option>
+      <option>Parents and Adults</option>
+      <option>Senior Citizens (60+)</option>
+      <option>Everyone in my building / neighbourhood</option>
+      <option>My classmates</option>
+    </select>
+    <label for="customerNeed">What problem does your product solve for them?</label>
+    <input type="text" id="customerNeed" placeholder="It helps them by...">
+    <div class="validation-msg" id="v2"></div>
+    <button class="proceed-btn" onclick="proceedStep(2)">Next Step ➡️</button>
+  </div>
+
+  <!-- Step 3: Price -->
+  <div class="step-card" id="step3">
+    <div class="step-header">
+      <div class="step-number pending" id="num3">3</div>
+      <div class="step-title"><span class="step-emoji">💰</span> Step 3: Set Your Price</div>
+    </div>
+    <div class="price-row">
+      <div>
+        <label for="costPrice">Cost Price (How much does it cost to MAKE?) Rs.</label>
+        <input type="text" id="costPrice" placeholder="e.g. 20" oninput="calcProfit()">
+      </div>
+      <div>
+        <label for="sellPrice">Selling Price (How much will you SELL for?) Rs.</label>
+        <input type="text" id="sellPrice" placeholder="e.g. 35" oninput="calcProfit()">
+      </div>
+    </div>
+    <div class="profit-display" id="profitDisplay">💡 Enter prices above to see your profit!</div>
+    <div class="validation-msg" id="v3"></div>
+    <button class="proceed-btn" onclick="proceedStep(3)">Next Step ➡️</button>
+  </div>
+
+  <!-- Step 4: Marketing Tool -->
+  <div class="step-card" id="step4">
+    <div class="step-header">
+      <div class="step-number pending" id="num4">4</div>
+      <div class="step-title"><span class="step-emoji">📢</span> Step 4: Choose Your Marketing Tool</div>
+    </div>
+    <label>Which tool will you use to reach your customers? (Choose one)</label>
+    <div class="tool-options" id="toolOptions">
+      <div class="tool-option" onclick="selectTool(this, 'Poster or Handmade Sign 📋')">📋 Poster / Sign</div>
+      <div class="tool-option" onclick="selectTool(this, 'Word of Mouth — tell friends 👂')">👂 Word of Mouth</div>
+      <div class="tool-option" onclick="selectTool(this, 'Door-to-Door Announcement 🚪')">🚪 Door to Door</div>
+      <div class="tool-option" onclick="selectTool(this, 'Free Sample Offer 🎁')">🎁 Free Sample</div>
+      <div class="tool-option" onclick="selectTool(this, 'WhatsApp message to family & friends 📱')">📱 WhatsApp</div>
+      <div class="tool-option" onclick="selectTool(this, 'Put up a notice on the building board 📌')">📌 Notice Board</div>
+    </div>
+    <input type="hidden" id="selectedTool" value="">
+    <label for="adSlogan" style="margin-top:14px">Write a short slogan or message for your advertisement (1-2 lines):</label>
+    <textarea id="adSlogan" rows="2" placeholder="e.g. Fresh homemade cookies! Baked with love. Only Rs.25 per pack!"></textarea>
+    <div class="validation-msg" id="v4"></div>
+    <button class="proceed-btn" onclick="buildPlan()">🚀 Build My Plan!</button>
+  </div>
+
+  <!-- Final Plan -->
+  <div class="plan-preview" id="planPreview">
+    <h2>🎉 My Marketing Plan is Ready!</h2>
+    <table class="plan-table" id="planTable"></table>
+    <div class="ad-box">
+      <h3>📣 My Advertisement</h3>
+      <div class="ad-display" id="adDisplay"></div>
+      <div class="ad-sub" id="adSub"></div>
+    </div>
+    <div class="certificate-section">
+      <h3>🎓 Mini Marketer Certificate</h3>
+      <p>Congratulations! You have created your very first marketing plan on <strong>Planrs</strong>. You identified your product, found your customer, set your price, and designed your marketing strategy — just like a real business person!</p>
+      <p style="margin-top:8px;font-weight:bold;color:#D35400;">You are officially a Mini Marketer! ⭐</p>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-try" onclick="resetPlan()">🔄 Make a New Plan</button>
+      <button class="btn btn-print" onclick="window.print()">🖨️ Print My Plan</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let selectedToolVal = '';
+
+function proceedStep(stepNum) {
+  const validations = {
+    1: () => {
+      if(!document.getElementById('productName').value.trim()) return 'Please enter your product name!';
+      if(!document.getElementById('productDesc').value.trim()) return 'Please describe what makes it special!';
+      return null;
+    },
+    2: () => {
+      if(!document.getElementById('customerGroup').value) return 'Please choose your target customer group!';
+      if(!document.getElementById('customerNeed').value.trim()) return 'Please describe how your product helps them!';
+      return null;
+    },
+    3: () => {
+      const cost = parseFloat(document.getElementById('costPrice').value);
+      const sell = parseFloat(document.getElementById('sellPrice').value);
+      if(isNaN(cost) || cost<=0) return 'Please enter a valid cost price!';
+      if(isNaN(sell) || sell<=0) return 'Please enter a valid selling price!';
+      if(sell <= cost) return '⚠️ Your selling price should be HIGHER than cost price to make a profit!';
+      return null;
+    },
+  };
+  const err = validations[stepNum]();
+  document.getElementById('v'+stepNum).textContent = err || '';
+  if(err) return;
+  // Mark current as done
+  document.getElementById('step'+stepNum).className='step-card done-step';
+  document.getElementById('num'+stepNum).className='step-number done';
+  document.getElementById('num'+stepNum).textContent='✓';
+  // Activate next
+  const next = stepNum+1;
+  if(next<=4) {
+    document.getElementById('step'+next).className='step-card active-step';
+    document.getElementById('num'+next).className='step-number active';
+    document.getElementById('step'+next).scrollIntoView({behavior:'smooth',block:'center'});
+  }
+}
+
+function calcProfit() {
+  const cost=parseFloat(document.getElementById('costPrice').value)||0;
+  const sell=parseFloat(document.getElementById('sellPrice').value)||0;
+  const profit=sell-cost;
+  const d=document.getElementById('profitDisplay');
+  if(cost>0 && sell>0) {
+    if(profit>0) d.textContent=`✅ Your profit per unit = Rs.${profit.toFixed(2)} — Great pricing!`;
+    else if(profit===0) d.textContent=`⚠️ Breaking even — no profit! Try increasing your price.`;
+    else d.textContent=`❌ You are making a LOSS of Rs.${Math.abs(profit).toFixed(2)}! Increase your selling price.`;
+  }
+}
+
+function selectTool(el, val) {
+  document.querySelectorAll('.tool-option').forEach(t=>t.classList.remove('selected-tool'));
+  el.classList.add('selected-tool');
+  selectedToolVal = val;
+}
+
+function buildPlan() {
+  if(!selectedToolVal) { document.getElementById('v4').textContent='Please choose a marketing tool!'; return; }
+  if(!document.getElementById('adSlogan').value.trim()) { document.getElementById('v4').textContent='Please write your advertisement message!'; return; }
+  document.getElementById('v4').textContent='';
+  document.getElementById('step4').className='step-card done-step';
+  document.getElementById('num4').className='step-number done';
+  document.getElementById('num4').textContent='✓';
+
+  const product=document.getElementById('productName').value.trim();
+  const desc=document.getElementById('productDesc').value.trim();
+  const customer=document.getElementById('customerGroup').value;
+  const need=document.getElementById('customerNeed').value.trim();
+  const cost=document.getElementById('costPrice').value;
+  const sell=document.getElementById('sellPrice').value;
+  const profit=(parseFloat(sell)-parseFloat(cost)).toFixed(2);
+  const slogan=document.getElementById('adSlogan').value.trim();
+
+  document.getElementById('planTable').innerHTML=`
+    <tr><td>🛍️ My Product</td><td>${product}</td></tr>
+    <tr><td>✨ What Makes It Special</td><td>${desc}</td></tr>
+    <tr><td>👤 My Target Customer</td><td>${customer}</td></tr>
+    <tr><td>💡 Problem It Solves</td><td>${need}</td></tr>
+    <tr><td>💸 Cost Price</td><td>Rs. ${cost}</td></tr>
+    <tr><td>💰 Selling Price</td><td>Rs. ${sell}</td></tr>
+    <tr><td>📈 Profit Per Unit</td><td>Rs. ${profit}</td></tr>
+    <tr><td>📢 Marketing Tool</td><td>${selectedToolVal}</td></tr>
+  `;
+  document.getElementById('adDisplay').textContent=slogan;
+  document.getElementById('adSub').textContent=`Reach your customer using: ${selectedToolVal}`;
+  document.getElementById('planPreview').style.display='block';
+  document.getElementById('planPreview').scrollIntoView({behavior:'smooth'});
+}
+
+function resetPlan() {
+  selectedToolVal='';
+  ['productName','productDesc','customerNeed','costPrice','sellPrice','adSlogan'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('customerGroup').value='';
+  document.getElementById('profitDisplay').textContent='💡 Enter prices above to see your profit!';
+  document.querySelectorAll('.tool-option').forEach(t=>t.classList.remove('selected-tool'));
+  document.getElementById('planPreview').style.display='none';
+  for(let i=1;i<=4;i++){
+    document.getElementById('step'+i).className='step-card'+(i===1?' active-step':'');
+    document.getElementById('num'+i).className='step-number'+(i===1?' active':' pending');
+    document.getElementById('num'+i).textContent=i;
+    if(document.getElementById('v'+i)) document.getElementById('v'+i).textContent='';
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>

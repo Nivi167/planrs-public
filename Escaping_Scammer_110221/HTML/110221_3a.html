@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⭐ Planrs | Build the Escape Plan!</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --sky1:#1a1a6e;--sky2:#2d2d9f;--sky3:#4a90d9;
+  --cloud:#e8f4fd;--rain:#74b9ff;
+  --yellow:#ffd32a;--pink:#ff6b9d;--green:#00d2a0;
+  --orange:#ff8c42;--purple:#a55eea;
+  --card-shadow:0 8px 32px rgba(0,0,0,0.25);
+}
+
+body{font-family:'Nunito',sans-serif;min-height:100vh;overflow-x:hidden;
+  background:linear-gradient(180deg,#0f0c29 0%,#302b63 40%,#24243e 100%);
+  position:relative;}
+
+/* ═══ SKY SCENE ═══ */
+.sky-canvas{position:fixed;inset:0;z-index:0;overflow:hidden;}
+
+/* Stars */
+.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle ease-in-out infinite;}
+@keyframes twinkle{0%,100%{opacity:0.2;transform:scale(0.8);}50%{opacity:1;transform:scale(1.3);}}
+
+/* Moon */
+.moon{position:absolute;top:30px;right:80px;width:70px;height:70px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#fffacd,#ffd700);
+  box-shadow:0 0 40px 15px rgba(255,215,0,0.3),0 0 80px 30px rgba(255,215,0,0.1);
+  animation:moonGlow 4s ease-in-out infinite;}
+@keyframes moonGlow{0%,100%{box-shadow:0 0 40px 15px rgba(255,215,0,0.3);}50%{box-shadow:0 0 60px 25px rgba(255,215,0,0.5);}}
+.moon-face{font-size:36px;line-height:70px;text-align:center;}
+
+/* Clouds */
+.cloud{position:absolute;background:var(--cloud);border-radius:50px;animation:cloudDrift linear infinite;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.3));}
+.cloud::before,.cloud::after{content:'';position:absolute;background:var(--cloud);border-radius:50%;}
+.cloud::before{width:60%;height:180%;top:-50%;left:15%;}
+.cloud::after{width:40%;height:140%;top:-30%;right:15%;}
+.cloud.storm{background:#8899aa;filter:drop-shadow(0 4px 20px rgba(0,0,0,0.5));}
+.cloud.storm::before,.cloud.storm::after{background:#8899aa;}
+@keyframes cloudDrift{0%{transform:translateX(-200px);}100%{transform:translateX(calc(100vw + 200px));}}
+
+/* Lightning */
+.lightning{position:absolute;width:4px;top:0;animation:bolt 0.15s steps(1) infinite;transform-origin:top center;z-index:5;}
+.lightning svg{width:100%;height:100%;}
+@keyframes bolt{0%,100%{opacity:0;}10%,30%{opacity:1;filter:drop-shadow(0 0 10px #fff700) drop-shadow(0 0 20px #fff700);}20%{opacity:0;}}
+
+/* Rain */
+.rain-container{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden;}
+.raindrop{position:absolute;top:-20px;width:2px;border-radius:2px;background:linear-gradient(180deg,transparent,var(--rain));animation:fall linear infinite;opacity:0.6;}
+@keyframes fall{0%{transform:translateY(-20px) scaleY(1);opacity:0.7;}100%{transform:translateY(110vh) scaleY(1.5);opacity:0;}}
+
+/* Thunder flash */
+.thunder-flash{position:fixed;inset:0;background:rgba(255,255,200,0.4);z-index:10;pointer-events:none;opacity:0;animation:flash 8s ease infinite;}
+@keyframes flash{0%,89%,91%,93%,100%{opacity:0;}90%,92%{opacity:1;}}
+
+/* ═══ CONTENT ═══ */
+.wrap{position:relative;z-index:10;max-width:900px;margin:0 auto;padding:16px 12px 40px;}
+
+/* Header */
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.logo{font-family:'Fredoka One',cursive;font-size:18px;color:#ffd32a;
+  background:rgba(255,255,255,0.12);backdrop-filter:blur(10px);
+  padding:8px 18px;border-radius:30px;border:2px solid rgba(255,215,0,0.3);
+  text-shadow:0 0 20px rgba(255,211,42,0.8);}
+.score-box{font-family:'Fredoka One',cursive;font-size:16px;color:#fff;
+  background:linear-gradient(135deg,#a55eea,#7048e8);
+  padding:8px 20px;border-radius:30px;border:2px solid rgba(255,255,255,0.2);}
+
+.badge{display:block;text-align:center;width:fit-content;margin:0 auto 10px;
+  background:linear-gradient(135deg,#ffd32a,#ff8c42);color:#333;
+  font-size:12px;font-weight:800;padding:5px 18px;border-radius:20px;letter-spacing:1px;}
+
+h1{font-family:'Fredoka One',cursive;font-size:clamp(22px,5vw,36px);color:#fff;
+  text-align:center;margin-bottom:4px;text-shadow:0 0 30px rgba(255,211,42,0.6),0 4px 8px rgba(0,0,0,0.4);}
+.subtitle{text-align:center;font-size:14px;color:#b0c4de;margin-bottom:12px;font-weight:600;}
+
+/* Progress */
+.prog-wrap{background:rgba(255,255,255,0.1);border-radius:20px;height:14px;margin-bottom:14px;overflow:hidden;border:2px solid rgba(255,255,255,0.15);}
+.prog-bar{height:100%;background:linear-gradient(90deg,#a55eea,#ffd32a,#ff6b9d);border-radius:20px;transition:width 0.6s cubic-bezier(0.34,1.56,0.64,1);position:relative;}
+.prog-bar::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);animation:shimmer 1.5s ease infinite;}
+@keyframes shimmer{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
+
+/* Instruction */
+.instruction{background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);
+  border:2px dashed rgba(255,211,42,0.4);border-radius:20px;
+  padding:12px 16px;text-align:center;font-size:14px;color:#e0f0ff;margin-bottom:14px;font-weight:700;}
+
+/* Feedback */
+.feedback-bar{text-align:center;font-size:15px;font-weight:800;padding:12px 16px;
+  border-radius:16px;margin-bottom:14px;min-height:48px;transition:all 0.3s;
+  font-family:'Fredoka One',cursive;font-size:18px;letter-spacing:0.5px;}
+.fb-idle{background:rgba(255,255,255,0.07);color:#b0c4de;border:2px solid rgba(255,255,255,0.1);}
+.fb-c{background:linear-gradient(135deg,rgba(0,210,160,0.25),rgba(0,210,160,0.1));
+  color:#00d2a0;border:2px solid rgba(0,210,160,0.5);animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);}
+.fb-w{background:linear-gradient(135deg,rgba(255,107,157,0.25),rgba(255,107,157,0.1));
+  color:#ff8fa3;border:2px solid rgba(255,107,157,0.5);animation:shake 0.4s ease;}
+@keyframes popIn{0%{transform:scale(0.8);}100%{transform:scale(1);}}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-12px);}75%{transform:translateX(12px);}}
+
+/* Card Pool */
+.cards-label{font-family:'Fredoka One',cursive;color:#ffd32a;font-size:15px;margin-bottom:8px;text-align:center;letter-spacing:1px;}
+.steps-pool{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
+  padding:16px;background:rgba(255,255,255,0.06);backdrop-filter:blur(8px);
+  border-radius:24px;border:2px solid rgba(255,255,255,0.12);margin-bottom:16px;min-height:70px;}
+
+/* Step Cards */
+.step-card{padding:12px 20px;border-radius:20px;font-size:13px;font-weight:800;
+  color:#fff;cursor:grab;user-select:none;touch-action:none;text-align:center;
+  min-width:130px;position:relative;overflow:hidden;transition:transform 0.2s,box-shadow 0.2s;
+  border:3px solid rgba(255,255,255,0.25);font-family:'Nunito',sans-serif;}
+.step-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.25),transparent);pointer-events:none;}
+.step-card:hover{transform:translateY(-4px) scale(1.05);box-shadow:0 12px 30px rgba(0,0,0,0.4);}
+.step-card:active,.step-card.dragging{transform:scale(1.1) rotate(-3deg);opacity:0.7;cursor:grabbing;}
+.step-card.placed{opacity:0.2;pointer-events:none;filter:grayscale(1);}
+
+/* Zones Row */
+.steps-row{display:flex;align-items:stretch;gap:0;margin-bottom:16px;flex-wrap:wrap;justify-content:center;}
+.step-wrapper{display:flex;align-items:center;}
+.arrow-wrap{display:flex;align-items:center;padding:0 4px;}
+.arrow-anim{font-size:22px;animation:arrowBounce 1s ease-in-out infinite;display:inline-block;}
+@keyframes arrowBounce{0%,100%{transform:translateX(0);}50%{transform:translateX(5px);}}
+
+.step-zone{border-radius:24px;border:3px dashed rgba(255,255,255,0.2);
+  padding:16px 10px;min-height:150px;width:185px;
+  background:rgba(255,255,255,0.06);backdrop-filter:blur(8px);
+  transition:all 0.25s;flex-shrink:0;position:relative;overflow:hidden;}
+.step-zone::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity 0.3s;
+  background:radial-gradient(circle at center,rgba(255,255,255,0.15),transparent);}
+.step-zone.over{transform:scale(1.06);border-style:solid;border-color:rgba(255,255,255,0.5);}
+.step-zone.over::before{opacity:1;}
+.step-zone.correct{animation:zonePop 0.5s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes zonePop{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
+.step-zone.wrong{animation:zoneShake 0.4s ease;}
+@keyframes zoneShake{0%,100%{transform:translateX(0);}25%{transform:translateX(-10px);}75%{transform:translateX(10px);}}
+
+.step-num{font-family:'Fredoka One',cursive;font-size:36px;text-align:center;margin-bottom:4px;
+  filter:drop-shadow(0 2px 8px rgba(0,0,0,0.3));}
+.step-hint{font-size:11px;text-align:center;color:rgba(255,255,255,0.5);margin-bottom:8px;font-weight:700;}
+.step-filled{font-size:12px;font-weight:800;text-align:center;padding:10px 8px;
+  border-radius:14px;margin-top:4px;display:none;animation:fillPop 0.4s cubic-bezier(0.34,1.56,0.64,1);border:2px solid rgba(255,255,255,0.3);}
+@keyframes fillPop{0%{transform:scale(0) rotate(-10deg);opacity:0;}100%{transform:scale(1) rotate(0);opacity:1;}}
+
+/* ─── Final Screen ─── */
+.final-screen{display:none;background:rgba(10,10,40,0.9);backdrop-filter:blur(20px);
+  border-radius:32px;padding:32px 24px;text-align:center;
+  border:3px solid rgba(255,211,42,0.4);box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+.final-screen.show{display:block;animation:finalIn 0.6s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes finalIn{0%{transform:scale(0.5) translateY(40px);opacity:0;}100%{transform:scale(1) translateY(0);opacity:1;}}
+.hero-emoji{font-size:80px;display:block;animation:heroFloat 1.5s ease-in-out infinite;}
+@keyframes heroFloat{0%,100%{transform:translateY(0) rotate(-5deg);}50%{transform:translateY(-16px) rotate(5deg);}}
+.final-title{font-family:'Fredoka One',cursive;font-size:28px;color:#ffd32a;margin:14px 0 8px;
+  text-shadow:0 0 30px rgba(255,211,42,0.6);}
+.final-steps{font-family:'Fredoka One',cursive;font-size:16px;color:#e0f0ff;margin:10px 0 16px;line-height:2;}
+.final-note{font-size:13px;color:#b0c4de;margin-bottom:20px;}
+.btn{padding:13px 30px;border:none;border-radius:30px;font-family:'Fredoka One',cursive;
+  font-size:16px;cursor:pointer;margin:6px;letter-spacing:0.5px;transition:all 0.2s;}
+.btn:hover{transform:translateY(-3px) scale(1.05);}
+.btn-r{background:linear-gradient(135deg,#ff6b9d,#ff8c42);color:#fff;box-shadow:0 6px 20px rgba(255,107,157,0.4);}
+.btn-n{background:linear-gradient(135deg,#a55eea,#ffd32a);color:#fff;box-shadow:0 6px 20px rgba(165,94,234,0.4);}
+
+/* Confetti */
+.confetti-piece{position:fixed;border-radius:4px;animation:cfFall ease-in forwards;z-index:300;pointer-events:none;}
+@keyframes cfFall{0%{transform:translateY(-20px) rotate(0deg);opacity:1;}100%{transform:translateY(110vh) rotate(720deg);opacity:0;}}
+
+/* Sparkle particles */
+.sparkle{position:fixed;pointer-events:none;z-index:50;animation:sparkleFade 0.8s ease-out forwards;}
+@keyframes sparkleFade{0%{transform:scale(0) rotate(0deg);opacity:1;}100%{transform:scale(1.5) rotate(180deg);opacity:0;}}
+
+/* Responsive */
+@media(max-width:750px){.step-zone{width:145px;min-height:120px;}.arrow-wrap{padding:0 2px;}.arrow-anim{font-size:16px;}}
+@media(max-width:580px){.steps-row{flex-direction:column;align-items:center;}.arrow-wrap{transform:rotate(90deg);}}
+</style>
+</head>
+<body>
+
+<!-- ── SKY SCENE ── -->
+<div class="sky-canvas" id="skyCanvas">
+  <div class="moon"><div class="moon-face">🌝</div></div>
+</div>
+<div class="rain-container" id="rainContainer"></div>
+<div class="thunder-flash" id="tFlash"></div>
+
+<div class="wrap">
+  <div class="top-bar">
+    <div class="logo">⭐ Planrs</div>
+    <div class="score-box">⚡ Steps: <span id="sc">0</span>/4</div>
+  </div>
+  <span class="badge">SECTION 3 · ACTIVITY A</span>
+  <h1>🏃 Build the Escape Plan!</h1>
+  <p class="subtitle">Drag the steps into the correct order — 1 to 4!</p>
+  <div class="prog-wrap"><div class="prog-bar" id="pb" style="width:0"></div></div>
+  <div class="instruction">🧩 The 4 escape steps are scrambled below! Drag each action to its correct numbered position in the plan!</div>
+  <div class="feedback-bar fb-idle" id="fb">👆 Drag a step card to the correct numbered box!</div>
+
+  <!-- Card Pool -->
+  <p class="cards-label">🃏 Your Action Cards</p>
+  <div class="steps-pool" id="pool">
+    <div class="step-card" draggable="true" data-id="tell" data-step="3"
+      style="background:linear-gradient(135deg,#ff8c42,#ffd32a);box-shadow:0 6px 20px rgba(255,140,66,0.5);">
+      📢 TELL a trusted adult
+    </div>
+    <div class="step-card" draggable="true" data-id="stop" data-step="1"
+      style="background:linear-gradient(135deg,#ff6b9d,#e84393);box-shadow:0 6px 20px rgba(255,107,157,0.5);">
+      🛑 STOP — don't click!
+    </div>
+    <div class="step-card" draggable="true" data-id="report" data-step="4"
+      style="background:linear-gradient(135deg,#a55eea,#7048e8);box-shadow:0 6px 20px rgba(165,94,234,0.5);">
+      🚨 REPORT it online
+    </div>
+    <div class="step-card" draggable="true" data-id="think" data-step="2"
+      style="background:linear-gradient(135deg,#00b4d8,#0077b6);box-shadow:0 6px 20px rgba(0,180,216,0.5);">
+      🤔 THINK — is this a scam?
+    </div>
+    <!-- Wrong options -->
+    <div class="step-card" draggable="true" data-id="click" data-step="0"
+      style="background:linear-gradient(135deg,#444,#666);box-shadow:0 6px 20px rgba(0,0,0,0.4);">
+      ❌ Click the link to check
+    </div>
+    <div class="step-card" draggable="true" data-id="reply" data-step="0"
+      style="background:linear-gradient(135deg,#444,#666);box-shadow:0 6px 20px rgba(0,0,0,0.4);">
+      ❌ Reply and ask for proof
+    </div>
+    <div class="step-card" draggable="true" data-id="share" data-step="0"
+      style="background:linear-gradient(135deg,#444,#666);box-shadow:0 6px 20px rgba(0,0,0,0.4);">
+      ❌ Share with friends for fun
+    </div>
+    <div class="step-card" draggable="true" data-id="pay" data-step="0"
+      style="background:linear-gradient(135deg,#444,#666);box-shadow:0 6px 20px rgba(0,0,0,0.4);">
+      ❌ Pay to claim your prize
+    </div>
+  </div>
+
+  <!-- 4 Drop Zones -->
+  <div class="steps-row">
+    <div class="step-wrapper">
+      <div class="step-zone" data-accept-step="1" id="zone-1"
+        style="border-color:rgba(255,107,157,0.4);background:rgba(255,107,157,0.08);">
+        <div class="step-num">1️⃣</div>
+        <div class="step-hint">First thing to do</div>
+        <div class="step-filled" id="filled-1"
+          style="background:rgba(255,107,157,0.2);color:#ff8fa3;"></div>
+      </div>
+    </div>
+    <div class="arrow-wrap"><span class="arrow-anim">➡️</span></div>
+    <div class="step-wrapper">
+      <div class="step-zone" data-accept-step="2" id="zone-2"
+        style="border-color:rgba(0,180,216,0.4);background:rgba(0,180,216,0.08);">
+        <div class="step-num">2️⃣</div>
+        <div class="step-hint">Use your brain</div>
+        <div class="step-filled" id="filled-2"
+          style="background:rgba(0,180,216,0.2);color:#74d7f7;"></div>
+      </div>
+    </div>
+    <div class="arrow-wrap"><span class="arrow-anim" style="animation-delay:0.2s">➡️</span></div>
+    <div class="step-wrapper">
+      <div class="step-zone" data-accept-step="3" id="zone-3"
+        style="border-color:rgba(255,211,42,0.4);background:rgba(255,211,42,0.08);">
+        <div class="step-num">3️⃣</div>
+        <div class="step-hint">Get help from an adult</div>
+        <div class="step-filled" id="filled-3"
+          style="background:rgba(255,211,42,0.2);color:#ffd32a;"></div>
+      </div>
+    </div>
+    <div class="arrow-wrap"><span class="arrow-anim" style="animation-delay:0.4s">➡️</span></div>
+    <div class="step-wrapper">
+      <div class="step-zone" data-accept-step="4" id="zone-4"
+        style="border-color:rgba(165,94,234,0.4);background:rgba(165,94,234,0.08);">
+        <div class="step-num">4️⃣</div>
+        <div class="step-hint">Help protect others</div>
+        <div class="step-filled" id="filled-4"
+          style="background:rgba(165,94,234,0.2);color:#c694f7;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Final Screen -->
+  <div class="final-screen" id="fin">
+    <span class="hero-emoji">🦸</span>
+    <div class="final-title">Escape Plan Mastered! 🎯</div>
+    <div style="font-size:15px;color:#b0c4de;margin-bottom:8px;">You built the complete escape plan:</div>
+    <div class="final-steps">🛑 STOP → 🤔 THINK → 📢 TELL → 🚨 REPORT</div>
+    <div class="final-note">📞 cybercrime.gov.in &nbsp;|&nbsp; Call: 1930 (free, 24/7)</div>
+    <button class="btn btn-r" onclick="resetGame()">🔄 Try Again</button>
+    <button class="btn btn-n" onclick="alert('Section 3 complete! Move to Section 4! 🎉')">➡️ Next Section</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════
+// SKY SCENE SETUP
+// ══════════════════════════════════
+const sky = document.getElementById('skyCanvas');
+
+// Stars
+for(let i = 0; i < 120; i++){
+  const s = document.createElement('div');
+  s.className = 'star';
+  const size = Math.random() * 3 + 1;
+  Object.assign(s.style, {
+    width: size + 'px', height: size + 'px',
+    left: Math.random() * 100 + 'vw', top: Math.random() * 60 + 'vh',
+    animationDuration: (Math.random() * 3 + 1.5) + 's',
+    animationDelay: (Math.random() * 3) + 's'
+  });
+  sky.appendChild(s);
+}
+
+// Clouds (drifting across)
+const cloudConfigs = [
+  {width:160,top:8,duration:28,delay:0,storm:false},
+  {width:220,top:18,duration:40,delay:-12,storm:true},
+  {width:140,top:5,duration:22,delay:-5,storm:false},
+  {width:200,top:28,duration:45,delay:-20,storm:true},
+  {width:130,top:14,duration:32,delay:-8,storm:false},
+  {width:180,top:22,duration:38,delay:-15,storm:true},
+];
+cloudConfigs.forEach(cfg => {
+  const c = document.createElement('div');
+  c.className = 'cloud' + (cfg.storm ? ' storm' : '');
+  Object.assign(c.style, {
+    width: cfg.width + 'px',
+    height: Math.round(cfg.width * 0.4) + 'px',
+    top: cfg.top + 'vh',
+    animationDuration: cfg.duration + 's',
+    animationDelay: cfg.delay + 's'
+  });
+  sky.appendChild(c);
+
+  // Add lightning bolt to storm clouds
+  if(cfg.storm){
+    const bolt = document.createElement('div');
+    bolt.className = 'lightning';
+    bolt.style.height = '80px';
+    bolt.style.left = (Math.random() * 60 + 20) + '%';
+    bolt.style.top = '90%';
+    bolt.style.animationDuration = (Math.random() * 4 + 3) + 's';
+    bolt.style.animationDelay = (Math.random() * 3) + 's';
+    bolt.innerHTML = `<svg viewBox="0 0 20 80" xmlns="http://www.w3.org/2000/svg">
+      <polyline points="12,0 4,40 10,40 2,80" stroke="#fff700" stroke-width="3" fill="none" stroke-linecap="round"/>
+    </svg>`;
+    c.appendChild(bolt);
+  }
+});
+
+// Rain drops
+const rainCont = document.getElementById('rainContainer');
+for(let i = 0; i < 90; i++){
+  const drop = document.createElement('div');
+  drop.className = 'raindrop';
+  const h = Math.random() * 25 + 10;
+  Object.assign(drop.style, {
+    left: Math.random() * 100 + 'vw',
+    height: h + 'px',
+    animationDuration: (Math.random() * 0.8 + 0.5) + 's',
+    animationDelay: (Math.random() * 2) + 's'
+  });
+  rainCont.appendChild(drop);
+}
+
+// ══════════════════════════════════
+// GAME LOGIC
+// ══════════════════════════════════
+let score = 0, total = 4, dragId = null, dragEl = null;
+const mc = ['🎉 Correct step!', '⭐ That\'s right!', '🔥 You remember it!', '🦸 Perfect move!', '✨ Brilliant!'];
+const mw = ['❌ That step doesn\'t belong here!', '🤔 Wrong order! Think again!', '😅 Nope! Check the hints!'];
+
+// Drag events (desktop)
+document.querySelectorAll('.step-card').forEach(card => {
+  card.addEventListener('dragstart', e => {
+    dragId = card.dataset.id;
+    dragEl = card;
+    setTimeout(() => card.classList.add('dragging'), 0);
+  });
+  card.addEventListener('dragend', () => card.classList.remove('dragging'));
+
+  // Touch events (mobile)
+  let ghost = null;
+  card.addEventListener('touchstart', e => {
+    e.preventDefault();
+    dragId = card.dataset.id;
+    dragEl = card;
+  }, {passive: false});
+
+  card.addEventListener('touchmove', e => {
+    e.preventDefault();
+    const t = e.touches[0];
+    if(!ghost){
+      ghost = card.cloneNode(true);
+      Object.assign(ghost.style, {
+        position:'fixed', opacity:'0.9', pointerEvents:'none', zIndex:'999',
+        width: card.offsetWidth + 'px', transform:'scale(1.08) rotate(-3deg)',
+        transition:'none', borderRadius:'20px'
+      });
+      document.body.appendChild(ghost);
+    }
+    ghost.style.left = (t.clientX - card.offsetWidth/2) + 'px';
+    ghost.style.top  = (t.clientY - 24) + 'px';
+    document.querySelectorAll('.step-zone').forEach(z => z.classList.remove('over'));
+    document.elementFromPoint(t.clientX, t.clientY)?.closest('.step-zone')?.classList.add('over');
+  }, {passive: false});
+
+  card.addEventListener('touchend', e => {
+    e.preventDefault();
+    if(ghost){ ghost.remove(); ghost = null; }
+    const t = e.changedTouches[0];
+    const zone = document.elementFromPoint(t.clientX, t.clientY)?.closest('.step-zone');
+    document.querySelectorAll('.step-zone').forEach(z => z.classList.remove('over'));
+    if(zone && dragId) handleDrop(zone);
+    dragId = null; dragEl = null;
+  });
+});
+
+document.querySelectorAll('.step-zone').forEach(z => {
+  z.addEventListener('dragover', e => { e.preventDefault(); z.classList.add('over'); });
+  z.addEventListener('dragleave', () => z.classList.remove('over'));
+  z.addEventListener('drop', e => { e.preventDefault(); z.classList.remove('over'); handleDrop(z); });
+});
+
+function handleDrop(zone){
+  if(!dragId || !dragEl) return;
+  const card = document.querySelector(`[data-id="${dragId}"]`);
+  if(!card || card.classList.contains('placed')) return;
+
+  const correctStep = parseInt(card.dataset.step);
+  const zoneStep    = parseInt(zone.dataset.acceptStep);
+  const fb = document.getElementById('fb');
+
+  if(correctStep === zoneStep && correctStep > 0){
+    score++;
+    document.getElementById('sc').textContent = score;
+    document.getElementById('pb').style.width = (score / total * 100) + '%';
+    zone.classList.add('correct'); setTimeout(() => zone.classList.remove('correct'), 600);
+    card.classList.add('placed');
+    const filled = document.getElementById('filled-' + zoneStep);
+    filled.textContent = card.textContent.trim();
+    filled.style.display = 'block';
+    fb.className = 'feedback-bar fb-c';
+    fb.textContent = mc[Math.floor(Math.random() * mc.length)];
+    spawnSparkles(zone);
+    if(score === total) setTimeout(showFin, 1600);
+  } else {
+    zone.classList.add('wrong'); setTimeout(() => zone.classList.remove('wrong'), 500);
+    fb.className = 'feedback-bar fb-w';
+    fb.textContent = correctStep === 0
+      ? '❌ That is WRONG behaviour — never do this!'
+      : mw[Math.floor(Math.random() * mw.length)];
+    thunderEffect();
+  }
+  dragId = null; dragEl = null;
+}
+
+function thunderEffect(){
+  const tf = document.getElementById('tFlash');
+  tf.style.animation = 'none';
+  tf.offsetHeight; // reflow
+  tf.style.animation = 'flash 0.5s ease';
+}
+
+function spawnSparkles(el){
+  const rect = el.getBoundingClientRect();
+  const cx = rect.left + rect.width/2;
+  const cy = rect.top + rect.height/2;
+  ['⭐','✨','💫','🌟','🎉'].forEach((em, i) => {
+    const sp = document.createElement('div');
+    sp.className = 'sparkle';
+    sp.textContent = em;
+    sp.style.cssText = `font-size:${Math.random()*16+14}px;
+      left:${cx + (Math.random()-0.5)*100}px;
+      top:${cy + (Math.random()-0.5)*80}px;
+      animation-delay:${i*0.08}s;`;
+    document.body.appendChild(sp);
+    setTimeout(() => sp.remove(), 1000);
+  });
+}
+
+function showFin(){
+  confetti();
+  document.getElementById('fin').className = 'final-screen show';
+  document.getElementById('fin').scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+function confetti(){
+  const colors = ['#ffd32a','#ff6b9d','#00d2a0','#a55eea','#00b4d8','#ff8c42','#fff'];
+  for(let i = 0; i < 80; i++){
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    const size = Math.random() * 12 + 5;
+    el.style.cssText = `
+      left:${Math.random()*100}vw; top:-10px;
+      width:${size}px; height:${size}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
+      animation-delay:${Math.random()*1.5}s;
+      animation-duration:${Math.random()*1.5+1.5}s;`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 3500);
+  }
+}
+
+function resetGame(){
+  score = 0;
+  document.getElementById('sc').textContent = '0';
+  document.getElementById('pb').style.width = '0';
+  document.getElementById('fin').className = 'final-screen';
+  document.querySelectorAll('.step-card').forEach(c => c.classList.remove('placed','dragging'));
+  [1,2,3,4].forEach(n => {
+    const f = document.getElementById('filled-' + n);
+    f.textContent = ''; f.style.display = 'none';
+  });
+  const fb = document.getElementById('fb');
+  fb.className = 'feedback-bar fb-idle';
+  fb.textContent = '👆 Drag a step card to the correct numbered box!';
+}
+</script>
+</body>
+</html>

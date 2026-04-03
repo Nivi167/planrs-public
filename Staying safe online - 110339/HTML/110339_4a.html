@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 4 – Build Your Digital Footprint</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ── ANIMATED BACKGROUND ── */
+  body {
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    padding: 16px;
+    overflow-x: hidden;
+    background: #0f1a3d;
+    position: relative;
+  }
+
+  /* Starfield canvas behind everything */
+  #bgCanvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Floating emoji bubbles */
+  .bubble {
+    position: fixed;
+    font-size: 28px;
+    pointer-events: none;
+    z-index: 1;
+    animation: floatUp linear infinite;
+    opacity: 0;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(110vh) rotate(0deg) scale(0.6); opacity: 0; }
+    10%  { opacity: 0.7; }
+    90%  { opacity: 0.5; }
+    100% { transform: translateY(-10vh) rotate(360deg) scale(1); opacity: 0; }
+  }
+
+  /* Gradient overlay so text stays readable */
+  #overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 50% 50%, rgba(15,26,61,0.45) 0%, rgba(15,26,61,0.72) 100%);
+  }
+
+  /* ── CONTENT ── */
+  #app { position: relative; z-index: 3; max-width: 680px; margin: 0 auto; }
+
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(14px);
+    border-radius: 20px;
+    padding: 12px 20px;
+    margin-bottom: 18px;
+    border: 1.5px solid rgba(255,255,255,0.18);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    animation: slideDown 0.6s ease;
+  }
+  @keyframes slideDown { from{transform:translateY(-30px);opacity:0} to{transform:translateY(0);opacity:1} }
+  .logo { font-family:'Fredoka One',cursive; font-size:20px; color:#FFD166; letter-spacing:1px; }
+  .badge { background: linear-gradient(135deg,#FF6B6B,#FFD166); border-radius:20px; padding:6px 18px; font-size:14px; font-weight:800; color:#fff; box-shadow:0 2px 8px rgba(255,107,107,0.4); }
+
+  h1 {
+    text-align:center; font-family:'Fredoka One',cursive; font-size:30px;
+    background: linear-gradient(135deg,#FFD166,#FF6B6B,#A8EDEA);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    margin-bottom:6px; animation: fadeIn 0.7s 0.2s both;
+  }
+  .subtitle { text-align:center; color:rgba(255,255,255,0.7); font-size:14px; margin-bottom:18px; animation:fadeIn 0.7s 0.35s both; }
+  @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+  .intro-card {
+    background:rgba(255,255,255,0.10);
+    backdrop-filter:blur(10px);
+    border-radius:18px; padding:16px 20px;
+    margin-bottom:18px;
+    border:1.5px solid rgba(255,255,255,0.18);
+    animation:fadeIn 0.7s 0.5s both;
+  }
+  .intro-card p { font-size:14px; color:rgba(255,255,255,0.9); line-height:1.7; }
+
+  /* ── ACTION CARDS (draggable source) ── */
+  .section-label {
+    font-family:'Fredoka One',cursive; font-size:17px;
+    color:rgba(255,255,255,0.85); margin-bottom:10px; letter-spacing:0.5px;
+  }
+
+  .actions-grid {
+    display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:22px;
+  }
+  @media(max-width:480px){ .actions-grid{grid-template-columns:1fr;} }
+
+  .action-card {
+    background:rgba(255,255,255,0.10);
+    backdrop-filter:blur(10px);
+    border-radius:16px; padding:14px 12px;
+    cursor:grab; text-align:center;
+    border:2.5px solid transparent;
+    transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+    animation: popIn 0.4s ease both;
+    position:relative; overflow:hidden;
+    user-select:none;
+    touch-action: none;
+  }
+  .action-card::before {
+    content:''; position:absolute; inset:0; border-radius:14px;
+    background:linear-gradient(135deg,rgba(255,255,255,0.08),transparent);
+    pointer-events:none;
+  }
+  .action-card:hover { transform:translateY(-4px) scale(1.03); }
+  .action-card.good-action { border-color:#6EE7B7; box-shadow:0 4px 18px rgba(110,231,183,0.25); }
+  .action-card.bad-action  { border-color:#FCA5A5; box-shadow:0 4px 18px rgba(252,165,165,0.25); }
+  .action-card.good-action:hover { box-shadow:0 8px 26px rgba(110,231,183,0.45); }
+  .action-card.bad-action:hover  { box-shadow:0 8px 26px rgba(252,165,165,0.45); }
+  .action-card.used { opacity:0.35; cursor:not-allowed; transform:none !important; }
+  .action-card.dragging { opacity:0.4; cursor:grabbing; transform:scale(0.95) !important; }
+  .act-emoji { font-size:30px; margin-bottom:6px; display:block; }
+  .act-label { font-size:12px; color:rgba(255,255,255,0.9); font-weight:700; line-height:1.4; }
+  .act-type  { font-size:11px; margin-top:5px; font-weight:800; }
+  .good-action .act-type { color:#6EE7B7; }
+  .bad-action  .act-type { color:#FCA5A5; }
+
+  @keyframes popIn { 0%{transform:scale(0.6);opacity:0} 80%{transform:scale(1.06)} 100%{transform:scale(1);opacity:1} }
+
+  /* drag hint pulse */
+  .drag-hint {
+    text-align:center; font-size:12px; color:rgba(255,255,255,0.5);
+    margin-bottom:14px; animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:0.5} 50%{opacity:1} }
+
+  /* ── DROP ZONE ── */
+  .footprint-track {
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(12px);
+    border-radius:22px; padding:20px;
+    margin-bottom:20px;
+    border:2px dashed rgba(255,255,255,0.2);
+    transition:border-color 0.3s, background 0.3s;
+    animation:fadeIn 0.7s 0.6s both;
+  }
+  .footprint-track.drag-over {
+    border-color:#FFD166;
+    background:rgba(255,209,102,0.12);
+    box-shadow:0 0 30px rgba(255,209,102,0.2);
+  }
+  .track-title { font-family:'Fredoka One',cursive; font-size:18px; color:#FFD166; margin-bottom:14px; }
+
+  .footprint-row {
+    display:flex; flex-wrap:wrap; gap:8px;
+    min-height:64px; padding:10px;
+    border-radius:14px;
+    background:rgba(0,0,0,0.18);
+    margin-bottom:16px;
+  }
+  .fp-placeholder { color:rgba(255,255,255,0.3); font-size:13px; padding:10px; align-self:center; }
+
+  .footprint-chip {
+    padding:8px 14px; border-radius:10px;
+    font-size:12px; font-weight:700;
+    animation: chipBounce 0.5s cubic-bezier(0.34,1.56,0.64,1);
+    cursor:default;
+  }
+  @keyframes chipBounce {
+    0%{transform:scale(0) rotate(-10deg);opacity:0}
+    60%{transform:scale(1.15) rotate(3deg)}
+    100%{transform:scale(1) rotate(0);opacity:1}
+  }
+  .fp-good { background:rgba(110,231,183,0.25); border:2px solid #6EE7B7; color:#A7F3D0; }
+  .fp-bad  { background:rgba(252,165,165,0.2);  border:2px solid #FCA5A5; color:#FECDD3; }
+
+  /* ── METER ── */
+  .meter-label { display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px; font-weight:700; }
+  .bad-label  { color:#FCA5A5; }
+  .good-label { color:#6EE7B7; }
+  .meter-bar { height:22px; border-radius:12px; background:rgba(255,255,255,0.1); overflow:hidden; position:relative; }
+  .meter-fill {
+    height:100%; border-radius:12px;
+    transition: width 0.6s cubic-bezier(0.34,1.2,0.64,1), background 0.6s;
+    width:50%; background:#F5C842;
+    position:relative;
+  }
+  .meter-fill::after {
+    content:''; position:absolute; top:4px; left:10%; width:30%; height:6px;
+    background:rgba(255,255,255,0.35); border-radius:4px;
+  }
+  .meter-status { text-align:center; font-size:15px; font-weight:800; margin-top:8px; transition:color 0.5s; }
+
+  /* ── LESSON BOX ── */
+  .lesson-box {
+    background:rgba(255,255,255,0.10);
+    backdrop-filter:blur(10px);
+    border-radius:18px; padding:16px 20px;
+    margin-bottom:18px;
+    border:1.5px solid rgba(255,255,255,0.2);
+    display:none;
+    animation:lessonPop 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes lessonPop {
+    0%{transform:scale(0.85) translateY(20px);opacity:0}
+    100%{transform:scale(1) translateY(0);opacity:1}
+  }
+  .lesson-box h3 { font-family:'Fredoka One',cursive; font-size:16px; color:#FFD166; margin-bottom:8px; }
+  .lesson-box p  { font-size:14px; color:rgba(255,255,255,0.85); line-height:1.7; }
+
+  /* ── BUTTONS ── */
+  .reset-area { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; padding-bottom:30px; }
+  .btn {
+    padding:13px 30px; border:none; border-radius:28px;
+    font-family:'Fredoka One',cursive; font-size:17px; cursor:pointer;
+    transition:transform 0.2s, box-shadow 0.2s;
+    letter-spacing:0.5px;
+  }
+  .btn:hover { transform:translateY(-3px) scale(1.04); }
+  .btn-orange { background:linear-gradient(135deg,#FF6B6B,#E07B39); color:#fff; box-shadow:0 4px 16px rgba(224,123,57,0.5); }
+  .btn-blue   { background:linear-gradient(135deg,#A8EDEA,#2E86AB); color:#fff; box-shadow:0 4px 16px rgba(46,134,171,0.45); }
+
+  /* Ghost element during drag */
+  #dragGhost {
+    position:fixed; pointer-events:none; z-index:9999;
+    background:rgba(255,255,255,0.15);
+    backdrop-filter:blur(14px);
+    border-radius:14px; padding:12px 16px;
+    font-size:22px; text-align:center;
+    border:2px solid rgba(255,255,255,0.4);
+    box-shadow:0 8px 32px rgba(0,0,0,0.5);
+    display:none;
+    transform:rotate(6deg) scale(1.1);
+    transition:transform 0.1s;
+  }
+
+  /* Sparkle burst */
+  .sparkle {
+    position:fixed; pointer-events:none; z-index:9998;
+    font-size:20px; animation:sparkleOut 0.8s ease-out forwards;
+  }
+  @keyframes sparkleOut {
+    0%  { transform:scale(0) translateY(0); opacity:1; }
+    100%{ transform:scale(1.5) translateY(-60px); opacity:0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Animated background canvas -->
+<canvas id="bgCanvas"></canvas>
+<div id="overlay"></div>
+
+<!-- Ghost drag image -->
+<div id="dragGhost">🎯</div>
+
+<div id="app">
+  <header>
+    <div class="logo">⭐ Planrs</div>
+    <div class="badge">👣 Footprint Lab</div>
+  </header>
+
+  <h1>👣 Build Your Digital Footprint</h1>
+  <p class="subtitle">See how your online actions shape your digital reputation!</p>
+
+  <div class="intro-card">
+    <p>🌟 <strong>Every online action adds to your digital footprint!</strong> Drag the action cards into the trail below — or tap them! Watch your reputation meter change. Can you build a POSITIVE digital footprint?</p>
+  </div>
+
+  <p class="section-label">🃏 Action Cards</p>
+  <p class="drag-hint">✋ Drag a card into the trail below — or just tap it!</p>
+
+  <div class="actions-grid" id="actionsGrid">
+    <div class="action-card good-action" data-label="Shared study notes with classmates 📚" data-type="good" data-emoji="📚">
+      <span class="act-emoji">📚</span>
+      <div class="act-label">Share helpful study notes with classmates</div>
+      <div class="act-type">✅ POSITIVE</div>
+    </div>
+    <div class="action-card bad-action" data-label="Posted a mean comment on a video 😡" data-type="bad" data-emoji="😡">
+      <span class="act-emoji">😡</span>
+      <div class="act-label">Post a mean comment on someone's video</div>
+      <div class="act-type">❌ NEGATIVE</div>
+    </div>
+    <div class="action-card good-action" data-label="Reported a bullying post to the platform 🛡️" data-type="good" data-emoji="🛡️">
+      <span class="act-emoji">🛡️</span>
+      <div class="act-label">Report a bullying post on a platform</div>
+      <div class="act-type">✅ POSITIVE</div>
+    </div>
+    <div class="action-card bad-action" data-label="Forwarded fake news on WhatsApp 📰" data-type="bad" data-emoji="📰">
+      <span class="act-emoji">📰</span>
+      <div class="act-label">Forward unverified news on WhatsApp</div>
+      <div class="act-type">❌ NEGATIVE</div>
+    </div>
+    <div class="action-card good-action" data-label="Left a kind comment on a friend's art 💬" data-type="good" data-emoji="💬">
+      <span class="act-emoji">💬</span>
+      <div class="act-label">Leave an encouraging comment on a friend's project</div>
+      <div class="act-type">✅ POSITIVE</div>
+    </div>
+    <div class="action-card bad-action" data-label="Created a fake profile to tease someone 👤" data-type="bad" data-emoji="👤">
+      <span class="act-emoji">👤</span>
+      <div class="act-label">Create a fake profile to tease a classmate</div>
+      <div class="act-type">❌ NEGATIVE</div>
+    </div>
+    <div class="action-card good-action" data-label="Fact-checked before sharing a news article 🔍" data-type="good" data-emoji="🔍">
+      <span class="act-emoji">🔍</span>
+      <div class="act-label">Fact-check an article before sharing it</div>
+      <div class="act-type">✅ POSITIVE</div>
+    </div>
+    <div class="action-card bad-action" data-label="Shared a private photo of a friend without asking 📷" data-type="bad" data-emoji="📷">
+      <span class="act-emoji">📷</span>
+      <div class="act-label">Share a private photo of a friend without permission</div>
+      <div class="act-type">❌ NEGATIVE</div>
+    </div>
+  </div>
+
+  <!-- Drop zone -->
+  <div class="footprint-track" id="dropZone">
+    <div class="track-title">👣 Your Digital Footprint Trail</div>
+    <div class="footprint-row" id="footprintRow">
+      <span class="fp-placeholder">⬆️ Drop cards here or tap them above...</span>
+    </div>
+    <div>
+      <div class="meter-label">
+        <span class="bad-label">😟 Negative</span>
+        <span class="good-label">😊 Positive</span>
+      </div>
+      <div class="meter-bar"><div class="meter-fill" id="meterFill"></div></div>
+      <div class="meter-status" id="meterStatus" style="color:#FFD166">Neutral Footprint</div>
+    </div>
+  </div>
+
+  <div class="lesson-box" id="lessonBox">
+    <h3 id="lessonTitle">💡 What This Means</h3>
+    <p id="lessonText">Your digital footprint follows you everywhere!</p>
+  </div>
+
+  <div class="reset-area">
+    <button class="btn btn-orange" onclick="resetAll()">🔄 Start Over</button>
+    <button class="btn btn-blue" onclick="celebrate()">🏁 Finish Course!</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   ANIMATED BACKGROUND — starfield + nebula
+═══════════════════════════════════════════════ */
+(function() {
+  const canvas = document.getElementById('bgCanvas');
+  const ctx    = canvas.getContext('2d');
+  let W, H, stars=[], nebulae=[];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function initStars() {
+    stars = [];
+    for (let i = 0; i < 200; i++) {
+      stars.push({
+        x: Math.random()*W, y: Math.random()*H,
+        r: Math.random()*2.2+0.3,
+        speed: Math.random()*0.35+0.05,
+        twinkle: Math.random()*Math.PI*2,
+        twinkleSpeed: 0.03+Math.random()*0.05,
+        color: ['#ffffff','#ffe8a3','#a8edea','#ffb3c1'][Math.floor(Math.random()*4)]
+      });
+    }
+    nebulae = [];
+    const cols = ['rgba(255,107,107,','rgba(168,237,234,','rgba(255,209,102,','rgba(110,231,183,'];
+    for (let i=0;i<6;i++) {
+      nebulae.push({
+        x: Math.random()*W, y: Math.random()*H,
+        r: 120+Math.random()*180,
+        color: cols[Math.floor(Math.random()*cols.length)],
+        drift: {x:(Math.random()-0.5)*0.3,y:(Math.random()-0.5)*0.2},
+        pulse: Math.random()*Math.PI*2,
+        pulseSpeed: 0.005+Math.random()*0.008
+      });
+    }
+  }
+
+  function drawFrame(t) {
+    ctx.clearRect(0,0,W,H);
+
+    // Deep space gradient
+    const bg = ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*0.8);
+    bg.addColorStop(0,'#1a2a6c');
+    bg.addColorStop(0.5,'#0f1a3d');
+    bg.addColorStop(1,'#060c1f');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0,0,W,H);
+
+    // Nebulae
+    for (const n of nebulae) {
+      n.x += n.drift.x; n.y += n.drift.y;
+      n.pulse += n.pulseSpeed;
+      if(n.x < -n.r) n.x=W+n.r;
+      if(n.x > W+n.r) n.x=-n.r;
+      if(n.y < -n.r) n.y=H+n.r;
+      if(n.y > H+n.r) n.y=-n.r;
+      const radius = n.r*(1+0.06*Math.sin(n.pulse));
+      const grad = ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,radius);
+      grad.addColorStop(0,  n.color+'0.18)');
+      grad.addColorStop(0.5,n.color+'0.07)');
+      grad.addColorStop(1,  n.color+'0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(n.x,n.y,radius,0,Math.PI*2);
+      ctx.fill();
+    }
+
+    // Stars
+    for (const s of stars) {
+      s.y -= s.speed;
+      s.twinkle += s.twinkleSpeed;
+      if(s.y < -4) { s.y = H+4; s.x = Math.random()*W; }
+      const alpha = 0.4+0.6*Math.abs(Math.sin(s.twinkle));
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = s.color;
+      ctx.beginPath();
+      ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(drawFrame);
+  }
+
+  window.addEventListener('resize', ()=>{ resize(); initStars(); });
+  resize(); initStars();
+  requestAnimationFrame(drawFrame);
+})();
+
+/* ═══════════════════════════════════════════════
+   FLOATING EMOJI BUBBLES
+═══════════════════════════════════════════════ */
+const bubbleEmojis = ['🌟','💡','📱','🛡️','❤️','✅','🔍','📚','💬','🌈','⭐','🎉'];
+function spawnBubble() {
+  const el = document.createElement('div');
+  el.className = 'bubble';
+  el.textContent = bubbleEmojis[Math.floor(Math.random()*bubbleEmojis.length)];
+  el.style.left = (Math.random()*96)+'vw';
+  const dur = 8+Math.random()*10;
+  const delay = Math.random()*4;
+  el.style.animation = `floatUp ${dur}s ${delay}s linear infinite`;
+  document.body.appendChild(el);
+}
+for (let i=0;i<14;i++) spawnBubble();
+
+/* ═══════════════════════════════════════════════
+   GAME STATE
+═══════════════════════════════════════════════ */
+let goodCount=0, badCount=0, usedGood=0, usedBad=0;
+
+const lessons = {
+  good: [
+    "Amazing! Sharing knowledge online helps others and shows you're a responsible digital citizen.",
+    "Reporting bullying takes courage — you're making the internet safer for everyone! 🛡️",
+    "Kindness online costs nothing but means everything. This builds a wonderful digital reputation! 💛",
+    "Fact-checking is one of the most powerful skills of the digital age — keep it up! 🧠",
+  ],
+  bad: [
+    "Mean comments cause real emotional pain — and they stay in your digital footprint forever. 💔",
+    "Fake news can cause real harm. Always verify before you amplify! 🔎",
+    "Fake profiles are cyberbullying — it can have serious real-life consequences. ⚠️",
+    "Sharing private photos without permission violates trust and can even be illegal. 🚨",
+  ]
+};
+
+/* ═══════════════════════════════════════════════
+   DRAG & DROP — Desktop (HTML5 DnD)
+═══════════════════════════════════════════════ */
+let dragData = null;
+const ghost = document.getElementById('dragGhost');
+
+document.querySelectorAll('.action-card').forEach(card => {
+  card.addEventListener('dragstart', e => {
+    if (card.classList.contains('used')) { e.preventDefault(); return; }
+    dragData = card;
+    card.classList.add('dragging');
+    // use invisible default ghost
+    const empty = document.createElement('canvas');
+    empty.width = empty.height = 1;
+    e.dataTransfer.setDragImage(empty,0,0);
+    ghost.textContent = card.dataset.emoji;
+    ghost.style.display = 'block';
+  });
+  card.addEventListener('dragend', ()=>{
+    card.classList.remove('dragging');
+    ghost.style.display = 'none';
+    dragData = null;
+  });
+  // tap / click fallback
+  card.addEventListener('click', ()=>{
+    if(card.classList.contains('used')) return;
+    dropAction(card);
+  });
+  card.setAttribute('draggable','true');
+});
+
+document.addEventListener('dragover', e => {
+  e.preventDefault();
+  ghost.style.left = (e.clientX - 28)+'px';
+  ghost.style.top  = (e.clientY - 28)+'px';
+});
+
+const dropZone = document.getElementById('dropZone');
+dropZone.addEventListener('dragover', e => {
+  e.preventDefault();
+  dropZone.classList.add('drag-over');
+});
+dropZone.addEventListener('dragleave', ()=> dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('drag-over');
+  if(dragData && !dragData.classList.contains('used')) dropAction(dragData);
+  ghost.style.display='none';
+});
+
+/* ═══════════════════════════════════════════════
+   DRAG & DROP — Touch (Pointer Events)
+═══════════════════════════════════════════════ */
+let touchCard = null;
+
+document.querySelectorAll('.action-card').forEach(card => {
+  card.addEventListener('pointerdown', e => {
+    if(card.classList.contains('used')) return;
+    touchCard = card;
+    card.classList.add('dragging');
+    ghost.textContent = card.dataset.emoji;
+    ghost.style.display='block';
+    ghost.style.left=(e.clientX-28)+'px';
+    ghost.style.top=(e.clientY-28)+'px';
+    card.setPointerCapture(e.pointerId);
+  });
+  card.addEventListener('pointermove', e => {
+    if(!touchCard || touchCard!==card) return;
+    ghost.style.left=(e.clientX-28)+'px';
+    ghost.style.top=(e.clientY-28)+'px';
+    const zone = dropZone.getBoundingClientRect();
+    if(e.clientX>zone.left&&e.clientX<zone.right&&e.clientY>zone.top&&e.clientY<zone.bottom) {
+      dropZone.classList.add('drag-over');
+    } else {
+      dropZone.classList.remove('drag-over');
+    }
+  });
+  card.addEventListener('pointerup', e => {
+    if(!touchCard||touchCard!==card) return;
+    card.classList.remove('dragging');
+    ghost.style.display='none';
+    const zone = dropZone.getBoundingClientRect();
+    if(e.clientX>zone.left&&e.clientX<zone.right&&e.clientY>zone.top&&e.clientY<zone.bottom) {
+      dropAction(card);
+    }
+    dropZone.classList.remove('drag-over');
+    touchCard=null;
+  });
+  card.addEventListener('pointercancel', ()=>{
+    if(touchCard===card){ card.classList.remove('dragging'); ghost.style.display='none'; touchCard=null; }
+  });
+});
+
+/* ═══════════════════════════════════════════════
+   CORE DROP LOGIC
+═══════════════════════════════════════════════ */
+function dropAction(card) {
+  card.classList.add('used');
+
+  const row = document.getElementById('footprintRow');
+  const ph  = row.querySelector('.fp-placeholder');
+  if(ph) ph.remove();
+
+  const chip = document.createElement('div');
+  const type = card.dataset.type;
+  chip.className = 'footprint-chip fp-' + (type==='good'?'good':'bad');
+  chip.textContent = card.dataset.label;
+  row.appendChild(chip);
+
+  if(type==='good'){
+    goodCount++;
+    document.getElementById('lessonTitle').textContent='🌟 Great Choice!';
+    document.getElementById('lessonText').textContent=lessons.good[usedGood%lessons.good.length];
+    usedGood++;
+    spawnSparkles(card,'#6EE7B7');
+  } else {
+    badCount++;
+    document.getElementById('lessonTitle').textContent='⚠️ Think About This...';
+    document.getElementById('lessonText').textContent=lessons.bad[usedBad%lessons.bad.length];
+    usedBad++;
+    spawnSparkles(card,'#FCA5A5');
+  }
+
+  const lb=document.getElementById('lessonBox');
+  lb.style.display='block';
+  lb.style.animation='none';
+  lb.offsetHeight; // reflow
+  lb.style.animation='lessonPop 0.5s cubic-bezier(0.34,1.56,0.64,1)';
+
+  updateMeter();
+}
+
+function updateMeter() {
+  const total = goodCount+badCount;
+  if(!total) return;
+  const pct = (goodCount/total)*100;
+  const fill   = document.getElementById('meterFill');
+  const status = document.getElementById('meterStatus');
+  fill.style.width = pct+'%';
+  if(pct>=75){ fill.style.background='#6EE7B7'; status.textContent='🌟 Excellent Positive Footprint!'; status.style.color='#6EE7B7'; }
+  else if(pct>=50){ fill.style.background='#FFD166'; status.textContent='😊 Mostly Positive — Keep it up!'; status.style.color='#FFD166'; }
+  else if(pct>=25){ fill.style.background='#F39C12'; status.textContent='😐 Mixed Footprint — Be More Careful'; status.style.color='#F39C12'; }
+  else { fill.style.background='#FCA5A5'; status.textContent='😟 Negative Footprint — Time to Fix This!'; status.style.color='#FCA5A5'; }
+}
+
+/* ═══════════════════════════════════════════════
+   SPARKLE BURST
+═══════════════════════════════════════════════ */
+function spawnSparkles(el, color) {
+  const rect  = el.getBoundingClientRect();
+  const cx    = rect.left + rect.width/2;
+  const cy    = rect.top  + rect.height/2;
+  const sparks = ['✨','⭐','💫','🌟','★'];
+  for(let i=0;i<8;i++){
+    const s = document.createElement('div');
+    s.className='sparkle';
+    s.textContent = sparks[Math.floor(Math.random()*sparks.length)];
+    s.style.left=(cx-10+Math.random()*40-20)+'px';
+    s.style.top =(cy-10)+'px';
+    s.style.color = color;
+    s.style.animationDelay = (Math.random()*0.2)+'s';
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),900);
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   RESET
+═══════════════════════════════════════════════ */
+function resetAll() {
+  goodCount=badCount=usedGood=usedBad=0;
+  document.getElementById('footprintRow').innerHTML='<span class="fp-placeholder">⬆️ Drop cards here or tap them above...</span>';
+  document.querySelectorAll('.action-card').forEach(c=>c.classList.remove('used','dragging'));
+  document.getElementById('meterFill').style.width='50%';
+  document.getElementById('meterFill').style.background='#F5C842';
+  document.getElementById('meterStatus').textContent='Neutral Footprint';
+  document.getElementById('meterStatus').style.color='#FFD166';
+  document.getElementById('lessonBox').style.display='none';
+}
+
+function celebrate() {
+  spawnSparkles(document.querySelector('.reset-area'),'#FFD166');
+  spawnSparkles(document.querySelector('.reset-area'),'#6EE7B7');
+  setTimeout(()=>alert('🏆 Great work! You have completed all activities for Staying Safe Online! Keep building that positive digital footprint! ⭐'),200);
+}
+</script>
+</body>
+</html>

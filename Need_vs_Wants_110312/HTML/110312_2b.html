@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚡ Rapid Fire True or False | ⭐ Planrs</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green: #2ECC71; --green-dark: #1A8A4A; --green-light: #AAFFD4;
+  --coral: #FF6B6B; --coral-dark: #C0392B; --yellow: #FFE44D;
+  --blue: #4ECDC4; --purple: #A855F7; --orange: #FF9F43;
+  --bg1: #0f2027; --bg2: #203a43; --bg3: #2c5364;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 70%, #533483 100%);
+  background-size: 400% 400%;
+  animation: bgShift 8s ease infinite;
+}
+@keyframes bgShift {
+  0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%}
+}
+
+/* ===== FLOATING BACKGROUND OBJECTS ===== */
+.bg-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.floaty {
+  position: absolute;
+  border-radius: 50%;
+  animation: floatUp linear infinite;
+  opacity: 0.18;
+}
+@keyframes floatUp {
+  0%   { transform: translateY(110vh) rotate(0deg) scale(1); opacity: 0; }
+  10%  { opacity: 0.2; }
+  90%  { opacity: 0.18; }
+  100% { transform: translateY(-20vh) rotate(720deg) scale(1.3); opacity: 0; }
+}
+.star-obj {
+  position: absolute;
+  font-size: 28px;
+  animation: starFloat linear infinite;
+  pointer-events: none;
+}
+@keyframes starFloat {
+  0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+  15%  { opacity: 1; }
+  85%  { opacity: 0.9; }
+  100% { transform: translateY(-15vh) rotate(360deg); opacity: 0; }
+}
+.cloud-obj {
+  position: absolute;
+  font-size: 42px;
+  animation: cloudDrift linear infinite;
+  pointer-events: none;
+  opacity: 0.4;
+}
+@keyframes cloudDrift {
+  0%   { transform: translateX(-200px); opacity: 0; }
+  10%  { opacity: 0.4; }
+  90%  { opacity: 0.4; }
+  100% { transform: translateX(110vw); opacity: 0; }
+}
+
+/* ===== SPARKLES ===== */
+.sparkle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 1000;
+  border-radius: 50%;
+  animation: sparkleOut 0.7s ease-out forwards;
+}
+@keyframes sparkleOut {
+  0%   { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+}
+
+/* ===== LAYOUT ===== */
+.top-bar {
+  position: fixed; top: 0; left: 0; right: 0;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 20px; z-index: 50;
+  background: rgba(0,0,0,0.3); backdrop-filter: blur(10px);
+  border-bottom: 2px solid rgba(255,255,255,0.1);
+}
+.planrs-badge {
+  background: linear-gradient(135deg, #2ECC71, #00B894);
+  border-radius: 20px; padding: 6px 16px;
+  font-size: 14px; font-weight: 900; color: white;
+  font-family: 'Fredoka One', cursive;
+  box-shadow: 0 0 20px rgba(46,204,113,0.5);
+  animation: glow 2s ease-in-out infinite;
+}
+@keyframes glow {
+  0%,100% { box-shadow: 0 0 20px rgba(46,204,113,0.5); }
+  50%      { box-shadow: 0 0 35px rgba(46,204,113,0.9); }
+}
+.score-badge {
+  background: linear-gradient(135deg, #FF6B6B, #FF9F43);
+  border-radius: 20px; padding: 6px 16px;
+  font-size: 15px; font-weight: 900; color: white;
+  font-family: 'Fredoka One', cursive;
+  box-shadow: 0 0 20px rgba(255,107,107,0.5);
+}
+
+/* ===== MAIN CONTENT ===== */
+.main { position: relative; z-index: 10; padding-top: 80px; padding-bottom: 40px; }
+h1 {
+  text-align: center;
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(28px, 6vw, 52px);
+  color: white;
+  text-shadow: 0 0 30px rgba(255,255,255,0.4), 3px 3px 0 rgba(0,0,0,0.3);
+  margin-bottom: 4px;
+  animation: titleBounce 2s ease-in-out infinite;
+}
+@keyframes titleBounce {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+.subtitle {
+  text-align: center; color: rgba(255,255,255,0.7);
+  font-size: 15px; margin-bottom: 24px; font-weight: 700;
+}
+
+/* ===== TIMER ===== */
+.timer-wrap { display: flex; justify-content: center; margin-bottom: 14px; }
+.timer-ring { width: 90px; height: 90px; position: relative; }
+.timer-ring svg { transform: rotate(-90deg); filter: drop-shadow(0 0 10px rgba(46,204,113,0.6)); }
+.timer-ring circle { fill: none; stroke-width: 9; }
+.timer-ring .bg { stroke: rgba(255,255,255,0.15); }
+.timer-ring .fg { stroke: #2ECC71; stroke-dasharray: 220; stroke-dashoffset: 0; transition: stroke-dashoffset 0.1s linear, stroke 0.3s; stroke-linecap: round; }
+.timer-text {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  font-size: 26px; font-weight: 900; color: white;
+  font-family: 'Fredoka One', cursive;
+  text-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
+
+/* ===== STREAK ===== */
+.streak-bar {
+  text-align: center; font-size: 18px; color: var(--yellow);
+  font-weight: 900; margin-bottom: 14px; min-height: 28px;
+  font-family: 'Fredoka One', cursive;
+  text-shadow: 0 0 15px rgba(255,228,77,0.8);
+  animation: streakPulse 0.5s ease infinite alternate;
+}
+@keyframes streakPulse {
+  from { transform: scale(1); } to { transform: scale(1.05); }
+}
+
+/* ===== QUESTION CARD ===== */
+.card {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 28px;
+  padding: 30px 28px 20px;
+  max-width: 620px; margin: 0 auto 16px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+  animation: cardIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  position: relative; overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 60%);
+  pointer-events: none;
+}
+@keyframes cardIn {
+  from { transform: scale(0.8) translateY(30px); opacity: 0; }
+  to   { transform: scale(1) translateY(0); opacity: 1; }
+}
+.q-count {
+  font-size: 13px; font-weight: 900; color: var(--green);
+  margin-bottom: 12px; letter-spacing: 1px;
+  font-family: 'Fredoka One', cursive;
+}
+.q-text {
+  font-size: clamp(16px, 3vw, 22px); color: white; font-weight: 700;
+  line-height: 1.5; min-height: 80px;
+  display: flex; align-items: center; justify-content: center;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+/* ===== DRAG AND DROP ZONE ===== */
+.dnd-zone {
+  display: flex; gap: 16px; justify-content: center;
+  margin: 24px 0 16px; flex-wrap: wrap;
+}
+.drop-zone {
+  flex: 1; max-width: 200px; min-height: 90px;
+  border-radius: 20px; border: 3px dashed rgba(255,255,255,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 900; color: rgba(255,255,255,0.5);
+  font-family: 'Fredoka One', cursive;
+  transition: all 0.3s; position: relative; overflow: hidden;
+  cursor: pointer;
+}
+.drop-zone.true-zone {
+  background: rgba(46,204,113,0.1);
+  border-color: var(--green);
+  color: var(--green);
+}
+.drop-zone.false-zone {
+  background: rgba(255,107,107,0.1);
+  border-color: var(--coral);
+  color: var(--coral);
+}
+.drop-zone.dragover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.15);
+}
+.drop-zone.correct-zone {
+  background: rgba(46,204,113,0.3);
+  border-color: #2ECC71; border-style: solid;
+  animation: correctPulse 0.5s ease;
+}
+.drop-zone.wrong-zone {
+  background: rgba(255,107,107,0.3);
+  border-color: var(--coral); border-style: solid;
+  animation: shakeDrop 0.4s ease;
+}
+@keyframes correctPulse { 0%{transform:scale(1)} 50%{transform:scale(1.08)} 100%{transform:scale(1)} }
+@keyframes shakeDrop    { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+
+/* ===== DRAGGABLE TOKEN ===== */
+.drag-token-area {
+  display: flex; justify-content: center; margin-bottom: 10px;
+}
+.drag-token {
+  background: linear-gradient(135deg, var(--yellow), var(--orange));
+  border-radius: 50px; padding: 14px 34px;
+  font-size: 18px; font-weight: 900; color: #1a1a2e;
+  font-family: 'Fredoka One', cursive;
+  cursor: grab; user-select: none;
+  box-shadow: 0 8px 30px rgba(255,159,67,0.5), 0 3px 8px rgba(0,0,0,0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+  animation: tokenFloat 2s ease-in-out infinite;
+  position: relative; z-index: 20;
+}
+@keyframes tokenFloat {
+  0%,100% { transform: translateY(0) rotate(-1deg); }
+  50%      { transform: translateY(-6px) rotate(1deg); }
+}
+.drag-token:active { cursor: grabbing; transform: scale(1.1) rotate(3deg); box-shadow: 0 16px 40px rgba(255,159,67,0.7); }
+.drag-token.dragging { opacity: 0.6; transform: scale(1.1); animation: none; }
+.drag-token.hidden-token { display: none; }
+
+/* ===== CLICK BUTTONS (fallback) ===== */
+.btns { display: flex; gap: 16px; justify-content: center; margin: 6px 0 0; }
+.tf-btn {
+  flex: 1; max-width: 180px; padding: 16px 10px;
+  border-radius: 20px; border: 3px solid; font-size: 20px;
+  font-weight: 900; cursor: pointer;
+  transition: all 0.2s; font-family: 'Fredoka One', cursive;
+  position: relative; overflow: hidden;
+}
+.tf-btn::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.15), transparent);
+  pointer-events: none;
+}
+.true-btn { background: rgba(46,204,113,0.25); border-color: var(--green); color: var(--green-light); }
+.true-btn:hover { background: rgba(46,204,113,0.4); transform: scale(1.05) rotate(-1deg); box-shadow: 0 8px 25px rgba(46,204,113,0.4); }
+.false-btn { background: rgba(255,107,107,0.25); border-color: var(--coral); color: #FFAAAA; }
+.false-btn:hover { background: rgba(255,107,107,0.4); transform: scale(1.05) rotate(1deg); box-shadow: 0 8px 25px rgba(255,107,107,0.4); }
+.tf-btn.correct { transform: scale(1.1); box-shadow: 0 0 30px rgba(46,204,113,0.6); animation: correctBounce 0.5s ease; }
+.tf-btn.wrong   { animation: shake 0.4s ease; }
+@keyframes correctBounce { 0%{transform:scale(1)} 40%{transform:scale(1.2)} 70%{transform:scale(0.95)} 100%{transform:scale(1.08)} }
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-10px)} 60%{transform:translateX(10px)} }
+
+/* ===== EXPLANATION ===== */
+.explain {
+  background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 16px; padding: 14px 18px;
+  font-size: 14px; color: rgba(255,255,255,0.9);
+  margin: 14px 0 0; text-align: left; display: none;
+  line-height: 1.6; font-weight: 600;
+  backdrop-filter: blur(10px);
+  animation: slideIn 0.4s ease;
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== FEEDBACK ===== */
+.feedback {
+  text-align: center; font-size: 26px; font-weight: 900;
+  min-height: 40px; font-family: 'Fredoka One', cursive;
+  animation: feedbackIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes feedbackIn {
+  from { transform: scale(0.5); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+/* ===== NEXT BUTTON ===== */
+.next-btn {
+  display: none; padding: 14px 36px;
+  border-radius: 50px; border: none; cursor: pointer;
+  font-size: 18px; font-weight: 900;
+  font-family: 'Fredoka One', cursive;
+  background: linear-gradient(135deg, var(--green), var(--blue));
+  color: white;
+  box-shadow: 0 8px 25px rgba(46,204,113,0.4);
+  transition: all 0.2s;
+  animation: btnPop 0.5s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes btnPop { from{transform:scale(0)} to{transform:scale(1)} }
+.next-btn:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 14px 35px rgba(46,204,113,0.6); }
+
+/* ===== RESULT PANEL ===== */
+.result-panel {
+  display: none; background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px); border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 28px; padding: 40px 30px;
+  max-width: 500px; margin: 20px auto; text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  animation: cardIn 0.6s cubic-bezier(0.34,1.56,0.64,1);
+}
+.score-huge {
+  font-size: 72px; font-weight: 900;
+  font-family: 'Fredoka One', cursive;
+  background: linear-gradient(135deg, var(--yellow), var(--orange), var(--coral));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  animation: scoreCount 1s ease;
+}
+@keyframes scoreCount { from{transform:scale(0) rotate(180deg)} to{transform:scale(1) rotate(0)} }
+.result-title {
+  font-family: 'Fredoka One', cursive;
+  color: white; font-size: 28px; margin-bottom: 12px;
+  text-shadow: 0 0 20px rgba(255,255,255,0.3);
+}
+.result-msg { color: rgba(255,255,255,0.75); font-size: 15px; margin-bottom: 24px; font-weight: 600; }
+.btn {
+  display: inline-block; padding: 14px 30px;
+  border-radius: 50px; border: none; cursor: pointer;
+  font-size: 16px; font-weight: 900; margin: 6px;
+  font-family: 'Fredoka One', cursive;
+  transition: all 0.2s;
+}
+.btn-green { background: linear-gradient(135deg, #2ECC71, #00B894); color: white; box-shadow: 0 8px 20px rgba(46,204,113,0.4); }
+.btn-coral { background: linear-gradient(135deg, #FF6B6B, #FF9F43); color: white; box-shadow: 0 8px 20px rgba(255,107,107,0.4); }
+.btn:hover { transform: translateY(-3px) scale(1.05); }
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar-wrap { max-width: 620px; margin: 0 auto 16px; padding: 0 20px; }
+.progress-bar-bg { background: rgba(255,255,255,0.1); border-radius: 50px; height: 10px; overflow: hidden; }
+.progress-bar-fill {
+  height: 100%; background: linear-gradient(90deg, var(--green), var(--blue));
+  border-radius: 50px; transition: width 0.5s ease;
+  box-shadow: 0 0 10px rgba(46,204,113,0.6);
+}
+
+/* ===== CONFETTI BURST ===== */
+.confetti { position: fixed; pointer-events: none; z-index: 999; }
+
+/* ===== DRAG GHOST ===== */
+#dragGhost {
+  position: fixed; pointer-events: none; z-index: 9999;
+  background: linear-gradient(135deg, var(--yellow), var(--orange));
+  border-radius: 50px; padding: 10px 26px;
+  font-size: 16px; font-weight: 900; color: #1a1a2e;
+  font-family: 'Fredoka One', cursive;
+  box-shadow: 0 12px 40px rgba(255,159,67,0.7);
+  opacity: 0; transform: rotate(5deg);
+  transition: opacity 0.1s;
+  white-space: nowrap;
+}
+
+.center { text-align: center; margin-top: 12px; }
+.dnd-hint { text-align: center; color: rgba(255,255,255,0.5); font-size: 12px; margin-top: 8px; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- Animated Background -->
+<div class="bg-canvas" id="bgCanvas"></div>
+
+<!-- Drag Ghost -->
+<div id="dragGhost">🎯 Answer!</div>
+
+<!-- Top Bar -->
+<div class="top-bar">
+  <div class="planrs-badge">⭐ Planrs</div>
+  <div class="score-badge" id="scoreBadge">⚡ 0 / 0</div>
+</div>
+
+<div class="main">
+  <h1>⚡ Rapid Fire!</h1>
+  <p class="subtitle">Section 2 — Drag your answer OR click! 10 seconds per question!</p>
+
+  <!-- Timer -->
+  <div class="timer-wrap">
+    <div class="timer-ring">
+      <svg width="90" height="90" viewBox="0 0 90 90">
+        <circle class="bg" cx="45" cy="45" r="35"/>
+        <circle class="fg" id="timerCircle" cx="45" cy="45" r="35"/>
+      </svg>
+      <div class="timer-text" id="timerText">10</div>
+    </div>
+  </div>
+
+  <!-- Streak -->
+  <div class="streak-bar" id="streakBar"></div>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+
+  <!-- Quiz Area -->
+  <div id="quizArea">
+    <div class="card" id="questionCard">
+      <div class="q-count" id="qCount">Question 1 / 12</div>
+      <div class="q-text" id="qText"></div>
+
+      <!-- Drag Token -->
+      <div class="drag-token-area">
+        <div class="drag-token" id="dragToken"
+          draggable="true"
+          onmousedown="tokenMouseDown(event)"
+          ondragstart="tokenDragStart(event)">
+          🎯 Drag Me!
+        </div>
+      </div>
+
+      <!-- Drop Zones -->
+      <div class="dnd-zone">
+        <div class="drop-zone true-zone" id="trueZone"
+          ondragover="zoneDragOver(event,'true')"
+          ondragleave="zoneDragLeave(event,'true')"
+          ondrop="zoneDrop(event,true)"
+          onclick="answer(true)">
+          ✅ TRUE
+        </div>
+        <div class="drop-zone false-zone" id="falseZone"
+          ondragover="zoneDragOver(event,'false')"
+          ondragleave="zoneDragLeave(event,'false')"
+          ondrop="zoneDrop(event,false)"
+          onclick="answer(false)">
+          ❌ FALSE
+        </div>
+      </div>
+
+      <div class="dnd-hint" id="dndHint">👆 Tap a zone OR drag the token!</div>
+      <div class="explain" id="explainBox"></div>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+    <div class="center">
+      <button class="next-btn" id="nextBtn" onclick="next()">Next ➡️</button>
+    </div>
+  </div>
+
+  <!-- Result Panel -->
+  <div class="result-panel" id="resultPanel">
+    <div class="result-title" id="resultTitle"></div>
+    <div class="score-huge" id="finalScore"></div>
+    <p style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:10px">out of 12</p>
+    <p class="result-msg" id="resultMsg"></p>
+    <button class="btn btn-coral" onclick="resetGame()">🔄 Play Again</button>
+    <button class="btn btn-green" onclick="alert('Head to Section 3! 🚀')">➡️ Next Section</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  { text: 'A basic school uniform is a NEED because it helps you stay presentable and attend school.', answer: true, explain: 'TRUE! Basic clothing for school is a need — it serves the essential function of covering the body and meeting school requirements.' },
+  { text: 'Buying branded ₹5000 shoes is a NEED if cheaper ₹300 chappals are already available and work fine.', answer: false, explain: 'FALSE! If basic footwear is already working, expensive branded shoes are a WANT. The extra cost goes toward branding, not necessity.' },
+  { text: 'A mobile phone is ALWAYS a want, no matter what.', answer: false, explain: 'FALSE! Context matters. A basic phone for a working parent who needs it for safety, banking, or communication can be a NEED.' },
+  { text: 'Spectacles prescribed by a doctor for vision problems are a NEED.', answer: true, explain: 'TRUE! Prescribed medical aids like glasses are always a NEED — they directly affect health, safety, and the ability to learn.' },
+  { text: 'Eating pizza from a restaurant when you already have dal-chawal at home is a NEED.', answer: false, explain: 'FALSE! Food is a need, but restaurant pizza when home food is available is a WANT — a treat, not a survival necessity.' },
+  { text: 'Extra tuition classes can SOMETIMES be a need if a student is at serious risk of failing exams.', answer: true, explain: 'TRUE! When academic progress is severely affected, extra tuition can shift from a want to a need. Context always matters!' },
+  { text: 'Transport to school is always a WANT.', answer: false, explain: 'FALSE! If a school is far away with no safe walking route or bus, transport becomes a genuine NEED for safety and education.' },
+  { text: 'The question "Can I survive without this?" is a useful first step to identify if something is a need or want.', answer: true, explain: 'TRUE! This question is part of the 3-question decision framework from Section 2. If you can survive without it, it is likely a want.' },
+  { text: 'A branded ₹80,000 phone is a NEED even when a ₹6,000 basic smartphone already does the same job.', answer: false, explain: 'FALSE! When a basic version already meets the required purpose, the expensive upgrade is purely a WANT — however tempting!' },
+  { text: 'In personal finance, the FUNCTION (what something DOES) determines if it is a need, not the brand or quality.', answer: true, explain: 'TRUE! The basic function (clothing, communication, transport) is the need. Upgrading to premium versions for comfort or status is a want.' },
+  { text: 'Going to an amusement park every weekend is a need for mental health.', answer: false, explain: 'FALSE! While mental relaxation is important, an amusement park every weekend is a want. Simple, lower-cost activities can meet mental relaxation needs.' },
+  { text: 'Drinking clean water is a NEED.', answer: true, explain: 'TRUE! Clean drinking water is one of the most fundamental human needs — without it, health and life are directly at risk.' },
+];
+
+let current = 0, score = 0, streak = 0, timer = null, timeLeft = 10, answered = false;
+const circumference = 220;
+
+// ===== BACKGROUND ANIMATIONS =====
+function createBgObjects() {
+  const canvas = document.getElementById('bgCanvas');
+  const emojis = ['🌟','⭐','💫','✨','🎈','🎀','🌈','🦋','🌸','🎯','🚀','💎','🌙','☀️','🍀'];
+  const colors = ['#FF6B6B','#FFE44D','#4ECDC4','#A855F7','#FF9F43','#2ECC71','#3498DB'];
+
+  // Floating bubbles
+  for (let i = 0; i < 18; i++) {
+    const el = document.createElement('div');
+    el.className = 'floaty';
+    const size = 40 + Math.random() * 80;
+    el.style.cssText = `
+      width:${size}px; height:${size}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      left:${Math.random()*100}%;
+      animation-duration:${8+Math.random()*14}s;
+      animation-delay:-${Math.random()*15}s;
+      border-radius:${30+Math.random()*30}% ${70-Math.random()*30}% ${50+Math.random()*30}% ${40+Math.random()*30}%;
+    `;
+    canvas.appendChild(el);
+  }
+
+  // Floating emoji stars
+  for (let i = 0; i < 12; i++) {
+    const el = document.createElement('div');
+    el.className = 'star-obj';
+    el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    el.style.cssText = `
+      left:${Math.random()*95}%;
+      font-size:${22+Math.random()*24}px;
+      animation-duration:${9+Math.random()*10}s;
+      animation-delay:-${Math.random()*12}s;
+    `;
+    canvas.appendChild(el);
+  }
+
+  // Drifting clouds
+  for (let i = 0; i < 5; i++) {
+    const el = document.createElement('div');
+    el.className = 'cloud-obj';
+    el.textContent = ['☁️','🌤️','⛅'][Math.floor(Math.random()*3)];
+    el.style.cssText = `
+      top:${5+Math.random()*30}%;
+      animation-duration:${18+Math.random()*15}s;
+      animation-delay:-${Math.random()*20}s;
+    `;
+    canvas.appendChild(el);
+  }
+}
+
+// ===== SPARKLE BURST =====
+function sparkle(x, y, color) {
+  const colors = color ? [color] : ['#FFE44D','#FF6B6B','#4ECDC4','#A855F7','#2ECC71','#FF9F43'];
+  for (let i = 0; i < 12; i++) {
+    const s = document.createElement('div');
+    s.className = 'sparkle';
+    const angle = (i / 12) * 2 * Math.PI;
+    const dist = 50 + Math.random() * 80;
+    const size = 6 + Math.random() * 10;
+    s.style.cssText = `
+      left:${x}px; top:${y}px;
+      width:${size}px; height:${size}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      --dx:${Math.cos(angle)*dist}px;
+      --dy:${Math.sin(angle)*dist}px;
+    `;
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 800);
+  }
+}
+
+// ===== CONFETTI BURST =====
+function confetti(count = 40) {
+  const colors = ['#FF6B6B','#FFE44D','#4ECDC4','#A855F7','#2ECC71','#FF9F43','#3498DB'];
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      const size = 8 + Math.random() * 12;
+      const x = 20 + Math.random() * 60;
+      c.style.cssText = `
+        left:${x}vw; top:-10px;
+        width:${size}px; height:${size}px;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        border-radius:${Math.random()>0.5?'50%':'3px'};
+        animation: confettiFall ${1.5+Math.random()}s ease-in forwards;
+        transform: rotate(${Math.random()*360}deg);
+      `;
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 2500);
+    }, i * 30);
+  }
+}
+
+// Inject confetti keyframe
+const styleEl = document.createElement('style');
+styleEl.textContent = `
+  @keyframes confettiFall {
+    to { transform: translateY(110vh) rotate(${Math.random()*720}deg); opacity: 0; }
+  }
+`;
+document.head.appendChild(styleEl);
+
+// ===== DRAG & DROP =====
+let isDragging = false;
+const ghost = document.getElementById('dragGhost');
+
+function tokenMouseDown(e) {
+  // Touch / pointer for mobile feel
+}
+
+function tokenDragStart(e) {
+  if (answered) { e.preventDefault(); return; }
+  isDragging = true;
+  document.getElementById('dragToken').classList.add('dragging');
+  e.dataTransfer.setData('text/plain', 'token');
+  // custom ghost
+  ghost.textContent = '🎯 Answer!';
+  e.dataTransfer.setDragImage(ghost, 60, 25);
+}
+
+document.addEventListener('dragend', () => {
+  isDragging = false;
+  const t = document.getElementById('dragToken');
+  if (t) t.classList.remove('dragging');
+});
+
+function zoneDragOver(e, side) {
+  if (answered) return;
+  e.preventDefault();
+  document.getElementById(side + 'Zone').classList.add('dragover');
+}
+function zoneDragLeave(e, side) {
+  document.getElementById(side + 'Zone').classList.remove('dragover');
+}
+function zoneDrop(e, val) {
+  e.preventDefault();
+  document.getElementById('trueZone').classList.remove('dragover');
+  document.getElementById('falseZone').classList.remove('dragover');
+  if (answered) return;
+  if (isDragging || e.dataTransfer?.getData('text/plain') === 'token') {
+    answer(val);
+  }
+}
+
+// ===== TOUCH DRAG SUPPORT =====
+let touchStarted = false, touchToken = null;
+document.addEventListener('touchstart', e => {
+  const t = e.target.closest('.drag-token');
+  if (!t || answered) return;
+  touchStarted = true; touchToken = t;
+  t.style.transition = 'none';
+}, {passive: true});
+
+document.addEventListener('touchmove', e => {
+  if (!touchStarted || answered) return;
+  const touch = e.touches[0];
+  const el = document.elementFromPoint(touch.clientX, touch.clientY);
+  // highlight zones
+  ['trueZone','falseZone'].forEach(id => {
+    const zone = document.getElementById(id);
+    zone && zone.classList.remove('dragover');
+  });
+  if (el) {
+    const zone = el.closest('.drop-zone');
+    if (zone) zone.classList.add('dragover');
+  }
+}, {passive: true});
+
+document.addEventListener('touchend', e => {
+  if (!touchStarted || answered) { touchStarted = false; return; }
+  const touch = e.changedTouches[0];
+  const el = document.elementFromPoint(touch.clientX, touch.clientY);
+  ['trueZone','falseZone'].forEach(id => {
+    const zone = document.getElementById(id);
+    zone && zone.classList.remove('dragover');
+  });
+  if (el) {
+    const zone = el.closest('.drop-zone');
+    if (zone) {
+      const val = zone.id === 'trueZone';
+      answer(val);
+      sparkle(touch.clientX, touch.clientY);
+    }
+  }
+  touchStarted = false;
+}, {passive: true});
+
+// ===== TIMER =====
+function startTimer() {
+  clearInterval(timer);
+  timeLeft = 10;
+  updateTimer();
+  timer = setInterval(() => {
+    timeLeft -= 0.1;
+    if (timeLeft <= 0) { timeLeft = 0; updateTimer(); timeUp(); clearInterval(timer); }
+    else updateTimer();
+  }, 100);
+}
+function updateTimer() {
+  const pct = timeLeft / 10;
+  document.getElementById('timerCircle').style.strokeDashoffset = circumference * (1 - pct);
+  document.getElementById('timerText').textContent = Math.ceil(timeLeft);
+  const color = timeLeft > 5 ? '#2ECC71' : timeLeft > 2 ? '#FFB74D' : '#EF5350';
+  document.getElementById('timerCircle').style.stroke = color;
+}
+function timeUp() {
+  if (answered) return;
+  answered = true; streak = 0;
+  document.getElementById('streakBar').textContent = '';
+  const q = questions[current];
+  document.getElementById('explainBox').textContent = '⏰ Time ran out! ' + q.explain;
+  document.getElementById('explainBox').style.display = 'block';
+  document.getElementById('nextBtn').style.display = 'inline-block';
+  document.getElementById('feedback').textContent = '⏰ Too slow!';
+  document.getElementById('feedback').style.color = '#FF9F43';
+  document.getElementById('dndHint').style.display = 'none';
+  document.getElementById('dragToken').classList.add('hidden-token');
+  disableBtns();
+}
+
+// ===== ANSWER =====
+function answer(val) {
+  if (answered) return;
+  clearInterval(timer);
+  answered = true;
+  const q = questions[current];
+  const correct = val === q.answer;
+  const zoneId = val ? 'trueZone' : 'falseZone';
+  const zone = document.getElementById(zoneId);
+
+  document.getElementById('dragToken').classList.add('hidden-token');
+  document.getElementById('dndHint').style.display = 'none';
+
+  if (correct) {
+    score++; streak++;
+    zone.classList.add('correct-zone');
+    const streakMsg = streak >= 3 ? ` 🔥 ${streak} in a row!` : '';
+    document.getElementById('feedback').textContent = '🎉 Correct!' + streakMsg;
+    document.getElementById('feedback').style.color = '#2ECC71';
+    document.getElementById('streakBar').textContent = streak >= 2 ? `🔥 Streak: ${streak}!` : '';
+    // Confetti & sparkles
+    confetti(streak >= 3 ? 60 : 25);
+    const r = zone.getBoundingClientRect();
+    sparkle(r.left + r.width/2, r.top + r.height/2, '#2ECC71');
+  } else {
+    streak = 0;
+    zone.classList.add('wrong-zone');
+    document.getElementById('feedback').textContent = '❌ Wrong! See explanation.';
+    document.getElementById('feedback').style.color = '#FF6B6B';
+    document.getElementById('streakBar').textContent = '';
+    const r = zone.getBoundingClientRect();
+    sparkle(r.left + r.width/2, r.top + r.height/2, '#FF6B6B');
+  }
+  document.getElementById('explainBox').textContent = (correct ? '✅ ' : '❌ Answer: ' + (q.answer ? 'TRUE' : 'FALSE') + '. ') + q.explain;
+  document.getElementById('explainBox').style.display = 'block';
+  document.getElementById('nextBtn').style.display = 'inline-block';
+  updateScore();
+  disableBtns();
+}
+
+function disableBtns() {
+  document.getElementById('trueZone').style.pointerEvents = 'none';
+  document.getElementById('falseZone').style.pointerEvents = 'none';
+  document.getElementById('dragToken').draggable = false;
+}
+function enableBtns() {
+  ['trueZone','falseZone'].forEach(id => {
+    const z = document.getElementById(id);
+    z.style.pointerEvents = '';
+    z.classList.remove('correct-zone','wrong-zone','dragover');
+  });
+  document.getElementById('dragToken').draggable = true;
+  document.getElementById('dragToken').classList.remove('hidden-token');
+  document.getElementById('dndHint').style.display = '';
+}
+function updateScore() {
+  document.getElementById('scoreBadge').textContent = `⚡ ${score} / ${current + (answered ? 1 : 0)}`;
+}
+function updateProgress() {
+  const pct = ((current) / questions.length) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+function next() {
+  current++;
+  if (current >= questions.length) { showResult(); return; }
+  renderQ();
+}
+function renderQ() {
+  updateProgress();
+  const q = questions[current];
+  document.getElementById('qCount').textContent = `Question ${current+1} / ${questions.length}`;
+  document.getElementById('qText').textContent = q.text;
+  document.getElementById('explainBox').style.display = 'none';
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('nextBtn').style.display = 'none';
+  answered = false;
+  enableBtns();
+  // Re-animate card
+  const card = document.getElementById('questionCard');
+  card.style.animation = 'none';
+  void card.offsetWidth;
+  card.style.animation = 'cardIn 0.5s cubic-bezier(0.34,1.56,0.64,1)';
+  startTimer();
+}
+function showResult() {
+  clearInterval(timer);
+  document.getElementById('quizArea').style.display = 'none';
+  document.getElementById('resultPanel').style.display = 'block';
+  document.getElementById('finalScore').textContent = score;
+  document.getElementById('progressFill').style.width = '100%';
+  const pct = (score / questions.length) * 100;
+  let title, msg;
+  if (pct === 100)  { title = '🏆 Rapid Fire Champion!'; msg = 'Flawless! All 12 correct. You truly know your needs vs wants!'; }
+  else if (pct>=80) { title = '🎉 Amazing Speed!'; msg = `${score}/12 correct! A few slipped through — review those explanations!`; }
+  else if (pct>=60) { title = '😊 Good Effort!'; msg = `${score}/12! The timer makes it tough. Take your time reviewing Section 2.`; }
+  else              { title = '💪 Practice More!'; msg = `${score}/12 this round. Head back to Section 2 slides and try again!`; }
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultMsg').textContent = msg;
+  confetti(80);
+}
+function resetGame() {
+  current = 0; score = 0; streak = 0; answered = false;
+  clearInterval(timer);
+  document.getElementById('resultPanel').style.display = 'none';
+  document.getElementById('quizArea').style.display = 'block';
+  document.getElementById('scoreBadge').textContent = '⚡ 0 / 0';
+  document.getElementById('streakBar').textContent = '';
+  document.getElementById('progressFill').style.width = '0%';
+  renderQ();
+}
+
+// Click to sparkle on any zone tap
+document.querySelectorAll('.drop-zone').forEach(zone => {
+  zone.addEventListener('click', e => {
+    sparkle(e.clientX, e.clientY);
+  });
+});
+
+// Init
+createBgObjects();
+renderQ();
+</script>
+</body>
+</html>

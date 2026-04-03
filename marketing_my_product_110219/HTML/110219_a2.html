@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 1 Activity B — True or False! | Planrs</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --true-color: #00C853;
+  --false-color: #FF1744;
+  --gold: #FFD600;
+  --purple: #BB86FC;
+  --cyan: #00E5FF;
+  --pink: #FF4081;
+  --bg: #07071a;
+  --card-bg: rgba(255,255,255,0.05);
+  --text: #F0F0FF;
+  --muted: #8888AA;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  overflow-x: hidden;
+  color: var(--text);
+}
+
+/* ---- LIVE CANVAS BACKGROUND ---- */
+#bgCanvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ---- LAYOUT ---- */
+.wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 20px 16px 60px;
+}
+
+/* ---- HEADER ---- */
+.header { text-align: center; padding: 16px 0 22px; }
+
+.planrs-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #FFD600, #FF6D00);
+  border-radius: 30px; padding: 5px 18px;
+  font-size: 13px; font-weight: 800; color: #000;
+  letter-spacing: 1px; margin-bottom: 14px;
+  box-shadow: 0 4px 20px rgba(255,214,0,0.4);
+  animation: badgePop 0.6s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes badgePop { from{transform:scale(0) rotate(-10deg)} to{transform:scale(1) rotate(0)} }
+
+h1 {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(28px,5vw,46px);
+  background: linear-gradient(135deg, #00E5FF, #BB86FC, #FF4081);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.1; margin-bottom: 6px;
+  animation: slideDown 0.7s 0.2s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes slideDown { from{transform:translateY(-30px);opacity:0} to{transform:translateY(0);opacity:1} }
+
+.subtitle { color: var(--muted); font-size: 15px; font-weight: 600; animation: slideDown 0.7s 0.35s both; }
+
+/* ---- MODE SWITCHER ---- */
+.mode-switcher {
+  display: flex; gap: 8px; justify-content: center;
+  margin-bottom: 16px; flex-wrap: wrap;
+  animation: slideDown 0.6s 0.4s both;
+}
+.mode-btn {
+  padding: 6px 16px; border-radius: 20px;
+  border: 1.5px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.6); font-size: 12px;
+  font-family: 'Nunito', sans-serif; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+}
+.mode-btn:hover { border-color: rgba(255,255,255,0.35); color: #fff; }
+.mode-btn.active {
+  background: linear-gradient(135deg, rgba(187,134,252,0.3), rgba(0,229,255,0.2));
+  border-color: var(--purple); color: #fff;
+  box-shadow: 0 0 12px rgba(187,134,252,0.3);
+}
+
+/* ---- INFO STRIP ---- */
+.info-strip {
+  display: flex; gap: 12px; justify-content: center; align-items: center;
+  margin-bottom: 16px; flex-wrap: wrap;
+  animation: slideDown 0.6s 0.45s both;
+}
+.info-pill {
+  background: rgba(255,255,255,0.06);
+  border: 1.5px solid rgba(255,255,255,0.12);
+  border-radius: 30px; padding: 8px 20px;
+  font-size: 15px; font-weight: 700;
+  backdrop-filter: blur(10px);
+}
+.info-pill .label { color: var(--muted); font-size: 11px; font-weight: 700; display: block; text-align: center; letter-spacing: 1px; text-transform: uppercase; }
+.score-val { color: var(--cyan); font-family: 'Fredoka One', cursive; font-size: 22px; }
+.timer-val { color: var(--gold); font-family: 'Fredoka One', cursive; font-size: 22px; transition: color 0.3s; }
+.timer-val.urgent { color: var(--false-color); animation: timerPulse 0.4s infinite; }
+@keyframes timerPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+
+/* ---- PROGRESS ---- */
+.progress-track {
+  background: rgba(255,255,255,0.07); border-radius: 20px; height: 10px;
+  margin-bottom: 20px; overflow: visible; position: relative;
+  animation: slideDown 0.6s 0.5s both;
+}
+.progress-fill {
+  background: linear-gradient(90deg, #00E5FF, #BB86FC, #FF4081);
+  height: 100%; border-radius: 20px;
+  transition: width 0.5s cubic-bezier(.34,1.56,.64,1);
+  position: relative;
+}
+.progress-fill::after {
+  content: '⚡'; position: absolute; right: -10px; top: -10px;
+  font-size: 18px;
+}
+
+/* ---- QUESTION CARD ---- */
+.question-card {
+  background: rgba(255,255,255,0.05);
+  border: 1.5px solid rgba(187,134,252,0.25);
+  border-radius: 28px; padding: 30px 26px 26px;
+  text-align: center;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+  backdrop-filter: blur(16px);
+  animation: cardIn 0.5s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes cardIn { from{transform:scale(0.87) translateY(20px);opacity:0} to{transform:scale(1) translateY(0);opacity:1} }
+
+.q-num { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--purple); font-weight: 700; margin-bottom: 12px; }
+.q-text { font-size: clamp(17px,3vw,22px); color: var(--text); line-height: 1.55; font-weight: 700; margin-bottom: 26px; min-height: 60px; }
+
+/* ---- DRAGGABLE CARDS ---- */
+.cards-container { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
+
+.drag-card {
+  padding: 14px 28px; border-radius: 20px;
+  font-family: 'Fredoka One', cursive; font-size: 20px;
+  cursor: grab; color: var(--text);
+  user-select: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  touch-action: none;
+  animation: cardFloat 3s ease-in-out infinite;
+}
+.drag-card:nth-child(2) { animation-delay: -1.5s; }
+@keyframes cardFloat {
+  0%,100%{transform:translateY(0px)}
+  50%{transform:translateY(-6px)}
+}
+.drag-card:hover { transform: translateY(-8px) scale(1.07) !important; }
+.drag-card.dragging { opacity: 0.45; transform: scale(0.88) !important; cursor: grabbing; animation: none !important; }
+
+.TRUE-card {
+  background: linear-gradient(135deg, rgba(0,200,83,0.2), rgba(0,200,83,0.08));
+  border: 2px solid rgba(0,200,83,0.5);
+  box-shadow: 0 4px 24px rgba(0,200,83,0.2);
+}
+.FALSE-card {
+  background: linear-gradient(135deg, rgba(255,23,68,0.2), rgba(255,23,68,0.08));
+  border: 2px solid rgba(255,23,68,0.5);
+  box-shadow: 0 4px 24px rgba(255,23,68,0.2);
+}
+
+/* ---- DROP ZONES ---- */
+.drop-zones { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+.drop-zone {
+  border: 2.5px dashed rgba(255,255,255,0.18);
+  border-radius: 22px; padding: 20px 30px;
+  min-width: 140px; min-height: 88px;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 5px;
+  font-family: 'Fredoka One', cursive; font-size: 16px;
+  color: rgba(255,255,255,0.25);
+  transition: all 0.25s; position: relative;
+}
+.drop-zone .zone-icon { font-size: 26px; }
+.drop-zone .zone-label { font-size: 13px; letter-spacing: 1px; }
+.drop-zone.true-zone { border-color: rgba(0,200,83,0.35); }
+.drop-zone.false-zone { border-color: rgba(255,23,68,0.35); }
+.drop-zone.over { transform: scale(1.06); border-style: solid; }
+.drop-zone.true-zone.over { background: rgba(0,200,83,0.13); border-color: var(--true-color); color: var(--true-color); box-shadow: 0 0 28px rgba(0,200,83,0.3); }
+.drop-zone.false-zone.over { background: rgba(255,23,68,0.13); border-color: var(--false-color); color: var(--false-color); box-shadow: 0 0 28px rgba(255,23,68,0.3); }
+.drop-zone.filled-true { background: rgba(0,200,83,0.18); border-color: var(--true-color); border-style: solid; }
+.drop-zone.filled-false { background: rgba(255,23,68,0.18); border-color: var(--false-color); border-style: solid; }
+
+/* ---- CLICK BUTTONS ---- */
+.click-fallback { margin-top: 14px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.click-btn {
+  padding: 10px 26px; border: none; border-radius: 30px;
+  font-family: 'Fredoka One', cursive; font-size: 16px;
+  cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+}
+.click-btn:hover { transform: scale(1.08); }
+.true-click-btn { background: linear-gradient(135deg,#00C853,#69F0AE); color: #003300; box-shadow: 0 4px 16px rgba(0,200,83,0.45); }
+.false-click-btn { background: linear-gradient(135deg,#FF1744,#FF8A80); color: #fff; box-shadow: 0 4px 16px rgba(255,23,68,0.45); }
+.click-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+/* ---- FEEDBACK ---- */
+.feedback {
+  font-family: 'Fredoka One', cursive; font-size: 22px;
+  min-height: 34px; margin-top: 14px;
+}
+.feedback.correct { color: #69F0AE; }
+.feedback.wrong { color: #FF8A80; }
+@keyframes feedPop { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+
+.explanation {
+  background: rgba(255,214,0,0.07); border-left: 4px solid var(--gold);
+  border-radius: 12px; padding: 12px 16px; margin-top: 12px;
+  font-size: 14px; color: #CCCCDD; text-align: left; line-height: 1.6;
+  display: none;
+  animation: slideDown 0.4s cubic-bezier(.34,1.56,.64,1) both;
+}
+
+.next-btn {
+  margin-top: 16px; padding: 12px 32px;
+  background: linear-gradient(135deg, #BB86FC, #00E5FF);
+  color: #000; border: none; border-radius: 30px;
+  font-family: 'Fredoka One', cursive; font-size: 17px;
+  cursor: pointer; display: none;
+  box-shadow: 0 6px 24px rgba(187,134,252,0.45);
+  animation: slideDown 0.4s cubic-bezier(.34,1.56,.64,1) both;
+  transition: transform 0.15s;
+}
+.next-btn:hover { transform: scale(1.07); }
+
+/* ---- RESULT ---- */
+.result-screen {
+  display: none;
+  background: rgba(255,255,255,0.05);
+  border: 1.5px solid rgba(187,134,252,0.3);
+  border-radius: 28px; padding: 40px 28px;
+  text-align: center; backdrop-filter: blur(16px);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  animation: cardIn 0.6s cubic-bezier(.34,1.56,.64,1) both;
+}
+.result-screen h2 {
+  font-family: 'Fredoka One', cursive; font-size: 38px;
+  background: linear-gradient(135deg,#FFD600,#FF6D00);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  margin-bottom: 6px;
+}
+.stars-row { font-size: 44px; letter-spacing: 6px; margin: 10px 0; animation: starSpin 0.8s cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes starSpin { from{transform:scale(0) rotate(-180deg)} to{transform:scale(1) rotate(0)} }
+.result-score {
+  font-family: 'Fredoka One', cursive; font-size: 52px;
+  background: linear-gradient(135deg,#00E5FF,#BB86FC);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin: 6px 0;
+}
+.result-msg { color: var(--muted); font-size: 16px; margin-bottom: 26px; }
+.btn-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.btn { padding: 13px 30px; border: none; border-radius: 30px; font-family: 'Fredoka One', cursive; font-size: 17px; cursor: pointer; transition: transform 0.15s; }
+.btn:hover { transform: scale(1.07); }
+.btn-try { background: linear-gradient(135deg,#FF6D00,#FFD600); color: #000; box-shadow: 0 6px 20px rgba(255,109,0,0.45); }
+.btn-next { background: linear-gradient(135deg,#00C853,#69F0AE); color: #003300; box-shadow: 0 6px 20px rgba(0,200,83,0.45); }
+
+/* ---- SHAKE ---- */
+.shake { animation: shake 0.5s both; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-10px)} 40%{transform:translateX(10px)} 60%{transform:translateX(-7px)} 80%{transform:translateX(7px)} }
+
+/* ---- CONFETTI ---- */
+.confetti-piece {
+  position: fixed; pointer-events: none; z-index: 999;
+  border-radius: 2px;
+  animation: confettiFall linear forwards;
+}
+@keyframes confettiFall { 0%{transform:translateY(-20px) rotate(0);opacity:1} 100%{transform:translateY(100vh) rotate(720deg);opacity:0} }
+
+/* ---- GHOST ---- */
+#ghost {
+  position: fixed; pointer-events: none; z-index: 9999;
+  display: none; transform: translate(-50%,-50%) rotate(5deg) scale(1.1);
+  font-family: 'Fredoka One', cursive; font-size: 18px;
+  padding: 12px 22px; border-radius: 16px; color: #fff;
+  white-space: nowrap;
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div id="ghost"></div>
+
+<div class="wrap">
+  <!-- Header -->
+  <div class="header">
+    <div class="planrs-badge">⭐ PLANRS</div>
+    <h1>⚡ True or False!</h1>
+    <p class="subtitle">Section 1 · Activity B — Drag the card to the right zone!</p>
+  </div>
+
+  <!-- Animation Mode Switcher -->
+  <div class="mode-switcher">
+    <button class="mode-btn active" onclick="setMode('orbit')">🌀 Orbits</button>
+    <button class="mode-btn" onclick="setMode('bounce')">🎱 Bounce</button>
+    <button class="mode-btn" onclick="setMode('wave')">🌊 Wave</button>
+    <button class="mode-btn" onclick="setMode('spiral')">🌀 Spiral</button>
+  </div>
+
+  <!-- Info Strip -->
+  <div class="info-strip">
+    <div class="info-pill">
+      <span class="label">Score</span>
+      <span class="score-val" id="scoreVal">0 / 10</span>
+    </div>
+    <div class="info-pill">
+      <span class="label">Timer</span>
+      <span class="timer-val" id="timerVal">⏱ 10</span>
+    </div>
+    <div class="info-pill">
+      <span class="label">Question</span>
+      <span class="score-val" id="qCounter">1 / 10</span>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+
+  <!-- Question Card -->
+  <div class="question-card" id="questionCard">
+    <div class="q-num" id="qNum">Question 1 of 10</div>
+    <div class="q-text" id="qText">Loading...</div>
+
+    <div class="cards-container">
+      <div class="drag-card TRUE-card" id="trueCard" draggable="true">✅ TRUE</div>
+      <div class="drag-card FALSE-card" id="falseCard" draggable="true">❌ FALSE</div>
+    </div>
+
+    <div class="drop-zones">
+      <div class="drop-zone true-zone" id="dropTrue" data-answer="true">
+        <span class="zone-icon">✅</span>
+        <span class="zone-label">TRUE</span>
+      </div>
+      <div class="drop-zone false-zone" id="dropFalse" data-answer="false">
+        <span class="zone-icon">❌</span>
+        <span class="zone-label">FALSE</span>
+      </div>
+    </div>
+
+    <div class="click-fallback">
+      <button class="click-btn true-click-btn" id="trueBtn" onclick="submitAnswer(true)">✅ TRUE</button>
+      <button class="click-btn false-click-btn" id="falseBtn" onclick="submitAnswer(false)">❌ FALSE</button>
+    </div>
+
+    <div class="feedback" id="feedbackOverlay" style="margin-top:14px;"></div>
+    <div class="explanation" id="explanation"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next Question ➡️</button>
+  </div>
+
+  <!-- Result -->
+  <div class="result-screen" id="resultScreen">
+    <div class="stars-row" id="resultStars">⭐⭐⭐</div>
+    <h2 id="resultTitle">Fantastic!</h2>
+    <div class="result-score" id="resultScore">10 / 10</div>
+    <div class="result-msg" id="resultMsg">You are a product expert!</div>
+    <div class="btn-row">
+      <button class="btn btn-try" onclick="startGame()">🔄 Try Again</button>
+      <button class="btn btn-next" onclick="alert('Move to Section 2! 🎉')">➡️ Next Section</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   BACKGROUND ANIMATION ENGINE (all 4 modes)
+   ============================================================ */
+const bgCanvas = document.getElementById('bgCanvas');
+const bgCtx = bgCanvas.getContext('2d');
+let animMode = 'orbit';
+let animT = 0;
+let animObjects = [];
+let animRAF;
+
+const PALETTE = ['#a78bfa','#60a5fa','#34d399','#f472b6','#fb923c','#facc15','#38bdf8','#f87171','#4ade80','#c084fc','#ff6b6b','#00e5ff'];
+
+function resizeBg() {
+  bgCanvas.width = window.innerWidth;
+  bgCanvas.height = window.innerHeight;
+}
+resizeBg();
+window.addEventListener('resize', () => { resizeBg(); rebuildBg(); });
+
+class BgOrb {
+  constructor(i, total) {
+    this.i = i; this.total = total;
+    this.color = PALETTE[i % PALETTE.length];
+    this.r = 2.5 + Math.random() * 4;
+    this.phase = (i / total) * Math.PI * 2 + Math.random() * 0.3;
+    this.orbitR = (60 + i * 22) % (Math.min(bgCanvas.width, bgCanvas.height) * 0.44) + 50;
+    this.orbitSpeed = (0.25 + Math.random() * 0.6) * (Math.random() < 0.5 ? 1 : -1);
+    this.bx = Math.random() * bgCanvas.width;
+    this.by = Math.random() * bgCanvas.height;
+    this.vx = (Math.random() - 0.5) * 3;
+    this.vy = (Math.random() - 0.5) * 3;
+    this.waveY = (0.1 + 0.8 * (i / Math.max(total - 1, 1))) * bgCanvas.height;
+    this.waveAmp = 20 + Math.random() * 50;
+    this.waveFreq = 0.4 + Math.random() * 1.2;
+    this.waveOffset = Math.random() * Math.PI * 2;
+    this.spiralAngle = this.phase;
+    this.spiralR = Math.random() * 80;
+    this.trail = [];
+  }
+
+  update(mode, t) {
+    const s = 0.012;
+    let nx, ny;
+    const W = bgCanvas.width, H = bgCanvas.height;
+    if (mode === 'orbit') {
+      this.phase += this.orbitSpeed * s;
+      nx = W / 2 + Math.cos(this.phase) * this.orbitR;
+      ny = H / 2 + Math.sin(this.phase) * this.orbitR * (0.3 + 0.25 * (this.i % 3));
+    } else if (mode === 'bounce') {
+      this.bx += this.vx; this.by += this.vy;
+      if (this.bx < this.r || this.bx > W - this.r) this.vx *= -1;
+      if (this.by < this.r || this.by > H - this.r) this.vy *= -1;
+      this.bx = Math.max(this.r, Math.min(W - this.r, this.bx));
+      this.by = Math.max(this.r, Math.min(H - this.r, this.by));
+      nx = this.bx; ny = this.by;
+    } else if (mode === 'wave') {
+      const wt = t * s * this.waveFreq + this.waveOffset;
+      nx = ((t * 0.6 + this.i * 70) % (W + 60)) - 30;
+      ny = this.waveY + Math.sin(wt) * this.waveAmp;
+    } else {
+      this.spiralAngle += s * (0.4 + this.i * 0.04);
+      this.spiralR = (this.spiralR + s * 0.5) % (Math.min(W, H) * 0.48);
+      nx = W / 2 + Math.cos(this.spiralAngle + this.i * 0.5) * this.spiralR;
+      ny = H / 2 + Math.sin(this.spiralAngle + this.i * 0.5) * this.spiralR * 0.55;
+    }
+    this.trail.push({ x: nx, y: ny });
+    if (this.trail.length > 22) this.trail.shift();
+    this.x = nx; this.y = ny;
+  }
+
+  draw(ctx) {
+    const tl = this.trail;
+    if (tl.length > 1) {
+      for (let j = 1; j < tl.length; j++) {
+        const alpha = (j / tl.length) * 0.35;
+        const w = this.r * (j / tl.length) * 1.1;
+        ctx.beginPath();
+        ctx.moveTo(tl[j-1].x, tl[j-1].y);
+        ctx.lineTo(tl[j].x, tl[j].y);
+        ctx.strokeStyle = this.color + Math.floor(alpha * 255).toString(16).padStart(2, '0');
+        ctx.lineWidth = w; ctx.lineCap = 'round';
+        ctx.stroke();
+      }
+    }
+    // glow
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r + 2, 0, Math.PI * 2);
+    ctx.fillStyle = this.color + '22'; ctx.fill();
+    // core
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fillStyle = this.color; ctx.fill();
+    // center
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r * 0.36, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.fill();
+  }
+}
+
+function rebuildBg() {
+  animObjects = Array.from({ length: 16 }, (_, i) => new BgOrb(i, 16));
+}
+rebuildBg();
+
+function bgLoop() {
+  bgCtx.fillStyle = 'rgba(7,7,26,0.2)';
+  bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+  animObjects.forEach(o => o.update(animMode, animT));
+  animObjects.forEach(o => o.draw(bgCtx));
+  animT++;
+  animRAF = requestAnimationFrame(bgLoop);
+}
+bgLoop();
+
+function setMode(m) {
+  animMode = m;
+  rebuildBg();
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+/* ============================================================
+   GAME LOGIC
+   ============================================================ */
+const questions = [
+  { q: "A product is something made or grown that can be sold.", ans: true, exp: "Correct! A product like Parle-G biscuits or a mango from a tree — both are products because they can be sold." },
+  { q: "A cricket bat is a food product.", ans: false, exp: "A cricket bat is a sports product, not food! Food products are things like rice, biscuits, and vegetables." },
+  { q: "Marketing means telling people about your product.", ans: true, exp: "Yes! Marketing is how you let customers know your product exists — like the sabzi wala shouting 'Taaza sabzi lo!'" },
+  { q: "People only sell products to become famous.", ans: false, exp: "People sell products mainly to earn money and solve a problem. Fame might come later — but earning money is the main reason!" },
+  { q: "Even a homemade pickle sold by your neighbour is a product.", ans: true, exp: "Absolutely! Any item made and sold — whether in a big factory or at home — counts as a product." },
+  { q: "The pani-puri wala near school is doing marketing by calling out to students.", ans: true, exp: "Yes! Calling out 'Pani puri lo!' is a simple form of marketing — he is telling nearby customers about his product." },
+  { q: "A school notebook belongs to the sports product category.", ans: false, exp: "A school notebook is a stationery product. Sports products are things like bats, balls, and rackets." },
+  { q: "Without marketing, nobody will know your product exists.", ans: true, exp: "Correct! Even the best product needs marketing. If you make amazing cookies but never tell anyone, who will buy them?" },
+  { q: "Farmers do not make or sell any products.", ans: false, exp: "Farmers grow crops like wheat, rice, and vegetables — these are all agricultural products that are sold in markets!" },
+  { q: "The three steps in business are: Spot a Need, Make a Product, and Sell It.", ans: true, exp: "Perfect! These three steps describe the complete business cycle — from identifying what people need to earning money by selling it." },
+];
+
+let current = 0, score = 0, timer = null, timeLeft = 10, answered = false;
+let draggedAns = null;
+
+const trueCard = document.getElementById('trueCard');
+const falseCard = document.getElementById('falseCard');
+const dropTrue = document.getElementById('dropTrue');
+const dropFalse = document.getElementById('dropFalse');
+const ghost = document.getElementById('ghost');
+
+/* --- Desktop Drag --- */
+[trueCard, falseCard].forEach(card => {
+  card.addEventListener('dragstart', e => {
+    draggedAns = card.id === 'trueCard';
+    card.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', draggedAns ? 'true' : 'false');
+  });
+  card.addEventListener('dragend', () => card.classList.remove('dragging'));
+});
+
+[dropTrue, dropFalse].forEach(zone => {
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('over');
+    if (answered) return;
+    submitAnswer(zone.dataset.answer === 'true');
+  });
+});
+
+/* --- Touch Drag --- */
+let touchAns = null;
+[trueCard, falseCard].forEach(card => {
+  card.addEventListener('touchstart', e => {
+    if (answered) return;
+    touchAns = card.id === 'trueCard';
+    ghost.innerHTML = card.innerHTML;
+    ghost.style.display = 'block';
+    ghost.style.background = touchAns ? 'rgba(0,180,80,0.4)' : 'rgba(220,20,60,0.4)';
+    ghost.style.border = touchAns ? '2px solid #00C853' : '2px solid #FF1744';
+  }, { passive: true });
+  card.addEventListener('touchmove', e => {
+    if (touchAns === null) return;
+    const t = e.touches[0];
+    ghost.style.left = t.clientX + 'px'; ghost.style.top = t.clientY + 'px';
+    [dropTrue, dropFalse].forEach(z => z.classList.remove('over'));
+    const el = document.elementFromPoint(t.clientX, t.clientY);
+    const zone = el && el.closest('.drop-zone');
+    if (zone) zone.classList.add('over');
+  }, { passive: true });
+  card.addEventListener('touchend', e => {
+    if (touchAns === null) return;
+    ghost.style.display = 'none';
+    const t = e.changedTouches[0];
+    const el = document.elementFromPoint(t.clientX, t.clientY);
+    const zone = el && el.closest('.drop-zone');
+    [dropTrue, dropFalse].forEach(z => z.classList.remove('over'));
+    if (zone && !answered) submitAnswer(zone.dataset.answer === 'true');
+    touchAns = null;
+  }, { passive: true });
+});
+
+/* --- Game --- */
+function startGame() {
+  current = 0; score = 0; answered = false;
+  document.getElementById('resultScreen').style.display = 'none';
+  document.getElementById('questionCard').style.display = 'block';
+  document.getElementById('scoreVal').textContent = '0 / 10';
+  loadQuestion();
+}
+
+function loadQuestion() {
+  if (current >= questions.length) { showResult(); return; }
+  answered = false;
+  const q = questions[current];
+  document.getElementById('qNum').textContent = `Question ${current + 1} of ${questions.length}`;
+  document.getElementById('qCounter').textContent = `${current + 1} / 10`;
+  document.getElementById('qText').textContent = q.q;
+  document.getElementById('feedbackOverlay').textContent = '';
+  document.getElementById('feedbackOverlay').className = 'feedback';
+  document.getElementById('explanation').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'none';
+  document.getElementById('trueBtn').disabled = false;
+  document.getElementById('falseBtn').disabled = false;
+  document.getElementById('progressFill').style.width = (current / questions.length * 100) + '%';
+  trueCard.style.pointerEvents = 'auto'; falseCard.style.pointerEvents = 'auto';
+  trueCard.style.opacity = '1'; falseCard.style.opacity = '1';
+  [dropTrue, dropFalse].forEach(z => { z.className = z.id === 'dropTrue' ? 'drop-zone true-zone' : 'drop-zone false-zone'; });
+  // re-trigger float animation
+  trueCard.style.animation = 'none'; falseCard.style.animation = 'none';
+  void trueCard.offsetWidth;
+  trueCard.style.animation = ''; falseCard.style.animation = '';
+  falseCard.style.animationDelay = '-1.5s';
+  startTimer();
+}
+
+function startTimer() {
+  clearInterval(timer);
+  timeLeft = 10; updateTimerDisplay();
+  timer = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) { clearInterval(timer); if (!answered) timeOut(); }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById('timerVal');
+  el.textContent = '⏱ ' + timeLeft;
+  el.className = timeLeft <= 3 ? 'timer-val urgent' : 'timer-val';
+}
+
+function timeOut() {
+  answered = true; disableInputs();
+  showFeedback(false, "⏰ Time's up!");
+  showExplanation();
+}
+
+function submitAnswer(userAns) {
+  if (answered) return;
+  answered = true; clearInterval(timer); disableInputs();
+  const correct = userAns === questions[current].ans;
+  (userAns ? dropTrue : dropFalse).classList.add(userAns ? 'filled-true' : 'filled-false');
+  if (correct) {
+    score++;
+    document.getElementById('scoreVal').textContent = `${score} / 10`;
+    const msgs = ["🌟 Amazing!", "⭐ You're a star!", "🎉 Brilliant!", "💪 Keep going!", "🔥 On fire!", "🚀 Superb!"];
+    showFeedback(true, msgs[Math.floor(Math.random() * msgs.length)]);
+    spawnConfetti();
+    // speed up background on correct
+    animObjects.forEach(o => { o.orbitSpeed *= 1.05; o.vx *= 1.05; o.vy *= 1.05; });
+  } else {
+    showFeedback(false, '❌ Not quite!');
+    document.getElementById('questionCard').classList.add('shake');
+    setTimeout(() => document.getElementById('questionCard').classList.remove('shake'), 600);
+  }
+  showExplanation();
+}
+
+function disableInputs() {
+  trueCard.style.pointerEvents = 'none'; falseCard.style.pointerEvents = 'none';
+  document.getElementById('trueBtn').disabled = true;
+  document.getElementById('falseBtn').disabled = true;
+}
+
+function showFeedback(ok, msg) {
+  const el = document.getElementById('feedbackOverlay');
+  el.textContent = msg;
+  el.className = 'feedback ' + (ok ? 'correct' : 'wrong');
+  el.style.animation = 'none'; void el.offsetWidth;
+  el.style.animation = 'feedPop 0.5s cubic-bezier(.34,1.56,.64,1) both';
+}
+
+function showExplanation() {
+  const el = document.getElementById('explanation');
+  el.textContent = questions[current].exp;
+  el.style.display = 'block';
+  document.getElementById('nextBtn').style.display = 'inline-block';
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= questions.length) showResult();
+  else loadQuestion();
+}
+
+function showResult() {
+  clearInterval(timer);
+  document.getElementById('questionCard').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'block';
+  document.getElementById('resultStars').textContent = score >= 9 ? '⭐⭐⭐' : score >= 6 ? '⭐⭐' : '⭐';
+  document.getElementById('resultTitle').textContent = score === 10 ? '🏆 Perfect!' : score >= 7 ? '🎉 Great Job!' : '👍 Good Try!';
+  document.getElementById('resultScore').textContent = `${score} / 10`;
+  document.getElementById('resultMsg').textContent = score === 10 ? 'You are a product and marketing expert!' : score >= 7 ? 'Almost perfect! Review the tricky ones.' : 'Go through Section 1 slides again and try once more!';
+  document.getElementById('progressFill').style.width = '100%';
+  if (score >= 7) for (let i = 0; i < 80; i++) setTimeout(spawnConfetti, i * 50);
+}
+
+function spawnConfetti() {
+  const colors = ['#FFD600','#00E5FF','#BB86FC','#FF4081','#00C853','#FF6D00','#fff'];
+  for (let i = 0; i < 6; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    c.style.cssText = `left:${15+Math.random()*70}vw;top:0;background:${colors[Math.floor(Math.random()*colors.length)]};width:${6+Math.random()*9}px;height:${6+Math.random()*9}px;border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1.1+Math.random()*1.6}s;animation-delay:${Math.random()*0.3}s`;
+    document.body.appendChild(c);
+    c.addEventListener('animationend', () => c.remove());
+  }
+}
+
+startGame();
+</script>
+</body>
+</html>

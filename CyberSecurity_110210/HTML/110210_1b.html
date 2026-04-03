@@ -3,527 +3,796 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Section 2 – Match the Cyber Threat!</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>Cyber True/False — Section 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --virus: #FF6B6B;
-    --phishing: #2E86AB;
-    --bully: #9B5DE5;
-    --scam: #FF9900;
-    --safe: #44BBA4;
-    --bg: #FFF8F0;
-    --card-bg: #fff;
-    --shadow: 0 6px 24px rgba(0,0,0,0.10);
-  }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green: #00C853;
+    --red: #FF3D57;
+    --blue: #2979FF;
+    --yellow: #FFD600;
+    --purple: #AA00FF;
+    --orange: #FF6D00;
+    --pink: #FF4081;
+    --cyan: #00E5FF;
+    --card-bg: rgba(255,255,255,0.95);
+  }
 
   body {
     font-family: 'Nunito', sans-serif;
-    background: var(--bg);
+    background: #0a0a2e;
     min-height: 100vh;
-    padding: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     overflow-x: hidden;
+    position: relative;
   }
 
-  /* Floating background shapes */
-  .bg-shapes {
-    position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+  /* ===== ANIMATED BACKGROUND ===== */
+  .bg-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: linear-gradient(135deg, #0a0a2e 0%, #1a0533 40%, #0d2b1a 100%);
+    overflow: hidden;
   }
-  .bg-shape {
-    position: absolute; border-radius: 50%; opacity: 0.07;
-    animation: floaty 8s ease-in-out infinite;
-  }
-  .bg-shape:nth-child(1) { width:200px;height:200px;background:#FF6B6B;top:5%;left:-5%;animation-delay:0s; }
-  .bg-shape:nth-child(2) { width:150px;height:150px;background:#9B5DE5;top:20%;right:-4%;animation-delay:1.5s; }
-  .bg-shape:nth-child(3) { width:120px;height:120px;background:#44BBA4;bottom:30%;left:2%;animation-delay:3s; }
-  .bg-shape:nth-child(4) { width:180px;height:180px;background:#FF9900;bottom:5%;right:-3%;animation-delay:2s; }
-  @keyframes floaty { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-22px)} }
 
-  .wrapper { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+  /* Floating emoji bubbles */
+  .bubble {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.15;
+    animation: floatUp linear infinite;
+    font-size: 0px;
+  }
 
-  /* Header */
-  .header {
-    display: flex; justify-content: space-between; align-items: center;
-    background: #fff; border-radius: 20px; padding: 12px 20px;
-    margin-bottom: 14px; box-shadow: var(--shadow);
+  @keyframes floatUp {
+    0%   { transform: translateY(110vh) rotate(0deg) scale(0.8); opacity: 0; }
+    10%  { opacity: 0.15; }
+    90%  { opacity: 0.15; }
+    100% { transform: translateY(-10vh) rotate(360deg) scale(1.2); opacity: 0; }
   }
-  .logo { font-family: 'Fredoka One', cursive; font-size: 20px; color: #FF6B6B; }
-  .score-wrap { display: flex; gap: 10px; align-items: center; }
-  .score-pill {
-    background: linear-gradient(135deg, #FF6B6B, #FF9900);
-    border-radius: 30px; padding: 6px 16px;
-    font-family: 'Fredoka One', cursive; font-size: 16px; color: #fff;
-  }
-  .close-btn {
-    background: #FFE5E5; border: none; border-radius: 50%;
-    width: 34px; height: 34px; font-size: 16px; font-weight: 800;
-    color: #E84855; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: background 0.18s, transform 0.15s;
-    box-shadow: 0 2px 8px rgba(232,72,85,0.15);
-  }
-  .close-btn:hover { background: #FF6B6B; color: #fff; transform: scale(1.12) rotate(90deg); }
 
-  .moves-pill {
-    background: #EDE7F6; border-radius: 30px; padding: 6px 16px;
-    font-family: 'Fredoka One', cursive; font-size: 16px; color: #9B5DE5;
+  /* Twinkling stars */
+  .star {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle ease-in-out infinite;
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.1; transform: scale(1); }
+    50%       { opacity: 1;   transform: scale(1.8); }
+  }
+
+  /* Neon rings */
+  .ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid;
+    animation: expandRing ease-out infinite;
+    opacity: 0;
+  }
+
+  @keyframes expandRing {
+    0%   { transform: scale(0.2); opacity: 0.6; }
+    100% { transform: scale(4);   opacity: 0; }
+  }
+
+  /* Floating emoji icons */
+  .float-emoji {
+    position: absolute;
+    font-size: 28px;
+    animation: floatEmoji ease-in-out infinite;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  @keyframes floatEmoji {
+    0%, 100% { transform: translateY(0px) rotate(-8deg); }
+    50%       { transform: translateY(-20px) rotate(8deg); }
+  }
+
+  /* Zigzag moving comets */
+  .comet {
+    position: absolute;
+    width: 80px;
+    height: 3px;
+    border-radius: 2px;
+    animation: cometFly linear infinite;
+    opacity: 0;
+  }
+
+  @keyframes cometFly {
+    0%   { opacity: 0; transform: translateX(-120px); }
+    10%  { opacity: 0.8; }
+    90%  { opacity: 0.8; }
+    100% { opacity: 0; transform: translateX(120vw); }
+  }
+
+  /* Animated grid lines */
+  .grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,200,83,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,200,83,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridScroll 8s linear infinite;
+  }
+
+  @keyframes gridScroll {
+    from { background-position: 0 0; }
+    to   { background-position: 60px 60px; }
+  }
+
+  /* Blob glows in background */
+  .glow-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    animation: blobPulse ease-in-out infinite alternate;
+    opacity: 0.25;
+  }
+
+  @keyframes blobPulse {
+    from { transform: scale(1) translate(0,0); opacity: 0.2; }
+    to   { transform: scale(1.3) translate(10px, -10px); opacity: 0.35; }
+  }
+
+  /* ===== CONTENT ===== */
+  .content { position: relative; z-index: 10; width: 100%; display: flex; flex-direction: column; align-items: center; }
+
+  .planrs {
+    position: fixed; top: 12px; right: 16px;
+    font-size: 13px; color: rgba(255,255,255,0.7);
+    font-weight: bold; z-index: 100;
+    background: rgba(255,255,255,0.1);
+    padding: 4px 12px; border-radius: 20px;
+    backdrop-filter: blur(10px);
   }
 
   h1 {
-    text-align: center; font-family: 'Fredoka One', cursive;
-    font-size: 28px; color: #E84855; margin-bottom: 4px;
-    text-shadow: 3px 3px 0 rgba(232,72,85,0.15);
-  }
-  .subtitle { text-align: center; color: #888; font-size: 13px; margin-bottom: 14px; font-weight: 600; }
-
-  /* Instructions */
-  .instructions {
-    background: #FFF3E0; border: 2.5px dashed #FFA940;
-    border-radius: 16px; padding: 12px 18px; margin-bottom: 16px;
-    font-size: 13px; color: #555; font-weight: 700; text-align: center;
+    font-family: 'Fredoka One', cursive;
+    color: #fff;
+    font-size: 30px;
+    margin: 48px 0 4px;
+    text-align: center;
+    text-shadow: 0 0 30px var(--yellow), 0 0 60px var(--orange);
+    animation: titlePop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both, titleGlow 2s ease-in-out infinite alternate;
+    letter-spacing: 1px;
   }
 
-  /* Category legend pills */
-  .legend {
-    display: flex; flex-wrap: wrap; gap: 8px;
-    justify-content: center; margin-bottom: 18px;
-  }
-  .leg-pill {
-    border-radius: 20px; padding: 5px 14px;
-    font-size: 12px; font-weight: 800; color: #fff;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+  @keyframes titlePop {
+    from { transform: scale(0) rotate(-5deg); opacity: 0; }
+    to   { transform: scale(1) rotate(0deg);  opacity: 1; }
   }
 
-  /* Match game layout */
-  .match-game {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 18px;
+  @keyframes titleGlow {
+    from { text-shadow: 0 0 20px var(--yellow), 0 0 40px var(--orange); }
+    to   { text-shadow: 0 0 40px var(--cyan),   0 0 80px var(--blue); }
   }
 
-  .column { display: flex; flex-direction: column; gap: 9px; }
-  .col-label {
-    text-align: center; font-family: 'Fredoka One', cursive;
-    font-size: 15px; margin-bottom: 4px; padding: 6px;
-    border-radius: 10px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+  .subtitle {
+    color: rgba(255,255,255,0.8);
+    font-size: 14px; margin-bottom: 18px;
+    text-align: center; font-weight: 700;
+    background: rgba(255,255,255,0.1);
+    padding: 5px 16px; border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
   }
 
-  /* Cards */
+  /* Score bar */
+  .score-bar {
+    background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.25);
+    border-radius: 20px;
+    padding: 10px 24px;
+    margin-bottom: 14px;
+    font-size: 18px;
+    color: #fff;
+    font-weight: 900;
+    display: flex; gap: 24px;
+    flex-wrap: wrap; justify-content: center;
+    backdrop-filter: blur(12px);
+    font-family: 'Fredoka One', cursive;
+    animation: slideDown 0.6s ease both;
+    animation-delay: 0.3s;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+  }
+
+  .score-bar span { display: flex; align-items: center; gap: 6px; }
+
+  @keyframes slideDown {
+    from { transform: translateY(-30px); opacity: 0; }
+    to   { transform: translateY(0);     opacity: 1; }
+  }
+
+  /* Progress bar */
+  .progress {
+    width: 100%; max-width: 480px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 20px; height: 14px;
+    margin-bottom: 20px; overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+
+  .progress-bar {
+    background: linear-gradient(90deg, var(--green), var(--cyan), var(--yellow));
+    background-size: 200% 100%;
+    height: 100%; border-radius: 20px;
+    transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: shimmer 2s linear infinite;
+    box-shadow: 0 0 15px var(--cyan);
+  }
+
+  @keyframes shimmer {
+    from { background-position: 200% 0; }
+    to   { background-position: -200% 0; }
+  }
+
+  /* Card */
   .card {
-    background: var(--card-bg); border-radius: 16px;
-    padding: 12px 14px; cursor: pointer;
-    border: 3px solid transparent;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.09);
-    transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
-    font-size: 13px; font-weight: 700; color: #333;
-    line-height: 1.45; user-select: none;
+    background: rgba(255,255,255,0.97);
+    border-radius: 28px;
+    padding: 30px 26px;
+    max-width: 480px; width: 100%;
+    text-align: center;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.2), inset 0 1px 0 rgba(255,255,255,0.9);
+    margin-bottom: 20px;
+    animation: cardEntrance 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--green), var(--cyan), var(--blue), var(--purple), var(--pink), var(--orange), var(--yellow));
+    background-size: 200%;
+    animation: rainbowSlide 3s linear infinite;
+  }
+
+  @keyframes rainbowSlide {
+    from { background-position: 0%; }
+    to   { background-position: 200%; }
+  }
+
+  @keyframes cardEntrance {
+    from { transform: scale(0.8) translateY(40px); opacity: 0; }
+    to   { transform: scale(1) translateY(0);      opacity: 1; }
+  }
+
+  .q-num {
+    font-size: 12px; color: #888;
+    margin-bottom: 8px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 2px;
+  }
+
+  .question {
+    font-size: 17px; color: #1A1A3E;
+    font-weight: 800; line-height: 1.5;
+    min-height: 80px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 16px; justify-content: center; margin-top: 22px; }
+
+  .btn-tf {
+    padding: 16px 32px;
+    border: none; border-radius: 50px;
+    font-size: 18px; font-weight: 900;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    font-family: 'Fredoka One', cursive;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-tf::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 60%);
+    border-radius: inherit;
+  }
+
+  .btn-true {
+    background: linear-gradient(135deg, #00C853, #00E676);
+    color: #fff;
+    box-shadow: 0 6px 0 #00882A, 0 8px 20px rgba(0,200,83,0.5);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  }
+
+  .btn-false {
+    background: linear-gradient(135deg, #FF3D57, #FF6B6B);
+    color: #fff;
+    box-shadow: 0 6px 0 #C62828, 0 8px 20px rgba(255,61,87,0.5);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  }
+
+  .btn-tf:hover:not(:disabled) {
+    transform: translateY(-4px) scale(1.05);
+  }
+
+  .btn-true:hover:not(:disabled) {
+    box-shadow: 0 10px 0 #00882A, 0 15px 30px rgba(0,200,83,0.6);
+  }
+
+  .btn-false:hover:not(:disabled) {
+    box-shadow: 0 10px 0 #C62828, 0 15px 30px rgba(255,61,87,0.6);
+  }
+
+  .btn-tf:active:not(:disabled) {
+    transform: translateY(2px);
+  }
+
+  .btn-true:active:not(:disabled) {
+    box-shadow: 0 2px 0 #00882A, 0 4px 10px rgba(0,200,83,0.4);
+  }
+
+  .btn-false:active:not(:disabled) {
+    box-shadow: 0 2px 0 #C62828, 0 4px 10px rgba(255,61,87,0.4);
+  }
+
+  .btn-tf:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* Feedback */
+  .feedback-box {
+    min-height: 60px; text-align: center;
+    font-size: 15px; font-weight: 700;
+    margin-bottom: 12px; margin-top: 14px;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 8px;
+  }
+
+  .explain {
+    font-size: 13px; color: #555;
+    font-style: italic; font-weight: 600;
+    max-width: 400px; line-height: 1.6;
+    background: rgba(0,0,0,0.04);
+    padding: 8px 14px;
+    border-radius: 12px;
+    border-left: 3px solid var(--cyan);
+  }
+
+  .btn-next-q {
+    background: linear-gradient(135deg, var(--blue), #6C63FF);
+    color: #fff; border: none;
+    border-radius: 50px;
+    padding: 12px 32px;
+    font-size: 16px; font-weight: 900;
+    cursor: pointer; margin-top: 8px;
+    display: none;
+    font-family: 'Fredoka One', cursive;
+    box-shadow: 0 6px 0 #1A237E, 0 8px 20px rgba(41,121,255,0.5);
+    transition: transform 0.15s, box-shadow 0.15s;
+    letter-spacing: 1px;
+  }
+
+  .btn-next-q:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 9px 0 #1A237E, 0 12px 30px rgba(41,121,255,0.6);
+  }
+
+  /* Result screen */
+  .result-screen {
+    display: none;
+    background: rgba(255,255,255,0.97);
+    border-radius: 28px;
+    padding: 36px 30px;
+    max-width: 480px; width: 100%;
+    text-align: center;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
     position: relative; overflow: hidden;
   }
-  .card::before {
-    content: ''; position: absolute; inset: 0;
-    background: currentColor; opacity: 0;
-    transition: opacity 0.18s;
-  }
-  .card:hover:not(.matched):not(.selected) {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 8px 22px rgba(0,0,0,0.14);
-  }
-  .card.selected {
-    border-color: #FFD700;
-    box-shadow: 0 0 0 4px rgba(255,215,0,0.35), 0 6px 18px rgba(0,0,0,0.13);
-    transform: scale(1.03);
-    animation: pulse-sel 0.6s ease-in-out infinite alternate;
-  }
-  @keyframes pulse-sel { 0%{box-shadow:0 0 0 3px rgba(255,215,0,0.3)} 100%{box-shadow:0 0 0 7px rgba(255,215,0,0.15)} }
 
-  .card.matched {
-    opacity: 0.75; cursor: default;
-    animation: matched-pop 0.45s cubic-bezier(.36,2,.6,1) both;
-    border-color: #44BBA4 !important;
-  }
-  @keyframes matched-pop {
-    0%{transform:scale(1)} 50%{transform:scale(1.1)} 100%{transform:scale(1)}
-  }
-  .card.wrong-flash { animation: wrong-shake 0.4s ease; }
-  @keyframes wrong-shake {
-    0%,100%{transform:translateX(0)} 25%{transform:translateX(-7px)} 75%{transform:translateX(7px)}
+  .result-screen::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--green), var(--cyan), var(--yellow), var(--orange), var(--pink));
+    background-size: 200%;
+    animation: rainbowSlide 2s linear infinite;
   }
 
-  .scenario-card { min-height: 76px; display: flex; align-items: center; gap: 10px; }
-  .scenario-icon { font-size: 26px; flex-shrink: 0; }
-
-  .threat-card {
-    display: flex; flex-direction: column; align-items: center;
-    justify-content: center; text-align: center; min-height: 64px;
-    gap: 4px; border-radius: 16px;
-  }
-  .threat-icon { font-size: 24px; }
-  .threat-label { font-size: 12px; font-weight: 800; }
-
-  /* Threat card colors */
-  .card[data-type="virus"] { background: #FFF0F0; }
-  .card[data-type="virus"].matched { background: #FFD0D0; border-color: var(--virus)!important; }
-  .card[data-type="phishing"] { background: #E8F4FF; }
-  .card[data-type="phishing"].matched { background: #C5E4F3; border-color: var(--phishing)!important; }
-  .card[data-type="bully"] { background: #F3ECFF; }
-  .card[data-type="bully"].matched { background: #DED0FF; border-color: var(--bully)!important; }
-  .card[data-type="scam"] { background: #FFF7E6; }
-  .card[data-type="scam"].matched { background: #FFE8B0; border-color: var(--scam)!important; }
-  .card[data-type="safe"] { background: #E6FBF7; }
-  .card[data-type="safe"].matched { background: #B8EFE5; border-color: var(--safe)!important; }
-
-  /* Feedback toast */
-  .toast {
-    position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-80px);
-    background: #fff; border-radius: 20px; padding: 12px 24px;
-    font-family: 'Fredoka One', cursive; font-size: 18px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-    transition: transform 0.4s cubic-bezier(.36,2,.6,1);
-    z-index: 999; pointer-events: none; white-space: nowrap;
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-  .toast.correct { color: #22A47A; border: 3px solid #44BBA4; }
-  .toast.wrong { color: #E84855; border: 3px solid #FF6B6B; }
-
-  /* Progress */
-  .progress-track {
-    background: #E0E0E0; border-radius: 12px; height: 12px; margin-bottom: 16px; overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%; border-radius: 12px;
-    background: linear-gradient(90deg, #FF6B6B, #9B5DE5, #44BBA4);
-    transition: width 0.5s cubic-bezier(.4,2,.6,1);
+  .result-screen h2 {
+    font-family: 'Fredoka One', cursive;
+    color: #1A1A3E;
+    font-size: 28px; margin-bottom: 14px;
+    line-height: 1.3;
   }
 
-  /* End screen */
-  .end-screen {
-    display: none; text-align: center; padding: 30px 20px;
-    background: #fff; border-radius: 24px; box-shadow: var(--shadow);
-    animation: pop-in 0.5s cubic-bezier(.36,2,.6,1);
-  }
-  @keyframes pop-in { 0%{transform:scale(0.7);opacity:0} 100%{transform:scale(1);opacity:1} }
-  .trophy { font-size: 64px; animation: bounce 1s ease-in-out infinite alternate; }
-  @keyframes bounce { 0%{transform:translateY(0)} 100%{transform:translateY(-12px)} }
-  .end-title { font-family:'Fredoka One',cursive; font-size:30px; color:#2E86AB; margin: 12px 0 6px; }
-  .end-score { font-size:20px; color:#333; font-weight:800; margin-bottom:10px; }
-  .end-msg { color:#888; font-size:15px; margin-bottom:24px; }
-  .stars { font-size:36px; margin: 8px 0 16px; letter-spacing: 4px; }
+  .result-screen p { color: #444; font-size: 15px; margin-bottom: 14px; font-weight: 700; }
 
-  .btn {
-    display: inline-block; border: none; border-radius: 16px;
-    padding: 14px 32px; font-size: 16px; font-weight: 800;
-    cursor: pointer; margin: 6px; transition: transform 0.15s, box-shadow 0.15s;
-    font-family: 'Nunito', sans-serif; box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+  .btn-reset {
+    background: linear-gradient(135deg, var(--orange), var(--pink));
+    color: #fff; border: none;
+    border-radius: 50px;
+    padding: 14px 28px;
+    font-size: 15px; font-weight: 900;
+    cursor: pointer; margin: 6px;
+    font-family: 'Fredoka One', cursive;
+    box-shadow: 0 5px 0 #b71c1c, 0 8px 20px rgba(255,64,129,0.4);
+    transition: transform 0.15s;
+    letter-spacing: 1px;
   }
-  .btn:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 8px 22px rgba(0,0,0,0.2); }
-  .btn-retry { background: linear-gradient(135deg, #FF6B6B, #FF9900); color: #fff; }
-  .btn-next { background: linear-gradient(135deg, #44BBA4, #2E86AB); color: #fff; }
 
-  /* Confetti burst */
-  .confetti-wrap { position:fixed;inset:0;pointer-events:none;z-index:998;overflow:hidden; }
+  .btn-reset:hover { transform: translateY(-3px); }
+
+  .btn-nxt {
+    background: linear-gradient(135deg, var(--green), #00BCD4);
+    color: #fff; border: none;
+    border-radius: 50px;
+    padding: 14px 28px;
+    font-size: 15px; font-weight: 900;
+    cursor: pointer; margin: 6px;
+    font-family: 'Fredoka One', cursive;
+    box-shadow: 0 5px 0 #006064, 0 8px 20px rgba(0,200,83,0.4);
+    transition: transform 0.15s;
+    letter-spacing: 1px;
+  }
+
+  .btn-nxt:hover { transform: translateY(-3px); }
+
+  /* Confetti particles */
   .confetti-piece {
-    position:absolute; width:10px; height:10px; opacity:0;
-    animation: confetti-fall 2s ease-in forwards;
-  }
-  @keyframes confetti-fall {
-    0%{transform:translateY(-20px) rotate(0deg);opacity:1}
-    100%{transform:translateY(100vh) rotate(720deg);opacity:0}
+    position: fixed;
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    animation: confettiFall linear forwards;
+    z-index: 999;
+    pointer-events: none;
   }
 
-  @media(max-width:520px) {
-    .match-game { grid-template-columns: 1fr 1fr; gap:8px; }
-    .card { padding:10px 10px; font-size:12px; }
-    .scenario-icon { font-size:20px; }
-    h1 { font-size:22px; }
+  @keyframes confettiFall {
+    0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* Animations */
+  @keyframes shake {
+    0%,100% { transform: translateX(0) rotate(0); }
+    20%      { transform: translateX(-12px) rotate(-2deg); }
+    40%      { transform: translateX(12px) rotate(2deg); }
+    60%      { transform: translateX(-8px) rotate(-1deg); }
+    80%      { transform: translateX(8px) rotate(1deg); }
+  }
+
+  @keyframes bounce {
+    0%,100% { transform: translateY(0) scale(1); }
+    30%     { transform: translateY(-16px) scale(1.03); }
+    60%     { transform: translateY(-6px) scale(1.01); }
+  }
+
+  .shake  { animation: shake 0.5s ease; }
+  .bounce { animation: bounce 0.5s ease; }
+
+  /* Sparkles on correct */
+  .sparkle {
+    position: fixed;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 998;
+    animation: sparkleOut 0.8s ease forwards;
+  }
+
+  @keyframes sparkleOut {
+    0%   { transform: scale(0) translate(0,0); opacity: 1; }
+    100% { transform: scale(1) translate(var(--tx), var(--ty)); opacity: 0; }
+  }
+
+  .mascot {
+    font-size: 50px;
+    animation: mascotFloat 3s ease-in-out infinite;
+    display: block;
+    margin: 0 auto 8px;
+  }
+
+  @keyframes mascotFloat {
+    0%,100% { transform: translateY(0) rotate(-3deg); }
+    50%     { transform: translateY(-12px) rotate(3deg); }
   }
 </style>
 </head>
 <body>
 
-<div class="bg-shapes">
-  <div class="bg-shape"></div>
-  <div class="bg-shape"></div>
-  <div class="bg-shape"></div>
-  <div class="bg-shape"></div>
+<!-- ANIMATED BACKGROUND -->
+<div class="bg-canvas" id="bgCanvas">
+  <div class="grid-bg"></div>
+  <!-- Glow blobs -->
+  <div class="glow-blob" style="width:400px;height:400px;background:var(--green);top:-100px;left:-100px;animation-duration:7s;"></div>
+  <div class="glow-blob" style="width:350px;height:350px;background:var(--blue);bottom:-80px;right:-80px;animation-duration:9s;"></div>
+  <div class="glow-blob" style="width:300px;height:300px;background:var(--purple);top:40%;left:30%;animation-duration:11s;"></div>
 </div>
 
-<div class="toast" id="toast"></div>
-<div class="confetti-wrap" id="confettiWrap"></div>
+<div class="planrs">⭐ Planrs</div>
 
-<div class="wrapper">
-  <div class="header">
-    <div class="logo">⭐ Planrs</div>
-    <div class="score-wrap">
-      <div class="moves-pill">🎯 Moves: <span id="movesDisplay">0</span></div>
-      <div class="score-pill">✅ <span id="scoreDisplay">0</span>/5</div>
-      <button class="close-btn" onclick="closeGame()" title="Close">✕</button>
+<div class="content">
+  <h1>⚡ True or False Rapid Fire!</h1>
+  <p class="subtitle">Section 1 — What is Cybersecurity? | Activity 2 of 2</p>
+
+  <div class="score-bar">
+    <span>✅ <span id="correct">0</span> Correct</span>
+    <span>❌ <span id="wrong">0</span> Wrong</span>
+    <span>⚡ Q<span id="qnum">1</span>/10</span>
+  </div>
+
+  <div class="progress"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+
+  <div class="card" id="gameCard">
+    <span class="mascot" id="mascot">🛡️</span>
+    <div class="q-num" id="qLabel">Question 1 of 10</div>
+    <div class="question" id="questionText">Loading...</div>
+    <div class="btn-row">
+      <button class="btn-tf btn-true" onclick="answer(true)">✅ TRUE</button>
+      <button class="btn-tf btn-false" onclick="answer(false)">❌ FALSE</button>
     </div>
+    <div class="feedback-box" id="feedbackBox"></div>
+    <button class="btn-next-q" id="nextQBtn" onclick="nextQuestion()">Next Question ➡️</button>
   </div>
 
-  <h1>🔗 Match the Threat!</h1>
-  <p class="subtitle">Section 2 Activity — Connect each scenario to the correct cyber threat!</p>
-
-  <div class="instructions">
-    🕵️ <strong>How to play:</strong> Tap a <strong>scenario</strong> on the left, then tap the matching <strong>threat</strong> on the right. Match all 5 to win!
-  </div>
-
-  <div class="legend">
-    <span class="leg-pill" style="background:#FF6B6B">🦠 Virus</span>
-    <span class="leg-pill" style="background:#2E86AB">🎣 Phishing</span>
-    <span class="leg-pill" style="background:#9B5DE5">😠 Cyberbullying</span>
-    <span class="leg-pill" style="background:#FF9900">💸 Scam</span>
-    <span class="leg-pill" style="background:#44BBA4">✅ Safe</span>
-  </div>
-
-  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-
-  <div id="gameArea">
-    <div class="match-game">
-      <div class="column">
-        <div class="col-label">🗒️ Scenarios</div>
-        <div id="scenarioCol"></div>
-      </div>
-      <div class="column">
-        <div class="col-label">⚡ Threats</div>
-        <div id="threatCol"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="end-screen" id="endScreen">
-    <div class="trophy">🏆</div>
-    <div class="end-title">Amazing Work!</div>
-    <div class="stars" id="endStars"></div>
-    <div class="end-score">You matched all 5 threats in <span id="endMoves"></span> moves!</div>
-    <div class="end-msg" id="endMsg"></div>
-    <button class="btn btn-retry" onclick="resetGame()">🔄 Play Again</button>
-    <button class="btn btn-next" onclick="goNext()">Next Section ➡️</button>
+  <div class="result-screen" id="resultScreen">
+    <h2 id="resultTitle"></h2>
+    <p id="resultDetails"></p>
+    <p id="resultMsg"></p>
+    <button class="btn-reset" onclick="resetGame()">🔄 Play Again</button>
+    <button class="btn-nxt" onclick="alert('You completed Section 1! Move to Section 2 — Passwords! 🔑')">➡️ Next Section</button>
   </div>
 </div>
 
 <script>
-  const pairs = [
-    {
-      id: 'virus',
-      scenarioIcon: '💻',
-      scenario: 'You download a free game from a random website and your phone starts opening apps by itself.',
-      threatIcon: '🦠',
-      threatLabel: 'Virus / Malware',
-      color: '#FF6B6B',
-      explain: 'Apps from unknown sites carry malware! Always use the official Play Store. 🛡️'
-    },
-    {
-      id: 'phishing',
-      scenarioIcon: '📧',
-      scenario: 'An email says "You won ₹50,000! Click here and enter your Aadhaar number to claim."',
-      threatIcon: '🎣',
-      threatLabel: 'Phishing',
-      color: '#2E86AB',
-      explain: 'Fake prize emails want to steal your info! Real companies never ask for Aadhaar. 🚫'
-    },
-    {
-      id: 'bully',
-      scenarioIcon: '💬',
-      scenario: 'Your classmate posts mean comments and shares an embarrassing photo of you in the school group.',
-      threatIcon: '😠',
-      threatLabel: 'Cyberbullying',
-      color: '#9B5DE5',
-      explain: 'This is cyberbullying — tell a trusted adult or teacher right away! 💜'
-    },
-    {
-      id: 'scam',
-      scenarioIcon: '🎮',
-      scenario: 'A stranger online says "Give me your phone number and I\'ll send you free game coins!"',
-      threatIcon: '💸',
-      threatLabel: 'Online Scam',
-      color: '#FF9900',
-      explain: 'No one gives free things for your number. It\'s a trap! Never share personal info. 🚷'
-    },
-    {
-      id: 'safe',
-      scenarioIcon: '📚',
-      scenario: 'You visit your school\'s official website to check the homework posted by your teacher.',
-      threatIcon: '✅',
-      threatLabel: 'Safe Activity',
-      color: '#44BBA4',
-      explain: 'Great job! Using official websites for studying is smart and safe. 🌟'
-    }
-  ];
+// ===== BACKGROUND GENERATION =====
+const canvas = document.getElementById('bgCanvas');
 
-  let selectedScenario = null;
-  let selectedThreat = null;
-  let matchedCount = 0;
-  let moves = 0;
+// Stars
+for (let i = 0; i < 80; i++) {
+  const star = document.createElement('div');
+  star.className = 'star';
+  star.style.cssText = `
+    left: ${Math.random()*100}%;
+    top: ${Math.random()*100}%;
+    animation-duration: ${1.5 + Math.random()*3}s;
+    animation-delay: ${Math.random()*3}s;
+    width: ${Math.random() > 0.7 ? 4 : 2}px;
+    height: ${Math.random() > 0.7 ? 4 : 2}px;
+  `;
+  canvas.appendChild(star);
+}
 
-  function shuffle(arr) {
-    const a = [...arr];
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
+// Floating emojis
+const emojis = ['🔐','🛡️','💻','🔑','🌐','⚡','🎮','🦠','🔒','📱','🎯','💡','🚀','⭐','🎉'];
+emojis.forEach((em, i) => {
+  const el = document.createElement('div');
+  el.className = 'float-emoji';
+  el.textContent = em;
+  el.style.cssText = `
+    left: ${5 + (i / emojis.length) * 90}%;
+    top: ${10 + Math.random() * 80}%;
+    animation-duration: ${3 + Math.random()*3}s;
+    animation-delay: ${Math.random()*3}s;
+    opacity: 0.35;
+    font-size: ${20 + Math.random()*18}px;
+  `;
+  canvas.appendChild(el);
+});
+
+// Neon rings
+const ringColors = ['#00E5FF','#FF4081','#FFD600','#00C853','#AA00FF'];
+for (let i = 0; i < 5; i++) {
+  const ring = document.createElement('div');
+  ring.className = 'ring';
+  const size = 60 + Math.random() * 80;
+  ring.style.cssText = `
+    width: ${size}px; height: ${size}px;
+    left: ${Math.random()*80}%;
+    top: ${Math.random()*80}%;
+    border-color: ${ringColors[i % ringColors.length]};
+    animation-duration: ${3 + Math.random()*4}s;
+    animation-delay: ${Math.random()*5}s;
+  `;
+  canvas.appendChild(ring);
+}
+
+// Comets
+const cometColors = ['#00E5FF','#FFD600','#FF4081','#00C853'];
+for (let i = 0; i < 4; i++) {
+  const comet = document.createElement('div');
+  comet.className = 'comet';
+  comet.style.cssText = `
+    top: ${10 + Math.random()*80}%;
+    left: 0;
+    background: linear-gradient(90deg, transparent, ${cometColors[i]});
+    animation-duration: ${4 + Math.random()*6}s;
+    animation-delay: ${Math.random()*8}s;
+  `;
+  canvas.appendChild(comet);
+}
+
+// Bubble circles
+const bubbleColors = ['#00C853','#2979FF','#AA00FF','#FFD600','#FF4081','#00E5FF'];
+for (let i = 0; i < 12; i++) {
+  const b = document.createElement('div');
+  b.className = 'bubble';
+  const size = 30 + Math.random() * 80;
+  b.style.cssText = `
+    width: ${size}px; height: ${size}px;
+    left: ${Math.random()*100}%;
+    bottom: -100px;
+    background: radial-gradient(circle, ${bubbleColors[i % bubbleColors.length]}, transparent);
+    animation-duration: ${8 + Math.random()*10}s;
+    animation-delay: ${Math.random()*8}s;
+  `;
+  canvas.appendChild(b);
+}
+
+// ===== QUIZ LOGIC =====
+const questions = [
+  { q: "Cybersecurity is only important for adults — children don't need to worry about it.", ans: false, explain: "False! Children use the internet for games, school, and videos — they need cybersecurity too. Cybercriminals target everyone!" },
+  { q: "A virus is a harmful program that can damage your computer and spread to other devices.", ans: true, explain: "Correct! Computer viruses work like real flu viruses — they spread and cause damage. Antivirus software protects you." },
+  { q: "It is safe to share your password with your best friend at school.", ans: false, explain: "Never share your password with ANYONE — even your best friend. Passwords are private, like a secret only you should know." },
+  { q: "The word 'phishing' means tricking someone into revealing personal information using fake messages.", ans: true, explain: "Yes! Phishing (from 'fishing') means using fake bait (messages) to 'catch' your personal info. Very sneaky!" },
+  { q: "If you receive a message saying 'You won Rs. 10 lakhs! Click here!' — it is probably real.", ans: false, explain: "This is almost certainly a phishing scam! Real prize draws don't randomly message people. When in doubt, delete!" },
+  { q: "Cyberbullying can only happen face-to-face, not through phones or computers.", ans: false, explain: "False! Cyberbullying happens ONLINE — through messages, comments, gaming, and social media. It can happen 24/7." },
+  { q: "A firewall helps protect your network by monitoring and controlling incoming and outgoing traffic.", ans: true, explain: "Correct! A firewall is like a security guard for your internet connection — it blocks suspicious activity." },
+  { q: "HTTPS in a website address means the connection is more secure than HTTP.", ans: true, explain: "Yes! The 'S' in HTTPS stands for Secure. Always look for the padlock icon and HTTPS before entering personal info." },
+  { q: "Hacking means entering someone's account or device without their permission.", ans: true, explain: "Exactly right! Hacking is unauthorized access to someone's accounts, devices, or data. It is illegal and harmful." },
+  { q: "Using the internet in open family areas at home is safer than using it alone in your room.", ans: true, explain: "True! Using devices in common areas helps trusted adults notice if something harmful happens online. Safety in the open!" },
+];
+
+const mascots = {
+  idle:    ['🛡️','🤖','🦸','🧠','🔐'],
+  correct: ['🎉','⭐','🏆','🎊','💪','🌟','🔥'],
+  wrong:   ['😬','🙈','💡','🤔','📖'],
+};
+
+let current = 0, correctCount = 0, wrongCount = 0;
+const shuffled = [...questions].sort(() => Math.random() - 0.5);
+
+function setMascot(type) {
+  const pool = mascots[type];
+  document.getElementById('mascot').textContent = pool[Math.floor(Math.random()*pool.length)];
+}
+
+function loadQuestion() {
+  const q = shuffled[current];
+  document.getElementById('questionText').textContent = q.q;
+  document.getElementById('qLabel').textContent = `Question ${current+1} of ${questions.length}`;
+  document.getElementById('qnum').textContent = current+1;
+  document.getElementById('progressBar').style.width = `${(current/questions.length)*100}%`;
+  document.getElementById('feedbackBox').innerHTML = '';
+  document.getElementById('nextQBtn').style.display = 'none';
+  document.querySelectorAll('.btn-tf').forEach(b => b.disabled = false);
+  setMascot('idle');
+}
+
+function spawnConfetti() {
+  const colors = ['#FFD600','#00C853','#2979FF','#FF4081','#00E5FF','#AA00FF','#FF6D00'];
+  for (let i = 0; i < 40; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    c.style.cssText = `
+      left: ${20 + Math.random()*60}%;
+      top: -10px;
+      background: ${colors[Math.floor(Math.random()*colors.length)]};
+      width: ${6+Math.random()*8}px;
+      height: ${6+Math.random()*8}px;
+      border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+      animation-duration: ${1.5+Math.random()*1.5}s;
+      animation-delay: ${Math.random()*0.5}s;
+    `;
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 3000);
+  }
+}
+
+function spawnSparkles(x, y) {
+  const colors = ['#FFD600','#00C853','#FF4081','#00E5FF'];
+  for (let i = 0; i < 12; i++) {
+    const s = document.createElement('div');
+    s.className = 'sparkle';
+    const angle = (i / 12) * Math.PI * 2;
+    const dist = 50 + Math.random()*60;
+    s.style.cssText = `
+      left: ${x}px; top: ${y}px;
+      background: ${colors[i % colors.length]};
+      --tx: ${Math.cos(angle)*dist}px;
+      --ty: ${Math.sin(angle)*dist}px;
+      animation-duration: ${0.6+Math.random()*0.4}s;
+    `;
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 1200);
+  }
+}
+
+function answer(userAnswer) {
+  const q = shuffled[current];
+  const isCorrect = userAnswer === q.ans;
+  document.querySelectorAll('.btn-tf').forEach(b => b.disabled = true);
+
+  const fb = document.getElementById('feedbackBox');
+  const card = document.getElementById('gameCard');
+  const rect = card.getBoundingClientRect();
+
+  if (isCorrect) {
+    correctCount++;
+    const msgs = ['🎉 Brilliant!', '⭐ Amazing!', '🔥 You\'re on fire!', '💪 Superstar!', '🌟 Incredible!', '🏆 Awesome!'];
+    fb.innerHTML = `<span style="color:#00C853;font-size:24px;font-family:'Fredoka One',cursive">${msgs[Math.floor(Math.random()*msgs.length)]}</span><span class="explain">${q.explain}</span>`;
+    card.classList.add('bounce');
+    setTimeout(() => card.classList.remove('bounce'), 500);
+    spawnConfetti();
+    spawnSparkles(rect.left + rect.width/2, rect.top + 100);
+    setMascot('correct');
+  } else {
+    wrongCount++;
+    const correct_word = q.ans ? 'TRUE ✅' : 'FALSE ❌';
+    fb.innerHTML = `<span style="color:#FF3D57;font-size:18px;font-family:'Fredoka One',cursive">❌ Not quite! Answer: <strong>${correct_word}</strong></span><span class="explain">${q.explain}</span>`;
+    card.classList.add('shake');
+    setTimeout(() => card.classList.remove('shake'), 500);
+    setMascot('wrong');
   }
 
-  function buildGame() {
-    const scenarioCol = document.getElementById('scenarioCol');
-    const threatCol = document.getElementById('threatCol');
-    scenarioCol.innerHTML = '';
-    threatCol.innerHTML = '';
+  document.getElementById('correct').textContent = correctCount;
+  document.getElementById('wrong').textContent = wrongCount;
+  document.getElementById('nextQBtn').style.display = 'inline-block';
 
-    const shuffledScenarios = shuffle(pairs);
-    const shuffledThreats = shuffle(pairs);
-
-    shuffledScenarios.forEach(p => {
-      const el = document.createElement('div');
-      el.className = 'card scenario-card';
-      el.dataset.id = p.id;
-      el.dataset.type = p.id;
-      el.innerHTML = `<span class="scenario-icon">${p.scenarioIcon}</span><span>${p.scenario}</span>`;
-      el.addEventListener('click', () => selectScenario(el, p));
-      scenarioCol.appendChild(el);
-    });
-
-    shuffledThreats.forEach(p => {
-      const el = document.createElement('div');
-      el.className = 'card threat-card';
-      el.dataset.id = p.id;
-      el.dataset.type = p.id;
-      el.innerHTML = `<span class="threat-icon">${p.threatIcon}</span><span class="threat-label" style="color:${p.color}">${p.threatLabel}</span>`;
-      el.addEventListener('click', () => selectThreat(el, p));
-      threatCol.appendChild(el);
-    });
+  if (current === questions.length - 1) {
+    document.getElementById('nextQBtn').textContent = 'See Results 🏆';
+    document.getElementById('nextQBtn').onclick = showResult;
   }
+}
 
-  function selectScenario(el, pair) {
-    if (el.classList.contains('matched')) return;
-    document.querySelectorAll('.scenario-card.selected').forEach(c => c.classList.remove('selected'));
-    selectedScenario = { el, pair };
-    el.classList.add('selected');
-    if (selectedThreat) tryMatch();
-  }
+function nextQuestion() {
+  current++;
+  if (current < questions.length) loadQuestion();
+}
 
-  function selectThreat(el, pair) {
-    if (el.classList.contains('matched')) return;
-    document.querySelectorAll('.threat-card.selected').forEach(c => c.classList.remove('selected'));
-    selectedThreat = { el, pair };
-    el.classList.add('selected');
-    if (selectedScenario) tryMatch();
-  }
+function showResult() {
+  document.getElementById('gameCard').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'block';
+  document.getElementById('progressBar').style.width = '100%';
+  spawnConfetti();
 
-  function tryMatch() {
-    const s = selectedScenario;
-    const t = selectedThreat;
-    selectedScenario = null;
-    selectedThreat = null;
-    moves++;
-    document.getElementById('movesDisplay').textContent = moves;
+  const pct = Math.round((correctCount/questions.length)*100);
+  let title, msg;
+  if (pct === 100) { title = '🏆 Perfect Score! Cyber Champion!'; msg = 'You got EVERYTHING right! You are a true cybersecurity superstar! 🌟'; }
+  else if (pct >= 70) { title = '⭐ Great Job! Well Done!'; msg = 'Excellent understanding! A little more practice and you will be perfect!'; }
+  else if (pct >= 50) { title = '💪 Good Effort! Keep Going!'; msg = 'You\'re on the right track! Review the ones you missed and try again!'; }
+  else { title = '🌱 Keep Learning — You Can Do It!'; msg = 'Cybersecurity is a big topic! Try again after reviewing the slides. 📖'; }
 
-    if (s.pair.id === t.pair.id) {
-      // Correct!
-      s.el.classList.remove('selected');
-      t.el.classList.remove('selected');
-      s.el.classList.add('matched');
-      t.el.classList.add('matched');
-      s.el.style.borderColor = s.pair.color;
-      t.el.style.borderColor = t.pair.color;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultDetails').textContent = `Score: ${correctCount}/${questions.length} (${pct}%) | ✅ ${correctCount} Correct | ❌ ${wrongCount} Wrong`;
+  document.getElementById('resultMsg').textContent = msg;
+}
 
-      matchedCount++;
-      document.getElementById('scoreDisplay').textContent = matchedCount;
-      document.getElementById('progressFill').style.width = (matchedCount / pairs.length * 100) + '%';
+function resetGame() {
+  current = 0; correctCount = 0; wrongCount = 0;
+  document.getElementById('correct').textContent = 0;
+  document.getElementById('wrong').textContent = 0;
+  document.getElementById('gameCard').style.display = 'block';
+  document.getElementById('resultScreen').style.display = 'none';
+  shuffled.sort(() => Math.random() - 0.5);
+  document.getElementById('nextQBtn').onclick = nextQuestion;
+  document.getElementById('nextQBtn').textContent = 'Next Question ➡️';
+  loadQuestion();
+}
 
-      const wins = ['Great match! 🌟', 'Correct! You\'re a star! ⭐', 'Brilliant! 🎉', 'Spot on! 💪', 'Amazing! 🏆'];
-      showToast(wins[Math.floor(Math.random() * wins.length)] + ' ' + s.pair.explain, 'correct');
-
-      if (matchedCount === pairs.length) {
-        setTimeout(showEndScreen, 1400);
-      }
-    } else {
-      // Wrong
-      s.el.classList.remove('selected');
-      t.el.classList.remove('selected');
-      s.el.classList.add('wrong-flash');
-      t.el.classList.add('wrong-flash');
-      setTimeout(() => {
-        s.el.classList.remove('wrong-flash');
-        t.el.classList.remove('wrong-flash');
-      }, 500);
-      showToast('Oops! Try again 🤔 Think carefully!', 'wrong');
-    }
-  }
-
-  let toastTimer;
-  function showToast(msg, type) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = 'toast ' + type + ' show';
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
-  }
-
-  function showEndScreen() {
-    document.getElementById('gameArea').style.display = 'none';
-    const end = document.getElementById('endScreen');
-    end.style.display = 'block';
-    document.getElementById('endMoves').textContent = moves;
-
-    let stars = '';
-    if (moves <= 5) stars = '⭐⭐⭐';
-    else if (moves <= 8) stars = '⭐⭐';
-    else stars = '⭐';
-
-    document.getElementById('endStars').textContent = stars;
-    document.getElementById('endMsg').textContent = moves <= 5
-      ? 'Perfect score! You\'re a true Cyber Detective! 🕵️'
-      : moves <= 8
-      ? 'Well done! Keep practising to be a Cyber Hero! 🦸'
-      : 'Good effort! Reviewing the lessons will help you do even better! 📖';
-
-    launchConfetti();
-  }
-
-  function launchConfetti() {
-    const wrap = document.getElementById('confettiWrap');
-    wrap.innerHTML = '';
-    const colors = ['#FF6B6B','#9B5DE5','#44BBA4','#FF9900','#2E86AB','#FFD700'];
-    for (let i = 0; i < 70; i++) {
-      const div = document.createElement('div');
-      div.className = 'confetti-piece';
-      div.style.left = Math.random() * 100 + 'vw';
-      div.style.top = '-20px';
-      div.style.background = colors[Math.floor(Math.random() * colors.length)];
-      div.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
-      div.style.width = div.style.height = (8 + Math.random() * 8) + 'px';
-      div.style.animationDelay = (Math.random() * 1.2) + 's';
-      div.style.animationDuration = (1.5 + Math.random() * 1.5) + 's';
-      wrap.appendChild(div);
-    }
-    setTimeout(() => wrap.innerHTML = '', 4000);
-  }
-
-  function resetGame() {
-    matchedCount = 0; moves = 0;
-    selectedScenario = null; selectedThreat = null;
-    document.getElementById('scoreDisplay').textContent = 0;
-    document.getElementById('movesDisplay').textContent = 0;
-    document.getElementById('progressFill').style.width = '0%';
-    document.getElementById('endScreen').style.display = 'none';
-    document.getElementById('gameArea').style.display = 'block';
-    buildGame();
-  }
-
-  function goNext() {
-    alert('Keep it up! Move on to Section 3 — How to Stay Safe Online! 🛡️');
-  }
-
-  function closeGame() {
-    if (confirm('Are you sure you want to close the game? Your progress will be lost.')) {
-      document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:Fredoka One,cursive;font-size:28px;color:#888;">👋 See you next time!</div>';
-    }
-  }
-
-  buildGame();
+loadQuestion();
 </script>
 </body>
 </html>

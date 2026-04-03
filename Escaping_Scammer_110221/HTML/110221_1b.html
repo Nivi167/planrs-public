@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⭐ Planrs | Scam or Safe?</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pink: #FF6B9D;
+  --yellow: #FFD93D;
+  --blue: #4ECDC4;
+  --purple: #A855F7;
+  --orange: #FF9500;
+  --green: #00C896;
+  --red: #FF4757;
+  --bg1: #0d0221;
+  --bg2: #0c1a4b;
+  --card-bg: linear-gradient(135deg, #1e0b3a, #0b2250);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family:'Nunito',sans-serif;
+  min-height:100vh;
+  background: var(--bg1);
+  overflow-x:hidden;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E🔍%3C/text%3E%3C/svg%3E") 8 8, auto;
+}
+
+/* ── ANIMATED BACKGROUND ── */
+.bg-canvas {
+  position:fixed;
+  inset:0;
+  z-index:0;
+  overflow:hidden;
+  background: radial-gradient(ellipse at 20% 50%, #3b0764 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 20%, #0c2461 0%, transparent 60%),
+              radial-gradient(ellipse at 50% 90%, #1a0533 0%, transparent 70%),
+              linear-gradient(135deg, #0d0221 0%, #0c2461 50%, #0d0221 100%);
+}
+
+/* Floating emoji/shapes in background */
+.bg-float {
+  position:absolute;
+  animation:floatAround linear infinite;
+  pointer-events:none;
+  user-select:none;
+  z-index:0;
+}
+@keyframes floatAround {
+  0%   { transform:translateY(110vh) rotate(0deg) scale(0.6); opacity:0; }
+  8%   { opacity:1; }
+  92%  { opacity:0.85; }
+  100% { transform:translateY(-15vh) rotate(540deg) scale(1.1); opacity:0; }
+}
+
+#bgFloats {
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  overflow:hidden;
+}
+
+/* Neon grid lines */
+.grid-lines {
+  position:fixed;
+  inset:0;
+  z-index:0;
+  background-image:
+    linear-gradient(rgba(255,107,157,0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(78,205,196,0.07) 1px, transparent 1px);
+  background-size:60px 60px;
+  animation:gridMove 20s linear infinite;
+}
+@keyframes gridMove {
+  0%   { background-position: 0 0; }
+  100% { background-position: 60px 60px; }
+}
+
+/* Glowing orbs */
+.orb {
+  position:fixed;
+  border-radius:50%;
+  filter:blur(80px);
+  animation:orbPulse ease-in-out infinite alternate;
+  z-index:0;
+  pointer-events:none;
+}
+@keyframes orbPulse {
+  0%   { transform:scale(1) translate(0,0); opacity:0.35; }
+  100% { transform:scale(1.3) translate(40px,-30px); opacity:0.6; }
+}
+
+/* Stars twinkle */
+.star-field {
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+}
+.tstar {
+  position:absolute;
+  border-radius:50%;
+  animation:twinkleS ease-in-out infinite;
+}
+@keyframes twinkleS {
+  0%,100% { opacity:0.1; transform:scale(0.7); }
+  50%      { opacity:0.9; transform:scale(1.3); }
+}
+
+/* ── LAYOUT ── */
+.wrap {
+  position:relative;
+  z-index:1;
+  max-width:900px;
+  margin:0 auto;
+  padding:20px 16px 40px;
+}
+
+/* ── TOP BAR ── */
+.top-bar {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:16px;
+}
+.logo {
+  font-family:'Fredoka One',cursive;
+  font-size:18px;
+  color:#fff;
+  background:linear-gradient(135deg,#A855F7,#EC4899);
+  padding:8px 20px;
+  border-radius:50px;
+  box-shadow:0 0 20px rgba(168,85,247,0.6), 0 4px 15px rgba(0,0,0,0.3);
+  animation:logoBounce 2s ease-in-out infinite;
+}
+@keyframes logoBounce {
+  0%,100% { transform:translateY(0) rotate(-1deg); }
+  50%      { transform:translateY(-4px) rotate(1deg); }
+}
+.score-box {
+  font-family:'Fredoka One',cursive;
+  font-size:16px;
+  color:#fff;
+  background:linear-gradient(135deg,#FF6B9D,#FFD93D);
+  padding:8px 22px;
+  border-radius:50px;
+  box-shadow:0 0 20px rgba(255,107,157,0.5), 0 4px 15px rgba(0,0,0,0.3);
+  position:relative;
+  overflow:hidden;
+}
+.score-box::before {
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent);
+  transform:translateX(-100%);
+  animation:shimmer 2.5s ease infinite;
+}
+@keyframes shimmer {
+  0%   { transform:translateX(-100%); }
+  100% { transform:translateX(100%); }
+}
+#sc {
+  font-size:20px;
+  text-shadow:0 0 10px rgba(255,255,255,0.8);
+}
+
+/* ── BADGE ── */
+.badge {
+  display:block;
+  width:fit-content;
+  margin:0 auto 10px;
+  font-family:'Fredoka One',cursive;
+  font-size:13px;
+  color:#fff;
+  background:linear-gradient(135deg,#FF4757,#FF6B9D);
+  padding:5px 20px;
+  border-radius:50px;
+  box-shadow:0 0 15px rgba(255,71,87,0.5);
+  animation:badgePop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes badgePop {
+  0%   { transform:scale(0); opacity:0; }
+  100% { transform:scale(1); opacity:1; }
+}
+
+/* ── TITLE ── */
+h1 {
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(26px,5vw,44px);
+  text-align:center;
+  margin-bottom:4px;
+  background:linear-gradient(135deg, #FFD93D 0%, #FF6B9D 40%, #A855F7 70%, #4ECDC4 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  filter:drop-shadow(0 0 20px rgba(255,107,157,0.4));
+  animation:titleWiggle 3s ease-in-out infinite;
+}
+@keyframes titleWiggle {
+  0%,100% { transform:skewX(0deg); }
+  25%      { transform:skewX(-1deg); }
+  75%      { transform:skewX(1deg); }
+}
+.subtitle {
+  text-align:center;
+  font-size:15px;
+  color:#C4AAFF;
+  margin-bottom:14px;
+  font-weight:700;
+  text-shadow:0 0 8px rgba(168,85,247,0.4);
+}
+
+/* ── PROGRESS BAR ── */
+.progress-wrap {
+  background:rgba(168,85,247,0.15);
+  border-radius:50px;
+  height:16px;
+  margin-bottom:16px;
+  overflow:hidden;
+  border:2px solid rgba(168,85,247,0.3);
+  position:relative;
+}
+.progress-bar {
+  height:100%;
+  border-radius:50px;
+  background:linear-gradient(90deg,#FF4757,#FF9500,#FFD93D,#00C896);
+  background-size:200% 100%;
+  animation:progressShine 2s linear infinite;
+  transition:width 0.6s cubic-bezier(0.34,1.2,0.64,1);
+  position:relative;
+}
+.progress-bar::after {
+  content:'';
+  position:absolute;
+  right:0;
+  top:50%;
+  transform:translateY(-50%);
+  width:20px;
+  height:20px;
+  background:linear-gradient(135deg,#FFD93D,#FF9500);
+  border-radius:50%;
+  box-shadow:0 0 12px rgba(255,217,61,0.9);
+}
+@keyframes progressShine {
+  0%   { background-position:0 0; }
+  100% { background-position:200% 0; }
+}
+
+/* ── INSTRUCTION BOX ── */
+.instruction {
+  background:linear-gradient(135deg,rgba(168,85,247,0.2),rgba(78,205,196,0.2));
+  border:2px solid rgba(168,85,247,0.5);
+  border-radius:20px;
+  padding:14px 18px;
+  text-align:center;
+  font-size:14px;
+  font-weight:700;
+  color:#E0D4FF;
+  margin-bottom:16px;
+  backdrop-filter:blur(10px);
+  animation:instrPulse 3s ease-in-out infinite;
+}
+@keyframes instrPulse {
+  0%,100% { box-shadow:0 0 0 0 rgba(168,85,247,0.4); }
+  50%      { box-shadow:0 0 0 8px rgba(168,85,247,0); }
+}
+
+/* ── FEEDBACK BAR ── */
+.feedback-bar {
+  text-align:center;
+  font-family:'Fredoka One',cursive;
+  font-size:18px;
+  padding:12px;
+  border-radius:16px;
+  margin-bottom:16px;
+  min-height:50px;
+  background:linear-gradient(135deg,rgba(168,85,247,0.15),rgba(78,205,196,0.1));
+  border:2px solid rgba(168,85,247,0.3);
+  color:#C4AAFF;
+  backdrop-filter:blur(10px);
+  transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  text-shadow:0 0 8px rgba(168,85,247,0.4);
+}
+.fb-c {
+  background:linear-gradient(135deg,rgba(0,200,150,0.3),rgba(78,205,196,0.3)) !important;
+  border-color:#00C896 !important;
+  color:#6fffd8 !important;
+  animation:fbBounce 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+.fb-w {
+  background:linear-gradient(135deg,rgba(255,71,87,0.3),rgba(255,107,157,0.3)) !important;
+  border-color:#FF4757 !important;
+  color:#ffb3bc !important;
+  animation:fbShake 0.4s ease;
+}
+@keyframes fbBounce { 0%,100%{transform:scale(1);}50%{transform:scale(1.05);} }
+@keyframes fbShake  { 0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);} }
+
+/* ── MESSAGE CARDS ── */
+.msg-pool { display:flex; flex-direction:column; gap:12px; margin-bottom:20px; }
+
+.msg-card {
+  background: linear-gradient(135deg, #1e0b3a 0%, #0b2250 100%);
+  border:3px solid rgba(168,85,247,0.35);
+  border-radius:20px;
+  padding:16px 20px;
+  cursor:grab;
+  user-select:none;
+  touch-action:none;
+  position:relative;
+  transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  overflow:hidden;
+  box-shadow:0 8px 25px rgba(0,0,0,0.5), 0 0 0 1px rgba(168,85,247,0.2);
+}
+.msg-card::before {
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg, rgba(168,85,247,0.12) 0%, transparent 60%);
+  pointer-events:none;
+}
+.msg-card:hover {
+  transform:translateY(-5px) rotate(0.5deg) scale(1.02);
+  box-shadow:0 16px 40px rgba(168,85,247,0.5), 0 0 0 3px rgba(255,107,157,0.5);
+  border-color:var(--pink);
+}
+.msg-card.dragging {
+  opacity:0.3;
+  transform:scale(0.95);
+}
+.msg-card.placed {
+  opacity:0.15;
+  pointer-events:none;
+  transform:scale(0.95);
+  filter:grayscale(1);
+}
+
+/* Colored left accent per card */
+.msg-card[data-id="m1"] { border-left:5px solid #FF4757; }
+.msg-card[data-id="m2"] { border-left:5px solid #00C896; }
+.msg-card[data-id="m3"] { border-left:5px solid #FF9500; }
+.msg-card[data-id="m4"] { border-left:5px solid #00C896; }
+.msg-card[data-id="m5"] { border-left:5px solid #FF4757; }
+.msg-card[data-id="m6"] { border-left:5px solid #00C896; }
+.msg-card[data-id="m7"] { border-left:5px solid #FF4757; }
+.msg-card[data-id="m8"] { border-left:5px solid #00C896; }
+.msg-card[data-id="m9"] { border-left:5px solid #FF4757; }
+.msg-card[data-id="m10"]{ border-left:5px solid #00C896; }
+
+.msg-header {
+  font-size:11px;
+  font-weight:900;
+  color:#A855F7;
+  margin-bottom:5px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  text-shadow:0 0 8px rgba(168,85,247,0.5);
+}
+.msg-body {
+  font-size:14px;
+  color:#E0D4FF;
+  line-height:1.6;
+  font-weight:700;
+}
+.msg-tag {
+  position:absolute;
+  top:12px;
+  right:14px;
+  font-size:11px;
+  font-weight:800;
+  background:linear-gradient(135deg,rgba(168,85,247,0.3),rgba(78,205,196,0.3));
+  padding:4px 12px;
+  border-radius:50px;
+  color:#4ECDC4;
+  border:1px solid rgba(78,205,196,0.4);
+}
+
+/* Drag handle hint */
+.drag-hint {
+  position:absolute;
+  left:0;
+  top:50%;
+  transform:translateY(-50%);
+  width:6px;
+  height:60%;
+  border-radius:0 4px 4px 0;
+  background:linear-gradient(180deg,var(--purple),var(--pink));
+  animation:hintPulse 2s ease-in-out infinite;
+}
+@keyframes hintPulse {
+  0%,100% { opacity:0.5; }
+  50%      { opacity:1; }
+}
+
+/* ── DROP BUCKETS ── */
+.buckets {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+  margin-bottom:20px;
+}
+@media(max-width:560px) { .buckets { grid-template-columns:1fr; } }
+
+.bucket {
+  border-radius:28px;
+  border:3px dashed;
+  padding:20px 16px;
+  min-height:180px;
+  transition:all 0.3s cubic-bezier(0.34,1.2,0.64,1);
+  position:relative;
+  overflow:hidden;
+  backdrop-filter:blur(20px);
+}
+.bucket::before {
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,rgba(168,85,247,0.1),transparent);
+  pointer-events:none;
+}
+
+/* Scam bucket */
+#bucket-scam {
+  background:linear-gradient(135deg,rgba(255,71,87,0.2),rgba(255,107,157,0.1));
+  border-color:rgba(255,71,87,0.6);
+  box-shadow:0 0 30px rgba(255,71,87,0.25), inset 0 0 30px rgba(255,71,87,0.08);
+}
+/* Safe bucket */
+#bucket-safe {
+  background:linear-gradient(135deg,rgba(0,200,150,0.2),rgba(78,205,196,0.1));
+  border-color:rgba(0,200,150,0.6);
+  box-shadow:0 0 30px rgba(0,200,150,0.25), inset 0 0 30px rgba(0,200,150,0.08);
+}
+
+.bucket.over {
+  transform:scale(1.05);
+  filter:brightness(1.2);
+}
+#bucket-scam.over { box-shadow:0 0 50px rgba(255,71,87,0.6), 0 0 0 4px rgba(255,71,87,0.4); }
+#bucket-safe.over { box-shadow:0 0 50px rgba(0,200,150,0.6), 0 0 0 4px rgba(0,200,150,0.4); }
+
+.bucket.correct { animation:bucketWin 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes bucketWin { 0%,100%{transform:scale(1);}50%{transform:scale(1.07);} }
+.bucket.wrong   { animation:bucketShake 0.4s ease; }
+@keyframes bucketShake { 0%,100%{transform:translateX(0);}25%{transform:translateX(-10px);}75%{transform:translateX(10px);} }
+
+.bucket-icon {
+  font-size:54px;
+  text-align:center;
+  display:block;
+  margin-bottom:10px;
+  animation:iconBob 2s ease-in-out infinite;
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+}
+@keyframes iconBob {
+  0%,100% { transform:translateY(0) rotate(-3deg); }
+  50%      { transform:translateY(-8px) rotate(3deg); }
+}
+.bucket-title {
+  font-family:'Fredoka One',cursive;
+  font-size:22px;
+  text-align:center;
+  margin-bottom:6px;
+  text-shadow:0 2px 8px rgba(0,0,0,0.2);
+}
+#bucket-scam .bucket-title { color:#FF6B9D; }
+#bucket-safe .bucket-title { color:#4ECDC4; }
+
+.bucket-desc {
+  font-size:12px;
+  font-weight:800;
+  text-align:center;
+  margin-bottom:12px;
+  opacity:0.8;
+}
+#bucket-scam .bucket-desc { color:#FFB3BC; }
+#bucket-safe .bucket-desc { color:#A8FFF0; }
+
+.placed-list { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; }
+.p-tag {
+  font-size:11px;
+  font-weight:800;
+  padding:5px 12px;
+  border-radius:50px;
+  color:#fff;
+  animation:tagPop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+  box-shadow:0 3px 10px rgba(0,0,0,0.2);
+}
+@keyframes tagPop { 0%{transform:scale(0) rotate(-10deg);}100%{transform:scale(1) rotate(0deg);} }
+
+/* ── FINAL SCREEN ── */
+.final-screen {
+  display:none;
+  background:linear-gradient(135deg,rgba(168,85,247,0.35),rgba(78,205,196,0.25));
+  border:3px solid rgba(168,85,247,0.5);
+  border-radius:32px;
+  padding:40px 30px;
+  text-align:center;
+  backdrop-filter:blur(30px);
+  box-shadow:0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(168,85,247,0.3);
+}
+.final-screen.show { display:block; animation:finalIn 0.6s cubic-bezier(0.34,1.56,0.64,1) both; }
+@keyframes finalIn { 0%{transform:scale(0.5) rotate(-5deg);opacity:0;}100%{transform:scale(1) rotate(0deg);opacity:1;} }
+
+.big-emoji {
+  font-size:90px;
+  display:block;
+  animation:superBob 1.5s ease-in-out infinite;
+  filter:drop-shadow(0 8px 20px rgba(168,85,247,0.5));
+}
+@keyframes superBob {
+  0%,100% { transform:translateY(0) scale(1); }
+  50%      { transform:translateY(-18px) scale(1.1); }
+}
+.final-title {
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(22px,4vw,36px);
+  background:linear-gradient(135deg,#FFD93D,#FF6B9D,#A855F7);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  margin:14px 0 8px;
+}
+.final-msg {
+  font-size:16px;
+  font-weight:700;
+  color:#C4AAFF;
+  margin-bottom:20px;
+  text-shadow:0 0 10px rgba(168,85,247,0.5);
+}
+
+/* Stars rating */
+.stars-rating {
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  margin-bottom:20px;
+}
+.star-rate {
+  font-size:36px;
+  animation:starSpin 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+.btn {
+  padding:14px 30px;
+  border:none;
+  border-radius:50px;
+  font-family:'Fredoka One',cursive;
+  font-size:16px;
+  cursor:pointer;
+  margin:6px;
+  transition:all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  position:relative;
+  overflow:hidden;
+}
+.btn::after {
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.3),transparent);
+  pointer-events:none;
+}
+.btn:hover { transform:translateY(-4px) scale(1.05); }
+.btn:active { transform:scale(0.95); }
+.btn-r {
+  background:linear-gradient(135deg,#FF4757,#FF6B9D);
+  color:#fff;
+  box-shadow:0 6px 20px rgba(255,71,87,0.4);
+}
+.btn-n {
+  background:linear-gradient(135deg,#A855F7,#4ECDC4);
+  color:#fff;
+  box-shadow:0 6px 20px rgba(168,85,247,0.4);
+}
+
+/* ── CONFETTI ── */
+.confetti-piece {
+  position:fixed;
+  animation:cfFall ease-in forwards;
+  z-index:500;
+  pointer-events:none;
+}
+@keyframes cfFall {
+  0%   { transform:translateY(-20px) rotate(0deg); opacity:1; }
+  100% { transform:translateY(105vh) rotate(720deg); opacity:0; }
+}
+
+/* ── GHOST DRAG CARD ── */
+#drag-ghost {
+  position:fixed;
+  z-index:999;
+  pointer-events:none;
+  background:linear-gradient(135deg,#A855F7,#EC4899);
+  color:#fff;
+  font-family:'Fredoka One',cursive;
+  font-size:13px;
+  padding:10px 16px;
+  border-radius:16px;
+  max-width:220px;
+  line-height:1.4;
+  box-shadow:0 10px 30px rgba(168,85,247,0.6), 0 0 20px rgba(236,72,153,0.4);
+  transform:rotate(-3deg);
+  display:none;
+}
+
+/* ── SCORE POP ── */
+.score-pop {
+  position:fixed;
+  font-family:'Fredoka One',cursive;
+  font-size:28px;
+  font-weight:900;
+  color:#FFD93D;
+  text-shadow:0 0 20px rgba(255,217,61,0.8);
+  pointer-events:none;
+  z-index:400;
+  animation:scoreFly 1s ease-out forwards;
+}
+@keyframes scoreFly {
+  0%   { transform:translateY(0) scale(0); opacity:1; }
+  60%  { transform:translateY(-60px) scale(1.2); opacity:1; }
+  100% { transform:translateY(-100px) scale(0.8); opacity:0; }
+}
+
+/* ── PARTICLES ── */
+.particle {
+  position:fixed;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:400;
+  animation:particleOut ease-out forwards;
+}
+@keyframes particleOut {
+  0%   { transform:translate(0,0) scale(1); opacity:1; }
+  100% { transform:var(--tx) scale(0); opacity:0; }
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:480px) {
+  .msg-body { font-size:13px; }
+  .bucket-icon { font-size:40px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Animated Background -->
+<div class="bg-canvas"></div>
+<div class="grid-lines"></div>
+
+<!-- Glowing orbs -->
+<div class="orb" style="width:400px;height:400px;left:-100px;top:-100px;background:radial-gradient(circle,rgba(168,85,247,0.5),transparent 70%);animation-duration:7s;"></div>
+<div class="orb" style="width:350px;height:350px;right:-80px;bottom:100px;background:radial-gradient(circle,rgba(78,205,196,0.4),transparent 70%);animation-duration:9s;animation-delay:-3s;"></div>
+<div class="orb" style="width:300px;height:300px;left:40%;top:40%;background:radial-gradient(circle,rgba(255,107,157,0.3),transparent 70%);animation-duration:11s;animation-delay:-5s;"></div>
+
+<!-- Star field -->
+<div class="star-field" id="starField"></div>
+
+<!-- Floating BG emojis -->
+<div id="bgFloats"></div>
+
+<!-- Ghost drag element -->
+<div id="drag-ghost">✋ Dragging...</div>
+
+<div class="wrap">
+  <!-- Top bar -->
+  <div class="top-bar">
+    <div class="logo">⭐ Planrs</div>
+    <div class="score-box">🏆 <span id="sc">0</span>/<span id="tot">10</span></div>
+  </div>
+
+  <div class="badge">✨ Section 2 · Activity A ✨</div>
+  <h1>📲 Scam or Safe?</h1>
+  <p class="subtitle">🕵️ Become a super scam detective! Drag each message to the right bucket!</p>
+  <div class="progress-wrap"><div class="progress-bar" id="pb" style="width:0%"></div></div>
+  <div class="instruction">💬 Read each message carefully, then drag it to <strong>SCAM 🚨</strong> or <strong>SAFE ✅</strong>!</div>
+  <div class="feedback-bar" id="fb">👆 Grab a message and drag it to start!</div>
+
+  <!-- Message pool -->
+  <div class="msg-pool" id="pool">
+    <div class="msg-card" draggable="true" data-id="m1" data-bucket="scam">
+      <div class="drag-hint"></div>
+      <div class="msg-header">📱 WhatsApp Message</div>
+      <div class="msg-body">"CONGRATULATIONS! You won ₹25 Lakh in KBC lottery! Send your bank details to claim NOW! Offer expires in 10 minutes!"</div>
+      <div class="msg-tag">Unknown sender</div>
+    </div>
+    <div class="msg-card" draggable="true" data-id="m2" data-bucket="safe">
+      <div class="drag-hint"></div>
+      <div class="msg-header">📧 Email from School</div>
+      <div class="msg-body">"Dear Student, please submit your assignment by Friday via the school portal. Login at school.edu.in with your student ID."</div>
+      <div class="msg-tag">Known sender</div>
+    </div>
+    <div class="msg-card" draggable="true" data-id="m3" data-bucket="scam">
+      <div class="drag-hint"></div>
+      <div class="msg-header">📱 SMS</div>
+      <div class="msg-body">"Your SBI account will be blocked! Click here immediately to verify: www.sbi-secure-update.net — Enter OTP to confirm."</div>
+      <div class="msg-tag">Unknown number</div>
+    </div>
+    <div class="msg-card" draggable="true" data-id="m4" data-bucket="safe">
+      <div class="drag-hint"></div>
+      <div class="msg-header">📧 Email from YouTube</div>
+      <div class="msg-body">"You have a new comment on your video. View your notification at youtube.com/notifications."</div>
+      <div class="msg-tag">no-reply@youtube.com</div>
+    </div>
+    <div class="msg-card" draggable="true" data-id="m5" data-bucket="scam">
+      <div class="drag-hint"></div>
+      <div class="msg-header">💬 Instagram DM</div>
+      <div class="msg-body">"Hey! I found your photos! I have access to your account. Pay me ₹500 via Paytm or I'll share them. Send money NOW!"</div>
+      <div class="msg-tag">Stranger</div>
+    </div>
+    <div class="msg-card" draggable="true" data-id="m6" data-bucket="safe">
+      <div class="drag-hint"></div>
+      <div class="msg-header">📱 WhatsApp from Mum</div>
+      <div class="msg-body">"Beta, I'll be late today. Please start your homework. Have your dabba in the fridge. See you by 7pm! Love, Amma ❤️"</div>
+      <div class="msg-tag">Saved contact</div>
+    </div>
+    <div class="msg-card" draggable="true" data-id="m7" data-bucket="scam">
+      <div class="drag-hint"></div>
+      <div class="msg-header">📞 Phone Call</div>
+      <div class="msg-body">"Hello, I am calling from Microsoft technical support. Your computer has a virus. Please install this app and give me remote access immediately."</div>
+      <div class="msg-tag">Unknown number</div>
+    </div>
+    <div class="msg-card" draggable="true" data-id="m8" data-bucket="safe">
+      <div class="drag-hint"></div>
+      <div class="msg-header">📧 Email from Amazon</div>
+      <div class="msg-body">"Your order #405-1234 has been shipped! Track your package at amazon.in/orders using your registered email."</div>
+      <div class="msg-tag">ship-confirm@amazon.in</div>
+    </div>
+    <div class="msg-card" draggable="true" data-id="m9" data-bucket="scam">
+      <div class="drag-hint"></div>
+      <div class="msg-header">💬 Discord Message</div>
+      <div class="msg-body">"Dude I'm testing a new game cheat! Download this file and run it. Don't tell anyone — it might get patched. Trust me bro!"</div>
+      <div class="msg-tag">Online friend</div>
+    </div>
+    <div class="msg-card" draggable="true" data-id="m10" data-bucket="safe">
+      <div class="drag-hint"></div>
+      <div class="msg-header">📱 SMS from HDFC Bank</div>
+      <div class="msg-body">"Your account XX1234 has been debited ₹500 for utility payment on 15-Mar. If not done by you, call 1800-2600-333."</div>
+      <div class="msg-tag">VM-HDFC</div>
+    </div>
+  </div>
+
+  <!-- Buckets -->
+  <div class="buckets">
+    <div class="bucket" data-id="scam" id="bucket-scam">
+      <span class="bucket-icon">🚨</span>
+      <div class="bucket-title">SCAM!</div>
+      <div class="bucket-desc">Don't click · Don't reply · Tell an adult!</div>
+      <div class="placed-list" id="placed-scam"></div>
+    </div>
+    <div class="bucket" data-id="safe" id="bucket-safe">
+      <span class="bucket-icon">✅</span>
+      <div class="bucket-title">SAFE</div>
+      <div class="bucket-desc">Looks legit — but always stay alert!</div>
+      <div class="placed-list" id="placed-safe"></div>
+    </div>
+  </div>
+
+  <!-- Final screen -->
+  <div class="final-screen" id="fin">
+    <span class="big-emoji" id="finEmoji">🛡️</span>
+    <div class="final-title" id="finScore">10/10 Correct!</div>
+    <div class="stars-rating" id="starsRating"></div>
+    <div class="final-msg" id="finMsg">Amazing work!</div>
+    <button class="btn btn-r" onclick="resetGame()">🔄 Try Again</button>
+    <button class="btn btn-n" onclick="alert('🚀 Excellent! Move to Section 3!')">➡️ Next Section</button>
+  </div>
+</div>
+
+<script>
+// ── BACKGROUND SETUP ──
+(function(){
+  // Stars
+  const sf = document.getElementById('starField');
+  const cols = ['#FF6B9D','#FFD93D','#A855F7','#4ECDC4','#FF9500','#00C896'];
+  for(let i=0;i<80;i++){
+    const s=document.createElement('div');
+    s.className='tstar';
+    const sz=Math.random()*4+1;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${Math.random()*3+1.5}s;animation-delay:-${Math.random()*5}s;`;
+    sf.appendChild(s);
+  }
+
+  // Floating BG emojis
+  const bg = document.getElementById('bgFloats');
+  const ems = ['🛡️','🔍','📱','💻','🔐','⚠️','✅','🚨','🔑','💡','🌟','⭐','🎯','🏆','💎','🔒','🕵️','🦸','🎉','🎊','🌈','🚀','💥','🔥','✨','🧩','🎮','👾'];
+  const glowColors = ['rgba(255,107,157,0.8)','rgba(255,217,61,0.8)','rgba(168,85,247,0.8)','rgba(78,205,196,0.8)','rgba(255,149,0,0.8)','rgba(0,200,150,0.8)'];
+  for(let i=0;i<30;i++){
+    const d=document.createElement('div');
+    d.className='bg-float';
+    const sz = Math.random()*3+2.5;
+    const gc = glowColors[Math.floor(Math.random()*glowColors.length)];
+    d.textContent=ems[Math.floor(Math.random()*ems.length)];
+    d.style.cssText=`left:${Math.random()*100}%;font-size:${sz}rem;animation-duration:${Math.random()*12+10}s;animation-delay:-${Math.random()*22}s;filter:drop-shadow(0 0 12px ${gc}) drop-shadow(0 0 24px ${gc});`;
+    bg.appendChild(d);
+  }
+})();
+
+// ── GAME STATE ──
+let score=0, total=10, dragId=null, dragEl=null;
+const msgs_c=['🎉 CORRECT! You spotted it!','⭐ BRILLIANT detective!','🔥 You got it!','🦸 Scam master!','💪 Nailed it!','🌟 Super smart!'];
+const msgs_w=['😅 Not quite! Read more carefully!','🤔 Think again!','💪 Keep trying!','🧐 Look for clues!'];
+
+const correctEmojis  = ['🛡️','🏆','🌟'];
+const scoreDisplay   = document.getElementById('sc');
+const progressBar    = document.getElementById('pb');
+const feedbackBar    = document.getElementById('fb');
+const ghost          = document.getElementById('drag-ghost');
+
+// ── DRAG EVENTS ──
+document.querySelectorAll('.msg-card').forEach(card => {
+  // Desktop drag
+  card.addEventListener('dragstart', e => {
+    dragId = card.dataset.id;
+    dragEl = card;
+    setTimeout(() => card.classList.add('dragging'), 0);
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  card.addEventListener('dragend', () => card.classList.remove('dragging'));
+
+  // Touch drag
+  let touchGhostActive = false;
+  card.addEventListener('touchstart', e => {
+    e.preventDefault();
+    dragId = card.dataset.id;
+    dragEl = card;
+    ghost.textContent = card.querySelector('.msg-body').textContent.slice(0,60)+'…';
+    touchGhostActive = false;
+  }, {passive:false});
+
+  card.addEventListener('touchmove', e => {
+    e.preventDefault();
+    const t = e.touches[0];
+    if(!touchGhostActive){ ghost.style.display='block'; touchGhostActive=true; }
+    ghost.style.left = (t.clientX - 110) + 'px';
+    ghost.style.top  = (t.clientY - 40)  + 'px';
+    document.querySelectorAll('.bucket').forEach(b => b.classList.remove('over'));
+    const under = document.elementFromPoint(t.clientX, t.clientY);
+    under?.closest('.bucket')?.classList.add('over');
+  }, {passive:false});
+
+  card.addEventListener('touchend', e => {
+    e.preventDefault();
+    ghost.style.display = 'none';
+    const t = e.changedTouches[0];
+    const under = document.elementFromPoint(t.clientX, t.clientY);
+    const bucket = under?.closest('.bucket');
+    document.querySelectorAll('.bucket').forEach(b => b.classList.remove('over'));
+    if(bucket && dragId) handleDrop(bucket, t.clientX, t.clientY);
+    dragId = null; dragEl = null;
+  });
+});
+
+document.querySelectorAll('.bucket').forEach(b => {
+  b.addEventListener('dragover',  e => { e.preventDefault(); b.classList.add('over'); });
+  b.addEventListener('dragleave', ()  => b.classList.remove('over'));
+  b.addEventListener('drop',      e  => { e.preventDefault(); b.classList.remove('over'); handleDrop(b); });
+});
+
+// ── HANDLE DROP ──
+function handleDrop(b, cx, cy) {
+  if(!dragId || !dragEl) return;
+  const card = document.querySelector(`[data-id="${dragId}"]`);
+  if(!card || card.classList.contains('placed')) return;
+
+  const rect = b.getBoundingClientRect();
+  const px = cx ?? (rect.left + rect.width/2);
+  const py = cy ?? (rect.top  + rect.height/2);
+
+  const correct = card.dataset.bucket === b.dataset.id;
+
+  if(correct){
+    score++;
+    scoreDisplay.textContent = score;
+    progressBar.style.width = (score/total*100) + '%';
+
+    b.classList.add('correct');
+    setTimeout(() => b.classList.remove('correct'), 600);
+
+    card.classList.add('placed');
+
+    // Add placed tag
+    const tag = document.createElement('div');
+    tag.className = 'p-tag';
+    tag.style.background = b.dataset.id==='scam'
+      ? 'linear-gradient(135deg,#FF4757,#FF6B9D)'
+      : 'linear-gradient(135deg,#00C896,#4ECDC4)';
+    tag.textContent = '✓ '+card.querySelector('.msg-header').textContent;
+    document.getElementById('placed-'+b.dataset.id).appendChild(tag);
+
+    feedbackBar.className = 'feedback-bar fb-c';
+    feedbackBar.textContent = msgs_c[Math.floor(Math.random()*msgs_c.length)];
+
+    // Score pop
+    spawnScorePop(px, py, '+1 ⭐');
+    // Particles
+    spawnParticles(px, py, ['#FFD93D','#FF6B9D','#4ECDC4','#A855F7']);
+
+    if(score === total) setTimeout(showFinal, 1400);
+  } else {
+    b.classList.add('wrong');
+    setTimeout(() => b.classList.remove('wrong'), 500);
+    feedbackBar.className = 'feedback-bar fb-w';
+    feedbackBar.textContent = msgs_w[Math.floor(Math.random()*msgs_w.length)];
+    spawnParticles(px, py, ['#FF4757','#FF9500'], 8);
+  }
+  dragId = null; dragEl = null;
+}
+
+// ── SCORE POP ──
+function spawnScorePop(x, y, txt) {
+  const el = document.createElement('div');
+  el.className = 'score-pop';
+  el.textContent = txt;
+  el.style.left = x + 'px';
+  el.style.top  = y + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1100);
+}
+
+// ── PARTICLES ──
+function spawnParticles(x, y, colors, n=16) {
+  for(let i=0;i<n;i++){
+    const el = document.createElement('div');
+    el.className = 'particle';
+    const angle = (Math.PI*2/n)*i + Math.random()*0.5;
+    const dist  = Math.random()*80+40;
+    const tx = `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px)`;
+    el.style.cssText = `left:${x}px;top:${y}px;width:${Math.random()*10+4}px;height:${Math.random()*10+4}px;background:${colors[Math.floor(Math.random()*colors.length)]};--tx:${tx};animation-duration:${Math.random()*0.4+0.4}s;`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 900);
+  }
+}
+
+// ── FINAL SCREEN ──
+function showFinal() {
+  launchConfetti();
+  const fin = document.getElementById('fin');
+  fin.className = 'final-screen show';
+  const pct = Math.round(score/total*100);
+
+  const emojis = ['😅','🤔','📚','👍','🎯','🌟','🏆'];
+  document.getElementById('finEmoji').textContent = pct===100 ? '🏆' : pct>=60 ? '🌟' : '📚';
+  document.getElementById('finScore').textContent = score+'/'+total+' Correct! ('+pct+'%)';
+
+  const msgs = [
+    'Keep practising! You\'ll get there! 💪',
+    'Good effort! Review the clues! 📚',
+    'Not bad! Try once more! 👍',
+    'Well done, detective! 🎯',
+    'Amazing work! 🌟',
+    'PERFECT! Master Scam Detector! 🏆'
+  ];
+  document.getElementById('finMsg').textContent = msgs[Math.min(5, Math.floor(pct/20))];
+
+  // Stars
+  const stars = document.getElementById('starsRating');
+  stars.innerHTML = '';
+  const starCount = pct===100?5:pct>=80?4:pct>=60?3:pct>=40?2:1;
+  for(let i=0;i<5;i++){
+    const s = document.createElement('span');
+    s.className = 'star-rate';
+    s.style.animationDelay = (i*0.1)+'s';
+    s.textContent = i<starCount ? '⭐' : '☆';
+    s.style.opacity = i<starCount ? '1' : '0.25';
+    s.style.filter  = i<starCount ? 'drop-shadow(0 0 6px #FFD93D)' : 'grayscale(1)';
+    stars.appendChild(s);
+  }
+}
+
+// ── CONFETTI ──
+function launchConfetti() {
+  const colors = ['#FF4757','#FFD93D','#A855F7','#00C896','#4ECDC4','#FF6B9D','#FF9500','#F97316','#06B6D4'];
+  const shapes = ['circle','square'];
+  for(let i=0;i<80;i++){
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    const isCircle = Math.random() > 0.5;
+    el.style.cssText = `
+      left:${Math.random()*100}vw;
+      top:-20px;
+      width:${Math.random()*14+5}px;
+      height:${Math.random()*14+5}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      border-radius:${isCircle?'50%':'3px'};
+      animation-delay:${Math.random()*1.5}s;
+      animation-duration:${Math.random()*1.5+1.5}s;
+    `;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  }
+}
+
+// ── RESET ──
+function resetGame() {
+  score = 0;
+  scoreDisplay.textContent = '0';
+  progressBar.style.width = '0%';
+  feedbackBar.className = 'feedback-bar';
+  feedbackBar.textContent = '👆 Grab a message and drag it to start!';
+  document.getElementById('fin').className = 'final-screen';
+  document.querySelectorAll('.msg-card').forEach(c => c.classList.remove('placed','dragging'));
+  document.getElementById('placed-scam').innerHTML = '';
+  document.getElementById('placed-safe').innerHTML = '';
+}
+</script>
+</body>
+</html>

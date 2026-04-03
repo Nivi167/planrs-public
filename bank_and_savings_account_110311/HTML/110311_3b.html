@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Section 1 Activity B — True or False!</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue: #3B82F6; --green: #22C55E; --red: #EF4444;
+  --orange: #F97316; --yellow: #FBBF24; --purple: #A855F7;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: #060818;
+  min-height: 100vh;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 20px 40px;
+  position: relative;
+  user-select: none;
+}
+
+/* ===== CANVAS BG ===== */
+#bgCanvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ===== APP ===== */
+.app {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.badge {
+  background: linear-gradient(135deg, #FBBF24, #F97316);
+  color: white;
+  border-radius: 30px;
+  padding: 6px 20px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  box-shadow: 0 0 20px rgba(251,191,36,0.5), 0 0 50px rgba(251,191,36,0.2);
+  animation: badgeGlow 2.5s ease-in-out infinite;
+}
+@keyframes badgeGlow {
+  0%,100%{box-shadow:0 0 20px rgba(251,191,36,0.5),0 0 50px rgba(251,191,36,0.2)}
+  50%{box-shadow:0 0 30px rgba(251,191,36,0.9),0 0 80px rgba(251,191,36,0.4)}
+}
+
+h1 {
+  font-family: 'Fredoka One', cursive;
+  font-size: 2.5rem;
+  background: linear-gradient(135deg, #60A5FA 0%, #A78BFA 40%, #34D399 80%, #FBBF24 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  margin-bottom: 2px;
+  line-height: 1.1;
+  animation: titleShimmer 4s linear infinite;
+  background-size: 200%;
+}
+@keyframes titleShimmer {
+  0%{background-position:0%} 100%{background-position:200%}
+}
+
+.subtitle {
+  color: rgba(255,255,255,0.4);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 18px;
+  text-transform: uppercase;
+}
+
+.score-bar {
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 30px;
+  padding: 9px 26px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #FBBF24;
+  margin-bottom: 12px;
+  text-shadow: 0 0 10px rgba(251,191,36,0.6);
+}
+
+.progress {
+  width: 100%;
+  background: rgba(255,255,255,0.06);
+  border-radius: 10px;
+  height: 10px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.06);
+  position: relative;
+}
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #60A5FA, #A78BFA, #34D399, #FBBF24);
+  background-size: 200%;
+  border-radius: 10px;
+  transition: width 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  animation: barShimmer 2s linear infinite;
+  position: relative;
+}
+@keyframes barShimmer { 0%{background-position:0%} 100%{background-position:200%} }
+.progress-bar::after {
+  content:'';position:absolute;right:-1px;top:-2px;bottom:-2px;
+  width:14px;background:white;border-radius:50%;opacity:0.7;
+  filter:blur(3px);animation:orb 1.5s ease-in-out infinite;
+}
+@keyframes orb{0%,100%{opacity:0.4}50%{opacity:0.9}}
+
+/* ===== QUESTION CARD ===== */
+.question-card {
+  background: rgba(255,255,255,0.055);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255,255,255,0.13);
+  border-radius: 28px;
+  padding: 36px 28px;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 24px;
+  min-height: 155px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.12);
+  position: relative;
+  overflow: hidden;
+}
+.question-card::before {
+  content:'';position:absolute;top:0;left:-100%;right:0;height:1.5px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.5),transparent);
+  animation:scanLine 3.5s ease-in-out infinite;
+}
+@keyframes scanLine{0%{left:-100%}100%{left:100%}}
+.question-card.slide-in { animation: slideIn 0.45s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes slideIn { from{transform:translateX(90px) scale(0.88);opacity:0} to{transform:none;opacity:1} }
+.question-card.shake { animation: shake 0.5s ease; }
+@keyframes shake { 0%,100%{transform:none} 20%{transform:translateX(-9px) rotate(-1deg)} 40%{transform:translateX(9px) rotate(1deg)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+.question-card.correct-glow { animation: correctGlow 0.6s ease; }
+@keyframes correctGlow { 0%{box-shadow:0 24px 60px rgba(0,0,0,0.5)} 50%{box-shadow:0 24px 80px rgba(34,197,94,0.5),inset 0 0 50px rgba(34,197,94,0.12)} 100%{box-shadow:0 24px 60px rgba(0,0,0,0.5)} }
+
+.q-num { color:rgba(255,255,255,0.3);font-size:0.75rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:12px; }
+.q-text { font-size:1.12rem;color:rgba(255,255,255,0.9);font-weight:700;line-height:1.65; }
+
+/* ===== DRAG ZONE ===== */
+.drag-hint { color:rgba(255,255,255,0.35);font-size:0.73rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;text-align:center; }
+
+.draggable-wrap { display:flex;justify-content:center;margin-bottom:16px; }
+.draggable-card {
+  background: linear-gradient(135deg,rgba(255,255,255,0.14),rgba(255,255,255,0.07));
+  border: 1px solid rgba(255,255,255,0.22);
+  border-radius: 18px;
+  padding: 13px 36px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 1rem;
+  color: white;
+  letter-spacing: 1.5px;
+  cursor: grab;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.18);
+  animation: cardBob 3.5s ease-in-out infinite;
+  transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s;
+  touch-action: none;
+}
+@keyframes cardBob { 0%,100%{transform:translateY(0) rotate(-1.2deg)} 50%{transform:translateY(-7px) rotate(1.2deg)} }
+.draggable-card:hover { animation:none;transform:scale(1.07);box-shadow:0 16px 44px rgba(0,0,0,0.45),0 0 20px rgba(255,255,255,0.08); }
+.draggable-card.dragging { cursor:grabbing;animation:none;transform:scale(1.12) rotate(4deg);opacity:0.7; }
+.draggable-card.hidden { opacity:0;pointer-events:none;transform:scale(0.7);transition:all 0.3s; }
+
+.drop-zones { display:flex;gap:14px;width:100%;margin-bottom:14px; }
+.drop-zone {
+  flex:1;min-height:76px;border-radius:20px;border:2px dashed;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fredoka One',cursive;
+  transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
+  position:relative;overflow:hidden;cursor:pointer;
+}
+.drop-zone::before {
+  content:'';position:absolute;inset:0;opacity:0;
+  transition:opacity 0.3s;border-radius:18px;
+}
+.drop-zone-true { border-color:rgba(34,197,94,0.45);color:#22C55E;background:rgba(34,197,94,0.04); }
+.drop-zone-false { border-color:rgba(239,68,68,0.45);color:#EF4444;background:rgba(239,68,68,0.04); }
+.drop-zone-true.drag-over { transform:scale(1.05);border-style:solid;border-color:#22C55E;background:rgba(34,197,94,0.18);box-shadow:0 0 30px rgba(34,197,94,0.35),inset 0 0 20px rgba(34,197,94,0.1); }
+.drop-zone-false.drag-over { transform:scale(1.05);border-style:solid;border-color:#EF4444;background:rgba(239,68,68,0.18);box-shadow:0 0 30px rgba(239,68,68,0.35),inset 0 0 20px rgba(239,68,68,0.1); }
+.drop-zone-true.accepted { border-style:solid;border-color:#22C55E;background:rgba(34,197,94,0.2);box-shadow:0 0 35px rgba(34,197,94,0.4); }
+.drop-zone-false.accepted { border-style:solid;border-color:#EF4444;background:rgba(239,68,68,0.2);box-shadow:0 0 35px rgba(239,68,68,0.4); }
+.zone-icon { font-size:1.5rem;margin-right:7px; }
+.zone-label { font-size:1.15rem;letter-spacing:1px; }
+
+.btn-row { display:flex;gap:12px;margin-bottom:16px;width:100%; }
+.btn-tf {
+  flex:1;padding:14px;border:none;border-radius:18px;
+  font-family:'Fredoka One',cursive;font-size:1.05rem;letter-spacing:1px;
+  cursor:pointer;transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.2s;
+  position:relative;overflow:hidden;
+}
+.btn-tf:disabled { opacity:0.3;cursor:not-allowed;transform:none!important; }
+.btn-true { background:linear-gradient(135deg,#22C55E,#16A34A);color:white;box-shadow:0 8px 22px rgba(34,197,94,0.4); }
+.btn-true:hover:not(:disabled) { transform:translateY(-3px) scale(1.03);box-shadow:0 14px 32px rgba(34,197,94,0.55); }
+.btn-false { background:linear-gradient(135deg,#EF4444,#DC2626);color:white;box-shadow:0 8px 22px rgba(239,68,68,0.4); }
+.btn-false:hover:not(:disabled) { transform:translateY(-3px) scale(1.03);box-shadow:0 14px 32px rgba(239,68,68,0.55); }
+
+.feedback {
+  min-height:54px;font-size:0.92rem;font-weight:700;text-align:center;
+  padding:13px 18px;border-radius:18px;width:100%;line-height:1.55;
+  opacity:0;transform:translateY(12px) scale(0.96);transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  margin-bottom:4px;
+}
+.feedback.show { opacity:1;transform:none; }
+.feedback.correct { background:rgba(34,197,94,0.13);color:#4ADE80;border:1px solid rgba(34,197,94,0.28); }
+.feedback.wrong   { background:rgba(239,68,68,0.1);color:#F87171;border:1px solid rgba(239,68,68,0.28); }
+
+/* ===== END ===== */
+.end-screen { display:none;text-align:center;width:100%;animation:endReveal 0.6s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes endReveal { from{transform:scale(0.65) rotate(-6deg);opacity:0} to{transform:none;opacity:1} }
+.end-screen h2 { font-family:'Fredoka One',cursive;font-size:2rem;color:white;margin-bottom:6px; }
+.end-score {
+  font-family:'Fredoka One',cursive;font-size:4.5rem;
+  background:linear-gradient(135deg,#FBBF24,#F97316,#EF4444);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin:14px 0;filter:drop-shadow(0 0 25px rgba(251,191,36,0.5));
+  animation:scoreReveal 0.6s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes scoreReveal { from{transform:scale(0.3);opacity:0} to{transform:none;opacity:1} }
+.end-msg { color:rgba(255,255,255,0.6);font-size:1rem;font-weight:700;margin-bottom:28px;line-height:1.6; }
+.end-stars { font-size:2.2rem;margin-bottom:14px;animation:starPop 0.8s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes starPop { from{transform:scale(0) rotate(-180deg)} to{transform:none} }
+.btn-action {
+  padding:13px 30px;border:none;border-radius:50px;
+  font-family:'Fredoka One',cursive;font-size:0.95rem;letter-spacing:1px;
+  cursor:pointer;margin:5px;
+  transition:transform 0.2s cubic-bezier(0.34,1.56,0.64,1),box-shadow 0.2s;
+}
+.btn-action:hover { transform:translateY(-3px) scale(1.06); }
+.btn-action:active { transform:scale(0.95); }
+.btn-retry { background:linear-gradient(135deg,#F97316,#EF4444);color:white;box-shadow:0 8px 22px rgba(249,115,22,0.45); }
+.btn-next  { background:linear-gradient(135deg,#3B82F6,#8B5CF6);color:white;box-shadow:0 8px 22px rgba(59,130,246,0.45); }
+
+/* ===== GHOST ===== */
+#dragGhost {
+  position:fixed;pointer-events:none;z-index:9998;
+  background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.35);
+  border-radius:14px;padding:11px 26px;
+  font-family:'Fredoka One',cursive;color:white;font-size:0.9rem;letter-spacing:1px;
+  box-shadow:0 20px 50px rgba(0,0,0,0.6);backdrop-filter:blur(10px);
+  transform:rotate(5deg) scale(1.12);display:none;
+}
+
+/* ===== CONFETTI ===== */
+.confetti-piece {
+  position:fixed;pointer-events:none;z-index:9999;
+  animation:confettiFall linear forwards;
+}
+@keyframes confettiFall {
+  0%{transform:translateY(0) rotate(0deg) scale(1);opacity:1}
+  100%{transform:translateY(100vh) rotate(720deg) scale(0.3);opacity:0}
+}
+
+.planrs { position:fixed;top:14px;right:18px;font-family:'Fredoka One',cursive;font-size:0.82rem;color:#FBBF24;letter-spacing:1px;background:rgba(255,255,255,0.05);border:1px solid rgba(251,191,36,0.3);border-radius:20px;padding:4px 14px;z-index:100; }
+
+@media(max-width:480px){
+  h1{font-size:1.9rem} .drop-zone{min-height:64px} .draggable-card{font-size:0.88rem;padding:11px 22px} .zone-label{font-size:1rem}
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div class="planrs">⭐ Planrs</div>
+<div id="dragGhost">MY ANSWER</div>
+
+<div class="app">
+  <div class="badge">📚 Section 1 · Activity B</div>
+  <h1>True or False? 🎯</h1>
+  <p class="subtitle">Banks Rapid Fire!</p>
+  <div class="score-bar" id="scoreBar">⭐ Score: 0 / 10</div>
+  <div class="progress" style="width:100%"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+
+  <div class="question-card slide-in" id="questionCard">
+    <div class="q-num" id="qNum">Question 1 of 10</div>
+    <div class="q-text" id="qText">Loading...</div>
+  </div>
+
+  <div class="drag-hint" id="dragHint">✦ Drag the card · or tap a button below ✦</div>
+  <div class="draggable-wrap">
+    <div class="draggable-card" id="dragCard"
+         draggable="true"
+         onmousedown="startDrag(event)"
+         ontouchstart="startTouchDrag(event)">MY ANSWER</div>
+  </div>
+
+  <div class="drop-zones" id="dropZones">
+    <div class="drop-zone drop-zone-true" id="dropTrue"
+         ondragover="onDragOver(event,'true')" ondragleave="onDragLeave('true')"
+         ondrop="onDrop(event,true)">
+      <span class="zone-icon">✅</span><span class="zone-label">TRUE</span>
+    </div>
+    <div class="drop-zone drop-zone-false" id="dropFalse"
+         ondragover="onDragOver(event,'false')" ondragleave="onDragLeave('false')"
+         ondrop="onDrop(event,false)">
+      <span class="zone-icon">❌</span><span class="zone-label">FALSE</span>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-tf btn-true"  id="btnTrue"  onclick="answer(true)">✅ TRUE</button>
+    <button class="btn-tf btn-false" id="btnFalse" onclick="answer(false)">❌ FALSE</button>
+  </div>
+  <div class="feedback" id="feedback"></div>
+
+  <div class="end-screen" id="endScreen">
+    <div class="end-stars" id="endStars">⭐⭐⭐</div>
+    <h2>Quiz Complete!</h2>
+    <div class="end-score" id="endScore">0/10</div>
+    <div class="end-msg" id="endMsg"></div>
+    <button class="btn-action btn-retry" onclick="startGame()">🔄 Try Again</button>
+    <button class="btn-action btn-next"  onclick="nextSection()">Next Section ➡️</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CANVAS BACKGROUND — multi-layer visual system
+   Layer 1: Deep aurora waves (sine curves, slow)
+   Layer 2: Particle field (stars + floating coins)
+   Layer 3: Shooting stars
+   Layer 4: Pulsing nebula orbs
+   Layer 5: Grid shimmer
+   ============================================================ */
+
+const canvas = document.getElementById('bgCanvas');
+const ctx    = canvas.getContext('2d');
+let W, H;
+
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+/* ---- AURORA WAVES ---- */
+const AURORA_WAVES = [
+  { color:'#3B82F6', alpha:0.07, freq:0.0008, amp:180, speed:0.0006, offset:0 },
+  { color:'#8B5CF6', alpha:0.07, freq:0.0011, amp:140, speed:0.0004, offset:1.5 },
+  { color:'#06B6D4', alpha:0.06, freq:0.0006, amp:160, speed:0.0008, offset:3.0 },
+  { color:'#22C55E', alpha:0.05, freq:0.0009, amp:120, speed:0.0005, offset:4.5 },
+];
+
+function drawAurora(t) {
+  for(const w of AURORA_WAVES) {
+    ctx.save();
+    ctx.beginPath();
+    const y0 = H * 0.45 + Math.sin(t * w.speed + w.offset * 2.5) * 60;
+    ctx.moveTo(0, H);
+    for(let x = 0; x <= W; x += 4) {
+      const y = y0 + Math.sin(x * w.freq + t * w.speed + w.offset) * w.amp
+                   + Math.sin(x * w.freq * 2.3 + t * w.speed * 1.7 + w.offset) * (w.amp * 0.4);
+      ctx.lineTo(x, y);
+    }
+    ctx.lineTo(W, H);
+    ctx.lineTo(0, H);
+    ctx.closePath();
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    const hexA = Math.round(w.alpha * 255).toString(16).padStart(2,'0');
+    grad.addColorStop(0,   w.color + '00');
+    grad.addColorStop(0.5, w.color + hexA);
+    grad.addColorStop(1,   w.color + hexA);
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+/* ---- NEBULA ORBS ---- */
+const ORBS = [
+  { x:0.15, y:0.2,  r:280, color:'#3B82F6', speed:0.00015, phase:0     },
+  { x:0.85, y:0.35, r:260, color:'#A855F7', speed:0.0002,  phase:2.1   },
+  { x:0.25, y:0.75, r:220, color:'#22C55E', speed:0.00017, phase:4.2   },
+  { x:0.75, y:0.8,  r:240, color:'#F97316', speed:0.00013, phase:1.05  },
+  { x:0.5,  y:0.1,  r:200, color:'#06B6D4', speed:0.00018, phase:3.14  },
+];
+
+function drawOrbs(t) {
+  for(const o of ORBS) {
+    const pulse = 0.85 + 0.15 * Math.sin(t * o.speed * 3000 + o.phase);
+    const cx = W * o.x + Math.sin(t * o.speed * 1000 + o.phase) * 55;
+    const cy = H * o.y + Math.cos(t * o.speed * 800  + o.phase) * 40;
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, o.r * pulse);
+    grad.addColorStop(0,   o.color + '18');
+    grad.addColorStop(0.5, o.color + '0a');
+    grad.addColorStop(1,   o.color + '00');
+    ctx.beginPath();
+    ctx.arc(cx, cy, o.r * pulse, 0, Math.PI * 2);
+    ctx.fillStyle = grad;
+    ctx.fill();
+  }
+}
+
+/* ---- STARS ---- */
+const STARS = Array.from({length:160}, () => ({
+  x: Math.random(), y: Math.random(),
+  r: 0.4 + Math.random() * 1.4,
+  phase: Math.random() * Math.PI * 2,
+  speed: 0.5 + Math.random() * 1.5,
+  color: ['#fff','#60A5FA','#A78BFA','#34D399','#FBBF24'][Math.floor(Math.random()*5)],
+}));
+
+function drawStars(t) {
+  for(const s of STARS) {
+    const alpha = 0.2 + 0.5 * (0.5 + 0.5 * Math.sin(t * 0.001 * s.speed + s.phase));
+    ctx.beginPath();
+    ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = s.color + Math.round(alpha * 255).toString(16).padStart(2,'0');
+    ctx.fill();
+  }
+}
+
+/* ---- FLOATING COINS / EMOJIS (canvas text) ---- */
+const SYMBOLS = ['💰','🏦','💳','🪙','💵','📒','💹','🏧','🤑','💸','⭐','✨','🎯'];
+const FLOATERS = Array.from({length:22}, () => ({
+  x: Math.random() * 1,
+  y: Math.random() * 1 + 0.5,       // start below screen
+  size: 12 + Math.random() * 18,
+  speed: 0.00012 + Math.random() * 0.00022,
+  phase: Math.random() * Math.PI * 2,
+  sway: 25 + Math.random() * 50,
+  symbol: SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
+  rot: Math.random() * Math.PI * 2,
+  rotSpeed: (Math.random() - 0.5) * 0.001,
+}));
+
+function drawFloaters(t) {
+  for(const f of FLOATERS) {
+    let vy = (t * f.speed) % 1.6 - 0.05;  // 0 → bottom, wrap around
+    let py = 1.05 - vy;                    // actual screen y fraction
+    if(py < -0.1) py += 1.6;
+    const px  = f.x + Math.sin(t * 0.0003 + f.phase) * f.sway / W;
+    const alpha = (py > 0 && py < 0.9) ? 0.25 + 0.25 * Math.sin(t * 0.0005 + f.phase) : 0;
+    if(alpha < 0.01) continue;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.font = f.size + 'px serif';
+    ctx.textAlign = 'center';
+    const sx = Math.max(0, Math.min(W, px * W));
+    const sy = py * H;
+    ctx.translate(sx, sy);
+    ctx.rotate(f.rot + t * f.rotSpeed);
+    ctx.fillText(f.symbol, 0, 0);
+    ctx.restore();
+  }
+}
+
+/* ---- SHOOTING STARS ---- */
+const SHOOTS = Array.from({length:6}, () => mkShoot());
+function mkShoot() {
+  return {
+    x: -0.1 + Math.random() * 1.2,
+    y: Math.random() * 0.5,
+    len: 80 + Math.random() * 160,
+    speed: 0.0006 + Math.random() * 0.001,
+    angle: 0.4 + Math.random() * 0.4,
+    alpha: 0,
+    life: 0,
+    maxLife: 600 + Math.random() * 800,
+    delay: Math.random() * 3000,
+    color: ['#60A5FA','#A78BFA','#34D399','#FBBF24','#ffffff'][Math.floor(Math.random()*5)],
+  };
+}
+
+function drawShoots(t) {
+  for(const s of SHOOTS) {
+    s.delay -= 16;
+    if(s.delay > 0) continue;
+    s.life += 16;
+    if(s.life > s.maxLife) {
+      const next = mkShoot();
+      Object.assign(s, next);
+      s.life = 0;
+      continue;
+    }
+    const progress = s.life / s.maxLife;
+    s.alpha = progress < 0.1 ? progress / 0.1 : progress > 0.8 ? (1 - progress) / 0.2 : 1;
+    const dx = Math.cos(s.angle) * s.speed * s.life;
+    const dy = Math.sin(s.angle) * s.speed * s.life;
+    const sx = (s.x + dx) * W, sy = (s.y + dy) * H;
+    const ex = sx - Math.cos(s.angle) * s.len, ey = sy - Math.sin(s.angle) * s.len;
+    const grad = ctx.createLinearGradient(ex, ey, sx, sy);
+    grad.addColorStop(0, s.color + '00');
+    grad.addColorStop(1, s.color + Math.round(s.alpha * 200).toString(16).padStart(2,'0'));
+    ctx.save();
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(sx, sy);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(sx, sy, 1.5, 0, Math.PI * 2);
+    ctx.fillStyle = s.color + Math.round(s.alpha * 255).toString(16).padStart(2,'0');
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+/* ---- GRID SHIMMER ---- */
+function drawGrid(t) {
+  const CELL = 52;
+  const shimmer = (Math.sin(t * 0.0006) + 1) * 0.5;
+  ctx.save();
+  ctx.strokeStyle = `rgba(255,255,255,${0.012 + shimmer * 0.008})`;
+  ctx.lineWidth = 0.5;
+  for(let x = 0; x < W; x += CELL) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+  }
+  for(let y = 0; y < H; y += CELL) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+/* ---- MAIN LOOP ---- */
+function render(t) {
+  ctx.clearRect(0, 0, W, H);
+  // Dark gradient base
+  const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+  bgGrad.addColorStop(0, '#060818');
+  bgGrad.addColorStop(0.5, '#08091a');
+  bgGrad.addColorStop(1, '#060818');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  drawGrid(t);
+  drawOrbs(t);
+  drawAurora(t);
+  drawStars(t);
+  drawFloaters(t);
+  drawShoots(t);
+
+  requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
+
+/* ============================================================
+   QUIZ LOGIC
+   ============================================================ */
+const questions = [
+  { q: "A bank is a safe place to keep your money.", ans: true,  exp: "Yes! Banks keep money safe and insured." },
+  { q: "SBI stands for State Bank of India.", ans: true, exp: "Correct! SBI is India's largest public sector bank." },
+  { q: "When you put money into your account, it is called a withdrawal.", ans: false, exp: "Putting money IN is a DEPOSIT. Withdrawal is taking money OUT." },
+  { q: "The bank pays you interest for keeping your savings.", ans: true, exp: "Yes! Banks give you extra money (interest) for saving with them." },
+  { q: "You should share your ATM PIN with your best friend.", ans: false, exp: "Never! Your PIN is secret. Don't share it with ANYONE." },
+  { q: "A passbook shows all your bank transactions.", ans: true, exp: "Correct! A passbook records every deposit and withdrawal." },
+  { q: "HDFC Bank is a private sector bank in India.", ans: true, exp: "Yes! HDFC is a private sector bank — owned by a company." },
+  { q: "The post office in India does NOT have any savings accounts.", ans: false, exp: "False! India Post Payments Bank allows savings at post offices." },
+  { q: "A cashier at a bank helps customers with deposits and withdrawals.", ans: true, exp: "Correct! The cashier / teller handles transactions at the counter." },
+  { q: "If your money is in a bank, it is still yours — the bank is just keeping it safe.", ans: true, exp: "Absolutely! It's YOUR money — the bank just keeps it safe." },
+];
+
+let current = 0, score = 0, shuffled = [], answered = false, isDragging = false;
+
+function shuffle(arr){ return [...arr].sort(()=>Math.random()-0.5); }
+
+function startGame(){
+  shuffled = shuffle(questions);
+  current = 0; score = 0; answered = false;
+  document.getElementById('endScreen').style.display = 'none';
+  document.getElementById('questionCard').style.display = 'flex';
+  document.getElementById('dropZones').style.display = 'flex';
+  document.getElementById('dragCard').style.display = '';
+  document.getElementById('dragHint').style.display = '';
+  document.querySelector('.btn-row').style.display = 'flex';
+  document.getElementById('scoreBar').textContent = '⭐ Score: 0 / 10';
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('dragCard').classList.remove('hidden');
+  resetZones();
+  document.getElementById('btnTrue').disabled = false;
+  document.getElementById('btnFalse').disabled = false;
+  loadQ();
+}
+
+function loadQ(){
+  answered = false;
+  const q = shuffled[current];
+  const card = document.getElementById('questionCard');
+  card.classList.remove('slide-in','shake','correct-glow');
+  void card.offsetWidth;
+  card.classList.add('slide-in');
+  document.getElementById('qNum').textContent = `Question ${current+1} of 10`;
+  document.getElementById('qText').textContent = q.q;
+  document.getElementById('progressBar').style.width = (current/10*100)+'%';
+  document.getElementById('btnTrue').disabled = false;
+  document.getElementById('btnFalse').disabled = false;
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('dragCard').classList.remove('hidden');
+  resetZones();
+}
+
+function resetZones(){
+  document.getElementById('dropTrue').classList.remove('drag-over','accepted');
+  document.getElementById('dropFalse').classList.remove('drag-over','accepted');
+}
+
+function answer(userAns){
+  if(answered) return;
+  answered = true;
+  document.getElementById('btnTrue').disabled = true;
+  document.getElementById('btnFalse').disabled = true;
+  document.getElementById('dragCard').classList.add('hidden');
+  const q = shuffled[current];
+  const fb = document.getElementById('feedback');
+  const card = document.getElementById('questionCard');
+  card.classList.remove('slide-in','shake','correct-glow');
+  void card.offsetWidth;
+  const zone = document.getElementById(userAns ? 'dropTrue' : 'dropFalse');
+  zone.classList.add('accepted');
+  if(userAns === q.ans){
+    score++;
+    fb.textContent = '🎉 Correct! ' + q.exp;
+    fb.className = 'feedback correct show';
+    card.classList.add('correct-glow');
+    document.getElementById('scoreBar').textContent = `⭐ Score: ${score} / 10`;
+    spawnConfetti();
+  } else {
+    fb.textContent = '😊 Not quite! ' + q.exp;
+    fb.className = 'feedback wrong show';
+    card.classList.add('shake');
+  }
+  current++;
+  setTimeout(()=>{ if(current < 10) loadQ(); else showEnd(); }, 2600);
+}
+
+/* --- Drag (HTML5) --- */
+document.getElementById('dragCard').addEventListener('dragstart', e => {
+  e.dataTransfer.setData('text','answer');
+  setTimeout(()=>e.target.classList.add('dragging'),0);
+});
+document.getElementById('dragCard').addEventListener('dragend', e => e.target.classList.remove('dragging'));
+function onDragOver(e,w){ e.preventDefault(); document.getElementById(w==='true'?'dropTrue':'dropFalse').classList.add('drag-over'); }
+function onDragLeave(w){ document.getElementById(w==='true'?'dropTrue':'dropFalse').classList.remove('drag-over'); }
+function onDrop(e,v){ e.preventDefault(); resetZones(); answer(v); }
+
+/* --- Custom mouse drag --- */
+const ghost = document.getElementById('dragGhost');
+function startDrag(e){
+  if(answered) return;
+  isDragging = false;
+  const card = document.getElementById('dragCard');
+  const sx = e.clientX, sy = e.clientY;
+  function mv(e2){
+    if(!isDragging && (Math.abs(e2.clientX-sx)>6||Math.abs(e2.clientY-sy)>6)){
+      isDragging = true; ghost.style.display='block'; card.style.opacity='0.35';
+    }
+    if(isDragging){
+      ghost.style.left=(e2.clientX-60)+'px'; ghost.style.top=(e2.clientY-24)+'px';
+      const tr=document.getElementById('dropTrue').getBoundingClientRect();
+      const fr=document.getElementById('dropFalse').getBoundingClientRect();
+      const ov=(r,x,y)=>x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;
+      document.getElementById('dropTrue').classList.toggle('drag-over',ov(tr,e2.clientX,e2.clientY));
+      document.getElementById('dropFalse').classList.toggle('drag-over',ov(fr,e2.clientX,e2.clientY));
+    }
+  }
+  function up(e2){
+    document.removeEventListener('mousemove',mv);
+    document.removeEventListener('mouseup',up);
+    card.style.opacity=''; ghost.style.display='none';
+    if(isDragging){
+      const tr=document.getElementById('dropTrue').getBoundingClientRect();
+      const fr=document.getElementById('dropFalse').getBoundingClientRect();
+      const ov=(r,x,y)=>x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;
+      if(ov(tr,e2.clientX,e2.clientY)) answer(true);
+      else if(ov(fr,e2.clientX,e2.clientY)) answer(false);
+      else resetZones();
+      isDragging=false;
+    }
+  }
+  document.addEventListener('mousemove',mv);
+  document.addEventListener('mouseup',up);
+}
+
+/* --- Touch drag --- */
+function startTouchDrag(e){
+  if(answered) return;
+  const t0 = e.touches[0];
+  const sx=t0.clientX,sy=t0.clientY;
+  isDragging=false;
+  const card=document.getElementById('dragCard');
+  function tm(e2){
+    const t=e2.touches[0];
+    if(!isDragging&&(Math.abs(t.clientX-sx)>8||Math.abs(t.clientY-sy)>8)){
+      isDragging=true; ghost.style.display='block'; card.style.opacity='0.35'; e2.preventDefault();
+    }
+    if(isDragging){
+      e2.preventDefault();
+      ghost.style.left=(t.clientX-60)+'px'; ghost.style.top=(t.clientY-24)+'px';
+      const tr=document.getElementById('dropTrue').getBoundingClientRect();
+      const fr=document.getElementById('dropFalse').getBoundingClientRect();
+      const ov=(r,x,y)=>x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;
+      document.getElementById('dropTrue').classList.toggle('drag-over',ov(tr,t.clientX,t.clientY));
+      document.getElementById('dropFalse').classList.toggle('drag-over',ov(fr,t.clientX,t.clientY));
+    }
+  }
+  function te(e2){
+    document.removeEventListener('touchmove',tm);
+    document.removeEventListener('touchend',te);
+    card.style.opacity=''; ghost.style.display='none';
+    if(isDragging){
+      const t=e2.changedTouches[0];
+      const tr=document.getElementById('dropTrue').getBoundingClientRect();
+      const fr=document.getElementById('dropFalse').getBoundingClientRect();
+      const ov=(r,x,y)=>x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;
+      if(ov(tr,t.clientX,t.clientY)) answer(true);
+      else if(ov(fr,t.clientX,t.clientY)) answer(false);
+      else resetZones();
+      isDragging=false;
+    }
+  }
+  document.addEventListener('touchmove',tm,{passive:false});
+  document.addEventListener('touchend',te);
+}
+
+/* --- Confetti --- */
+function spawnConfetti(){
+  const cols=['#FBBF24','#34D399','#60A5FA','#F472B6','#A78BFA','#F97316','#22D3EE'];
+  for(let i=0;i<55;i++){
+    const el=document.createElement('div');
+    el.className='confetti-piece';
+    el.style.cssText=`left:${15+Math.random()*70}vw;top:25vh;width:${6+Math.random()*10}px;height:${6+Math.random()*10}px;background:${cols[Math.floor(Math.random()*cols.length)]};border-radius:${Math.random()>0.5?'50%':'3px'};animation-duration:${1.4+Math.random()*1.4}s;animation-delay:${Math.random()*0.45}s;`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),(2+Math.random())*1000);
+  }
+}
+
+/* --- End --- */
+function showEnd(){
+  document.getElementById('questionCard').style.display='none';
+  document.getElementById('dropZones').style.display='none';
+  document.getElementById('dragCard').style.display='none';
+  document.getElementById('dragHint').style.display='none';
+  document.querySelector('.btn-row').style.display='none';
+  const es=document.getElementById('endScreen');
+  es.style.display='block';
+  document.getElementById('endScore').textContent=`${score}/10`;
+  document.getElementById('endMsg').textContent=score>=9?"🌟 Outstanding! You're a Bank Expert!":score>=7?"🎉 Great job, Money Champion!":score>=5?"👍 Good effort! Review the slides and try again!":"💪 Keep learning — you'll get it!";
+  document.getElementById('endStars').textContent=score>=9?"⭐⭐⭐":score>=7?"⭐⭐":"⭐";
+  document.getElementById('progressBar').style.width='100%';
+  if(score>=7){ setTimeout(spawnConfetti,300); setTimeout(spawnConfetti,900); }
+}
+
+function nextSection(){ alert('Awesome! Move on to Section 2 — Savings Accounts! 💰'); }
+
+startGame();
+</script>
+</body>
+</html>

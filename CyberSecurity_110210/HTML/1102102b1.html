@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Password Builder — Section 2</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: #0a1628;
+}
+
+/* ─── OCEAN BACKGROUND ─── */
+.ocean-bg {
+  position: fixed; inset: 0; z-index: 0;
+  background: linear-gradient(180deg,
+    #0d2137 0%,
+    #0a3d6b 25%,
+    #0e5a8a 55%,
+    #1a7a9a 80%,
+    #22a0b8 100%
+  );
+  overflow: hidden;
+}
+
+/* Bubbles */
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  animation: rise linear infinite;
+  bottom: -60px;
+}
+@keyframes rise {
+  0%   { transform: translateX(0) scale(1); opacity: 0.6; }
+  50%  { transform: translateX(20px) scale(1.05); }
+  100% { transform: translateX(-10px) scale(0.8); opacity: 0; bottom: 110vh; }
+}
+
+/* Seaweed */
+.seaweed {
+  position: absolute;
+  bottom: 0;
+  width: 18px;
+  height: 120px;
+  background: linear-gradient(180deg, #1dbb6e, #0e8a4a);
+  border-radius: 40px 10px 0 0;
+  transform-origin: bottom center;
+  animation: sway 3s ease-in-out infinite;
+}
+.seaweed:nth-child(even) { animation-direction: reverse; background: linear-gradient(180deg, #26e88a, #0daa59); }
+@keyframes sway {
+  0%,100% { transform: rotate(-12deg); }
+  50%      { transform: rotate(12deg); }
+}
+
+/* Coral */
+.coral {
+  position: absolute;
+  bottom: 0;
+  width: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+}
+
+/* Light rays */
+.ray {
+  position: absolute;
+  top: -10%;
+  width: 60px;
+  height: 80vh;
+  background: linear-gradient(180deg, rgba(160,80,255,0.10) 0%, transparent 100%);
+  transform-origin: top center;
+  animation: shimmer 5s ease-in-out infinite;
+  border-radius: 0 0 50% 50%;
+}
+@keyframes fishBob {
+  0%,100% { transform: translateY(0px); }
+  50%      { transform: translateY(-12px); }
+}
+@keyframes shimmer {
+  0%,100% { opacity: 0.4; transform: scaleX(1); }
+  50%      { opacity: 0.8; transform: scaleX(1.3); }
+}
+
+/* ─── FISH ─── */
+.fish {
+  position: absolute;
+  cursor: pointer;
+  animation: swim linear infinite;
+  filter: drop-shadow(0 6px 12px rgba(100,0,200,0.5)) drop-shadow(0 0 8px rgba(180,100,255,0.5)) hue-rotate(200deg) saturate(1.4);
+  transition: filter 0.3s, transform 0.2s;
+  user-select: none;
+}
+.fish:hover {
+  filter: drop-shadow(0 6px 20px rgba(100,0,200,0.6)) drop-shadow(0 0 28px rgba(200,100,255,0.9)) hue-rotate(200deg) saturate(1.6) brightness(1.25);
+  transform: scale(1.22) !important;
+}
+
+@keyframes swim {
+  0%   { left: -260px; }
+  100% { left: 115vw; }
+}
+@keyframes swimBack {
+  0%   { left: 115vw; transform: scaleX(-1); }
+  100% { left: -260px; transform: scaleX(-1); }
+}
+
+@keyframes tailWag {
+  0%,100% { transform: rotate(-8deg); }
+  50%      { transform: rotate(8deg); }
+}
+@keyframes finWave {
+  0%,100% { transform: scaleY(1); }
+  50%      { transform: scaleY(1.25); }
+}
+
+/* ─── LAYOUT ─── */
+.page-wrap {
+  position: relative; z-index: 10;
+  min-height: 100vh;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.planrs {
+  position: fixed; top: 12px; right: 16px;
+  font-size: 13px; color: rgba(255,255,255,0.7);
+  font-weight: bold; font-family: 'Fredoka One', cursive;
+  z-index: 100;
+  background: rgba(0,0,0,0.3);
+  padding: 4px 12px;
+  border-radius: 20px;
+  backdrop-filter: blur(6px);
+}
+
+h1 {
+  font-family: 'Fredoka One', cursive;
+  color: #fff;
+  font-size: 32px;
+  margin: 36px 0 4px;
+  text-align: center;
+  text-shadow: 0 4px 20px rgba(0,200,255,0.5);
+  letter-spacing: 1px;
+}
+
+.subtitle {
+  color: rgba(255,255,255,0.75);
+  font-size: 14px;
+  margin-bottom: 18px;
+  text-align: center;
+  font-weight: 700;
+}
+
+/* Score bar */
+.score-bar {
+  background: rgba(255,255,255,0.12);
+  border: 2px solid rgba(255,255,255,0.25);
+  border-radius: 40px;
+  padding: 10px 28px;
+  margin-bottom: 18px;
+  font-size: 15px;
+  color: #fff;
+  font-weight: 800;
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+/* Card */
+.card {
+  background: linear-gradient(135deg, rgba(18,6,50,0.97), rgba(26,8,64,0.97), rgba(10,4,30,0.97));
+  border-radius: 28px;
+  padding: 26px;
+  max-width: 560px;
+  width: 100%;
+  box-shadow: 0 8px 50px rgba(80,0,180,0.4), 0 0 0 2px rgba(180,80,255,0.2);
+  margin-bottom: 18px;
+  border: 2px solid rgba(180,80,255,0.25);
+  backdrop-filter: blur(20px);
+  animation: cardPop 0.5s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes cardPop {
+  from { transform: scale(0.85) translateY(20px); opacity: 0; }
+  to   { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.q-label {
+  font-size: 12px; color: #a78bfa;
+  margin-bottom: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px;
+}
+
+.scenario {
+  font-size: 15px; color: #e2d9f3;
+  font-weight: 700; line-height: 1.6;
+  margin-bottom: 18px;
+  background: linear-gradient(135deg, rgba(80,20,160,0.4), rgba(40,10,100,0.5));
+  border-radius: 14px;
+  padding: 14px 16px;
+  border-left: 5px solid #a855f7;
+  box-shadow: inset 0 1px 0 rgba(200,120,255,0.15);
+}
+
+/* ─── DRAG & DROP ─── */
+.dnd-section {
+  margin-bottom: 16px;
+}
+.dnd-label {
+  font-size: 13px; font-weight: 800; color: #c4b5fd;
+  margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+}
+
+/* Source ingredients */
+/* ── Ingredient pool ── */
+.ingredients-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  padding: 16px;
+  background: linear-gradient(135deg, #1a0533, #2d0a5e, #1a0a40);
+  border-radius: 18px;
+  border: 2px dashed rgba(200,120,255,0.5);
+  min-height: 76px;
+  margin-bottom: 12px;
+  box-shadow: inset 0 4px 24px rgba(120,0,200,0.2), 0 0 0 1px rgba(180,80,255,0.15);
+  position: relative;
+  overflow: hidden;
+}
+.ingredients-pool::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 30% 50%, rgba(160,60,255,0.12) 0%, transparent 65%),
+              radial-gradient(ellipse at 75% 40%, rgba(80,180,255,0.09) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* Each ingredient chip — each gets a unique rainbow colour via nth-child */
+.ingredient {
+  padding: 8px 18px;
+  border-radius: 26px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: grab;
+  user-select: none;
+  transition: transform 0.18s cubic-bezier(.34,1.56,.64,1), box-shadow 0.18s, filter 0.18s;
+  position: relative;
+  animation: ingredientBounce 0.45s cubic-bezier(.34,1.56,.64,1) backwards;
+  border: 2px solid rgba(255,255,255,0.25);
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.45);
+  letter-spacing: 0.3px;
+}
+/* Rainbow chip colours cycling through 10 slots */
+.ingredient:nth-child(10n+1)  { background: linear-gradient(135deg,#ff4fd8,#c026d3); box-shadow: 0 4px 14px rgba(255,79,216,0.45); }
+.ingredient:nth-child(10n+2)  { background: linear-gradient(135deg,#a855f7,#7c3aed); box-shadow: 0 4px 14px rgba(168,85,247,0.45); }
+.ingredient:nth-child(10n+3)  { background: linear-gradient(135deg,#3b82f6,#1d4ed8); box-shadow: 0 4px 14px rgba(59,130,246,0.45); }
+.ingredient:nth-child(10n+4)  { background: linear-gradient(135deg,#06b6d4,#0891b2); box-shadow: 0 4px 14px rgba(6,182,212,0.45); }
+.ingredient:nth-child(10n+5)  { background: linear-gradient(135deg,#10b981,#059669); box-shadow: 0 4px 14px rgba(16,185,129,0.45); }
+.ingredient:nth-child(10n+6)  { background: linear-gradient(135deg,#f59e0b,#d97706); box-shadow: 0 4px 14px rgba(245,158,11,0.45); }
+.ingredient:nth-child(10n+7)  { background: linear-gradient(135deg,#ef4444,#dc2626); box-shadow: 0 4px 14px rgba(239,68,68,0.45); }
+.ingredient:nth-child(10n+8)  { background: linear-gradient(135deg,#f97316,#ea580c); box-shadow: 0 4px 14px rgba(249,115,22,0.45); }
+.ingredient:nth-child(10n+9)  { background: linear-gradient(135deg,#ec4899,#db2777); box-shadow: 0 4px 14px rgba(236,72,153,0.45); }
+.ingredient:nth-child(10n+10) { background: linear-gradient(135deg,#8b5cf6,#6d28d9); box-shadow: 0 4px 14px rgba(139,92,246,0.45); }
+
+.ingredient:hover {
+  transform: translateY(-5px) scale(1.12) rotate(-2deg);
+  filter: brightness(1.2) saturate(1.3);
+  box-shadow: 0 10px 28px rgba(180,80,255,0.55);
+  z-index: 10;
+}
+.ingredient:active { cursor: grabbing; transform: scale(1.15) rotate(4deg); }
+.ingredient.dragging { opacity: 0.35; transform: scale(0.9); filter: blur(1px); }
+
+@keyframes ingredientBounce {
+  0%   { transform: scale(0.4) rotate(-10deg); opacity: 0; }
+  70%  { transform: scale(1.1) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+/* ── Drop Zone ── */
+.drop-zone {
+  min-height: 70px;
+  background: linear-gradient(135deg, #0d0622, #1a0840, #0d0e2a);
+  border-radius: 18px;
+  border: 3px dashed rgba(180,100,255,0.6);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 10px 14px;
+  gap: 7px;
+  transition: all 0.25s cubic-bezier(.34,1.56,.64,1);
+  position: relative;
+  box-shadow: inset 0 4px 28px rgba(100,0,180,0.3), 0 0 0 1px rgba(160,60,255,0.1);
+  overflow: hidden;
+}
+.drop-zone::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(140,60,255,0.08) 0%, transparent 70%);
+  pointer-events: none;
+  animation: dzPulse 3s ease-in-out infinite;
+}
+@keyframes dzPulse {
+  0%,100% { opacity: 0.5; }
+  50%      { opacity: 1; }
+}
+.drop-zone.drag-over {
+  border-color: #f97316;
+  background: linear-gradient(135deg, #1a0d02, #2d1500, #1a0a00);
+  box-shadow: inset 0 4px 28px rgba(200,80,0,0.3), 0 0 30px rgba(249,115,22,0.4);
+  transform: scale(1.01);
+}
+.drop-zone-hint {
+  font-family: 'Fredoka One', cursive;
+  color: rgba(200,120,255,0.5);
+  font-size: 15px;
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%,-50%);
+  pointer-events: none;
+  letter-spacing: 2px;
+  white-space: nowrap;
+  animation: hintFloat 2.5s ease-in-out infinite;
+}
+@keyframes hintFloat {
+  0%,100% { opacity: 0.5; transform: translate(-50%,-50%) translateY(0); }
+  50%      { opacity: 0.9; transform: translate(-50%,-50%) translateY(-4px); }
+}
+
+/* Dropped pieces — rainbow cycle */
+.dropped-piece {
+  font-family: 'Fredoka One', cursive;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(.34,1.56,.64,1);
+  animation: dropIn 0.35s cubic-bezier(.34,1.56,.64,1);
+  position: relative;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  border: 1.5px solid rgba(255,255,255,0.2);
+}
+.dropped-piece:nth-child(7n+1) { background: linear-gradient(135deg,#f472b6,#a21caf); box-shadow: 0 3px 10px rgba(244,114,182,0.5); }
+.dropped-piece:nth-child(7n+2) { background: linear-gradient(135deg,#818cf8,#4f46e5); box-shadow: 0 3px 10px rgba(129,140,248,0.5); }
+.dropped-piece:nth-child(7n+3) { background: linear-gradient(135deg,#34d399,#059669); box-shadow: 0 3px 10px rgba(52,211,153,0.5); }
+.dropped-piece:nth-child(7n+4) { background: linear-gradient(135deg,#fbbf24,#d97706); box-shadow: 0 3px 10px rgba(251,191,36,0.5); }
+.dropped-piece:nth-child(7n+5) { background: linear-gradient(135deg,#60a5fa,#2563eb); box-shadow: 0 3px 10px rgba(96,165,250,0.5); }
+.dropped-piece:nth-child(7n+6) { background: linear-gradient(135deg,#f87171,#dc2626); box-shadow: 0 3px 10px rgba(248,113,113,0.5); }
+.dropped-piece:nth-child(7n+7) { background: linear-gradient(135deg,#c084fc,#7c3aed); box-shadow: 0 3px 10px rgba(192,132,252,0.5); }
+.dropped-piece:hover {
+  transform: scale(1.12) rotate(-3deg);
+  filter: brightness(0.75) saturate(0.6);
+  box-shadow: 0 0 14px rgba(255,60,60,0.6);
+}
+.dropped-piece:hover::after {
+  content: '×';
+  position: absolute;
+  top: -7px; right: -7px;
+  width: 18px; height: 18px;
+  background: #ef4444;
+  color: white;
+  border-radius: 50%;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 18px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(239,68,68,0.6);
+  animation: popIn 0.15s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+@keyframes dropIn {
+  0%   { transform: scale(0.3) rotate(-18deg); opacity: 0; }
+  70%  { transform: scale(1.15) rotate(3deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+/* ── Password preview ── */
+.pwd-preview {
+  font-family: 'Courier New', monospace;
+  font-size: 20px;
+  background: linear-gradient(135deg, #0d0622, #1a0840, #150826);
+  color: #e879f9;
+  border-radius: 16px;
+  padding: 14px;
+  text-align: center;
+  letter-spacing: 3px;
+  min-height: 54px;
+  margin: 14px 0 0;
+  word-break: break-all;
+  border: 2px solid rgba(200,80,255,0.35);
+  box-shadow: 0 4px 20px rgba(120,0,180,0.25), inset 0 1px 0 rgba(200,80,255,0.15);
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow: 0 0 12px rgba(232,121,249,0.6);
+}
+.pwd-preview.has-content {
+  animation: rainbowGlow 2.5s ease-in-out infinite;
+  color: #fff;
+  text-shadow: 0 0 16px rgba(232,121,249,0.9);
+}
+@keyframes rainbowGlow {
+  0%   { box-shadow: 0 0 18px rgba(232,121,249,0.6), inset 0 0 12px rgba(200,80,255,0.1); border-color: rgba(232,121,249,0.6); }
+  25%  { box-shadow: 0 0 22px rgba(96,165,250,0.6),  inset 0 0 12px rgba(60,130,255,0.1);  border-color: rgba(96,165,250,0.6); }
+  50%  { box-shadow: 0 0 22px rgba(52,211,153,0.6),  inset 0 0 12px rgba(16,185,129,0.1);  border-color: rgba(52,211,153,0.6); }
+  75%  { box-shadow: 0 0 22px rgba(251,191,36,0.6),  inset 0 0 12px rgba(245,158,11,0.1);  border-color: rgba(251,191,36,0.6); }
+  100% { box-shadow: 0 0 18px rgba(232,121,249,0.6), inset 0 0 12px rgba(200,80,255,0.1); border-color: rgba(232,121,249,0.6); }
+}
+
+/* ── Strength bar ── */
+.strength-bar-wrap { margin: 14px 0 4px; }
+.strength-label { font-size: 13px; color: #a78bfa; margin-bottom: 5px; font-weight: 800; letter-spacing: 0.3px; }
+.strength-bar { height: 16px; border-radius: 20px; background: rgba(80,0,120,0.3); overflow: hidden; box-shadow: inset 0 2px 8px rgba(0,0,0,0.3), 0 0 0 1px rgba(160,60,255,0.2); }
+.strength-fill {
+  height: 100%;
+  border-radius: 20px;
+  transition: width 0.55s cubic-bezier(.34,1.56,.64,1), background 0.4s;
+  box-shadow: 0 0 10px currentColor;
+}
+.strength-text { font-size: 15px; font-weight: 800; margin-top: 7px; transition: color 0.3s; text-shadow: 0 0 8px currentColor; }
+
+/* ── Checklist ── */
+.checklist { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.check-item {
+  font-size: 12px; padding: 5px 14px;
+  border-radius: 24px; font-weight: 800;
+  transition: all 0.3s cubic-bezier(.34,1.56,.64,1);
+}
+.check-yes {
+  background: linear-gradient(135deg, #052e16, #14532d);
+  color: #4ade80;
+  border: 1.5px solid #16a34a;
+  box-shadow: 0 2px 10px rgba(74,222,128,0.3), 0 0 0 1px rgba(74,222,128,0.1);
+  animation: checkBounce 0.35s cubic-bezier(.34,1.56,.64,1);
+}
+.check-no {
+  background: linear-gradient(135deg, #1c0a1c, #2d0a2d);
+  color: #f87171;
+  border: 1.5px solid rgba(248,113,113,0.4);
+}
+@keyframes checkBounce {
+  0%   { transform: scale(0.5) rotate(-8deg); }
+  70%  { transform: scale(1.12) rotate(2deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+/* ── Feedback ── */
+.feedback {
+  text-align: center;
+  font-size: 16px;
+  min-height: 30px;
+  margin: 10px 0;
+  font-weight: 800;
+  transition: all 0.3s;
+  text-shadow: 0 0 8px currentColor;
+  animation: feedbackPop 0.4s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes feedbackPop {
+  from { transform: scale(0.8); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+/* ── Buttons ── */
+.btn-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+.btn {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 30px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(.34,1.56,.64,1);
+  font-family: 'Nunito', sans-serif;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.3px;
+}
+.btn::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: rgba(255,255,255,0);
+  transition: background 0.2s;
+  border-radius: 30px;
+}
+.btn:hover::after { background: rgba(255,255,255,0.12); }
+.btn:hover { transform: translateY(-4px) scale(1.06); }
+.btn:active { transform: scale(0.96); }
+.btn-check {
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9, #4c1d95);
+  color: #fff;
+  box-shadow: 0 5px 20px rgba(139,92,246,0.55);
+}
+.btn-try {
+  background: linear-gradient(135deg, #f97316, #ea580c, #c2410c);
+  color: #fff;
+  box-shadow: 0 5px 20px rgba(249,115,22,0.5);
+}
+.btn-next {
+  background: linear-gradient(135deg, #10b981, #059669, #065f46);
+  color: #fff;
+  box-shadow: 0 5px 20px rgba(16,185,129,0.5);
+  display: none;
+}
+
+/* ── Result Screen ── */
+.result-screen {
+  display: none;
+  background: linear-gradient(135deg, rgba(26,8,64,0.97), rgba(13,6,34,0.97));
+  border-radius: 28px;
+  padding: 36px 28px;
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+  border: 3px solid rgba(180,80,255,0.4);
+  box-shadow: 0 8px 50px rgba(100,0,200,0.4), 0 0 0 1px rgba(180,80,255,0.15);
+  backdrop-filter: blur(20px);
+  animation: cardPop 0.5s cubic-bezier(.34,1.56,.64,1);
+}
+.result-screen h2 { color: #e879f9; font-size: 28px; margin-bottom: 10px; font-family: 'Fredoka One', cursive; text-shadow: 0 0 20px rgba(232,121,249,0.7); }
+.result-screen p { color: #c4b5fd !important; }
+
+/* ── Drag ghost ── */
+.drag-ghost {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  padding: 9px 18px;
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
+  color: white;
+  border-radius: 26px;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: 0 10px 34px rgba(168,85,247,0.7), 0 0 0 2px rgba(255,255,255,0.2);
+  transform: rotate(6deg) scale(1.12);
+  transition: none;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+
+/* ── Tip box ── */
+.tip-box {
+  background: linear-gradient(135deg, #1a0d00, #2d1800);
+  border: 2px solid rgba(251,191,36,0.5);
+  border-radius: 14px;
+  padding: 11px 16px;
+  font-size: 13px;
+  color: #fcd34d;
+  font-weight: 700;
+  margin-top: 8px;
+  display: none;
+  box-shadow: 0 0 16px rgba(251,191,36,0.2);
+}
+.tip-box.visible { display: block; animation: fadeIn 0.4s; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── Star burst ── */
+.star-burst {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  font-size: 28px;
+  animation: starFly 1s ease-out forwards;
+}
+@keyframes starFly {
+  0%   { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(0.3); opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- OCEAN BACKGROUND -->
+<div class="ocean-bg" id="oceanBg">
+  <!-- Light rays injected by JS -->
+  <!-- Fish injected by JS -->
+</div>
+
+<div class="page-wrap">
+  <div class="planrs">⭐ Planrs</div>
+  <h1>🔨 Password Builder Workshop!</h1>
+  <p class="subtitle">Section 2 — Passwords & Account Safety | Activity 2 of 2</p>
+
+  <div class="score-bar">
+    <span>⭐ Score: <span id="score">0</span></span>
+    <span>✅ Built: <span id="built">0</span>/5</span>
+  </div>
+
+  <div class="card" id="gameCard">
+    <div class="q-label" id="qLabel">Challenge 1 of 5</div>
+    <div class="scenario" id="scenario"></div>
+
+    <!-- DRAG & DROP -->
+    <div class="dnd-section">
+      <div class="dnd-label">🧩 Drag ingredients to build your password:</div>
+      <div class="ingredients-pool" id="ingredientsPool"></div>
+
+      <div class="dnd-label">🔐 Drop Zone — assemble your password here:</div>
+      <div class="drop-zone" id="dropZone">
+        <span class="drop-zone-hint" id="dzHint">drag pieces here →</span>
+      </div>
+    </div>
+
+    <div class="pwd-preview" id="preview">_</div>
+
+    <div class="strength-bar-wrap">
+      <div class="strength-label">💪 Password Strength:</div>
+      <div class="strength-bar"><div class="strength-fill" id="strengthFill" style="width:0%"></div></div>
+      <div class="strength-text" id="strengthText">—</div>
+    </div>
+
+    <div class="checklist" id="checklist"></div>
+    <div class="tip-box" id="tipBox"></div>
+    <div class="feedback" id="feedback"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-check" onclick="checkAnswer()">✅ Check Password</button>
+      <button class="btn btn-try" onclick="resetCurrentQ()">🔄 Rebuild</button>
+      <button class="btn btn-next" id="nextBtn" onclick="nextQ()">➡️ Next Challenge</button>
+    </div>
+  </div>
+
+  <div class="result-screen" id="resultScreen">
+    <h2 id="resultTitle"></h2>
+    <p id="resultDetails" style="color:#555;margin:10px 0;font-size:16px;font-weight:700;"></p>
+    <p id="resultMsg" style="color:#1F7A4D;font-size:15px;font-weight:800;margin-top:8px;"></p>
+    <div class="btn-row" style="margin-top:22px;">
+      <button class="btn btn-try" onclick="fullReset()">🔄 Play Again</button>
+      <button class="btn btn-next" style="display:inline-block;" onclick="alert('Password Master! Move to Section 3 — Phishing & Safe Browsing! 🔍')">➡️ Next Section</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   OCEAN BACKGROUND — FISH & BUBBLES
+   ============================================================ */
+const bg = document.getElementById('oceanBg');
+
+// Light rays
+for (let i = 0; i < 6; i++) {
+  const ray = document.createElement('div');
+  ray.className = 'ray';
+  ray.style.cssText = `left:${5+i*18}%;animation-delay:${i*0.8}s;animation-duration:${4+i}s;transform:rotate(${-10+i*4}deg);`;
+  bg.appendChild(ray);
+}
+
+// Bubbles
+function spawnBubble() {
+  const b = document.createElement('div');
+  b.className = 'bubble';
+  const sz = 6 + Math.random()*18;
+  b.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;animation-duration:${5+Math.random()*10}s;animation-delay:${Math.random()*4}s;`;
+  bg.appendChild(b);
+  setTimeout(() => b.remove(), 20000);
+}
+setInterval(spawnBubble, 600);
+for (let i=0;i<15;i++) spawnBubble();
+
+// Seaweed
+for (let i=0;i<10;i++) {
+  const sw = document.createElement('div');
+  sw.className = 'seaweed';
+  sw.style.cssText = `left:${5+i*10}%;height:${80+Math.random()*80}px;animation-delay:${Math.random()*2}s;animation-duration:${2.5+Math.random()*2}s;`;
+  bg.appendChild(sw);
+}
+
+// FISH SVG templates — gorgeous detailed fish
+const fishTemplates = [
+
+  // 🐠 Tropical Clownfish — orange with white bands, glowing eye
+  (id,c1,c2,sz) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 90" width="${sz}" height="${sz*0.65}">
+    <defs>
+      <radialGradient id="cf${id}b" cx="40%" cy="40%"><stop offset="0%" stop-color="#FF8C35"/><stop offset="100%" stop-color="#C44B00"/></radialGradient>
+      <radialGradient id="cf${id}e" cx="35%" cy="35%"><stop offset="0%" stop-color="#fff"/><stop offset="70%" stop-color="#ddeeff"/></radialGradient>
+      <linearGradient id="cf${id}t" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#FF6600"/><stop offset="100%" stop-color="#FF3300"/></linearGradient>
+    </defs>
+    <!-- Tail -->
+    <path d="M110,45 L138,18 Q140,45 138,72 Z" fill="url(#cf${id}t)"/>
+    <path d="M110,45 L130,30 Q132,45 130,60 Z" fill="#FF7722" opacity="0.7"/>
+    <!-- Body -->
+    <ellipse cx="62" cy="45" rx="52" ry="28" fill="url(#cf${id}b)"/>
+    <!-- Belly highlight -->
+    <ellipse cx="62" cy="52" rx="40" ry="14" fill="#FF9944" opacity="0.45"/>
+    <!-- White bands -->
+    <rect x="36" y="17" width="9" height="56" fill="white" rx="5" opacity="0.92"/>
+    <rect x="36" y="17" width="9" height="56" fill="none" stroke="#000" stroke-width="0.8" rx="5" opacity="0.2"/>
+    <rect x="64" y="17" width="8" height="56" fill="white" rx="4" opacity="0.92"/>
+    <rect x="88" y="22" width="7" height="46" fill="white" rx="4" opacity="0.85"/>
+    <!-- Dorsal fin -->
+    <path d="M40,17 Q55,2 80,14 L80,20 Q55,10 40,24 Z" fill="#FF6600" stroke="#CC4400" stroke-width="0.8"/>
+    <!-- Pectoral fin -->
+    <ellipse cx="55" cy="55" rx="14" ry="7" fill="#FF8833" transform="rotate(-20,55,55)" opacity="0.8"/>
+    <!-- Eye -->
+    <circle cx="24" cy="40" r="8" fill="url(#cf${id}e)"/>
+    <circle cx="22" cy="39" r="5" fill="#111"/>
+    <circle cx="20" cy="37" r="2" fill="white" opacity="0.9"/>
+    <!-- Mouth -->
+    <path d="M12,47 Q16,52 20,47" stroke="#994400" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- Gill line -->
+    <path d="M30,30 Q28,45 30,60" stroke="#CC4400" stroke-width="1.5" fill="none" opacity="0.5"/>
+    <!-- Scale shimmer -->
+    <ellipse cx="70" cy="35" rx="10" ry="5" fill="white" opacity="0.12" transform="rotate(-15,70,35)"/>
+    <ellipse cx="85" cy="50" rx="8" ry="4" fill="white" opacity="0.1" transform="rotate(10,85,50)"/>
+  </svg>`,
+
+  // 🐟 Sapphire Blue Tang — vibrant blue with yellow streak
+  (id,c1,c2,sz) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 145 85" width="${sz}" height="${sz*0.6}">
+    <defs>
+      <radialGradient id="bt${id}" cx="40%" cy="35%"><stop offset="0%" stop-color="#4BC8FF"/><stop offset="100%" stop-color="#0050CC"/></radialGradient>
+      <linearGradient id="bt${id}t" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0066DD"/><stop offset="100%" stop-color="#003399"/></linearGradient>
+    </defs>
+    <!-- Tail fan -->
+    <path d="M112,42 L140,16 Q143,42 140,68 Z" fill="url(#bt${id}t)"/>
+    <path d="M112,42 L135,28 Q137,42 135,56 Z" fill="#2277FF" opacity="0.6"/>
+    <!-- Body -->
+    <ellipse cx="63" cy="42" rx="52" ry="26" fill="url(#bt${id})"/>
+    <!-- Yellow stripe -->
+    <path d="M25,30 Q65,20 105,32 L105,38 Q65,26 25,36 Z" fill="#FFD700" opacity="0.9"/>
+    <path d="M25,36 Q65,26 105,38 L105,42 Q65,30 25,40 Z" fill="#FFA500" opacity="0.4"/>
+    <!-- Belly -->
+    <ellipse cx="63" cy="52" rx="38" ry="12" fill="#7BD5FF" opacity="0.35"/>
+    <!-- Dorsal fin -->
+    <path d="M38,16 Q60,2 90,12 L90,20 Q60,10 38,22 Z" fill="#0066CC"/>
+    <line x1="50" y1="6" x2="48" y2="18" stroke="#0044AA" stroke-width="1.2" opacity="0.7"/>
+    <line x1="63" y1="4" x2="61" y2="16" stroke="#0044AA" stroke-width="1.2" opacity="0.7"/>
+    <line x1="76" y1="6" x2="74" y2="17" stroke="#0044AA" stroke-width="1.2" opacity="0.7"/>
+    <!-- Anal fin -->
+    <path d="M50,68 Q65,80 80,70 L80,64 Q65,74 50,62 Z" fill="#0055BB"/>
+    <!-- Pectoral fin -->
+    <ellipse cx="52" cy="52" rx="16" ry="8" fill="#55AAFF" transform="rotate(-25,52,52)" opacity="0.75"/>
+    <!-- Eye -->
+    <circle cx="22" cy="37" r="8" fill="white"/>
+    <circle cx="20" cy="36" r="5" fill="#111"/>
+    <circle cx="18" cy="34" r="2" fill="white" opacity="0.95"/>
+    <!-- Mouth -->
+    <path d="M10,43 Q14,47 18,43" stroke="#004499" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <!-- Gill -->
+    <path d="M28,26 Q26,42 28,58" stroke="#0044AA" stroke-width="1.5" fill="none" opacity="0.5"/>
+    <!-- Shimmer -->
+    <ellipse cx="75" cy="32" rx="12" ry="5" fill="white" opacity="0.15" transform="rotate(-10,75,32)"/>
+  </svg>`,
+
+  // 🐡 Rainbow Pufferfish — chubby, spotted, adorable
+  (id,c1,c2,sz) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 115 105" width="${sz*0.85}" height="${sz*0.85}">
+    <defs>
+      <radialGradient id="pf${id}" cx="38%" cy="35%"><stop offset="0%" stop-color="#FADA5E"/><stop offset="100%" stop-color="#E07B00"/></radialGradient>
+      <radialGradient id="pf${id}b" cx="50%" cy="50%"><stop offset="0%" stop-color="#FFFDE7"/><stop offset="100%" stop-color="#F0C050"/></radialGradient>
+    </defs>
+    <!-- Tail -->
+    <path d="M92,52 L115,35 Q118,52 115,69 Z" fill="#E88800"/>
+    <!-- Body (chubby sphere) -->
+    <ellipse cx="50" cy="52" rx="46" ry="44" fill="url(#pf${id})"/>
+    <!-- Belly lighter -->
+    <ellipse cx="50" cy="62" rx="32" ry="28" fill="url(#pf${id}b)" opacity="0.55"/>
+    <!-- Spines top -->
+    <line x1="18" y1="16" x2="12" y2="4" stroke="#CC7700" stroke-width="3.5" stroke-linecap="round"/>
+    <line x1="30" y1="10" x2="26" y2="-2" stroke="#CC7700" stroke-width="3.5" stroke-linecap="round"/>
+    <line x1="46" y1="8" x2="44" y2="-4" stroke="#CC7700" stroke-width="3.5" stroke-linecap="round"/>
+    <line x1="62" y1="10" x2="62" y2="-2" stroke="#CC7700" stroke-width="3.5" stroke-linecap="round"/>
+    <line x1="76" y1="16" x2="79" y2="4" stroke="#CC7700" stroke-width="3.5" stroke-linecap="round"/>
+    <!-- Spines bottom -->
+    <line x1="18" y1="88" x2="12" y2="100" stroke="#CC7700" stroke-width="3.5" stroke-linecap="round"/>
+    <line x1="30" y1="94" x2="26" y2="106" stroke="#CC7700" stroke-width="3.5" stroke-linecap="round"/>
+    <line x1="46" y1="96" x2="44" y2="108" stroke="#CC7700" stroke-width="3.5" stroke-linecap="round"/>
+    <!-- Spots -->
+    <circle cx="55" cy="40" r="5" fill="#E06000" opacity="0.55"/>
+    <circle cx="72" cy="55" r="4" fill="#E06000" opacity="0.5"/>
+    <circle cx="50" cy="65" r="5.5" fill="#E06000" opacity="0.45"/>
+    <circle cx="35" cy="48" r="4" fill="#E06000" opacity="0.5"/>
+    <circle cx="65" cy="38" r="3" fill="#E06000" opacity="0.4"/>
+    <!-- Eye (big adorable) -->
+    <circle cx="20" cy="44" r="10" fill="white"/>
+    <circle cx="18" cy="42" r="6.5" fill="#222"/>
+    <circle cx="15" cy="39" r="2.5" fill="white" opacity="0.95"/>
+    <!-- Mouth smile -->
+    <path d="M8,56 Q16,64 24,56" stroke="#AA5500" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- Pectoral fin -->
+    <ellipse cx="42" cy="78" rx="16" ry="7" fill="#F0A000" transform="rotate(20,42,78)" opacity="0.7"/>
+    <!-- Shimmer -->
+    <ellipse cx="38" cy="30" rx="14" ry="7" fill="white" opacity="0.18" transform="rotate(-20,38,30)"/>
+  </svg>`,
+
+  // 🐟 Neon Tetra — slim, iridescent stripe, darting beauty
+  (id,c1,c2,sz) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 60" width="${sz*1.1}" height="${sz*0.44}">
+    <defs>
+      <linearGradient id="nt${id}" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#88CCFF"/><stop offset="50%" stop-color="#CCEEFF"/><stop offset="100%" stop-color="#44AAFF"/></linearGradient>
+      <linearGradient id="nt${id}s" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#00FFCC"/><stop offset="50%" stop-color="#00DDFF"/><stop offset="100%" stop-color="#7700FF"/></linearGradient>
+      <linearGradient id="nt${id}r" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#FF4466"/><stop offset="100%" stop-color="#FF0033"/></linearGradient>
+    </defs>
+    <!-- Tail -->
+    <path d="M118,30 L145,12 Q148,30 145,48 Z" fill="#4499FF"/>
+    <!-- Body -->
+    <ellipse cx="65" cy="30" rx="58" ry="18" fill="url(#nt${id})"/>
+    <!-- Neon stripe (electric blue-green) -->
+    <path d="M18,26 Q70,18 118,24 L118,28 Q70,22 18,30 Z" fill="url(#nt${id}s)" opacity="0.95"/>
+    <!-- Red lower body -->
+    <path d="M45,32 Q80,28 115,32 L115,42 Q80,38 45,44 Z" fill="url(#nt${id}r)" opacity="0.7"/>
+    <!-- Belly -->
+    <ellipse cx="65" cy="36" rx="45" ry="9" fill="white" opacity="0.25"/>
+    <!-- Dorsal fin -->
+    <path d="M55,12 Q68,4 82,10 L82,16 Q68,8 55,16 Z" fill="#5588FF" opacity="0.85"/>
+    <!-- Eye -->
+    <circle cx="16" cy="27" r="6" fill="white"/>
+    <circle cx="14" cy="26" r="4" fill="#111"/>
+    <circle cx="13" cy="24" r="1.5" fill="white" opacity="0.9"/>
+    <!-- Mouth -->
+    <path d="M6,31 Q9,34 12,31" stroke="#6699CC" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <!-- Shimmer -->
+    <ellipse cx="80" cy="22" rx="20" ry="6" fill="white" opacity="0.2" transform="rotate(-5,80,22)"/>
+  </svg>`,
+
+  // 🐠 Exotic Angelfish — tall, elegant, striped
+  (id,c1,c2,sz) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 130" width="${sz*0.7}" height="${sz*1.05}">
+    <defs>
+      <radialGradient id="af${id}" cx="40%" cy="40%"><stop offset="0%" stop-color="${c1}"/><stop offset="100%" stop-color="${c2}"/></radialGradient>
+      <linearGradient id="af${id}f" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${c2}"/><stop offset="100%" stop-color="${c1}"/></linearGradient>
+    </defs>
+    <!-- Bottom tail fan -->
+    <path d="M50,105 L20,128 Q50,120 80,128 Z" fill="url(#af${id}f)"/>
+    <!-- Top fin dramatic -->
+    <path d="M50,18 L28,40 Q50,28 72,40 Z" fill="url(#af${id}f)"/>
+    <!-- Body diamond -->
+    <ellipse cx="50" cy="68" rx="26" ry="44" fill="url(#af${id})"/>
+    <!-- Stripes -->
+    <rect x="36" y="38" width="8" height="60" fill="white" rx="4" opacity="0.8"/>
+    <rect x="56" y="40" width="7" height="56" fill="white" rx="3.5" opacity="0.7"/>
+    <rect x="72" y="46" width="5" height="44" fill="${c2}" rx="2.5" opacity="0.6"/>
+    <!-- Belly lighter -->
+    <ellipse cx="50" cy="78" rx="16" ry="22" fill="white" opacity="0.2"/>
+    <!-- Pectoral fin -->
+    <ellipse cx="36" cy="72" rx="14" ry="6" fill="${c1}" transform="rotate(-30,36,72)" opacity="0.75"/>
+    <!-- Eye -->
+    <circle cx="36" cy="56" r="7" fill="white"/>
+    <circle cx="34" cy="55" r="4.5" fill="#111"/>
+    <circle cx="32" cy="53" r="1.8" fill="white" opacity="0.95"/>
+    <!-- Mouth -->
+    <path d="M25,62 Q29,66 33,62" stroke="#555" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <!-- Shimmer highlight -->
+    <ellipse cx="55" cy="55" rx="10" ry="18" fill="white" opacity="0.13" transform="rotate(10,55,55)"/>
+  </svg>`,
+
+  // 🐡 Mandarin Dragonet — wildly colorful, psychedelic
+  (id,c1,c2,sz) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 75" width="${sz}" height="${sz*0.54}">
+    <defs>
+      <linearGradient id="md${id}" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#00AA88"/><stop offset="50%" stop-color="#0066FF"/><stop offset="100%" stop-color="#6600CC"/></linearGradient>
+      <linearGradient id="md${id}t" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FF6600"/><stop offset="100%" stop-color="#FFCC00"/></linearGradient>
+    </defs>
+    <!-- Tail -->
+    <path d="M108,38 L136,18 Q139,38 136,58 Z" fill="url(#md${id}t)"/>
+    <!-- Body -->
+    <ellipse cx="60" cy="38" rx="52" ry="24" fill="url(#md${id})"/>
+    <!-- Psychedelic pattern stripes -->
+    <path d="M30,20 Q50,14 70,18 Q90,14 108,20 L108,26 Q90,20 70,24 Q50,18 30,26 Z" fill="#FF6600" opacity="0.6"/>
+    <path d="M25,32 Q50,26 75,30 Q95,26 110,32 L110,36 Q95,32 75,34 Q50,30 25,36 Z" fill="#FFCC00" opacity="0.5"/>
+    <path d="M28,44 Q55,38 80,42 Q100,38 110,44 L110,50 Q100,44 80,48 Q55,44 28,50 Z" fill="#FF3399" opacity="0.45"/>
+    <!-- Orange spots -->
+    <circle cx="50" cy="30" r="5" fill="#FF4400" opacity="0.5"/>
+    <circle cx="75" cy="45" r="4.5" fill="#FF4400" opacity="0.45"/>
+    <circle cx="92" cy="30" r="3.5" fill="#FFAA00" opacity="0.55"/>
+    <!-- Tall dorsal fin -->
+    <path d="M30,14 Q45,0 65,8 Q85,0 100,10 L100,18 Q85,8 65,14 Q45,4 30,20 Z" fill="#FF6600" opacity="0.85"/>
+    <line x1="45" y1="5" x2="43" y2="16" stroke="#CC3300" stroke-width="1.2"/>
+    <line x1="60" y1="2" x2="58" y2="13" stroke="#CC3300" stroke-width="1.2"/>
+    <line x1="77" y1="3" x2="75" y2="14" stroke="#CC3300" stroke-width="1.2"/>
+    <!-- Pectoral fin -->
+    <ellipse cx="48" cy="54" rx="15" ry="7" fill="#00DDAA" transform="rotate(-25,48,54)" opacity="0.7"/>
+    <!-- Eye -->
+    <circle cx="20" cy="34" r="8" fill="white"/>
+    <circle cx="18" cy="33" r="5" fill="#111"/>
+    <circle cx="16" cy="31" r="2" fill="white" opacity="0.95"/>
+    <!-- Mouth -->
+    <path d="M8,40 Q12,44 16,40" stroke="#006655" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- Shimmer -->
+    <ellipse cx="70" cy="28" rx="16" ry="6" fill="white" opacity="0.2" transform="rotate(-8,70,28)"/>
+  </svg>`,
+
+  // 🐟 Goldfish — flowing fins, classic beauty
+  (id,c1,c2,sz) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 85" width="${sz}" height="${sz*0.61}">
+    <defs>
+      <radialGradient id="gf${id}" cx="38%" cy="35%"><stop offset="0%" stop-color="#FFD700"/><stop offset="100%" stop-color="#FF6600"/></radialGradient>
+      <linearGradient id="gf${id}t" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FF9900"/><stop offset="100%" stop-color="#FF3300"/></linearGradient>
+    </defs>
+    <!-- Flowing tail (split fan) -->
+    <path d="M108,42 L140,14 Q136,42 140,70 Z" fill="url(#gf${id}t)" opacity="0.9"/>
+    <path d="M108,42 L132,24 Q128,42 132,60 Z" fill="#FF6600" opacity="0.6"/>
+    <!-- Long ventral tail -->
+    <path d="M75,65 Q90,85 75,82 Q60,88 55,70 Z" fill="#FFAA00" opacity="0.8"/>
+    <!-- Body -->
+    <ellipse cx="60" cy="42" rx="52" ry="26" fill="url(#gf${id})"/>
+    <!-- Scale pattern -->
+    <ellipse cx="50" cy="35" rx="12" ry="7" fill="#FFB700" opacity="0.35" transform="rotate(-15,50,35)"/>
+    <ellipse cx="70" cy="32" rx="12" ry="7" fill="#FFB700" opacity="0.3" transform="rotate(-10,70,32)"/>
+    <ellipse cx="88" cy="37" rx="11" ry="6" fill="#FF8800" opacity="0.3"/>
+    <ellipse cx="55" cy="50" rx="12" ry="6" fill="#FF8800" opacity="0.3" transform="rotate(10,55,50)"/>
+    <ellipse cx="78" cy="50" rx="11" ry="6" fill="#FF7700" opacity="0.28" transform="rotate(5,78,50)"/>
+    <!-- Belly -->
+    <ellipse cx="58" cy="52" rx="36" ry="13" fill="#FFE880" opacity="0.35"/>
+    <!-- Dorsal fin -->
+    <path d="M36,16 Q55,2 84,12 L84,20 Q55,8 36,22 Z" fill="#FF7700" opacity="0.9"/>
+    <!-- Long pectoral fin -->
+    <path d="M48,48 Q38,65 52,72 Q58,68 52,56 Z" fill="#FFAA00" opacity="0.75"/>
+    <!-- Eye with iris -->
+    <circle cx="22" cy="37" r="9" fill="white"/>
+    <circle cx="20" cy="36" r="6" fill="#442200"/>
+    <circle cx="22" cy="34" r="3" fill="#220000"/>
+    <circle cx="20" cy="33" r="2" fill="white" opacity="0.9"/>
+    <!-- Mouth small -->
+    <path d="M9,43 Q13,46 17,43" stroke="#CC5500" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- Gill -->
+    <path d="M28,25 Q26,42 28,60" stroke="#CC6600" stroke-width="1.8" fill="none" opacity="0.5"/>
+    <!-- Shimmer -->
+    <ellipse cx="65" cy="30" rx="18" ry="7" fill="white" opacity="0.18" transform="rotate(-10,65,30)"/>
+  </svg>`,
+
+  // 🦈 Cute Baby Shark — smooth grey, friendly grin
+  (id,c1,c2,sz) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 165 75" width="${sz*1.1}" height="${sz*0.5}">
+    <defs>
+      <linearGradient id="sh${id}" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#90A8C0"/><stop offset="100%" stop-color="#4A6A88"/></linearGradient>
+      <linearGradient id="sh${id}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#B0CCDD"/><stop offset="100%" stop-color="#EEFAFF"/></linearGradient>
+    </defs>
+    <!-- Tail -->
+    <path d="M130,38 L158,10 L158,66 Z" fill="#5A7A99"/>
+    <path d="M130,38 L155,20 L155,56 Z" fill="#7090AA" opacity="0.5"/>
+    <!-- Body torpedo -->
+    <ellipse cx="68" cy="38" rx="65" ry="26" fill="url(#sh${id})"/>
+    <!-- Belly white -->
+    <ellipse cx="65" cy="50" rx="52" ry="14" fill="url(#sh${id}b)"/>
+    <!-- Dorsal fin (tall) -->
+    <path d="M65,12 L80,2 L95,12 L95,20 L65,20 Z" fill="#4A6A88"/>
+    <!-- Pectoral fins -->
+    <path d="M55,45 L35,62 L65,55 Z" fill="#5A7A99" opacity="0.8"/>
+    <path d="M95,45 L88,58 L110,50 Z" fill="#5A7A99" opacity="0.7"/>
+    <!-- Eye -->
+    <circle cx="15" cy="33" r="9" fill="white"/>
+    <circle cx="13" cy="32" r="6" fill="#111"/>
+    <circle cx="11" cy="30" r="2.5" fill="white" opacity="0.9"/>
+    <!-- Friendly grin with teeth -->
+    <path d="M5,44 Q15,56 28,46" stroke="#334455" stroke-width="2.5" fill="#EEFAFF" stroke-linecap="round"/>
+    <line x1="11" y1="50" x2="11" y2="55" stroke="white" stroke-width="2"/>
+    <line x1="16" y1="52" x2="16" y2="57" stroke="white" stroke-width="2"/>
+    <line x1="21" y1="52" x2="21" y2="56" stroke="white" stroke-width="2"/>
+    <!-- Gill slits -->
+    <path d="M30,22 Q28,38 30,54" stroke="#4A6A88" stroke-width="2" fill="none" opacity="0.5"/>
+    <path d="M38,20 Q36,38 38,56" stroke="#4A6A88" stroke-width="1.5" fill="none" opacity="0.35"/>
+    <!-- Shimmer -->
+    <ellipse cx="80" cy="28" rx="22" ry="8" fill="white" opacity="0.15" transform="rotate(-8,80,28)"/>
+  </svg>`,
+
+];
+
+const fishColors = [
+  ['#9B59B6','#D7BDE2'],['#8E44AD','#BB8FCE'],['#7D3C98','#C39BD3'],
+  ['#A569BD','#E8DAEF'],['#6C3483','#D2B4DE'],['#AF7AC5','#F4ECF7'],
+  ['#5B2C6F','#C9B1D9'],['#BDC3F7','#9B59B6'],['#7C4DFF','#CE93D8'],
+  ['#AB47BC','#EA80FC'],['#9C27B0','#E040FB'],['#7B1FA2','#CE93D8']
+];
+
+function createFish(index) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'fish';
+
+
+  const topPct  = 5 + Math.random() * 78;
+  const [c1, c2]= fishColors[index % fishColors.length];
+  const sz      = 90 + Math.random() * 110;
+  const dur     = 16 + Math.random() * 24;
+  const delay   = -Math.random() * dur;
+  const tIdx    = index % fishTemplates.length;
+  // Gentle vertical bob
+  const bobAmp  = 8 + Math.random() * 14;
+  const bobDur  = 2.5 + Math.random() * 2.5;
+
+  wrapper.innerHTML = fishTemplates[tIdx](index, c1, c2, sz);
+  wrapper.style.setProperty('--bob', bobAmp + 'px');
+
+  // Random direction: 50% chance left-to-right, 50% right-to-left
+  const goRight = Math.random() < 0.5;
+  const animName = goRight ? 'swim' : 'swimBack';
+  wrapper.style.cssText = `top:${topPct}%;animation-name:${animName};animation-duration:${dur}s;animation-delay:${delay}s;`;
+  // Add inner bob wrapper
+  wrapper.firstElementChild && (wrapper.firstElementChild.style.cssText = `animation:fishBob ${bobDur}s ease-in-out infinite;animation-delay:${Math.random()*3}s;display:block;`);
+
+  bg.appendChild(wrapper);
+}
+
+// Spawn 16 gorgeous fish
+for (let i = 0; i < 16; i++) createFish(i);
+
+// Continuously respawn
+setInterval(() => {
+  const fishes = bg.querySelectorAll('.fish');
+  if (fishes.length < 16) createFish(Math.floor(Math.random()*16));
+}, 4000);
+
+/* ============================================================
+   GAME LOGIC
+   ============================================================ */
+const challenges = [
+  {
+    scenario: "🎮 Arjun wants a password for his gaming account on Free Fire. It should be something only he knows and very hard to guess.",
+    minLength: 8, needUpper: true, needNumber: true, needSymbol: true,
+    baseWords: ["arjun","game","freefire","fire","play"],
+    symbols: ["!","@","#","*"],
+    extras: ["ABC","xyz","99","2024"],
+    tip: "Try combining a random word with numbers and symbols — like: G@m3r#99!"
+  },
+  {
+    scenario: "📧 Priya wants to protect her Gmail account. She should use a password that is long, unique, and has all required elements.",
+    minLength: 10, needUpper: true, needNumber: true, needSymbol: true,
+    baseWords: ["priya","email","gmail","inbox","safe"],
+    symbols: ["@","!","#","$"],
+    extras: ["Pr1y@","2024","Secure","M@il"],
+    tip: "Think of a phrase: 'I check mail daily' → ICh3ck@M@ilD@ily!"
+  },
+  {
+    scenario: "🏦 Rahul's parent needs a strong password for their banking app. It must be very secure with maximum strength.",
+    minLength: 12, needUpper: true, needNumber: true, needSymbol: true,
+    baseWords: ["bank","money","secure","rahul","paisa"],
+    symbols: ["#","!","@","&"],
+    extras: ["B@nk!","S3cur3","2024#","R@hul*"],
+    tip: "Banks need the strongest passwords! Use long random combinations: S3cur3B@nk!2024"
+  },
+  {
+    scenario: "📚 Meena wants a password for her school portal (CBSE). It should be easy for her to remember but hard for others to guess.",
+    minLength: 8, needUpper: true, needNumber: true, needSymbol: true,
+    baseWords: ["meena","school","cbse","study","learn"],
+    symbols: ["!","*","@","#"],
+    extras: ["M3ena!","CBSE@","St@r","L3arn"],
+    tip: "Use your favourite subject + a symbol + year: Sc!ence@2024"
+  },
+  {
+    scenario: "💻 Rohan wants a password for his YouTube Kids account that his parents set up. It needs all the right ingredients!",
+    minLength: 8, needUpper: true, needNumber: true, needSymbol: true,
+    baseWords: ["rohan","youtube","video","watch","fun"],
+    symbols: ["@","!","#","*"],
+    extras: ["Y0uTub3!","R0han@","V!deo#","W@tch*"],
+    tip: "Mix the platform name cleverly: Y0uTub3@R0han!"
+  }
+];
+
+let current = 0, score = 0, builtCount = 0;
+let droppedParts = [];
+let dragItem = null, ghostEl = null;
+
+function loadChallenge() {
+  const c = challenges[current];
+  document.getElementById('qLabel').textContent = `Challenge ${current+1} of ${challenges.length}`;
+  document.getElementById('scenario').textContent = c.scenario;
+  droppedParts = [];
+  document.getElementById('preview').textContent = '_';
+  document.getElementById('preview').classList.remove('has-content');
+  document.getElementById('strengthFill').style.width = '0%';
+  document.getElementById('strengthText').textContent = '—';
+  document.getElementById('checklist').innerHTML = '';
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('nextBtn').style.display = 'none';
+  document.getElementById('tipBox').className = 'tip-box';
+  document.getElementById('dzHint').style.display = '';
+
+  const allParts = [...c.baseWords, ...c.symbols, ...c.extras];
+  const shuffled = allParts.sort(() => Math.random() - 0.5).slice(0, 14);
+
+  const pool = document.getElementById('ingredientsPool');
+  pool.innerHTML = '';
+  shuffled.forEach((part, idx) => {
+    const el = document.createElement('div');
+    el.className = 'ingredient';
+    el.textContent = part;
+    el.style.animationDelay = (idx * 0.04) + 's';
+    el.dataset.part = part;
+    setupDrag(el, part);
+    pool.appendChild(el);
+  });
+
+  renderDropZone();
+}
+
+function setupDrag(el, part) {
+  // Mouse
+  el.addEventListener('mousedown', e => startDrag(e, part, el));
+  // Touch
+  el.addEventListener('touchstart', e => startTouchDrag(e, part, el), {passive:false});
+  // Click fallback
+  el.addEventListener('click', e => {
+    if (!droppedParts.includes(part) || true) {
+      droppedParts.push(part);
+      renderDropZone();
+      updatePreview();
+    }
+  });
+}
+
+/* ─── Mouse Drag ─── */
+function startDrag(e, part, el) {
+  if (e.button !== 0) return;
+  e.preventDefault();
+  dragItem = part;
+  el.classList.add('dragging');
+
+  ghostEl = document.createElement('div');
+  ghostEl.className = 'drag-ghost';
+  ghostEl.textContent = part;
+  document.body.appendChild(ghostEl);
+
+  moveGhost(e.clientX, e.clientY);
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+}
+
+function onMouseMove(e) {
+  moveGhost(e.clientX, e.clientY);
+  checkDropZoneHover(e.clientX, e.clientY);
+}
+
+function onMouseUp(e) {
+  const dz = document.getElementById('dropZone');
+  const rect = dz.getBoundingClientRect();
+  if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+    droppedParts.push(dragItem);
+    renderDropZone();
+    updatePreview();
+  }
+  cleanupDrag();
+  document.removeEventListener('mousemove', onMouseMove);
+  document.removeEventListener('mouseup', onMouseUp);
+}
+
+/* ─── Touch Drag ─── */
+function startTouchDrag(e, part, el) {
+  e.preventDefault();
+  dragItem = part;
+  el.classList.add('dragging');
+
+  ghostEl = document.createElement('div');
+  ghostEl.className = 'drag-ghost';
+  ghostEl.textContent = part;
+  document.body.appendChild(ghostEl);
+
+  const t = e.touches[0];
+  moveGhost(t.clientX, t.clientY);
+
+  el.addEventListener('touchmove', onTouchMove, {passive:false});
+  el.addEventListener('touchend', onTouchEnd);
+}
+
+function onTouchMove(e) {
+  e.preventDefault();
+  const t = e.touches[0];
+  moveGhost(t.clientX, t.clientY);
+  checkDropZoneHover(t.clientX, t.clientY);
+}
+
+function onTouchEnd(e) {
+  const t = e.changedTouches[0];
+  const dz = document.getElementById('dropZone');
+  const rect = dz.getBoundingClientRect();
+  if (t.clientX >= rect.left && t.clientX <= rect.right && t.clientY >= rect.top && t.clientY <= rect.bottom) {
+    droppedParts.push(dragItem);
+    renderDropZone();
+    updatePreview();
+  }
+  cleanupDrag();
+  this.removeEventListener('touchmove', onTouchMove);
+  this.removeEventListener('touchend', onTouchEnd);
+}
+
+function moveGhost(x, y) {
+  if (!ghostEl) return;
+  ghostEl.style.left = (x - 40) + 'px';
+  ghostEl.style.top  = (y - 20) + 'px';
+}
+
+function checkDropZoneHover(x, y) {
+  const dz = document.getElementById('dropZone');
+  const rect = dz.getBoundingClientRect();
+  const over = (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom);
+  dz.classList.toggle('drag-over', over);
+}
+
+function cleanupDrag() {
+  document.getElementById('dropZone').classList.remove('drag-over');
+  document.querySelectorAll('.ingredient.dragging').forEach(el => el.classList.remove('dragging'));
+  if (ghostEl) { ghostEl.remove(); ghostEl = null; }
+  dragItem = null;
+}
+
+function renderDropZone() {
+  const dz = document.getElementById('dropZone');
+  dz.innerHTML = '';
+
+  const hint = document.createElement('span');
+  hint.className = 'drop-zone-hint';
+  hint.id = 'dzHint';
+  hint.textContent = 'drag pieces here →';
+  dz.appendChild(hint);
+
+  if (droppedParts.length > 0) hint.style.display = 'none';
+
+  droppedParts.forEach((part, idx) => {
+    const el = document.createElement('div');
+    el.className = 'dropped-piece';
+    el.textContent = part;
+    el.title = 'Click to remove';
+    el.onclick = () => {
+      droppedParts.splice(idx, 1);
+      renderDropZone();
+      updatePreview();
+    };
+    dz.appendChild(el);
+  });
+}
+
+function updatePreview() {
+  const pwd = droppedParts.join('');
+  const prev = document.getElementById('preview');
+  prev.textContent = pwd || '_';
+  prev.classList.toggle('has-content', pwd.length > 0);
+  analyzeStrength(pwd);
+}
+
+function analyzeStrength(pwd) {
+  const c = challenges[current];
+  const checks = [
+    { label: `${pwd.length}/${c.minLength} chars`, ok: pwd.length >= c.minLength },
+    { label: 'Uppercase A-Z', ok: /[A-Z]/.test(pwd) },
+    { label: 'Lowercase a-z', ok: /[a-z]/.test(pwd) },
+    { label: 'Numbers 0-9',   ok: /[0-9]/.test(pwd) },
+    { label: 'Symbols !@#',   ok: /[!@#$*&]/.test(pwd) },
+  ];
+
+  const cl = document.getElementById('checklist');
+  cl.innerHTML = '';
+  checks.forEach(ch => {
+    const el = document.createElement('div');
+    el.className = `check-item ${ch.ok ? 'check-yes' : 'check-no'}`;
+    el.textContent = (ch.ok ? '✅ ' : '❌ ') + ch.label;
+    cl.appendChild(el);
+  });
+
+  const passed = checks.filter(c => c.ok).length;
+  const pct = (passed / 5) * 100;
+  const fill = document.getElementById('strengthFill');
+  fill.style.width = pct + '%';
+  const colors = ['#E74C3C','#E67E22','#F4D03F','#27AE60','#1F7A4D'];
+  fill.style.background = colors[passed - 1] || '#eee';
+  const labels = ['','Very Weak 😟','Weak 😐','OK 🙂','Strong 💪','Very Strong 🔥'];
+  const st = document.getElementById('strengthText');
+  st.textContent = labels[passed] || '—';
+  st.style.color  = colors[passed - 1] || '#aaa';
+}
+
+function checkAnswer() {
+  const pwd = droppedParts.join('');
+  const fb  = document.getElementById('feedback');
+  if (!pwd) { fb.style.color='#E74C3C'; fb.textContent='Build a password first! 🔑'; return; }
+  const c = challenges[current];
+  const ok = pwd.length >= c.minLength && /[A-Z]/.test(pwd) && /[0-9]/.test(pwd) && /[!@#$*&]/.test(pwd);
+  if (ok) {
+    score += 20; builtCount++;
+    document.getElementById('score').textContent = score;
+    document.getElementById('built').textContent = builtCount;
+    fb.style.color = '#27AE60';
+    fb.textContent = ['🎉 Amazing password! Super secure!','🌟 Excellent! Password Pro!','🔥 Outstanding! Uncrackable!'][Math.floor(Math.random()*3)];
+    document.getElementById('nextBtn').style.display = 'inline-block';
+    document.getElementById('tipBox').className = 'tip-box';
+    burstStars();
+    if (current === challenges.length - 1) {
+      document.getElementById('nextBtn').textContent = 'See Results 🏆';
+      document.getElementById('nextBtn').onclick = showResult;
+    }
+  } else {
+    fb.style.color = '#E74C3C';
+    fb.textContent = 'Not strong enough yet! See tip below 👇';
+    const tb = document.getElementById('tipBox');
+    tb.textContent = '💡 Tip: ' + c.tip;
+    tb.className = 'tip-box visible';
+  }
+}
+
+function burstStars() {
+  const emojis = ['⭐','🌟','✨','💫','🎉','🔑'];
+  for (let i = 0; i < 10; i++) {
+    const s = document.createElement('div');
+    s.className = 'star-burst';
+    s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    const x = 30 + Math.random() * 40; // vw %
+    const y = 20 + Math.random() * 60; // vh %
+    s.style.left = x + 'vw';
+    s.style.top  = y + 'vh';
+    s.style.setProperty('--dx', (-60+Math.random()*120) + 'px');
+    s.style.setProperty('--dy', (-80+Math.random()*60) + 'px');
+    s.style.animationDelay = (i*0.08) + 's';
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 1500);
+  }
+}
+
+function resetCurrentQ() {
+  droppedParts = [];
+  renderDropZone();
+  updatePreview();
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('nextBtn').style.display = 'none';
+  document.getElementById('tipBox').className = 'tip-box';
+}
+
+function nextQ() {
+  current++;
+  if (current < challenges.length) {
+    loadChallenge();
+    document.getElementById('nextBtn').style.display = 'none';
+    document.getElementById('nextBtn').onclick = nextQ;
+    document.getElementById('nextBtn').textContent = '➡️ Next Challenge';
+  } else showResult();
+}
+
+function showResult() {
+  document.getElementById('gameCard').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'block';
+  document.getElementById('resultTitle').textContent = score>=80 ? '🏆 Password Master! Outstanding!' : score>=60 ? '⭐ Great Job! Well Done!' : '💪 Good Effort! Keep Practising!';
+  document.getElementById('resultDetails').textContent = `Score: ${score}/100 | Challenges: ${builtCount}/5`;
+  document.getElementById('resultMsg').textContent = 'You now know how to build strong passwords to protect your digital life!';
+  burstStars(); burstStars();
+}
+
+function fullReset() {
+  current=0; score=0; builtCount=0; droppedParts=[];
+  document.getElementById('score').textContent=0;
+  document.getElementById('built').textContent=0;
+  document.getElementById('gameCard').style.display='block';
+  document.getElementById('resultScreen').style.display='none';
+  document.getElementById('nextBtn').onclick=nextQ;
+  document.getElementById('nextBtn').textContent='➡️ Next Challenge';
+  loadChallenge();
+}
+
+loadChallenge();
+</script>
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Wizard's Ledger</title>
+    <style>
+        :root {
+            --magic-gold: #ffd700;
+            --wizard-purple: #4b0082;
+            --parchment: #f4e4bc;
+            --crystal-blue: #00f2ff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Garamond', serif;
+            background: radial-gradient(circle at center, #1a0033 0%, #000 100%);
+            color: white;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Continuous Background Animations */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: twinkle 3s infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.5); opacity: 1; box-shadow: 0 0 10px var(--magic-gold); }
+        }
+
+        .floating-obj {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.4;
+            animation: floatUp 12s infinite linear;
+            z-index: -1;
+            filter: drop-shadow(0 0 5px var(--magic-gold));
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(110vh) translateX(0) rotate(0deg); }
+            50% { transform: translateY(50vh) translateX(20px) rotate(180deg); }
+            100% { transform: translateY(-10vh) translateX(-20px) rotate(360deg); }
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--magic-gold);
+            text-shadow: 0 0 20px var(--magic-gold);
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .activity-card {
+            background: rgba(40, 0, 80, 0.4);
+            backdrop-filter: blur(12px);
+            border: 2px solid var(--magic-gold);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.1);
+        }
+
+        /* Drag & Drop Styles */
+        .drop-zone {
+            width: 160px;
+            height: 160px;
+            border: 3px dashed var(--crystal-blue);
+            border-radius: 50%;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 20px;
+            background: rgba(0, 242, 255, 0.05);
+            transition: all 0.3s;
+        }
+
+        /* Special style for the Scroll Zone in Act 2 */
+        .scroll-zone {
+            width: 250px;
+            height: 120px;
+            border-radius: 10px;
+            border: 3px solid #c4a45d;
+            background: var(--parchment);
+            color: #2c1a00;
+            cursor: default;
+        }
+
+        .ingredient {
+            width: 90px;
+            padding: 12px;
+            background: var(--parchment);
+            color: #2c1a00;
+            border-radius: 8px;
+            cursor: grab;
+            display: inline-block;
+            margin: 10px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            border: 1px solid #c4a45d;
+        }
+
+        .cauldron-icon {
+            font-size: 5rem;
+            filter: drop-shadow(0 0 15px #a020f0);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        input {
+            background: rgba(255,255,255,0.1);
+            color: var(--magic-gold);
+            border: 1px solid var(--magic-gold);
+            padding: 10px;
+            border-radius: 8px;
+            width: 100px;
+            text-align: center;
+            font-size: 1.2rem;
+            outline: none;
+        }
+
+        button {
+            background: linear-gradient(45deg, #4b0082, #800080);
+            color: var(--magic-gold);
+            border: 1px solid var(--magic-gold);
+            padding: 10px 25px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 0 10px rgba(255,215,0,0.3);
+        }
+
+        button:hover {
+            box-shadow: 0 0 20px var(--magic-gold);
+        }
+
+        .feedback {
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            min-height: 25px;
+        }
+
+        .glow-cyan { color: var(--crystal-blue); text-shadow: 0 0 5px var(--crystal-blue); }
+    </style>
+</head>
+<body>
+
+    <div class="stars-container" id="stars"></div>
+
+    <div class="container">
+        <h1>✨ The Wizard's Ledger ✨</h1>
+        <p style="font-style: italic; color: #ccc;">Balance the magic of your wealth and the strength of your squares.</p>
+
+        <div class="activity-card">
+            <h2>1. The Cauldron of Vanishing Gold</h2>
+            <p>A wizard starts with a Gross Salary of <strong>₹40,000</strong>. <br>Drag the "Tax Curses" into the cauldron to see how much gold remains!</p>
+            
+            <div id="ing-bin">
+                <div class="ingredient" draggable="true" id="pf" data-val="3000">PF (₹3000)</div>
+                <div class="ingredient" draggable="true" id="tax" data-val="2800">Tax (₹2800)</div>
+                <div class="ingredient" draggable="true" id="ins" data-val="1000">Ins. (₹1000)</div>
+            </div>
+
+            <div class="drop-zone" id="cauldron">
+                <span class="cauldron-icon">🥣</span>
+            </div>
+
+            <div class="feedback glow-cyan" id="deduction-total">Deductions Applied: ₹0</div>
+            <p>What is the final <strong>Net Salary</strong>? ₹<input type="number" id="net-ans"> 
+            <button onclick="checkNet()">Seal Scroll</button></p>
+            <div class="feedback" id="feedback1"></div>
+        </div>
+
+        <div class="activity-card">
+            <h2>2. The Scroll of Roots</h2>
+            <p>The Elder's pay stub is protected by magic. You must identify the <strong>Perfect Squares</strong> to decipher the root salary!</p>
+            
+            <div id="num-bin">
+                <div class="ingredient" draggable="true" id="sq25" data-perfect="true">25</div>
+                <div class="ingredient" draggable="true" id="sq12" data-perfect="false">12</div>
+                <div class="ingredient" draggable="true" id="sq64" data-perfect="true">64</div>
+                <div class="ingredient" draggable="true" id="sq100" data-perfect="true">100</div>
+            </div>
+
+            <div class="drop-zone scroll-zone" id="scroll-target">
+                <span style="font-size: 1.2rem; font-weight: bold;">📜 Drop Valid Squares Here 📜</span>
+            </div>
+
+            <div class="feedback glow-cyan" id="scroll-count">Squares Deciphered: 0</div>
+            <p>Extract the root of the last square deciphered: <input type="number" id="root-ans">
+            <button onclick="checkRoot()">Authenticate Root</button></p>
+            <div class="feedback" id="feedback2"></div>
+        </div>
+
+        <div class="activity-card">
+            <h2>3. The Silent Deduction</h2>
+            <p>A scroll shows a Gross Salary of <span class="glow-cyan">₹40,000</span> and a Net Salary of <span class="glow-cyan">₹33,200</span>.</p>
+            <p>If PF is <strong>₹3,000</strong> and Tax is <strong>₹2,800</strong>... <br>How much was the <strong>Insurance</strong> potion?</p>
+            <input type="number" id="ins-solve" placeholder="???">
+            <button onclick="checkFinal()">Reveal Secret</button>
+            <div class="feedback" id="feedback3"></div>
+        </div>
+    </div>
+
+    <script>
+        // --- BACKGROUND AMBIANCE ---
+        const stars = document.getElementById('stars');
+        const magicalItems = ['📖', '🪄', '📜', '🦉', '⭐', '✨'];
+
+        for (let i = 0; i < 60; i++) {
+            const s = document.createElement('div');
+            s.className = 'star';
+            s.style.left = Math.random() * 100 + '%';
+            s.style.top = Math.random() * 100 + '%';
+            s.style.width = s.style.height = Math.random() * 3 + 'px';
+            s.style.animationDelay = Math.random() * 5 + 's';
+            stars.appendChild(s);
+        }
+
+        setInterval(() => {
+            const item = document.createElement('div');
+            item.className = 'floating-obj';
+            item.innerText = magicalItems[Math.floor(Math.random() * magicalItems.length)];
+            item.style.left = Math.random() * 90 + 'vw';
+            document.body.appendChild(item);
+            setTimeout(() => item.remove(), 12000);
+        }, 2500);
+
+        // --- INTERACTIVE LOGIC ---
+        let totalDeducted = 0;
+        let lastRoot = 0;
+        let squaresDeciphered = 0;
+
+        document.querySelectorAll('.ingredient').forEach(el => {
+            el.addEventListener('dragstart', e => e.dataTransfer.setData('text', e.target.id));
+        });
+
+        // Activity 1: Cauldron
+        const cauldron = document.getElementById('cauldron');
+        cauldron.addEventListener('dragover', e => e.preventDefault());
+        cauldron.addEventListener('drop', e => {
+            e.preventDefault();
+            const id = e.dataTransfer.getData('text');
+            const el = document.getElementById(id);
+            if(el.parentElement.id === "ing-bin") {
+                totalDeducted += parseInt(el.dataset.val);
+                document.getElementById('deduction-total').innerText = `Deductions Applied: ₹${totalDeducted}`;
+                el.style.visibility = 'hidden';
+            }
+        });
+
+        function checkNet() {
+            const ans = document.getElementById('net-ans').value;
+            if (ans == (40000 - totalDeducted) && totalDeducted > 0) {
+                document.getElementById('feedback1').innerText = "Perfect! Your gold is safe. ✨";
+                document.getElementById('feedback1').style.color = "#00ffcc";
+            } else {
+                document.getElementById('feedback1').innerText = "The Ledger is unbalanced. Recalculate!";
+                document.getElementById('feedback1').style.color = "#ff4444";
+            }
+        }
+
+        // Activity 2: Scroll Roots (UPDATED LOGIC for the scroll target)
+        const scrollTarget = document.getElementById('scroll-target');
+        scrollTarget.addEventListener('dragover', e => e.preventDefault());
+        scrollTarget.addEventListener('drop', e => {
+            e.preventDefault();
+            const id = e.dataTransfer.getData('text');
+            const el = document.getElementById(id);
+            if(el.dataset.perfect === "true") {
+                squaresDeciphered++;
+                lastRoot = Math.sqrt(parseInt(el.innerText));
+                document.getElementById('scroll-count').innerText = `Squares Deciphered: ${squaresDeciphered}`;
+                el.style.visibility = 'hidden';
+            } else {
+                alert("The scroll rejects this number! It is not a perfect square.");
+            }
+        });
+
+        function checkRoot() {
+            const ans = document.getElementById('root-ans').value;
+            if (ans == lastRoot && lastRoot !== 0) {
+                document.getElementById('feedback2').innerText = "The Scroll reveals a hidden glyph! Correct Root.";
+                document.getElementById('feedback2').style.color = "#00ffcc";
+            } else {
+                document.getElementById('feedback2').innerText = "The magic fizzles... wrong root.";
+            }
+        }
+
+        // Activity 3: The Solve
+        function checkFinal() {
+            const val = document.getElementById('ins-solve').value;
+            // 40000 - (3000 + 2800 + X) = 33200
+            // 40000 - 33200 = 6800 (Total Deductions)
+            // 6800 - 3000 - 2800 = 1000
+            if (val == 1000) {
+                document.getElementById('feedback3').innerText = "Wisdom achieved! You've found the hidden cost. 🦉";
+                document.getElementById('feedback3').style.color = "#00ffcc";
+            } else {
+                document.getElementById('feedback3').innerText = "The numbers are clouded. Try again.";
+                document.getElementById('feedback3').style.color = "#ff4444";
+            }
+        }
+    </script>
+</body>
+</html>

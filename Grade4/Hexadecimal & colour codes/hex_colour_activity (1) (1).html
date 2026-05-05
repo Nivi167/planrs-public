@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔮 The Hex Wizard's</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #f5c842;
+    --deep-purple: #1a0a2e;
+    --mid-purple: #2d1b5e;
+    --light-purple: #6b3fa0;
+    --teal: #00e5ff;
+    --magenta: #ff00c8;
+    --green-glow: #39ff14;
+    --parchment: #f4e4bc;
+    --dark-parchment: #d4b896;
+    --ink: #1a0a2e;
+    --red-potion: #ff3366;
+    --blue-potion: #4488ff;
+    --yellow-potion: #ffdd00;
+    --orange-glow: #ff6a00;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Crimson Text', serif;
+    background: var(--deep-purple);
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: var(--parchment);
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Ctext y='16' font-size='16'%3E✨%3C/text%3E%3C/svg%3E") 10 10, auto;
+  }
+
+  /* ── ANIMATED BACKGROUND ── */
+  .bg-layer {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, #2a0a5e 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, #0a1a3e 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, #1a0a2e 0%, transparent 70%);
+  }
+
+  .stars-layer {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  }
+
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: white;
+    animation: twinkle var(--dur, 3s) ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+  }
+
+  @keyframes twinkle {
+    0%,100% { opacity: 0.2; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.4); }
+  }
+
+  /* Floating objects */
+  .float-obj {
+    position: fixed;
+    font-size: var(--size, 2rem);
+    pointer-events: none;
+    z-index: 1;
+    animation: floatAround var(--dur, 8s) ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+    opacity: 0.7;
+    filter: drop-shadow(0 0 8px var(--glow, gold));
+  }
+
+  @keyframes floatAround {
+    0%   { transform: translate(0,0) rotate(0deg); }
+    25%  { transform: translate(20px,-30px) rotate(5deg); }
+    50%  { transform: translate(-10px,-50px) rotate(-3deg); }
+    75%  { transform: translate(15px,-20px) rotate(4deg); }
+    100% { transform: translate(0,0) rotate(0deg); }
+  }
+
+  /* nebula glow */
+  .nebula {
+    position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
+    filter: blur(80px);
+    animation: nebulaPulse 6s ease-in-out infinite;
+  }
+  @keyframes nebulaPulse {
+    0%,100% { opacity: 0.15; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(1.1); }
+  }
+
+  /* ── LAYOUT ── */
+  .wrapper {
+    position: relative; z-index: 2;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 20px 20px 60px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    text-align: center;
+    padding: 30px 20px 20px;
+    animation: fadeInDown 1s ease;
+  }
+
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .header h1 {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: clamp(1.6rem, 4vw, 3rem);
+    color: var(--gold);
+    text-shadow: 0 0 20px var(--gold), 0 0 40px #ff9900;
+    line-height: 1.3;
+  }
+
+  .header p {
+    font-family: 'Special Elite', cursive;
+    color: var(--parchment);
+    font-size: 1.1rem;
+    margin-top: 8px;
+    opacity: 0.85;
+  }
+
+  /* divider */
+  .divider {
+    text-align: center;
+    font-size: 1.5rem;
+    margin: 18px 0;
+    color: var(--gold);
+    letter-spacing: 12px;
+  }
+
+  /* ── ACTIVITY CARDS ── */
+  .activity-card {
+    background: linear-gradient(135deg, rgba(45,27,94,0.92), rgba(26,10,46,0.95));
+    border: 2px solid rgba(245,200,66,0.35);
+    border-radius: 20px;
+    padding: 28px 28px 32px;
+    margin-bottom: 36px;
+    box-shadow: 0 0 30px rgba(107,63,160,0.5), inset 0 0 40px rgba(0,0,0,0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .activity-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(245,200,66,0.04), transparent 60%);
+    pointer-events: none;
+  }
+
+  .activity-title {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: 1.25rem;
+    color: var(--gold);
+    text-shadow: 0 0 10px var(--gold);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .activity-num {
+    background: var(--gold);
+    color: var(--deep-purple);
+    font-size: 0.85rem;
+    font-weight: 700;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .activity-desc {
+    font-size: 1rem;
+    color: var(--dark-parchment);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  /* ══════════════════════════════
+     ACTIVITY 1 – INVISIBLE INK
+     ══════════════════════════════ */
+  .ink-scroll {
+    background: linear-gradient(160deg, #f4e4bc, #e8d4a0);
+    border-radius: 12px;
+    padding: 24px;
+    position: relative;
+    border: 3px solid #c8a870;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.15), 0 4px 20px rgba(0,0,0,0.4);
+    min-height: 130px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  .ink-scroll::before, .ink-scroll::after {
+    content: ''; position: absolute; left: 0; right: 0; height: 18px;
+    background: linear-gradient(90deg, #c8a870, #f4e4bc, #c8a870);
+    border-radius: 4px;
+  }
+  .ink-scroll::before { top: -2px; }
+  .ink-scroll::after  { bottom: -2px; }
+
+  .hidden-message {
+    font-family: 'Special Elite', cursive;
+    font-size: 1.4rem;
+    color: transparent;
+    text-shadow: none;
+    background: transparent;
+    transition: color 1.5s ease, text-shadow 1.5s ease;
+    text-align: center;
+    letter-spacing: 3px;
+    cursor: default;
+    user-select: none;
+  }
+
+  .hidden-message.revealed {
+    color: var(--ink);
+    text-shadow: 0 0 1px rgba(26,10,46,0.3);
+  }
+
+  .hex-input-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .hex-swatch {
+    width: 50px; height: 50px;
+    border-radius: 10px;
+    border: 3px solid rgba(255,255,255,0.3);
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.3s;
+    display: flex;align-items:center;justify-content:center;
+    font-size: 1.2rem;
+  }
+
+  .hex-swatch:hover { transform: scale(1.15); }
+  .hex-swatch.active {
+    border-color: var(--gold);
+    box-shadow: 0 0 16px var(--gold);
+    transform: scale(1.2);
+  }
+
+  .reveal-hint {
+    font-family: 'Special Elite', cursive;
+    font-size: 0.9rem;
+    color: #8b6040;
+    text-align: center;
+  }
+
+  .reveal-zone {
+    background: linear-gradient(90deg, #e8d4a0, #f4e4bc);
+    border: 2px dashed #c8a870;
+    border-radius: 10px;
+    padding: 14px 20px;
+    text-align: center;
+    font-family: 'Special Elite', cursive;
+    color: #6b4020;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .reveal-zone:hover {
+    background: linear-gradient(90deg, #ffd87a, #ffe8a0);
+    border-color: var(--gold);
+    box-shadow: 0 0 20px rgba(245,200,66,0.4);
+  }
+
+  /* colour clue slots */
+  .clue-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 14px;
+    margin-top: 12px;
+  }
+
+  .clue-box {
+    border-radius: 12px;
+    padding: 14px 10px;
+    text-align: center;
+    background: rgba(0,0,0,0.35);
+    border: 2px solid rgba(255,255,255,0.12);
+    transition: all 0.3s;
+  }
+
+  .clue-box .clue-color {
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    margin: 0 auto 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    box-shadow: 0 0 14px rgba(255,255,255,0.2);
+  }
+
+  .clue-box .clue-label {
+    font-family: 'Special Elite', cursive;
+    font-size: 0.82rem;
+    color: var(--parchment);
+    margin-bottom: 4px;
+  }
+
+  .clue-box .clue-hex {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: 0.75rem;
+    color: var(--gold);
+    letter-spacing: 1px;
+  }
+
+  /* ══════════════════════════════
+     ACTIVITY 2 – POTION MIXER
+     ══════════════════════════════ */
+  .potion-lab {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .potion-shelf {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .potion-bottle {
+    width: 70px;
+    cursor: grab;
+    position: relative;
+    transition: transform 0.2s;
+    user-select: none;
+  }
+
+  .potion-bottle:active { cursor: grabbing; transform: scale(1.1) rotate(5deg); }
+  .potion-bottle:hover  { transform: scale(1.08); }
+
+  .potion-svg { width: 100%; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5)); }
+
+  .potion-label {
+    font-family: 'Special Elite', cursive;
+    font-size: 0.7rem;
+    text-align: center;
+    color: var(--parchment);
+    margin-top: 4px;
+  }
+
+  .cauldron-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 220px;
+  }
+
+  .cauldron {
+    width: 160px;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .cauldron-drop-zone {
+    width: 160px; height: 100px;
+    border-radius: 0 0 80px 80px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.5rem;
+    border: 3px dashed rgba(245,200,66,0.4);
+    transition: all 0.3s;
+    background: rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cauldron-drop-zone.drag-over {
+    border-color: var(--gold);
+    background: rgba(245,200,66,0.1);
+    box-shadow: 0 0 20px var(--gold);
+  }
+
+  .cauldron-liquid {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    border-radius: 0 0 76px 76px;
+    transition: background 0.8s ease, height 0.5s ease;
+    height: 0;
+  }
+
+  .bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    animation: bubbleRise 1.5s ease-in infinite;
+    bottom: 0;
+  }
+
+  @keyframes bubbleRise {
+    0%   { transform: translateY(0) scale(1); opacity: 0.6; }
+    100% { transform: translateY(-60px) scale(0.3); opacity: 0; }
+  }
+
+  .mix-slots {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .mix-slot {
+    width: 64px; height: 64px;
+    border-radius: 12px;
+    border: 2px dashed rgba(245,200,66,0.5);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem;
+    background: rgba(0,0,0,0.3);
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  .mix-slot.filled {
+    border-style: solid;
+    border-color: var(--gold);
+    box-shadow: 0 0 12px rgba(245,200,66,0.4);
+  }
+
+  .mix-slot.drag-over {
+    background: rgba(245,200,66,0.15);
+    border-color: var(--gold);
+    transform: scale(1.1);
+  }
+
+  .mix-result {
+    border-radius: 14px;
+    padding: 14px 18px;
+    text-align: center;
+    font-family: 'Special Elite', cursive;
+    font-size: 0.95rem;
+    background: rgba(0,0,0,0.35);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    min-height: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.5s;
+    width: 100%;
+  }
+
+  .result-swatch {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.3);
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 6px;
+    box-shadow: 0 0 12px rgba(255,255,255,0.2);
+  }
+
+  /* ══════════════════════════════
+     ACTIVITY 3 – DECODE THE SPELL
+     ══════════════════════════════ */
+  .spell-board {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .cipher-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 8px;
+  }
+
+  .cipher-card {
+    background: rgba(0,0,0,0.4);
+    border: 1.5px solid rgba(245,200,66,0.25);
+    border-radius: 10px;
+    padding: 8px 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+  }
+
+  .cipher-card:hover {
+    border-color: var(--gold);
+    box-shadow: 0 0 12px rgba(245,200,66,0.4);
+    transform: translateY(-3px);
+  }
+
+  .cipher-card.selected {
+    background: rgba(245,200,66,0.2);
+    border-color: var(--gold);
+    box-shadow: 0 0 16px rgba(245,200,66,0.6);
+  }
+
+  .cipher-card .color-dot {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    margin: 0 auto 5px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem;
+    font-family: 'Special Elite', cursive;
+    color: rgba(255,255,255,0.85);
+    font-weight: bold;
+  }
+
+  .cipher-card .hex-code {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: 0.6rem;
+    color: var(--gold);
+  }
+
+  .cipher-card .letter-hint {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .decode-slots {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(0,0,0,0.25);
+    border-radius: 14px;
+    border: 1.5px solid rgba(245,200,66,0.2);
+    min-height: 70px;
+    align-items: center;
+  }
+
+  .decode-slot {
+    width: 46px; height: 52px;
+    border-radius: 8px;
+    border: 2px dashed rgba(245,200,66,0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.3);
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .decode-slot.filled {
+    border-style: solid;
+    border-color: var(--gold);
+  }
+
+  .decode-slot:hover { border-color: var(--teal); }
+
+  .decode-slot .slot-color {
+    width: 24px; height: 18px;
+    border-radius: 4px;
+    margin-bottom: 2px;
+  }
+
+  .decode-slot .slot-letter {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: 0.9rem;
+    color: var(--gold);
+    font-weight: 700;
+  }
+
+  .decode-slot .slot-blank {
+    font-family: 'Special Elite', cursive;
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.3);
+  }
+
+  .spell-target {
+    background: linear-gradient(135deg, rgba(245,200,66,0.08), rgba(107,63,160,0.2));
+    border: 1.5px solid rgba(245,200,66,0.3);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-family: 'Special Elite', cursive;
+    font-size: 0.95rem;
+    color: var(--parchment);
+    line-height: 1.6;
+  }
+
+  .spell-target strong {
+    color: var(--gold);
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: 0.9rem;
+  }
+
+  .spell-sequence {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+    align-items: center;
+  }
+
+  .seq-item {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Special Elite', cursive;
+    font-size: 0.85rem;
+  }
+
+  .seq-dot {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── BUTTONS ── */
+  .magic-btn {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: 0.85rem;
+    color: var(--deep-purple);
+    background: linear-gradient(135deg, var(--gold), #e8a800);
+    border: none;
+    border-radius: 30px;
+    padding: 10px 22px;
+    cursor: pointer;
+    box-shadow: 0 0 16px rgba(245,200,66,0.5);
+    transition: all 0.25s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .magic-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 28px rgba(245,200,66,0.7);
+    background: linear-gradient(135deg, #ffe066, var(--gold));
+  }
+
+  .magic-btn:active { transform: scale(0.96); }
+
+  .magic-btn.secondary {
+    background: linear-gradient(135deg, rgba(107,63,160,0.8), rgba(45,27,94,0.9));
+    color: var(--gold);
+    border: 1.5px solid rgba(245,200,66,0.4);
+    box-shadow: 0 0 12px rgba(107,63,160,0.5);
+  }
+
+  /* ── FEEDBACK / MESSAGES ── */
+  .feedback {
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-family: 'Special Elite', cursive;
+    font-size: 0.95rem;
+    text-align: center;
+    margin-top: 10px;
+    animation: fadeIn 0.5s ease;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.success {
+    background: rgba(57,255,20,0.12);
+    border: 1.5px solid #39ff14;
+    color: #39ff14;
+    box-shadow: 0 0 14px rgba(57,255,20,0.3);
+  }
+  .feedback.error {
+    background: rgba(255,51,102,0.12);
+    border: 1.5px solid var(--red-potion);
+    color: #ff8aaa;
+  }
+  .feedback.info {
+    background: rgba(0,229,255,0.08);
+    border: 1.5px solid var(--teal);
+    color: var(--teal);
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; } }
+
+  /* celebration burst */
+  .burst {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 4rem;
+    pointer-events: none;
+    z-index: 9999;
+    animation: burstAnim 1.5s ease forwards;
+    display: none;
+  }
+
+  @keyframes burstAnim {
+    0%   { opacity: 0; transform: translate(-50%,-50%) scale(0.2); }
+    40%  { opacity: 1; transform: translate(-50%,-50%) scale(1.4); }
+    100% { opacity: 0; transform: translate(-50%,-50%) scale(2); }
+  }
+
+  /* progress stars */
+  .progress-row {
+    display: flex; gap: 8px; justify-content: center; margin-top: 10px;
+  }
+  .prog-star {
+    font-size: 1.4rem;
+    filter: grayscale(1) opacity(0.3);
+    transition: all 0.4s;
+  }
+  .prog-star.lit {
+    filter: grayscale(0) opacity(1);
+    animation: starPop 0.4s ease;
+  }
+  @keyframes starPop {
+    0% { transform: scale(0.5); }
+    60% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+  }
+
+  /* hex reference strip */
+  .hex-reference {
+    background: rgba(0,0,0,0.3);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 18px;
+    border: 1px solid rgba(245,200,66,0.2);
+  }
+
+  .hex-reference h3 {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: 0.85rem;
+    color: var(--gold);
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .hex-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .hex-strip-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,0,0,0.35);
+    border-radius: 8px;
+    padding: 4px 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .hex-strip-dot {
+    width: 16px; height: 16px; border-radius: 50%;
+  }
+
+  .hex-strip-text {
+    font-family: 'Special Elite', cursive;
+    font-size: 0.78rem;
+    color: var(--parchment);
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--deep-purple); }
+  ::-webkit-scrollbar-thumb { background: var(--light-purple); border-radius: 4px; }
+
+  /* draggable highlight */
+  .dragging { opacity: 0.5; transform: rotate(8deg) scale(0.9); }
+
+  /* owl blink */
+  @keyframes owlBlink {
+    0%,96%,100% { transform: scaleY(1); }
+    98% { transform: scaleY(0.05); }
+  }
+
+  .owl-eye { display: inline-block; animation: owlBlink 4s ease-in-out infinite; }
+
+  /* glow pulse for cauldron */
+  @keyframes cauldronGlow {
+    0%,100% { filter: drop-shadow(0 0 6px #39ff14); }
+    50%      { filter: drop-shadow(0 0 20px #39ff14); }
+  }
+
+  .cauldron-active { animation: cauldronGlow 1.5s ease-in-out infinite; }
+
+</style>
+</head>
+<body>
+
+<!-- Background Layers -->
+<div class="bg-layer"></div>
+<div class="stars-layer" id="starsLayer"></div>
+<div class="nebula" style="width:400px;height:400px;top:-100px;left:-100px;background:radial-gradient(circle,rgba(107,63,160,0.6),transparent)"></div>
+<div class="nebula" style="width:350px;height:350px;bottom:-80px;right:-80px;background:radial-gradient(circle,rgba(0,70,130,0.5),transparent);animation-delay:3s"></div>
+
+<!-- Floating Objects -->
+<div class="float-obj" style="top:8%;left:3%;--size:2.2rem;--dur:7s;--delay:0s;--glow:#f5c842">📚</div>
+<div class="float-obj" style="top:15%;right:4%;--size:2rem;--dur:9s;--delay:1s;--glow:#00e5ff">🦉</div>
+<div class="float-obj" style="top:40%;left:1%;--size:1.8rem;--dur:8s;--delay:2s;--glow:#ff00c8">🔮</div>
+<div class="float-obj" style="top:60%;right:2%;--size:2.2rem;--dur:10s;--delay:0.5s;--glow:#39ff14">🧪</div>
+<div class="float-obj" style="top:75%;left:5%;--size:1.6rem;--dur:7.5s;--delay:3s;--glow:#f5c842">✨</div>
+<div class="float-obj" style="top:25%;right:7%;--size:1.9rem;--dur:11s;--delay:1.5s;--glow:#ff9900">🪄</div>
+<div class="float-obj" style="top:85%;right:8%;--size:2rem;--dur:9.5s;--delay:4s;--glow:#ff00c8">⭐</div>
+<div class="float-obj" style="top:50%;left:2%;--size:1.7rem;--dur:8.5s;--delay:2.5s;--glow:#00e5ff">📖</div>
+
+<!-- Celebration Burst -->
+<div class="burst" id="celebBurst">🎉</div>
+
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>🔮 The Hex Wizard's 🔮</h1>
+    <p>Master the ancient art of Hexadecimal Colour Magic!</p>
+  </div>
+
+  <!-- HEX REFERENCE -->
+  <div class="activity-card" style="padding:16px 22px;">
+    <div style="font-family:'Cinzel Decorative',cursive;font-size:0.9rem;color:var(--gold);margin-bottom:10px;text-align:center;">📜 Wizard's Hex Grimoire</div>
+    <div class="hex-strip">
+      <div class="hex-strip-item"><div class="hex-strip-dot" style="background:#FF0000"></div><span class="hex-strip-text">#FF0000 = Red</span></div>
+      <div class="hex-strip-item"><div class="hex-strip-dot" style="background:#00FF00"></div><span class="hex-strip-text">#00FF00 = Green</span></div>
+      <div class="hex-strip-item"><div class="hex-strip-dot" style="background:#0000FF"></div><span class="hex-strip-text">#0000FF = Blue</span></div>
+      <div class="hex-strip-item"><div class="hex-strip-dot" style="background:#FFFF00"></div><span class="hex-strip-text">#FFFF00 = Yellow</span></div>
+      <div class="hex-strip-item"><div class="hex-strip-dot" style="background:#FF00FF"></div><span class="hex-strip-text">#FF00FF = Magenta</span></div>
+      <div class="hex-strip-item"><div class="hex-strip-dot" style="background:#00FFFF"></div><span class="hex-strip-text">#00FFFF = Cyan</span></div>
+      <div class="hex-strip-item"><div class="hex-strip-dot" style="background:#FF8800"></div><span class="hex-strip-text">#FF8800 = Orange</span></div>
+      <div class="hex-strip-item"><div class="hex-strip-dot" style="background:#8800FF"></div><span class="hex-strip-text">#8800FF = Violet</span></div>
+      <div class="hex-strip-item"><div class="hex-strip-dot" style="background:#FFFFFF"></div><span class="hex-strip-text">#FFFFFF = White</span></div>
+      <div class="hex-strip-item"><div class="hex-strip-dot" style="background:#000000;border:1px solid #444"></div><span class="hex-strip-text">#000000 = Black</span></div>
+    </div>
+    <p style="font-family:'Special Elite',cursive;font-size:0.78rem;color:rgba(245,228,188,0.6);text-align:center;margin-top:10px;">💡 Hex codes = # + 6 characters &nbsp;|&nbsp; RR GG BB &nbsp;|&nbsp; 00=none, FF=maximum</p>
+  </div>
+
+  <!-- ═══════════════════════════
+       ACTIVITY 1
+  ═══════════════════════════════ -->
+  <div class="activity-card">
+    <div class="activity-title">
+      <div class="activity-num">1</div>
+      🕯️ Reveal the Invisible Ink Spell
+    </div>
+    <p class="activity-desc">
+      A secret spell is hidden on this enchanted scroll — but it's written in <strong>invisible ink</strong>!
+      The scroll can only be revealed by <em>applying the correct sequence of hex colour potions</em>.
+      Click the correct colour bottles in order (Red → Blue → Green), then pour them onto the scroll!
+    </p>
+
+    <div class="ink-scroll" id="inkScroll">
+      <p class="hidden-message" id="hiddenMsg">✨ LUMOS HEXADECIMA ✨</p>
+      <div class="hex-input-group" id="hexSwatches">
+        <div class="hex-swatch" id="sw-red"   style="background:#FF0000" data-color="red"   title="#FF0000 — Click me!" onclick="selectSwatch(this,'red')">🔴</div>
+        <div class="hex-swatch" id="sw-green" style="background:#00AA00" data-color="green" title="#00AA00 — Click me!" onclick="selectSwatch(this,'green')">🟢</div>
+        <div class="hex-swatch" id="sw-blue"  style="background:#0044FF" data-color="blue"  title="#0044FF — Click me!" onclick="selectSwatch(this,'blue')">🔵</div>
+        <div class="hex-swatch" id="sw-yellow"style="background:#FFDD00" data-color="yellow"title="#FFDD00 — Click me!" onclick="selectSwatch(this,'yellow')">🟡</div>
+        <div class="hex-swatch" id="sw-purple"style="background:#8800FF" data-color="purple"title="#8800FF — Click me!" onclick="selectSwatch(this,'purple')">🟣</div>
+      </div>
+      <p class="reveal-hint" id="seqHint">Your sequence: <span id="seqDisplay">_  _  _</span></p>
+      <div class="reveal-zone" id="pourBtn" onclick="pourInk()">🫗 Pour the Potions onto the Scroll!</div>
+    </div>
+
+    <div id="inkFeedback" class="feedback"></div>
+
+    <div style="margin-top:16px;">
+      <p style="font-family:'Special Elite',cursive;font-size:0.9rem;color:var(--parchment);margin-bottom:10px;">🔍 What do these hex codes look like?</p>
+      <div class="clue-grid">
+        <div class="clue-box">
+          <div class="clue-color" style="background:#FF0000;">❓</div>
+          <div class="clue-label">First potion</div>
+          <div class="clue-hex">#FF0000</div>
+        </div>
+        <div class="clue-box">
+          <div class="clue-color" style="background:#0044FF;">❓</div>
+          <div class="clue-label">Second potion</div>
+          <div class="clue-hex">#0044FF</div>
+        </div>
+        <div class="clue-box">
+          <div class="clue-color" style="background:#00AA00;">❓</div>
+          <div class="clue-label">Third potion</div>
+          <div class="clue-hex">#00AA00</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;">
+      <button class="magic-btn secondary" onclick="resetInk()">🔄 Reset Scroll</button>
+    </div>
+
+    <div class="progress-row">
+      <span class="prog-star" id="inkStar1">⭐</span>
+      <span class="prog-star" id="inkStar2">⭐</span>
+      <span class="prog-star" id="inkStar3">⭐</span>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════
+       ACTIVITY 2
+  ═══════════════════════════════ -->
+  <div class="activity-card">
+    <div class="activity-title">
+      <div class="activity-num">2</div>
+      🧪 The Colour-Mixing Cauldron
+    </div>
+    <p class="activity-desc">
+      Drag <strong>two</strong> colour potions from the shelf and drop them into the mixing slots.
+      Predict what colour the cauldron will brew — then cast the spell to see the result!
+      Use your <strong>hex colour knowledge</strong> to predict the outcome before mixing.
+    </p>
+
+    <div class="potion-lab">
+      <!-- Shelf -->
+      <div class="potion-shelf">
+        <p style="font-family:'Special Elite',cursive;font-size:0.85rem;color:var(--gold);text-align:center;">🧴 Potion Shelf</p>
+        <div class="potion-bottle" draggable="true" data-color="red" data-hex="#FF0000" id="pot-red" ondragstart="dragStart(event)" ontouchstart="touchStart(event)" ontouchmove="touchMove(event)" ontouchend="touchEnd(event)">
+          <svg class="potion-svg" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg">
+            <rect x="22" y="4" width="16" height="14" rx="3" fill="#aaa"/>
+            <path d="M10 32 Q10 20 20 16 L40 16 Q50 20 50 32 L55 65 Q55 75 30 75 Q5 75 5 65 Z" fill="#FF0000" opacity="0.9"/>
+            <path d="M15 40 Q15 30 22 26 L38 26 Q45 30 45 40 L48 63 Q48 72 30 72 Q12 72 12 63 Z" fill="#FF4444" opacity="0.5"/>
+            <ellipse cx="30" cy="75" rx="25" ry="5" fill="#CC0000" opacity="0.4"/>
+            <circle cx="22" cy="45" r="5" fill="rgba(255,255,255,0.25)"/>
+          </svg>
+          <p class="potion-label">Red #FF0000</p>
+        </div>
+        <div class="potion-bottle" draggable="true" data-color="blue" data-hex="#0000FF" id="pot-blue" ondragstart="dragStart(event)" ontouchstart="touchStart(event)" ontouchmove="touchMove(event)" ontouchend="touchEnd(event)">
+          <svg class="potion-svg" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg">
+            <rect x="22" y="4" width="16" height="14" rx="3" fill="#aaa"/>
+            <path d="M10 32 Q10 20 20 16 L40 16 Q50 20 50 32 L55 65 Q55 75 30 75 Q5 75 5 65 Z" fill="#0000FF" opacity="0.9"/>
+            <path d="M15 40 Q15 30 22 26 L38 26 Q45 30 45 40 L48 63 Q48 72 30 72 Q12 72 12 63 Z" fill="#4444FF" opacity="0.5"/>
+            <circle cx="22" cy="45" r="5" fill="rgba(255,255,255,0.25)"/>
+          </svg>
+          <p class="potion-label">Blue #0000FF</p>
+        </div>
+        <div class="potion-bottle" draggable="true" data-color="yellow" data-hex="#FFFF00" id="pot-yellow" ondragstart="dragStart(event)" ontouchstart="touchStart(event)" ontouchmove="touchMove(event)" ontouchend="touchEnd(event)">
+          <svg class="potion-svg" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg">
+            <rect x="22" y="4" width="16" height="14" rx="3" fill="#aaa"/>
+            <path d="M10 32 Q10 20 20 16 L40 16 Q50 20 50 32 L55 65 Q55 75 30 75 Q5 75 5 65 Z" fill="#FFFF00" opacity="0.9"/>
+            <path d="M15 40 Q15 30 22 26 L38 26 Q45 30 45 40 L48 63 Q48 72 30 72 Q12 72 12 63 Z" fill="#FFFF88" opacity="0.5"/>
+            <circle cx="22" cy="45" r="5" fill="rgba(255,255,255,0.3)"/>
+          </svg>
+          <p class="potion-label">Yellow #FFFF00</p>
+        </div>
+        <div class="potion-bottle" draggable="true" data-color="green" data-hex="#00FF00" id="pot-green" ondragstart="dragStart(event)" ontouchstart="touchStart(event)" ontouchmove="touchMove(event)" ontouchend="touchEnd(event)">
+          <svg class="potion-svg" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg">
+            <rect x="22" y="4" width="16" height="14" rx="3" fill="#aaa"/>
+            <path d="M10 32 Q10 20 20 16 L40 16 Q50 20 50 32 L55 65 Q55 75 30 75 Q5 75 5 65 Z" fill="#00CC00" opacity="0.9"/>
+            <path d="M15 40 Q15 30 22 26 L38 26 Q45 30 45 40 L48 63 Q48 72 30 72 Q12 72 12 63 Z" fill="#44FF44" opacity="0.5"/>
+            <circle cx="22" cy="45" r="5" fill="rgba(255,255,255,0.25)"/>
+          </svg>
+          <p class="potion-label">Green #00FF00</p>
+        </div>
+      </div>
+
+      <!-- Cauldron & slots -->
+      <div class="cauldron-area">
+        <p style="font-family:'Special Elite',cursive;font-size:0.85rem;color:var(--gold);">🪣 Drop zones</p>
+        <div class="mix-slots">
+          <div class="mix-slot" id="mixSlot1" ondragover="dragOver(event)" ondrop="dropPotion(event,1)" ondragleave="dragLeave(event)">
+            <span id="mixSlot1Icon">?</span>
+          </div>
+          <div style="font-size:1.6rem;color:var(--gold);line-height:52px">+</div>
+          <div class="mix-slot" id="mixSlot2" ondragover="dragOver(event)" ondrop="dropPotion(event,2)" ondragleave="dragLeave(event)">
+            <span id="mixSlot2Icon">?</span>
+          </div>
+        </div>
+
+        <!-- cauldron visual -->
+        <div style="margin:4px 0;">
+          <svg width="160" height="120" viewBox="0 0 160 120" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="80" cy="30" rx="65" ry="18" fill="#333" opacity="0.6"/>
+            <path d="M15 30 Q10 50 10 70 Q10 100 80 105 Q150 100 150 70 Q150 50 145 30 Z" fill="#2a2a2a"/>
+            <clipPath id="cauldronClip">
+              <path d="M20 35 Q15 55 15 72 Q15 98 80 102 Q145 98 145 72 Q145 55 140 35 Z"/>
+            </clipPath>
+            <rect id="cauldronLiquid" x="15" y="35" width="130" height="0" clip-path="url(#cauldronClip)" fill="#1a0a2e" style="transition:height 0.8s ease,y 0.8s ease,fill 0.8s ease"/>
+            <g id="bubbles"></g>
+            <path d="M10 32 Q80 44 150 32" stroke="#555" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <line x1="15" y1="28" x2="5" y2="10" stroke="#666" stroke-width="5" stroke-linecap="round"/>
+            <line x1="145" y1="28" x2="155" y2="10" stroke="#666" stroke-width="5" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <!-- prediction input -->
+        <div style="width:100%;">
+          <p style="font-family:'Special Elite',cursive;font-size:0.85rem;color:var(--parchment);margin-bottom:8px;">🔮 Your prediction — what hex will brew?</p>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <input id="predictionInput" type="text" placeholder="#??????" maxlength="7"
+              style="background:rgba(0,0,0,0.4);border:1.5px solid rgba(245,200,66,0.4);border-radius:8px;padding:8px 12px;color:var(--gold);font-family:'Special Elite',cursive;font-size:1rem;width:120px;outline:none;"
+              oninput="updatePredPreview(this.value)">
+            <div id="predPreview" style="width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,0.2);background:#333;transition:background 0.3s;"></div>
+          </div>
+        </div>
+
+        <button class="magic-btn" onclick="brewPotion()">🔥 Cast Mixing Spell!</button>
+
+        <div id="brewResult" class="mix-result">
+          <span style="color:rgba(255,255,255,0.4);font-size:0.9rem;">Brew result appears here…</span>
+        </div>
+
+        <button class="magic-btn secondary" onclick="resetBrew()" style="margin-top:4px;">🔄 Empty Cauldron</button>
+      </div>
+    </div>
+
+    <div id="brewFeedback" class="feedback"></div>
+
+    <div class="progress-row">
+      <span class="prog-star" id="brewStar1">⭐</span>
+      <span class="prog-star" id="brewStar2">⭐</span>
+      <span class="prog-star" id="brewStar3">⭐</span>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════
+       ACTIVITY 3
+  ═══════════════════════════════ -->
+  <div class="activity-card">
+    <div class="activity-title">
+      <div class="activity-num">3</div>
+      🧙 Decode the Ancient Colour Spell
+    </div>
+    <p class="activity-desc">
+      The ancient wizard left a spell encoded in hex colour codes. Each colour represents a <strong>letter</strong>.
+      Click the colour tiles in the correct order to spell out the magic word. 
+      Study the cipher key, then decode the glowing sequence below!
+    </p>
+
+    <!-- Cipher Key -->
+    <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:14px;margin-bottom:16px;border:1px solid rgba(245,200,66,0.2);">
+      <p style="font-family:'Cinzel Decorative',cursive;font-size:0.8rem;color:var(--gold);margin-bottom:10px;text-align:center;">🗝️ The Colour-Letter Cipher</p>
+      <div class="cipher-grid" id="cipherGrid"></div>
+    </div>
+
+    <!-- The Encoded Sequence -->
+    <div class="spell-target">
+      <strong>📜 Decode this sequence:</strong>
+      <div class="spell-sequence" id="spellSequence"></div>
+    </div>
+
+    <!-- Answer slots -->
+    <p style="font-family:'Special Elite',cursive;font-size:0.88rem;color:var(--parchment);margin:14px 0 6px;">Click the colours in order to fill the answer:</p>
+    <div class="decode-slots" id="decodeSlots"></div>
+
+    <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center;">
+      <button class="magic-btn" onclick="checkSpell()">⚡ Cast Spell Check!</button>
+      <button class="magic-btn secondary" onclick="resetSpell()">🔄 Clear</button>
+      <button class="magic-btn secondary" onclick="getHint()">💡 Hint</button>
+    </div>
+
+    <div id="spellFeedback" class="feedback"></div>
+
+    <div class="progress-row">
+      <span class="prog-star" id="spellStar1">⭐</span>
+      <span class="prog-star" id="spellStar2">⭐</span>
+      <span class="prog-star" id="spellStar3">⭐</span>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="text-align:center;padding:20px;font-family:'Special Elite',cursive;font-size:0.85rem;color:rgba(245,228,188,0.4);">
+    ✨ Hex Wizard's — AI & Digital Skills ✨
+  </div>
+
+</div>
+
+<script>
+/* ══════════════════════
+   BACKGROUND STARS
+══════════════════════ */
+(function generateStars() {
+  const layer = document.getElementById('starsLayer');
+  for (let i = 0; i < 120; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 3 + 1;
+    s.style.cssText = `
+      width:${size}px;height:${size}px;
+      top:${Math.random()*100}%;left:${Math.random()*100}%;
+      --dur:${2+Math.random()*4}s;
+      --delay:-${Math.random()*4}s;
+    `;
+    layer.appendChild(s);
+  }
+})();
+
+/* ══════════════════════
+   CELEBRATION
+══════════════════════ */
+function celebrate(emoji='🎉') {
+  const b = document.getElementById('celebBurst');
+  b.textContent = emoji;
+  b.style.display = 'block';
+  b.style.animation = 'none';
+  requestAnimationFrame(() => {
+    b.style.animation = 'burstAnim 1.5s ease forwards';
+    setTimeout(() => b.style.display='none', 1600);
+  });
+}
+
+function litStars(prefix, count) {
+  for (let i=1;i<=3;i++) {
+    const s = document.getElementById(prefix+i);
+    if (s) { s.classList.toggle('lit', i<=count); }
+  }
+}
+
+function showFeedback(id, msg, type) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'feedback show ' + type;
+  setTimeout(() => el.className = 'feedback', 4000);
+}
+
+/* ══════════════════════
+   ACTIVITY 1 — INVISIBLE INK
+══════════════════════ */
+const INK_SEQUENCE = ['red','blue','green'];
+let inkSelected = [];
+let inkRevealed = false;
+
+function selectSwatch(el, color) {
+  if (inkRevealed) return;
+  if (inkSelected.length >= 3) {
+    showFeedback('inkFeedback','⚠️ Already have 3 potions selected! Pour them or reset.','info');
+    return;
+  }
+  if (inkSelected.includes(color)) {
+    showFeedback('inkFeedback','⚠️ You already added that colour!','info');
+    return;
+  }
+  inkSelected.push(color);
+  el.classList.add('active');
+  updateSeqDisplay();
+  showFeedback('inkFeedback',`🧪 Added ${color}! Sequence: ${inkSelected.join(' → ')}`, 'info');
+}
+
+function updateSeqDisplay() {
+  const labels = ['_','_','_'];
+  inkSelected.forEach((c,i)=>{
+    const colors = {red:'🔴',blue:'🔵',green:'🟢',yellow:'🟡',purple:'🟣'};
+    labels[i] = colors[c]||c;
+  });
+  document.getElementById('seqDisplay').textContent = labels.join('  ');
+}
+
+function pourInk() {
+  if (inkRevealed) { showFeedback('inkFeedback','✅ Already revealed!','success'); return; }
+  if (inkSelected.length < 3) {
+    showFeedback('inkFeedback','🧪 Select 3 colour potions first!','error'); return;
+  }
+  const correct = JSON.stringify(inkSelected) === JSON.stringify(INK_SEQUENCE);
+  if (correct) {
+    document.getElementById('hiddenMsg').classList.add('revealed');
+    inkRevealed = true;
+    document.getElementById('pourBtn').textContent = '✅ Spell Revealed!';
+    document.getElementById('pourBtn').style.background = 'linear-gradient(90deg,rgba(57,255,20,0.2),rgba(57,255,20,0.1))';
+    showFeedback('inkFeedback','🎉 Brilliant! The invisible ink spell is revealed! You used Red → Blue → Green (#FF0000 → #0044FF → #00AA00)!','success');
+    litStars('inkStar',3);
+    celebrate('✨');
+  } else {
+    showFeedback('inkFeedback','❌ Wrong sequence! The scroll stays blank... Check the clue boxes below for the hex codes of each potion and try again!','error');
+    const wrong = [...document.querySelectorAll('.hex-swatch')];
+    wrong.forEach(w=>{ w.classList.remove('active'); });
+    inkSelected = [];
+    updateSeqDisplay();
+    litStars('inkStar',1);
+  }
+}
+
+function resetInk() {
+  inkSelected = [];
+  inkRevealed = false;
+  document.getElementById('hiddenMsg').classList.remove('revealed');
+  document.getElementById('pourBtn').textContent = '🫗 Pour the Potions onto the Scroll!';
+  document.getElementById('pourBtn').style.background = '';
+  document.querySelectorAll('.hex-swatch').forEach(s=>s.classList.remove('active'));
+  updateSeqDisplay();
+  document.getElementById('inkFeedback').className='feedback';
+  litStars('inkStar',0);
+}
+
+/* ══════════════════════
+   ACTIVITY 2 — CAULDRON
+══════════════════════ */
+const BREW_RECIPES = {
+  'red+blue':   { result:'#8800FF', name:'Violet', desc:'Red + Blue = Violet! (R:88, G:00, B:FF)' },
+  'blue+red':   { result:'#8800FF', name:'Violet', desc:'Red + Blue = Violet! (R:88, G:00, B:FF)' },
+  'red+yellow': { result:'#FF8800', name:'Orange', desc:'Red + Yellow = Orange! (R:FF, G:88, B:00)' },
+  'yellow+red': { result:'#FF8800', name:'Orange', desc:'Red + Yellow = Orange! (R:FF, G:88, B:00)' },
+  'blue+yellow':{ result:'#88BB00', name:'Yellowish-Green', desc:'Blue + Yellow ≈ Green-ish! (R:88, G:BB, B:00)' },
+  'yellow+blue':{ result:'#88BB00', name:'Yellowish-Green', desc:'Blue + Yellow ≈ Green-ish! (R:88, G:BB, B:00)' },
+  'red+green':  { result:'#888800', name:'Dark Yellow', desc:'Red + Green = Dark Yellow-Brown! (R:88, G:88, B:00)' },
+  'green+red':  { result:'#888800', name:'Dark Yellow', desc:'Red + Green = Dark Yellow-Brown! (R:88, G:88, B:00)' },
+  'blue+green': { result:'#0088AA', name:'Teal', desc:'Blue + Green = Teal! (R:00, G:88, B:AA)' },
+  'green+blue': { result:'#0088AA', name:'Teal', desc:'Blue + Green = Teal! (R:00, G:88, B:AA)' },
+};
+
+let slotData = {1:null,2:null};
+let draggedPotion = null;
+let touchDragEl = null;
+let touchClone = null;
+
+function dragStart(e) {
+  draggedPotion = e.currentTarget;
+  draggedPotion.classList.add('dragging');
+  e.dataTransfer.setData('text/plain', draggedPotion.dataset.color);
+  e.dataTransfer.effectAllowed = 'copy';
+}
+
+document.addEventListener('dragend', ()=>{
+  if (draggedPotion) draggedPotion.classList.remove('dragging');
+});
+
+// Touch drag
+function touchStart(e) {
+  touchDragEl = e.currentTarget;
+  const rect = touchDragEl.getBoundingClientRect();
+  touchClone = touchDragEl.cloneNode(true);
+  touchClone.style.cssText = `position:fixed;z-index:9999;width:${rect.width}px;opacity:0.8;pointer-events:none;top:${rect.top}px;left:${rect.left}px;transition:none;`;
+  document.body.appendChild(touchClone);
+}
+
+function touchMove(e) {
+  e.preventDefault();
+  if (!touchClone) return;
+  const t = e.touches[0];
+  touchClone.style.top = (t.clientY - 40) + 'px';
+  touchClone.style.left = (t.clientX - 35) + 'px';
+  // highlight drop targets
+  document.querySelectorAll('.mix-slot').forEach(slot=>{
+    const r = slot.getBoundingClientRect();
+    if (t.clientX>r.left&&t.clientX<r.right&&t.clientY>r.top&&t.clientY<r.bottom) {
+      slot.classList.add('drag-over');
+    } else slot.classList.remove('drag-over');
+  });
+}
+
+function touchEnd(e) {
+  if (!touchClone) return;
+  const t = e.changedTouches[0];
+  document.querySelectorAll('.mix-slot').forEach(slot=>{
+    const r = slot.getBoundingClientRect();
+    if (t.clientX>r.left&&t.clientX<r.right&&t.clientY>r.top&&t.clientY<r.bottom) {
+      const num = parseInt(slot.id.replace('mixSlot',''));
+      doDropPotion(touchDragEl, num);
+    }
+    slot.classList.remove('drag-over');
+  });
+  document.body.removeChild(touchClone);
+  touchClone = null; touchDragEl = null;
+}
+
+function dragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function dragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+
+function dropPotion(e, slotNum) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  doDropPotion(draggedPotion, slotNum);
+  if (draggedPotion) draggedPotion.classList.remove('dragging');
+}
+
+const potionEmoji = {red:'🔴',blue:'🔵',yellow:'🟡',green:'🟢'};
+const potionColors = {red:'#FF0000',blue:'#0000FF',yellow:'#FFFF00',green:'#00CC00'};
+
+function doDropPotion(potEl, slotNum) {
+  if (!potEl) return;
+  const color = potEl.dataset.color;
+  const other = slotNum===1 ? 2 : 1;
+  if (slotData[other]===color) {
+    showFeedback('brewFeedback','⚠️ Same potion already in the other slot! Choose a different one.','error');
+    return;
+  }
+  slotData[slotNum] = color;
+  const slot = document.getElementById('mixSlot'+slotNum);
+  slot.classList.add('filled');
+  slot.innerHTML = `<span style="font-size:2rem;">${potionEmoji[color]||'🧪'}</span>`;
+  showFeedback('brewFeedback',`✅ ${color.charAt(0).toUpperCase()+color.slice(1)} potion added to slot ${slotNum}! Now add a second potion.`,'info');
+}
+
+function updatePredPreview(val) {
+  const el = document.getElementById('predPreview');
+  if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+    el.style.background = val;
+    el.style.boxShadow = `0 0 10px ${val}`;
+  }
+}
+
+function brewPotion() {
+  if (!slotData[1]||!slotData[2]) {
+    showFeedback('brewFeedback','🧪 Drop potions into BOTH slots first!','error'); return;
+  }
+  const key = slotData[1]+'+'+slotData[2];
+  const recipe = BREW_RECIPES[key];
+  const resultDiv = document.getElementById('brewResult');
+
+  if (!recipe) {
+    resultDiv.innerHTML = `<span style="color:#ff8aaa;">🤔 These two potions don't have a known recipe yet! Try another combination.</span>`;
+    showFeedback('brewFeedback','❌ Unknown combination! Try Red+Blue, Red+Yellow, Blue+Yellow, Red+Green, or Blue+Green.','error');
+    litStars('brewStar',1);
+    return;
+  }
+
+  // animate cauldron
+  const liq = document.getElementById('cauldronLiquid');
+  liq.setAttribute('fill', recipe.result);
+  liq.setAttribute('y','70');
+  liq.setAttribute('height','32');
+
+  // bubbles
+  const bg = document.getElementById('bubbles');
+  bg.innerHTML='';
+  for(let i=0;i<5;i++){
+    const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    const x = 25+Math.random()*110;
+    c.setAttribute('cx',x); c.setAttribute('cy',90);
+    c.setAttribute('r',3+Math.random()*4);
+    c.setAttribute('fill','rgba(255,255,255,0.3)');
+    c.style.animation=`bubbleRise ${0.8+Math.random()}s ease-in ${Math.random()*0.5}s infinite`;
+    bg.appendChild(c);
+  }
+
+  const predVal = document.getElementById('predictionInput').value.toUpperCase();
+  const correct = predVal===recipe.result.toUpperCase();
+
+  resultDiv.innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="result-swatch" style="background:${recipe.result}"></div>
+      <span style="color:var(--gold);font-family:'Cinzel Decorative',cursive;font-size:0.9rem;">${recipe.name}</span>
+    </div>
+    <span style="color:var(--parchment);font-size:0.85rem;">${recipe.desc}</span>
+    <span style="color:var(--teal);font-family:'Cinzel Decorative',cursive;font-size:0.8rem;">Brewed Hex: ${recipe.result}</span>
+  `;
+
+  if (correct) {
+    showFeedback('brewFeedback',`🎉 Perfect prediction! You knew the hex code would be ${recipe.result}. Amazing wizard work!`,'success');
+    litStars('brewStar',3);
+    celebrate('🧪');
+  } else {
+    showFeedback('brewFeedback',`🧪 Great experiment! The result is ${recipe.result} (${recipe.name}). ${predVal ? 'Your prediction was '+predVal+'. Compare the R, G, B values!' : 'Next time, predict the hex before brewing!'}`,'info');
+    litStars('brewStar',2);
+  }
+}
+
+function resetBrew() {
+  slotData = {1:null,2:null};
+  document.getElementById('mixSlot1').className='mix-slot';
+  document.getElementById('mixSlot1').innerHTML='<span>?</span>';
+  document.getElementById('mixSlot2').className='mix-slot';
+  document.getElementById('mixSlot2').innerHTML='<span>?</span>';
+  document.getElementById('brewResult').innerHTML='<span style="color:rgba(255,255,255,0.4);font-size:0.9rem;">Brew result appears here…</span>';
+  document.getElementById('predictionInput').value='';
+  document.getElementById('predPreview').style.background='#333';
+  document.getElementById('predPreview').style.boxShadow='none';
+  document.getElementById('cauldronLiquid').setAttribute('height','0');
+  document.getElementById('bubbles').innerHTML='';
+  document.getElementById('brewFeedback').className='feedback';
+  litStars('brewStar',0);
+}
+
+/* ══════════════════════
+   ACTIVITY 3 — DECODE SPELL
+══════════════════════ */
+const CIPHER = [
+  {hex:'#FF0000',color:'Red',   letter:'M'},
+  {hex:'#00AAFF',color:'Sky',   letter:'A'},
+  {hex:'#FFFF00',color:'Yellow',letter:'G'},
+  {hex:'#FF00FF',color:'Pink',  letter:'I'},
+  {hex:'#00FF88',color:'Mint',  letter:'C'},
+];
+// Secret word: M-A-G-I-C
+const TARGET_SEQUENCE = ['M','A','G','I','C'];
+
+let spellAnswer = [];
+
+function buildSpellActivity() {
+  // cipher grid
+  const grid = document.getElementById('cipherGrid');
+  grid.innerHTML='';
+  CIPHER.forEach((c,i)=>{
+    const card = document.createElement('div');
+    card.className='cipher-card';
+    card.id='cipher_'+c.letter;
+    card.dataset.letter=c.letter;
+    card.dataset.hex=c.hex;
+    card.innerHTML=`
+      <div class="color-dot" style="background:${c.hex};">${c.letter}</div>
+      <div class="hex-code">${c.hex}</div>
+      <div class="letter-hint">${c.color} = "${c.letter}"</div>
+    `;
+    card.onclick=()=>addToAnswer(c);
+    grid.appendChild(card);
+  });
+
+  // encoded sequence (shuffled display)
+  const seqDiv = document.getElementById('spellSequence');
+  seqDiv.innerHTML='';
+  TARGET_SEQUENCE.forEach((letter,i)=>{
+    const cipherItem = CIPHER.find(c=>c.letter===letter);
+    const div = document.createElement('div');
+    div.className='seq-item';
+    div.innerHTML=`<div class="seq-dot" style="background:${cipherItem.hex};box-shadow:0 0 8px ${cipherItem.hex}"></div><span>${cipherItem.hex}</span>`;
+    seqDiv.appendChild(div);
+    if (i<TARGET_SEQUENCE.length-1) {
+      const arr = document.createElement('span');
+      arr.textContent='→';
+      arr.style.color='var(--gold)';
+      seqDiv.appendChild(arr);
+    }
+  });
+
+  // answer slots
+  buildSlots();
+}
+
+function buildSlots() {
+  const container = document.getElementById('decodeSlots');
+  container.innerHTML='';
+  spellAnswer = [];
+  for (let i=0; i<TARGET_SEQUENCE.length; i++) {
+    const slot = document.createElement('div');
+    slot.className='decode-slot';
+    slot.id='dslot_'+i;
+    slot.innerHTML=`<div class="slot-blank">?</div>`;
+    slot.onclick=()=>removeFromAnswer(i);
+    container.appendChild(slot);
+  }
+}
+
+function addToAnswer(cipherItem) {
+  if (spellAnswer.length >= TARGET_SEQUENCE.length) {
+    showFeedback('spellFeedback','⚠️ All slots are filled! Click a letter to remove it, or reset.','info');
+    return;
+  }
+  spellAnswer.push(cipherItem);
+  const slot = document.getElementById('dslot_'+(spellAnswer.length-1));
+  slot.className='decode-slot filled';
+  slot.innerHTML=`
+    <div class="slot-color" style="background:${cipherItem.hex};box-shadow:0 0 6px ${cipherItem.hex}"></div>
+    <div class="slot-letter">${cipherItem.letter}</div>
+  `;
+  // flash cipher card
+  const card = document.getElementById('cipher_'+cipherItem.letter);
+  if (card) { card.classList.add('selected'); setTimeout(()=>card.classList.remove('selected'),400); }
+}
+
+function removeFromAnswer(idx) {
+  if (idx >= spellAnswer.length) return;
+  spellAnswer.splice(idx,1);
+  buildSlots();
+  // re-fill
+  const tmpAns = [...spellAnswer];
+  spellAnswer=[];
+  tmpAns.forEach(item=>addToAnswer(item));
+}
+
+function checkSpell() {
+  if (spellAnswer.length < TARGET_SEQUENCE.length) {
+    showFeedback('spellFeedback','📜 Decode all 5 hex codes first!','error'); return;
+  }
+  const attempt = spellAnswer.map(c=>c.letter).join('');
+  const target = TARGET_SEQUENCE.join('');
+  if (attempt===target) {
+    showFeedback('spellFeedback','🌟 OUTSTANDING! You decoded the ancient spell "MAGIC"! Every hex colour matched its letter perfectly!','success');
+    litStars('spellStar',3);
+    celebrate('🌟');
+    // flash all slots green
+    document.querySelectorAll('.decode-slot').forEach(s=>{
+      s.style.borderColor='#39ff14';
+      s.style.boxShadow='0 0 14px #39ff14';
+    });
+  } else {
+    // partial score
+    let correct=0;
+    attempt.split('').forEach((l,i)=>{ if(l===target[i]) correct++; });
+    showFeedback('spellFeedback',`❌ Not quite! ${correct}/5 correct. Remember: each hex code is a colour. Use the cipher key to match colours to letters!`,'error');
+    litStars('spellStar', correct >= 3 ? 2 : 1);
+  }
+}
+
+function resetSpell() {
+  buildSlots();
+  document.getElementById('spellFeedback').className='feedback';
+  litStars('spellStar',0);
+  document.querySelectorAll('.decode-slot').forEach(s=>{
+    s.style.borderColor='';s.style.boxShadow='';
+  });
+}
+
+function getHint() {
+  const hints = [
+    '💡 Look at the FIRST hex code in the sequence: #FF0000. That\'s full Red! Find "Red" in the cipher key.',
+    '💡 The second code is #00AAFF — it looks like sky blue. Which letter is Sky Blue?',
+    '💡 #FFFF00 is fully Red AND Green channels — that makes bright Yellow! Find Yellow\'s letter.',
+    '💡 #FF00FF mixes Red and Blue at maximum — that\'s Magenta/Pink! Look for Pink in the cipher.',
+    '💡 The last code #00FF88 is mostly Green with a bit of Blue — a fresh Mint colour!',
+  ];
+  const idx = Math.min(spellAnswer.length, hints.length-1);
+  showFeedback('spellFeedback', hints[idx], 'info');
+}
+
+buildSpellActivity();
+</script>
+</body>
+</html>

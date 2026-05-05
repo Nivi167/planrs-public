@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stock Market Basics — What is a Share?</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Philosopher:ital,wght@0,400;0,700;1,400&family=Satisfy&display=swap" rel="stylesheet">
+<style>
+:root {
+  --emerald: #00B894;
+  --deep-emerald: #00695C;
+  --amber: #FDCB6E;
+  --deep-amber: #E17055;
+  --navy: #0A0E2A;
+  --deep-navy: #050810;
+  --slate: #1A2040;
+  --cream: #FFF9EC;
+  --mint: #55EFC4;
+  --rose: #FD79A8;
+  --sky: #74B9FF;
+  --glow-green: rgba(0,184,148,0.35);
+  --glow-amber: rgba(253,203,110,0.35);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+
+body {
+  font-family: 'Philosopher', serif;
+  background: var(--deep-navy);
+  color: var(--cream);
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* ── ANIMATED BACKGROUND ── */
+.bg-canvas {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse at 15% 20%, rgba(0,184,148,0.18) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 75%, rgba(253,121,110,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(10,14,42,1) 0%, #050810 100%);
+}
+
+/* Grid lines */
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0,184,148,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,184,148,0.04) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: gridShift 20s linear infinite;
+}
+@keyframes gridShift {
+  0%{transform:translateY(0);}
+  100%{transform:translateY(50px);}
+}
+
+/* Stars */
+.stars { position:fixed; inset:0; z-index:0; pointer-events:none; }
+.star {
+  position:absolute; border-radius:50%; background:white;
+  animation: twinkle var(--d,3s) var(--delay,0s) infinite alternate;
+}
+@keyframes twinkle {
+  0%{opacity:0.05;transform:scale(0.7);}
+  100%{opacity:0.9;transform:scale(1.3);}
+}
+
+/* Floating objects */
+.floaties { position:fixed; inset:0; z-index:1; pointer-events:none; overflow:hidden; }
+.fobj {
+  position:absolute;
+  animation: floatRise var(--dur,18s) var(--del,0s) linear infinite;
+  opacity:0;
+  font-size: var(--sz, 1.6rem);
+  filter: drop-shadow(0 0 6px rgba(0,184,148,0.5));
+}
+@keyframes floatRise {
+  0%   {transform:translateY(108vh) rotate(0deg) scale(0.8); opacity:0;}
+  8%   {opacity:0.65;}
+  92%  {opacity:0.65;}
+  100% {transform:translateY(-10vh) rotate(360deg) scale(1.1); opacity:0;}
+}
+
+/* Ticker tape */
+.ticker-wrap {
+  position:fixed; bottom:0; left:0; right:0; z-index:5;
+  background:rgba(0,0,0,0.7); border-top:1px solid rgba(0,184,148,0.3);
+  overflow:hidden; height:28px; display:flex; align-items:center;
+}
+.ticker-inner {
+  display:flex; gap:0; white-space:nowrap;
+  animation: tickerMove 25s linear infinite;
+  font-size:0.75rem; letter-spacing:0.5px;
+}
+@keyframes tickerMove {
+  0%{transform:translateX(0);}
+  100%{transform:translateX(-50%);}
+}
+.tick-item { padding:0 20px; }
+.tick-up { color:#00FF88; }
+.tick-dn { color:#FF6B8A; }
+
+/* ── LAYOUT ── */
+.container {
+  position:relative; z-index:10;
+  max-width:980px;
+  margin:0 auto;
+  padding:20px 16px 60px;
+}
+
+/* ── HEADER ── */
+header { text-align:center; padding:28px 0 20px; }
+.header-badge {
+  display:inline-flex; align-items:center; gap:14px;
+  background:linear-gradient(135deg,rgba(0,184,148,0.12),rgba(253,203,110,0.08));
+  border:1.5px solid rgba(0,184,148,0.4);
+  border-radius:60px; padding:10px 24px; margin-bottom:14px;
+  animation:badgeFloat 4s ease-in-out infinite;
+}
+@keyframes badgeFloat {
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-6px);}
+}
+.badge-icons { font-size:1.5rem; display:flex; gap:6px; }
+h1 {
+  font-family:'Cinzel Decorative',serif;
+  font-size:clamp(1.2rem,3.5vw,2rem);
+  background:linear-gradient(135deg,var(--amber),var(--emerald),var(--sky));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+  line-height:1.3; letter-spacing:0.5px;
+}
+.subtitle {
+  font-size:0.95rem; color:var(--mint);
+  font-style:italic; margin-top:5px;
+}
+
+/* ── CONCEPT STRIP ── */
+.concept-strip {
+  display:flex; gap:10px; flex-wrap:wrap; justify-content:center;
+  margin:18px 0 22px;
+}
+.concept-chip {
+  background:linear-gradient(135deg,rgba(0,184,148,0.15),rgba(10,14,42,0.8));
+  border:1px solid rgba(0,184,148,0.35);
+  border-radius:30px; padding:8px 16px;
+  font-size:0.82rem; color:var(--mint);
+  display:flex; align-items:center; gap:6px;
+  animation:chipGlow 3s ease-in-out infinite alternate;
+}
+@keyframes chipGlow {
+  0%{box-shadow:0 0 6px rgba(0,184,148,0.1);}
+  100%{box-shadow:0 0 18px rgba(0,184,148,0.35);}
+}
+
+/* ── TABS ── */
+.tabs {
+  display:flex; gap:8px; flex-wrap:wrap;
+  justify-content:center; margin-bottom:22px;
+}
+.tab-btn {
+  font-family:'Cinzel Decorative',serif;
+  font-size:0.68rem; letter-spacing:0.5px;
+  padding:10px 20px;
+  border:1.5px solid rgba(0,184,148,0.5);
+  background:rgba(0,184,148,0.05);
+  color:var(--mint);
+  border-radius:30px; cursor:pointer;
+  transition:all 0.3s;
+}
+.tab-btn:hover,.tab-btn.active {
+  background:var(--emerald); color:var(--deep-navy);
+  box-shadow:0 0 22px var(--glow-green);
+  transform:translateY(-2px);
+}
+
+/* ── PANELS ── */
+.activity { display:none; animation:fadeSlide 0.45s ease; }
+.activity.active { display:block; }
+@keyframes fadeSlide {
+  from{opacity:0;transform:translateY(14px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.panel {
+  background:linear-gradient(145deg,rgba(26,32,64,0.85),rgba(5,8,16,0.9));
+  border:1px solid rgba(0,184,148,0.25);
+  border-radius:20px; padding:22px;
+  margin-bottom:18px; position:relative; overflow:hidden;
+}
+.panel::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(to right,transparent,var(--emerald),var(--amber),transparent);
+}
+.panel h3 {
+  font-family:'Cinzel Decorative',serif;
+  font-size:0.85rem; letter-spacing:1px;
+  color:var(--amber); margin-bottom:12px;
+  display:flex; align-items:center; gap:8px;
+}
+.panel p { font-size:0.95rem; line-height:1.65; margin-bottom:10px; }
+
+/* ── ACTIVITY 1: SHARE BUILDER ── */
+.company-showcase {
+  display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:18px;
+}
+@media(max-width:600px){.company-showcase{grid-template-columns:1fr;}}
+
+.company-card {
+  background:rgba(0,0,0,0.35); border:1.5px solid rgba(0,184,148,0.2);
+  border-radius:16px; padding:16px; text-align:center;
+  transition:all 0.3s; position:relative; overflow:hidden;
+}
+.company-card::after {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(circle at 50% 0%,rgba(0,184,148,0.06),transparent 70%);
+}
+.company-card .co-icon { font-size:2.8rem; margin-bottom:8px; display:block; }
+.company-card .co-name {
+  font-family:'Cinzel Decorative',serif; font-size:0.72rem;
+  color:var(--amber); letter-spacing:0.5px; margin-bottom:4px;
+}
+.company-card .co-value {
+  font-size:1.4rem; font-weight:700; color:white; margin:4px 0;
+}
+.company-card .co-shares {
+  font-size:0.8rem; color:var(--mint);
+}
+.company-card .share-price-tag {
+  display:inline-block; margin-top:6px;
+  background:rgba(0,184,148,0.2); border:1px solid var(--emerald);
+  border-radius:20px; padding:3px 12px; font-size:0.78rem; color:var(--mint);
+}
+
+/* Share slice viz */
+.pie-wrapper {
+  display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+  margin:14px 0;
+}
+.pie-svg { flex-shrink:0; }
+.slice-legend { flex:1; min-width:160px; }
+.legend-item {
+  display:flex; align-items:center; gap:8px;
+  font-size:0.85rem; margin-bottom:6px;
+}
+.legend-dot { width:12px; height:12px; border-radius:3px; flex-shrink:0; }
+
+/* ── SHARE COUNTER experiment ── */
+.share-experiment {
+  background:rgba(0,0,0,0.3); border-radius:14px; padding:18px; margin-top:16px;
+}
+.experiment-row {
+  display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:14px;
+}
+.exp-label { font-size:0.9rem; min-width:130px; color:var(--mint); }
+.stepper {
+  display:flex; align-items:center; gap:0; border:1.5px solid rgba(0,184,148,0.4); border-radius:10px; overflow:hidden;
+}
+.step-btn {
+  background:rgba(0,184,148,0.15); border:none; color:var(--emerald);
+  width:36px; height:36px; font-size:1.1rem; cursor:pointer; transition:all 0.2s;
+}
+.step-btn:hover { background:var(--emerald); color:var(--deep-navy); }
+.step-val {
+  width:60px; text-align:center; background:rgba(0,0,0,0.4);
+  color:white; font-size:1rem; font-weight:700; padding:6px 0;
+}
+.result-row {
+  background:linear-gradient(135deg,rgba(0,184,148,0.12),rgba(253,203,110,0.06));
+  border:1px solid rgba(0,184,148,0.3); border-radius:12px;
+  padding:14px 16px; margin-top:10px;
+}
+.result-row .big-num {
+  font-size:clamp(1.6rem,5vw,2.4rem); font-weight:700; color:var(--amber);
+  text-shadow:0 0 20px var(--glow-amber);
+}
+.result-row .small-info { font-size:0.85rem; color:var(--mint); margin-top:4px; }
+.own-pct-bar {
+  height:10px; background:rgba(255,255,255,0.08); border-radius:5px; margin-top:8px; overflow:hidden;
+}
+.own-pct-fill {
+  height:100%; border-radius:5px;
+  background:linear-gradient(to right,var(--emerald),var(--amber));
+  transition:width 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow:0 0 10px var(--glow-green);
+}
+
+/* ── ACTIVITY 2: DRAG & DROP IPO BUILDER ── */
+.ipo-layout {
+  display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start;
+}
+.ipo-pieces {
+  flex:1; min-width:220px;
+  background:rgba(0,0,0,0.25); border:1px dashed rgba(0,184,148,0.3);
+  border-radius:14px; padding:14px;
+}
+.ipo-pieces h4 {
+  font-family:'Cinzel Decorative',serif; font-size:0.65rem;
+  color:var(--sky); margin-bottom:12px; letter-spacing:1px;
+}
+.ipo-piece {
+  background:linear-gradient(135deg,rgba(26,32,64,0.9),rgba(5,8,16,0.9));
+  border:1.5px solid rgba(116,185,255,0.4);
+  border-radius:10px; padding:10px 12px; margin-bottom:8px;
+  cursor:grab; transition:all 0.25s; user-select:none;
+  display:flex; align-items:center; gap:8px;
+}
+.ipo-piece:hover { transform:scale(1.03); box-shadow:0 4px 16px rgba(116,185,255,0.25); }
+.ipo-piece:active { cursor:grabbing; }
+.ipo-piece.dragging { opacity:0.3; }
+.ipo-piece .piece-icon { font-size:1.3rem; }
+.ipo-piece .piece-name { font-size:0.82rem; color:var(--sky); font-weight:700; }
+.ipo-piece .piece-desc { font-size:0.72rem; color:rgba(255,255,255,0.55); }
+
+.ipo-board {
+  flex:1.3; min-width:240px;
+  background:rgba(0,0,0,0.3); border:1.5px dashed rgba(253,203,110,0.35);
+  border-radius:14px; padding:14px; min-height:280px;
+  transition:all 0.3s; position:relative;
+}
+.ipo-board.dragover {
+  border-color:var(--amber); background:rgba(253,203,110,0.06);
+  box-shadow:0 0 25px rgba(253,203,110,0.2);
+}
+.ipo-board h4 {
+  font-family:'Cinzel Decorative',serif; font-size:0.65rem;
+  color:var(--amber); margin-bottom:12px; letter-spacing:1px;
+}
+.board-slot {
+  background:rgba(255,255,255,0.04); border:1px dashed rgba(253,203,110,0.25);
+  border-radius:10px; padding:10px 12px; margin-bottom:8px;
+  min-height:46px; display:flex; align-items:center; gap:8px;
+  font-size:0.82rem; color:rgba(255,255,255,0.25); transition:all 0.3s;
+}
+.board-slot.filled {
+  background:rgba(253,203,110,0.08); border-color:rgba(253,203,110,0.5);
+  color:var(--cream);
+}
+.board-slot .rm-btn {
+  margin-left:auto; background:none; border:none;
+  color:var(--deep-amber); cursor:pointer; font-size:1rem; padding:0 3px;
+  transition:transform 0.2s;
+}
+.board-slot .rm-btn:hover { transform:scale(1.3); }
+
+.ipo-result {
+  margin-top:14px; padding:14px 16px;
+  background:rgba(0,0,0,0.35);
+  border:1px solid rgba(0,184,148,0.3);
+  border-radius:12px; font-size:0.88rem; line-height:1.65;
+  display:none;
+}
+.ipo-result.show { display:block; animation:fadeSlide 0.4s ease; }
+
+/* ── ACTIVITY 3: MARKET DAY QUIZ ── */
+.scenario-card {
+  background:rgba(0,0,0,0.3);
+  border-left:4px solid var(--emerald);
+  border-radius:0 12px 12px 0;
+  padding:14px 16px; margin-bottom:14px; font-size:0.95rem; line-height:1.65;
+}
+.scenario-card .s-tag {
+  font-family:'Cinzel Decorative',serif; font-size:0.65rem;
+  color:var(--emerald); letter-spacing:1px; margin-bottom:6px; display:block;
+}
+.ans-row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:10px; }
+.magic-input {
+  background:rgba(0,0,0,0.5); border:1.5px solid rgba(0,184,148,0.4);
+  border-radius:10px; padding:9px 14px; color:white;
+  font-size:0.95rem; font-family:'Philosopher',serif;
+  transition:all 0.3s; width:140px;
+}
+.magic-input:focus { outline:none; border-color:var(--emerald); box-shadow:0 0 14px var(--glow-green); }
+.mcq-options {
+  display:flex; flex-direction:column; gap:8px; margin-top:10px;
+}
+.mcq-opt {
+  background:rgba(0,0,0,0.35); border:1.5px solid rgba(0,184,148,0.2);
+  border-radius:10px; padding:10px 14px; cursor:pointer;
+  font-size:0.9rem; transition:all 0.25s; display:flex; align-items:center; gap:8px;
+}
+.mcq-opt:hover { border-color:var(--emerald); background:rgba(0,184,148,0.08); }
+.mcq-opt.selected-right { border-color:#00FF88; background:rgba(0,255,136,0.1); color:#00FF88; }
+.mcq-opt.selected-wrong { border-color:var(--rose); background:rgba(253,121,168,0.1); color:var(--rose); }
+.mcq-opt.reveal-right { border-color:#00FF88; background:rgba(0,255,136,0.06); }
+.feedback {
+  padding:10px 14px; border-radius:10px; font-size:0.88rem;
+  margin-top:10px; display:none; line-height:1.5;
+}
+.feedback.correct { display:block; background:rgba(0,255,136,0.08); border:1px solid #00FF88; color:#00FF88; }
+.feedback.wrong { display:block; background:rgba(253,121,168,0.08); border:1px solid var(--rose); color:var(--rose); }
+
+/* ── BUTTONS ── */
+.magic-btn {
+  display:inline-flex; align-items:center; gap:7px;
+  font-family:'Cinzel Decorative',serif; font-size:0.7rem; letter-spacing:0.5px;
+  padding:11px 22px;
+  background:linear-gradient(135deg,var(--deep-emerald),var(--emerald));
+  color:var(--deep-navy); border:none; border-radius:30px;
+  cursor:pointer; font-weight:700; transition:all 0.3s;
+  box-shadow:0 4px 18px var(--glow-green);
+}
+.magic-btn:hover { transform:translateY(-3px); box-shadow:0 8px 28px var(--glow-green); }
+.magic-btn:active { transform:translateY(0); }
+.magic-btn.amber-btn {
+  background:linear-gradient(135deg,#B8860B,var(--amber));
+  box-shadow:0 4px 18px var(--glow-amber);
+}
+.magic-btn.amber-btn:hover { box-shadow:0 8px 28px var(--glow-amber); }
+.magic-btn.ghost-btn {
+  background:transparent; border:1.5px solid rgba(0,184,148,0.5);
+  color:var(--mint); box-shadow:none;
+}
+
+/* Progress */
+.progress-wrap { background:rgba(255,255,255,0.08); border-radius:20px; height:7px; margin:14px 0 3px; overflow:hidden; }
+.progress-fill {
+  height:100%; border-radius:20px;
+  background:linear-gradient(to right,var(--emerald),var(--amber));
+  transition:width 0.5s ease;
+  box-shadow:0 0 10px var(--glow-green);
+}
+.score-line { font-size:0.8rem; color:var(--amber); text-align:right; font-family:'Cinzel Decorative',serif; }
+
+/* Sparkle */
+.sparkle-el {
+  position:fixed; pointer-events:none; z-index:999; font-size:1.2rem;
+  animation:sparkleAnim 0.9s ease-out forwards;
+}
+@keyframes sparkleAnim {
+  0%{transform:scale(0) translateY(0);opacity:1;}
+  60%{transform:scale(1.6) translateY(-35px);opacity:1;}
+  100%{transform:scale(0) translateY(-65px);opacity:0;}
+}
+
+/* Completion */
+.completion {
+  position:fixed; inset:0; z-index:1000;
+  background:rgba(0,0,0,0.88);
+  display:none; place-items:center; text-align:center;
+}
+.completion.show { display:grid; }
+.completion-card {
+  background:linear-gradient(145deg,rgba(26,32,64,0.95),rgba(5,8,16,0.98));
+  border:2px solid var(--amber); border-radius:24px;
+  padding:40px 48px; max-width:460px;
+  box-shadow:0 0 60px var(--glow-amber);
+  animation:popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275);
+}
+@keyframes popIn { from{transform:scale(0.5);opacity:0;} to{transform:scale(1);opacity:1;} }
+.completion-card h2 { font-family:'Cinzel Decorative',serif; color:var(--amber); font-size:1.5rem; margin:10px 0; }
+.completion-card p { color:var(--mint); font-size:1rem; margin:6px 0; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width:7px; }
+::-webkit-scrollbar-track { background:var(--deep-navy); }
+::-webkit-scrollbar-thumb { background:var(--deep-emerald); border-radius:4px; }
+</style>
+</head>
+<body>
+
+<!-- BG -->
+<div class="bg-canvas"></div>
+<div class="bg-grid"></div>
+<div class="stars" id="stars"></div>
+<div class="floaties" id="floaties"></div>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-inner" id="ticker"></div>
+</div>
+
+<!-- COMPLETION -->
+<div class="completion" id="completion">
+  <div class="completion-card">
+    <div style="font-size:3.5rem">🏆</div>
+    <h2>Stock Market Wizard!</h2>
+    <p>You've completed all three Stock Market challenges!</p>
+    <p style="color:var(--amber);font-size:1.2rem;font-weight:700;" id="completionMsg"></p>
+    <button class="magic-btn amber-btn" style="margin-top:20px" onclick="document.getElementById('completion').classList.remove('show')">✨ Keep Learning</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-badge">
+      <div class="badge-icons">📚🪄⭐🦉</div>
+      <span style="font-family:'Satisfy',cursive;font-size:1rem;color:var(--mint)">Finance Academy</span>
+    </div>
+    <h1>Stock Market Basics — What is a Share?</h1>
+    <p class="subtitle">Brew your knowledge, cast your trades, grow your wealth! 🌟</p>
+  </header>
+
+  <!-- CONCEPT CHIPS -->
+  <div class="concept-strip">
+    <div class="concept-chip">📊 A share = part-ownership of a company</div>
+    <div class="concept-chip">💰 Shareholders earn dividends & profit</div>
+    <div class="concept-chip">📈 Share prices rise & fall daily</div>
+    <div class="concept-chip">🏛️ Shares are traded on stock exchanges</div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('builder',this)">🏗️ Activity 1: Share Builder</button>
+    <button class="tab-btn" onclick="switchTab('ipo',this)">🚀 Activity 2: IPO Workshop</button>
+    <button class="tab-btn" onclick="switchTab('market',this)">📈 Activity 3: Market Day</button>
+  </div>
+
+  <!-- ════════════════════════════════════
+       ACTIVITY 1 — SHARE BUILDER
+  ════════════════════════════════════ -->
+  <div class="activity active" id="tab-builder">
+
+    <div class="panel">
+      <h3>🏗️ The Company Share Builder</h3>
+      <p>A company needs money to grow. Instead of borrowing, it splits itself into thousands of tiny pieces called <strong style="color:var(--amber)">shares</strong>. Each person who buys a share becomes a <strong style="color:var(--amber)">part-owner</strong>!</p>
+      <p style="color:var(--mint);font-size:0.85rem;">Pick a company below, then experiment — change how many shares the company creates, and watch what each share is worth!</p>
+
+      <!-- Company selector -->
+      <div class="company-showcase">
+        <div class="company-card" id="co0" onclick="selectCompany(0)" style="cursor:pointer;border-color:rgba(0,184,148,0.5);">
+          <span class="co-icon">🧙</span>
+          <div class="co-name">WizardTech Co.</div>
+          <div class="co-value">₹10,00,000</div>
+          <div class="co-shares" style="color:rgba(255,255,255,0.4)">Company Value</div>
+          <div class="share-price-tag">Click to select</div>
+        </div>
+        <div class="company-card" id="co1" onclick="selectCompany(1)" style="cursor:pointer;">
+          <span class="co-icon">🦉</span>
+          <div class="co-name">Owl Airlines Ltd.</div>
+          <div class="co-value">₹25,00,000</div>
+          <div class="co-shares" style="color:rgba(255,255,255,0.4)">Company Value</div>
+          <div class="share-price-tag">Click to select</div>
+        </div>
+        <div class="company-card" id="co2" onclick="selectCompany(2)" style="cursor:pointer;">
+          <span class="co-icon">⚗️</span>
+          <div class="co-name">PotionBrew Foods</div>
+          <div class="co-value">₹5,00,000</div>
+          <div class="co-shares" style="color:rgba(255,255,255,0.4)">Company Value</div>
+          <div class="share-price-tag">Click to select</div>
+        </div>
+        <div class="company-card" id="co3" onclick="selectCompany(3)" style="cursor:pointer;">
+          <span class="co-icon">🔮</span>
+          <div class="co-name">Crystal Media Inc.</div>
+          <div class="co-value">₹50,00,000</div>
+          <div class="co-shares" style="color:rgba(255,255,255,0.4)">Company Value</div>
+          <div class="share-price-tag">Click to select</div>
+        </div>
+      </div>
+
+      <!-- Pie chart -->
+      <div class="pie-wrapper" id="pieWrapper" style="display:none;">
+        <svg class="pie-svg" width="140" height="140" viewBox="0 0 140 140" id="pieChart"></svg>
+        <div class="slice-legend" id="pieLegend"></div>
+      </div>
+
+      <!-- Experiment zone -->
+      <div class="share-experiment" id="shareExp" style="display:none;">
+        <div style="font-family:'Cinzel Decorative',serif;font-size:0.7rem;color:var(--amber);letter-spacing:1px;margin-bottom:14px;">
+          ⚗️ EXPERIMENT ZONE
+        </div>
+        <div class="experiment-row">
+          <span class="exp-label">🔢 Total Shares:</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="changeShares(-500)">−</button>
+            <div class="step-val" id="shareCount">1000</div>
+            <button class="step-btn" onclick="changeShares(500)">+</button>
+          </div>
+          <span style="font-size:0.8rem;color:rgba(255,255,255,0.4)">( min 500 / max 10,000 )</span>
+        </div>
+        <div class="experiment-row">
+          <span class="exp-label">🛒 You Buy:</span>
+          <div class="stepper">
+            <button class="step-btn" onclick="changeBuy(-10)">−</button>
+            <div class="step-val" id="buyCount">50</div>
+            <button class="step-btn" onclick="changeBuy(10)">+</button>
+          </div>
+          <span style="font-size:0.8rem;color:rgba(255,255,255,0.4)">shares</span>
+        </div>
+        <div class="result-row">
+          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+            <div>
+              <div style="font-size:0.78rem;color:var(--mint);margin-bottom:3px;">📦 Price per share</div>
+              <div class="big-num" id="pricePerShare">₹—</div>
+            </div>
+            <div>
+              <div style="font-size:0.78rem;color:var(--mint);margin-bottom:3px;">💸 Your investment</div>
+              <div class="big-num" id="yourInvestment">₹—</div>
+            </div>
+            <div>
+              <div style="font-size:0.78rem;color:var(--mint);margin-bottom:3px;">🏢 Ownership %</div>
+              <div class="big-num" id="ownPct">—%</div>
+            </div>
+          </div>
+          <div class="own-pct-bar"><div class="own-pct-fill" id="ownBar" style="width:0%"></div></div>
+          <div class="small-info" id="ownerInsight"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Challenge -->
+    <div class="panel">
+      <h3>🌟 Builder Challenge</h3>
+      <div class="scenario-card">
+        <span class="s-tag">🧪 EXPERIMENT PROBLEM</span>
+        <strong style="color:var(--amber)">StarBake Bakery</strong> is worth <strong style="color:var(--amber)">₹2,00,000</strong> and issues <strong style="color:var(--amber)">4,000 shares</strong>. Rohan buys <strong style="color:var(--amber)">400 shares</strong>.
+        <br><br>
+        What is the <strong style="color:var(--mint)">price per share</strong>? Use the experiment sliders above to help you figure it out!
+      </div>
+      <div class="ans-row">
+        <span>₹</span>
+        <input type="number" class="magic-input" id="ch1-ans" placeholder="Price per share">
+        <button class="magic-btn" onclick="checkCh1()">⚡ Check Answer</button>
+      </div>
+      <div class="feedback" id="ch1-fb"></div>
+    </div>
+
+  </div>
+
+  <!-- ════════════════════════════════════
+       ACTIVITY 2 — IPO WORKSHOP (Drag & Drop)
+  ════════════════════════════════════ -->
+  <div class="activity" id="tab-ipo">
+
+    <div class="panel">
+      <h3>🚀 The IPO (Initial Public Offering) Workshop</h3>
+      <p>When a company sells shares to the <em>public for the first time</em>, it's called an <strong style="color:var(--amber)">IPO</strong>. Drag the correct steps and players into the <strong style="color:var(--amber)">IPO Journey Board</strong> to build a complete IPO story!</p>
+      <p style="color:var(--mint);font-size:0.82rem;">⚡ This is NOT matching — each piece you add changes the story outcome below!</p>
+
+      <div class="ipo-layout">
+        <!-- Pieces shelf -->
+        <div class="ipo-pieces">
+          <h4>📦 IPO PIECES — DRAG THESE</h4>
+          <div id="piecesShelf"></div>
+        </div>
+
+        <!-- Board -->
+        <div class="ipo-board" id="ipoBoard">
+          <h4>🗺️ IPO JOURNEY BOARD</h4>
+          <div id="boardSlots"></div>
+          <div style="text-align:center;color:rgba(255,255,255,0.2);font-size:0.8rem;margin-top:10px;" id="boardHint">
+            Drop pieces here to build the journey…
+          </div>
+        </div>
+      </div>
+
+      <!-- IPO story result -->
+      <div class="ipo-result" id="ipoResult">
+        <div style="font-family:'Cinzel Decorative',serif;font-size:0.7rem;color:var(--amber);letter-spacing:1px;margin-bottom:8px;">📜 YOUR IPO STORY SO FAR</div>
+        <div id="ipoStoryText" style="line-height:1.8;font-size:0.9rem;"></div>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">
+        <button class="magic-btn amber-btn" onclick="checkIPO()">🔮 Evaluate My IPO</button>
+        <button class="magic-btn ghost-btn" onclick="resetIPO()">↺ Reset</button>
+      </div>
+
+      <div class="feedback" id="ipo-fb" style="margin-top:12px;"></div>
+    </div>
+
+    <!-- IPO quiz -->
+    <div class="panel">
+      <h3>🌟 IPO Challenge</h3>
+      <div class="scenario-card">
+        <span class="s-tag">💡 CONCEPT PROBLEM</span>
+        MoonRocket Ltd. is valued at <strong style="color:var(--amber)">₹1,00,00,000</strong> (1 crore). It issues <strong style="color:var(--amber)">1,00,000 shares</strong> in its IPO. If you buy <strong style="color:var(--amber)">500 shares</strong>, what percentage of the company do you own?
+      </div>
+      <div class="ans-row">
+        <input type="number" class="magic-input" id="ipo-q-ans" placeholder="Your %" step="0.01">
+        <span>%</span>
+        <button class="magic-btn" onclick="checkIPOQ()">⚡ Check</button>
+      </div>
+      <div class="feedback" id="ipo-q-fb"></div>
+    </div>
+
+  </div>
+
+  <!-- ════════════════════════════════════
+       ACTIVITY 3 — MARKET DAY
+  ════════════════════════════════════ -->
+  <div class="activity" id="tab-market">
+
+    <div class="panel">
+      <h3>📈 Market Day — Live Share Price Experiments</h3>
+      <p>Share prices change every second! Experiment with <strong style="color:var(--amber)">what causes prices to rise or fall</strong>, then answer the market scrolls below.</p>
+
+      <!-- Price simulator -->
+      <div style="background:rgba(0,0,0,0.3);border-radius:14px;padding:18px;margin:14px 0;">
+        <div style="font-family:'Cinzel Decorative',serif;font-size:0.7rem;color:var(--sky);letter-spacing:1px;margin-bottom:14px;">
+          ⚗️ SHARE PRICE SIMULATOR
+        </div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start;">
+          <!-- Controls -->
+          <div style="flex:1;min-width:200px;">
+            <div style="font-size:0.85rem;color:var(--mint);margin-bottom:8px;">Choose a market event:</div>
+            <div id="eventBtns" style="display:flex;flex-direction:column;gap:7px;"></div>
+          </div>
+          <!-- Chart display -->
+          <div style="flex:1.5;min-width:220px;">
+            <canvas id="priceChart" width="320" height="160" style="width:100%;border-radius:10px;background:rgba(0,0,0,0.4);"></canvas>
+            <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:0.78rem;">
+              <span style="color:rgba(255,255,255,0.4)">← Earlier</span>
+              <span id="currentPriceTag" style="color:var(--amber);font-weight:700;">Current: ₹100</span>
+              <span style="color:rgba(255,255,255,0.4)">Now →</span>
+            </div>
+            <div id="eventExplanation" style="background:rgba(0,184,148,0.08);border:1px solid rgba(0,184,148,0.25);border-radius:10px;padding:10px;font-size:0.82rem;color:var(--mint);margin-top:8px;line-height:1.6;display:none;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 Market Scrolls -->
+    <div class="panel">
+      <h3>📜 Market Scrolls — Solve All 6!</h3>
+      <div class="progress-wrap"><div class="progress-fill" id="mktProgress" style="width:0%"></div></div>
+      <div class="score-line" id="mktScore">Solved: 0 / 6</div>
+      <div id="scrollsContainer" style="margin-top:14px;"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">
+        <button class="magic-btn amber-btn" onclick="revealScrolls()">✨ Reveal Answers</button>
+        <button class="magic-btn ghost-btn" onclick="resetScrolls()">↺ Reset</button>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ── STARS ──
+(function(){
+  const s = document.getElementById('stars');
+  for(let i=0;i<100;i++){
+    const el=document.createElement('div');
+    el.className='star';
+    const sz=Math.random()*2.5+0.5;
+    el.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*5}s;--delay:${Math.random()*6}s;`;
+    s.appendChild(el);
+  }
+})();
+
+// ── FLOATIES ──
+(function(){
+  const items=['📚','🦉','🧙','⭐','🌟','✨','🧪','⚗️','🪄','🔮','💫','🌙','📜','💰','📈','📊','🏦','💎'];
+  const f=document.getElementById('floaties');
+  for(let i=0;i<20;i++){
+    const el=document.createElement('div');
+    el.className='fobj';
+    el.textContent=items[Math.floor(Math.random()*items.length)];
+    el.style.cssText=`left:${Math.random()*100}%;--dur:${13+Math.random()*20}s;--del:${Math.random()*16}s;--sz:${1.2+Math.random()*1.2}rem;`;
+    f.appendChild(el);
+  }
+})();
+
+// ── TICKER ──
+(function(){
+  const stocks=[
+    {n:'WIZTECH',p:'₹245',c:'+3.2%',up:true},{n:'OWLAIR',p:'₹1,820',c:'-1.1%',up:false},
+    {n:'POTIONBREW',p:'₹88',c:'+5.7%',up:true},{n:'CRYSTALMEDIA',p:'₹530',c:'+0.9%',up:true},
+    {n:'MOONROCKET',p:'₹2,100',c:'-0.4%',up:false},{n:'STARBAKE',p:'₹50',c:'+2.3%',up:true},
+    {n:'DRAGONFUND',p:'₹410',c:'+1.8%',up:true},{n:'RUNETECH',p:'₹77',c:'-3.2%',up:false},
+  ];
+  const inner=document.getElementById('ticker');
+  let html='';
+  for(let rep=0;rep<2;rep++){
+    stocks.forEach(s=>{
+      html+=`<span class="tick-item">${s.n} <strong>${s.p}</strong> <span class="${s.up?'tick-up':'tick-dn'}">${s.c}</span></span><span style="color:rgba(255,255,255,0.2)">|</span>`;
+    });
+  }
+  inner.innerHTML=html;
+})();
+
+// ── SPARKLE ──
+function sparkle(x,y){
+  const icons=['✨','⭐','💫','🌟','🎉','💰','📈'];
+  for(let i=0;i<7;i++){
+    const el=document.createElement('div');
+    el.className='sparkle-el';
+    el.textContent=icons[Math.floor(Math.random()*icons.length)];
+    el.style.cssText=`left:${x+(Math.random()-0.5)*90}px;top:${y+(Math.random()-0.5)*90}px;`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),1000);
+  }
+}
+
+// ── TABS ──
+function switchTab(tab,btn){
+  document.querySelectorAll('.activity').forEach(a=>a.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ════════════════════════════════════
+// ACTIVITY 1 — SHARE BUILDER
+// ════════════════════════════════════
+const companies=[
+  {name:'WizardTech Co.',icon:'🧙',value:1000000},
+  {name:'Owl Airlines Ltd.',icon:'🦉',value:2500000},
+  {name:'PotionBrew Foods',icon:'⚗️',value:500000},
+  {name:'Crystal Media Inc.',icon:'🔮',value:5000000},
+];
+let selCo=0, totalShares=1000, buyShares=50;
+
+function selectCompany(i){
+  selCo=i;
+  document.querySelectorAll('.company-card').forEach((c,j)=>{
+    c.style.borderColor = j===i ? 'var(--emerald)' : 'rgba(0,184,148,0.2)';
+    c.style.boxShadow = j===i ? '0 0 20px var(--glow-green)' : 'none';
+  });
+  document.getElementById('shareExp').style.display='block';
+  document.getElementById('pieWrapper').style.display='flex';
+  updateBuilder();
+  sparkle(300,300);
+}
+
+function changeShares(d){
+  totalShares=Math.max(500,Math.min(10000,totalShares+d));
+  buyShares=Math.min(buyShares,totalShares-10);
+  document.getElementById('shareCount').textContent=totalShares.toLocaleString();
+  updateBuilder();
+}
+function changeBuy(d){
+  buyShares=Math.max(10,Math.min(totalShares-10,buyShares+d));
+  document.getElementById('buyCount').textContent=buyShares.toLocaleString();
+  updateBuilder();
+}
+
+function updateBuilder(){
+  const co=companies[selCo];
+  const price=co.value/totalShares;
+  const investment=price*buyShares;
+  const pct=(buyShares/totalShares)*100;
+  document.getElementById('pricePerShare').textContent='₹'+price.toFixed(2);
+  document.getElementById('yourInvestment').textContent='₹'+investment.toLocaleString('en-IN',{maximumFractionDigits:2});
+  document.getElementById('ownPct').textContent=pct.toFixed(2)+'%';
+  document.getElementById('ownBar').style.width=Math.min(pct,100)+'%';
+  let insight='';
+  if(pct>=50) insight='🏆 Majority owner! You control the company!';
+  else if(pct>=25) insight='💼 Major shareholder — significant voting power!';
+  else if(pct>=10) insight='📊 Substantial stake — your voice matters!';
+  else if(pct>=1) insight='🌱 Growing investor — building your stake!';
+  else insight='🔍 Micro investor — every share counts!';
+  document.getElementById('ownerInsight').textContent=insight;
+  drawPie(pct);
+}
+
+function drawPie(ownPct){
+  const svg=document.getElementById('pieChart');
+  const r=60,cx=70,cy=70;
+  const colors=['#00B894','#FDCB6E','#74B9FF','#FD79A8','#A29BFE','#55EFC4'];
+  const others=100-ownPct;
+  const segments=[
+    {pct:ownPct,color:'#00B894',label:'You'},
+    {pct:Math.min(others*0.4,40),color:'#FDCB6E',label:'Investor A'},
+    {pct:Math.min(others*0.35,35),color:'#74B9FF',label:'Investor B'},
+    {pct:Math.max(0,others-(Math.min(others*0.4,40))-(Math.min(others*0.35,35))),color:'#FD79A8',label:'Others'},
+  ].filter(s=>s.pct>0);
+
+  let html='', startAngle=-Math.PI/2;
+  segments.forEach(seg=>{
+    const angle=(seg.pct/100)*2*Math.PI;
+    const endAngle=startAngle+angle;
+    const large=angle>Math.PI?1:0;
+    const x1=cx+r*Math.cos(startAngle), y1=cy+r*Math.sin(startAngle);
+    const x2=cx+r*Math.cos(endAngle),   y2=cy+r*Math.sin(endAngle);
+    html+=`<path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${large},1 ${x2},${y2} Z" fill="${seg.color}" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>`;
+    startAngle=endAngle;
+  });
+  svg.innerHTML=html;
+
+  const legend=document.getElementById('pieLegend');
+  legend.innerHTML=segments.map(s=>`
+    <div class="legend-item">
+      <div class="legend-dot" style="background:${s.color}"></div>
+      <span style="font-size:0.82rem;">${s.label}: <strong style="color:${s.color}">${s.pct.toFixed(1)}%</strong></span>
+    </div>`).join('');
+}
+
+function checkCh1(){
+  const ans=+document.getElementById('ch1-ans').value;
+  const correct=200000/4000;
+  const fb=document.getElementById('ch1-fb');
+  if(Math.abs(ans-correct)<0.5){
+    fb.className='feedback correct';
+    fb.textContent=`🎉 Excellent! ₹2,00,000 ÷ 4,000 shares = ₹${correct} per share. Rohan's 400 shares = ₹${correct*400} investment & 10% ownership!`;
+    sparkle(300,400);
+  } else {
+    fb.className='feedback wrong';
+    fb.textContent=`🔮 Not quite! Formula: Price per share = Company Value ÷ Total Shares = ₹2,00,000 ÷ 4,000 = ₹${correct}. Try the experiment sliders!`;
+  }
+}
+
+// ════════════════════════════════════
+// ACTIVITY 2 — IPO WORKSHOP
+// ════════════════════════════════════
+const ipoPieces=[
+  {id:'company',icon:'🏭',name:'The Company',desc:'MagicCo wants ₹10,00,000 to expand'},
+  {id:'sebi',icon:'🏛️',name:'SEBI Approval',desc:'Regulator checks company is safe for public'},
+  {id:'underwriter',icon:'🤝',name:'Underwriter Bank',desc:'Sets the IPO price & sells shares to public'},
+  {id:'investors',icon:'👥',name:'Public Investors',desc:'People apply & buy shares on listing day'},
+  {id:'exchange',icon:'📊',name:'Stock Exchange',desc:'Shares start trading on NSE / BSE'},
+  {id:'dividend',icon:'💰',name:'Dividend Payout',desc:'Company shares profits with shareholders'},
+];
+
+let boardFilled={};
+
+(function renderIPO(){
+  const shelf=document.getElementById('piecesShelf');
+  shelf.innerHTML='';
+  ipoPieces.forEach(p=>{
+    const el=document.createElement('div');
+    el.className='ipo-piece';
+    el.id='piece-'+p.id;
+    el.draggable=true;
+    el.innerHTML=`<span class="piece-icon">${p.icon}</span><div><div class="piece-name">${p.name}</div><div class="piece-desc">${p.desc}</div></div>`;
+    el.addEventListener('dragstart',e=>{
+      e.dataTransfer.setData('pieceId',p.id);
+      el.classList.add('dragging');
+    });
+    el.addEventListener('dragend',()=>el.classList.remove('dragging'));
+    shelf.appendChild(el);
+  });
+
+  // Board slots
+  const board=document.getElementById('boardSlots');
+  board.innerHTML='';
+  ipoPieces.forEach((p,i)=>{
+    const slot=document.createElement('div');
+    slot.className='board-slot';
+    slot.id='bslot-'+i;
+    slot.dataset.index=i;
+    slot.innerHTML=`<span style="opacity:0.3">${i+1}.</span> Drop a piece here…`;
+    board.appendChild(slot);
+  });
+})();
+
+const ipoBoard=document.getElementById('ipoBoard');
+ipoBoard.addEventListener('dragover',e=>{e.preventDefault();ipoBoard.classList.add('dragover');});
+ipoBoard.addEventListener('dragleave',()=>ipoBoard.classList.remove('dragover'));
+ipoBoard.addEventListener('drop',e=>{
+  e.preventDefault();
+  ipoBoard.classList.remove('dragover');
+  const pid=e.dataTransfer.getData('pieceId');
+  const piece=ipoPieces.find(p=>p.id===pid);
+  if(!piece) return;
+  // find first empty slot
+  const slots=document.querySelectorAll('#boardSlots .board-slot:not(.filled)');
+  if(!slots.length) return;
+  const slot=slots[0];
+  const idx=+slot.dataset.index;
+  boardFilled[idx]=piece;
+  slot.classList.add('filled');
+  slot.innerHTML=`<span>${piece.icon}</span><span style="flex:1">${piece.name}</span><button class="rm-btn" onclick="removeIPOSlot(${idx})">✕</button>`;
+  document.getElementById('boardHint').style.display='none';
+  // hide from shelf
+  const shelPiece=document.getElementById('piece-'+pid);
+  if(shelPiece) shelPiece.style.display='none';
+  updateIPOStory();
+  sparkle(e.clientX,e.clientY);
+});
+
+function removeIPOSlot(idx){
+  const piece=boardFilled[idx];
+  if(!piece) return;
+  delete boardFilled[idx];
+  const slot=document.getElementById('bslot-'+idx);
+  slot.classList.remove('filled');
+  slot.innerHTML=`<span style="opacity:0.3">${idx+1}.</span> Drop a piece here…`;
+  const shelPiece=document.getElementById('piece-'+piece.id);
+  if(shelPiece) shelPiece.style.display='';
+  if(!Object.keys(boardFilled).length) document.getElementById('boardHint').style.display='';
+  updateIPOStory();
+}
+
+function updateIPOStory(){
+  const pieces=Object.values(boardFilled);
+  if(!pieces.length){ document.getElementById('ipoResult').classList.remove('show'); return; }
+  const storyMap={
+    company:"📌 <strong>MagicCo</strong> decides to go public — they need ₹10,00,000 to open 5 new branches!",
+    sebi:"🏛️ <strong>SEBI</strong> reviews the company's books. They check if MagicCo is honest and safe for everyday investors.",
+    underwriter:"🤝 <strong>The underwriter bank</strong> sets the IPO price at ₹100 per share (1,00,000 shares × ₹100 = ₹1 crore raised!)",
+    investors:"👥 <strong>100,000 investors</strong> apply online! On listing day (Day 1 of trading), shares open at ₹115 — a 15% gain!",
+    exchange:"📊 <strong>MagicCo shares</strong> now trade live on the NSE every weekday, 9:15am–3:30pm.",
+    dividend:"💰 After a profitable year, MagicCo pays a <strong>₹5 dividend per share</strong> to all shareholders!",
+  };
+  const text=pieces.map(p=>storyMap[p.id]||'').filter(Boolean).join('<br><br>');
+  document.getElementById('ipoStoryText').innerHTML=text;
+  document.getElementById('ipoResult').classList.add('show');
+}
+
+function checkIPO(){
+  const count=Object.keys(boardFilled).length;
+  const fb=document.getElementById('ipo-fb');
+  const correctOrder=['company','sebi','underwriter','investors','exchange','dividend'];
+  const placed=Object.entries(boardFilled).sort((a,b)=>a[0]-b[0]).map(e=>e[1].id);
+  if(count<3){ fb.className='feedback wrong'; fb.textContent='🔮 Add at least 3 IPO pieces to build the journey!'; return; }
+  let correct=0;
+  placed.forEach((id,i)=>{ if(id===correctOrder[i]) correct++; });
+  if(count===6 && correct>=4){
+    fb.className='feedback correct';
+    fb.textContent=`🎉 Outstanding! You built a perfect IPO journey! ${correct}/6 pieces in the right order. A real investment wizard! 🧙`;
+    sparkle(400,300);
+  } else {
+    fb.className='feedback correct';
+    fb.textContent=`✅ Good work! You've placed ${count} pieces. The ideal order: Company → SEBI → Underwriter → Investors → Exchange → Dividend. Try reordering!`;
+  }
+}
+
+function resetIPO(){
+  boardFilled={};
+  document.querySelectorAll('#boardSlots .board-slot').forEach((slot,i)=>{
+    slot.classList.remove('filled');
+    slot.innerHTML=`<span style="opacity:0.3">${i+1}.</span> Drop a piece here…`;
+  });
+  document.querySelectorAll('.ipo-piece').forEach(p=>p.style.display='');
+  document.getElementById('ipoResult').classList.remove('show');
+  document.getElementById('ipo-fb').className='feedback';
+  document.getElementById('boardHint').style.display='';
+}
+
+function checkIPOQ(){
+  const ans=+document.getElementById('ipo-q-ans').value;
+  const correct=0.5;
+  const fb=document.getElementById('ipo-q-fb');
+  if(Math.abs(ans-correct)<0.05){
+    fb.className='feedback correct';
+    fb.textContent=`🎉 Perfect! 500 ÷ 1,00,000 × 100 = 0.5%. You own half a percent of MoonRocket Ltd.! Small but real ownership! 🚀`;
+    sparkle(400,500);
+  } else {
+    fb.className='feedback wrong';
+    fb.textContent=`🔮 Try again! % = (Shares bought ÷ Total shares) × 100 = (500 ÷ 1,00,000) × 100 = 0.5%`;
+  }
+}
+
+// ════════════════════════════════════
+// ACTIVITY 3 — MARKET DAY
+// ════════════════════════════════════
+const events=[
+  {label:'📰 Company profits doubled!',  delta:+25, color:'#00FF88', exp:'Great news pushes demand UP → price rises! More buyers than sellers.'},
+  {label:'😱 CEO arrested for fraud!',   delta:-30, color:'#FF6B8A', exp:'Bad news causes panic selling → price crashes! More sellers than buyers.'},
+  {label:'🌍 Economy is booming!',        delta:+15, color:'#00B894', exp:'A strong economy lifts ALL stocks — investors feel confident.'},
+  {label:'📉 Inflation hits 8%!',         delta:-20, color:'#E17055', exp:'High inflation = less spending power. Investors worried → sell shares.'},
+  {label:'🤝 Big merger announced!',      delta:+35, color:'#FDCB6E', exp:'Mergers create bigger companies → investors rush to buy!'},
+  {label:'🌧️ Factory flooded!',           delta:-15, color:'#FD79A8', exp:'Disaster reduces production → lower profits expected → price drops.'},
+];
+
+let priceHistory=[100];
+let currentPrice=100;
+
+(function renderEventBtns(){
+  const cont=document.getElementById('eventBtns');
+  events.forEach(ev=>{
+    const btn=document.createElement('button');
+    btn.style.cssText=`background:rgba(0,0,0,0.35);border:1px solid ${ev.color}33;border-radius:8px;padding:8px 12px;color:${ev.color};font-family:'Philosopher',serif;font-size:0.78rem;cursor:pointer;text-align:left;transition:all 0.2s;`;
+    btn.textContent=ev.label;
+    btn.onmouseover=()=>btn.style.background=`${ev.color}18`;
+    btn.onmouseout=()=>btn.style.background='rgba(0,0,0,0.35)';
+    btn.onclick=()=>applyEvent(ev);
+    cont.appendChild(btn);
+  });
+})();
+
+function applyEvent(ev){
+  currentPrice=Math.max(10, currentPrice+ev.delta+(Math.random()*6-3));
+  priceHistory.push(Math.round(currentPrice));
+  if(priceHistory.length>15) priceHistory.shift();
+  drawPriceChart();
+  document.getElementById('currentPriceTag').textContent=`Current: ₹${Math.round(currentPrice)}`;
+  document.getElementById('currentPriceTag').style.color=ev.delta>0?'#00FF88':'#FF6B8A';
+  const expEl=document.getElementById('eventExplanation');
+  expEl.style.display='block';
+  expEl.textContent=ev.exp;
+  expEl.style.borderColor=ev.delta>0?'rgba(0,255,136,0.3)':'rgba(255,107,138,0.3)';
+  sparkle(500,350);
+}
+
+function drawPriceChart(){
+  const canvas=document.getElementById('priceChart');
+  const ctx=canvas.getContext('2d');
+  const w=canvas.width, h=canvas.height;
+  ctx.clearRect(0,0,w,h);
+  if(priceHistory.length<2) return;
+  const min=Math.min(...priceHistory)-10;
+  const max=Math.max(...priceHistory)+10;
+  const toY=v=>h-20-((v-min)/(max-min))*(h-30);
+  const toX=(i)=>20+(i/(priceHistory.length-1))*(w-30);
+  // Grid
+  ctx.strokeStyle='rgba(0,184,148,0.08)';
+  ctx.lineWidth=1;
+  for(let g=0;g<=4;g++){
+    ctx.beginPath();
+    const y=h-20-(g/4)*(h-30);
+    ctx.moveTo(20,y); ctx.lineTo(w-10,y);
+    ctx.stroke();
+  }
+  // Gradient fill
+  const grad=ctx.createLinearGradient(0,0,0,h);
+  grad.addColorStop(0,'rgba(0,184,148,0.25)');
+  grad.addColorStop(1,'rgba(0,184,148,0)');
+  ctx.beginPath();
+  ctx.moveTo(toX(0),h-20);
+  priceHistory.forEach((v,i)=>ctx.lineTo(toX(i),toY(v)));
+  ctx.lineTo(toX(priceHistory.length-1),h-20);
+  ctx.closePath();
+  ctx.fillStyle=grad; ctx.fill();
+  // Line
+  ctx.beginPath();
+  ctx.strokeStyle='#00B894';
+  ctx.lineWidth=2.5;
+  ctx.lineJoin='round';
+  priceHistory.forEach((v,i)=>i===0?ctx.moveTo(toX(i),toY(v)):ctx.lineTo(toX(i),toY(v)));
+  ctx.stroke();
+  // Dots
+  priceHistory.forEach((v,i)=>{
+    ctx.beginPath();
+    ctx.arc(toX(i),toY(v),3.5,0,Math.PI*2);
+    ctx.fillStyle=i===priceHistory.length-1?'#FDCB6E':'#00B894';
+    ctx.fill();
+  });
+}
+drawPriceChart();
+
+// ── SCROLLS QUIZ ──
+const scrollQs=[
+  {type:'calc', q:'🏢 DragonBank shares are priced at <strong style="color:var(--amber)">₹200 each</strong>. You buy <strong style="color:var(--amber)">25 shares</strong>. How much do you spend in total?', ans:5000, hint:'Total = Price × Shares = 200 × 25'},
+  {type:'mcq',  q:'📈 When a company announces <strong style="color:var(--amber)">record profits</strong>, what usually happens to its share price?', opts:['It falls sharply','It stays the same','It rises because investors want to buy more','It is suspended from trading'], correct:2, exp:'Record profits → more people want shares → higher demand → price rises!'},
+  {type:'calc', q:'🎯 StarBake has <strong style="color:var(--amber)">10,000 shares</strong> worth <strong style="color:var(--amber)">₹50 each</strong>. What is the total company value?', ans:500000, hint:'Company Value = Shares × Price = 10,000 × 50'},
+  {type:'mcq',  q:'🏛️ Where are shares of Indian companies mainly bought and sold?', opts:['At the local bank','On NSE/BSE (stock exchanges)','At government offices','In supermarkets'], correct:1, exp:'The National Stock Exchange (NSE) and Bombay Stock Exchange (BSE) are India\'s main stock exchanges!'},
+  {type:'calc', q:'💰 You own <strong style="color:var(--amber)">200 shares</strong> of WizardCo. The company pays a <strong style="color:var(--amber)">₹3 dividend per share</strong>. How much dividend do you receive?', ans:600, hint:'Dividend received = Shares × Dividend per share = 200 × 3'},
+  {type:'mcq',  q:'💡 What does it mean to be a <strong style="color:var(--amber)">shareholder</strong> of a company?', opts:['You work for the company','You lend money to the company at interest','You are a part-owner of the company','You manage the company\'s accounts'], correct:2, exp:'Shareholders own a piece of the company — their share of ownership grows when the company grows!'},
+];
+
+let scrollSolved=new Array(scrollQs.length).fill(false);
+
+function renderScrolls(){
+  const cont=document.getElementById('scrollsContainer');
+  cont.innerHTML='';
+  scrollQs.forEach((q,i)=>{
+    const div=document.createElement('div');
+    div.className='panel';
+    div.style='margin-bottom:14px;';
+    if(q.type==='calc'){
+      div.innerHTML=`
+        <h3>📜 Scroll ${i+1}</h3>
+        <div class="scenario-card"><span class="s-tag">🧮 CALCULATION</span>${q.q}</div>
+        <div class="ans-row">
+          ${q.ans>1000?'₹':''}<input type="number" class="magic-input" id="sq-ans-${i}" placeholder="Your answer">
+          <button class="magic-btn" onclick="checkScroll(${i})">⚡ Cast</button>
+        </div>
+        <div class="feedback" id="sq-fb-${i}"></div>`;
+    } else {
+      div.innerHTML=`
+        <h3>📜 Scroll ${i+1}</h3>
+        <div class="scenario-card"><span class="s-tag">💡 CONCEPT</span>${q.q}</div>
+        <div class="mcq-options" id="mcq-${i}">
+          ${q.opts.map((o,j)=>`<div class="mcq-opt" id="opt-${i}-${j}" onclick="checkMCQ(${i},${j})">${String.fromCharCode(65+j)}. ${o}</div>`).join('')}
+        </div>
+        <div class="feedback" id="sq-fb-${i}"></div>`;
+    }
+    cont.appendChild(div);
+  });
+}
+
+function checkScroll(i){
+  const q=scrollQs[i];
+  const ans=+document.getElementById(`sq-ans-${i}`).value;
+  const fb=document.getElementById(`sq-fb-${i}`);
+  if(Math.abs(ans-q.ans)<1){
+    if(!scrollSolved[i]){ scrollSolved[i]=true; updateMktProgress(); }
+    fb.className='feedback correct';
+    fb.textContent=`✅ Correct! ${q.hint} = ${q.ans.toLocaleString('en-IN')}${i===0||i===4?'':(i===2?'':'')}.`;
+    sparkle(300,300+i*40);
+    checkAllDone();
+  } else {
+    fb.className='feedback wrong';
+    fb.textContent=`🔮 Not quite! Hint: ${q.hint}. Answer = ${q.ans.toLocaleString('en-IN')}.`;
+  }
+}
+
+function checkMCQ(qi,oi){
+  const q=scrollQs[qi];
+  if(scrollSolved[qi]) return;
+  const fb=document.getElementById(`sq-fb-${qi}`);
+  document.querySelectorAll(`#mcq-${qi} .mcq-opt`).forEach(o=>o.classList.remove('selected-right','selected-wrong'));
+  const chosenEl=document.getElementById(`opt-${qi}-${oi}`);
+  if(oi===q.correct){
+    chosenEl.classList.add('selected-right');
+    scrollSolved[qi]=true; updateMktProgress();
+    fb.className='feedback correct';
+    fb.textContent=`✅ Correct! ${q.exp}`;
+    sparkle(400,300+qi*40);
+    checkAllDone();
+  } else {
+    chosenEl.classList.add('selected-wrong');
+    fb.className='feedback wrong';
+    fb.textContent=`🔮 Not quite! ${q.exp}`;
+  }
+}
+
+function updateMktProgress(){
+  const n=scrollSolved.filter(Boolean).length;
+  document.getElementById('mktProgress').style.width=(n/scrollQs.length*100)+'%';
+  document.getElementById('mktScore').textContent=`Solved: ${n} / ${scrollQs.length}`;
+}
+
+function revealScrolls(){
+  scrollQs.forEach((q,i)=>{
+    const fb=document.getElementById(`sq-fb-${i}`);
+    if(q.type==='calc'){
+      document.getElementById(`sq-ans-${i}`).value=q.ans;
+      fb.className='feedback correct';
+      fb.textContent=`Answer: ${q.hint} = ${q.ans.toLocaleString('en-IN')}`;
+    } else {
+      document.querySelectorAll(`#mcq-${i} .mcq-opt`).forEach((o,j)=>{ if(j===q.correct) o.classList.add('reveal-right'); });
+      fb.className='feedback correct';
+      fb.textContent=`Answer: Option ${String.fromCharCode(65+q.correct)}. ${q.exp}`;
+    }
+    if(!scrollSolved[i]){ scrollSolved[i]=true; }
+  });
+  updateMktProgress();
+}
+
+function resetScrolls(){
+  scrollSolved=new Array(scrollQs.length).fill(false);
+  updateMktProgress();
+  renderScrolls();
+}
+
+function checkAllDone(){
+  if(scrollSolved.every(Boolean)){
+    setTimeout(()=>{
+      document.getElementById('completionMsg').textContent='All 6 Market Scrolls solved! 🧙📈';
+      document.getElementById('completion').classList.add('show');
+    },700);
+  }
+}
+
+renderScrolls();
+</script>
+</body>
+</html>

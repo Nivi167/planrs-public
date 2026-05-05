@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧙 The Money Wizard's Academy — Simple Interest</title>
+<link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel+Decorative:wght@400;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #FFD700;
+    --deep-gold: #B8860B;
+    --purple: #4B0082;
+    --midnight: #0D0221;
+    --navy: #0A0A2E;
+    --teal: #00CED1;
+    --mint: #7FFFD4;
+    --crimson: #DC143C;
+    --parchment: #FFF8DC;
+    --glow: rgba(255,215,0,0.4);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Crimson Pro', serif;
+    background: var(--midnight);
+    color: var(--parchment);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ── ANIMATED BACKGROUND ── */
+  .bg-layer {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(ellipse at 20% 30%, rgba(75,0,130,0.5) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 70%, rgba(0,0,80,0.6) 0%, transparent 55%),
+      radial-gradient(ellipse at 50% 50%, rgba(13,2,33,1) 0%, #0A0A2E 100%);
+  }
+
+  /* Stars */
+  .stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: white;
+    animation: twinkle var(--d,3s) var(--delay,0s) infinite alternate;
+  }
+  @keyframes twinkle {
+    0% { opacity: 0.1; transform: scale(0.8); }
+    100% { opacity: 1; transform: scale(1.2); }
+  }
+
+  /* Floating objects */
+  .floaties { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+  .float-obj {
+    position: absolute;
+    font-size: 1.8rem;
+    animation: floatUp var(--dur,15s) var(--delay,0s) linear infinite;
+    opacity: 0.6;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.7; }
+    90%  { opacity: 0.7; }
+    100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* ── LAYOUT ── */
+  .container {
+    position: relative; z-index: 10;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    text-align: center;
+    padding: 30px 0 24px;
+  }
+  .academy-badge {
+    display: inline-block;
+    border: 3px solid var(--gold);
+    border-radius: 50%;
+    padding: 14px 18px;
+    font-size: 2.8rem;
+    box-shadow: 0 0 30px var(--glow), inset 0 0 20px rgba(255,215,0,0.1);
+    animation: pulseGlow 2.5s ease-in-out infinite;
+    margin-bottom: 12px;
+  }
+  @keyframes pulseGlow {
+    0%,100% { box-shadow: 0 0 20px var(--glow), inset 0 0 10px rgba(255,215,0,0.05); }
+    50%      { box-shadow: 0 0 50px var(--glow), inset 0 0 30px rgba(255,215,0,0.2); }
+  }
+  h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.4rem, 4vw, 2.2rem);
+    color: var(--gold);
+    text-shadow: 0 0 20px var(--glow);
+    letter-spacing: 1px;
+    line-height: 1.3;
+  }
+  .subtitle {
+    font-size: 1.1rem;
+    color: var(--mint);
+    margin-top: 6px;
+    font-style: italic;
+  }
+
+  /* ── FORMULA BANNER ── */
+  .formula-banner {
+    background: linear-gradient(135deg, rgba(75,0,130,0.7), rgba(0,0,80,0.7));
+    border: 2px solid var(--gold);
+    border-radius: 16px;
+    padding: 18px 24px;
+    text-align: center;
+    margin: 20px 0 28px;
+    box-shadow: 0 0 25px rgba(255,215,0,0.2);
+  }
+  .formula-banner h2 {
+    font-family: 'Cinzel Decorative', serif;
+    color: var(--gold);
+    font-size: 1rem;
+    margin-bottom: 8px;
+    letter-spacing: 2px;
+  }
+  .formula-text {
+    font-size: clamp(1.3rem,4vw,1.8rem);
+    color: white;
+    font-weight: 600;
+    letter-spacing: 3px;
+  }
+  .formula-text span { color: var(--gold); }
+  .formula-legend {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 14px;
+    margin-top: 10px; font-size: 0.9rem; color: var(--mint);
+  }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    justify-content: center; margin-bottom: 24px;
+  }
+  .tab-btn {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 0.75rem;
+    padding: 10px 18px;
+    border: 2px solid var(--gold);
+    background: rgba(75,0,130,0.3);
+    color: var(--gold);
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s;
+    letter-spacing: 0.5px;
+  }
+  .tab-btn:hover, .tab-btn.active {
+    background: var(--gold);
+    color: var(--midnight);
+    box-shadow: 0 0 20px var(--glow);
+    transform: translateY(-2px);
+  }
+
+  /* ── ACTIVITY PANELS ── */
+  .activity { display: none; animation: fadeIn 0.5s ease; }
+  .activity.active { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .panel {
+    background: linear-gradient(145deg, rgba(75,0,130,0.25), rgba(0,0,60,0.4));
+    border: 1.5px solid rgba(255,215,0,0.4);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .panel::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at top left, rgba(255,215,0,0.05), transparent 60%);
+    pointer-events: none;
+  }
+  .panel h3 {
+    font-family: 'Cinzel Decorative', serif;
+    color: var(--gold);
+    font-size: 1rem;
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* ── SLIDERS ── */
+  .slider-group { margin: 12px 0; }
+  .slider-label {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 1rem; margin-bottom: 4px;
+  }
+  .slider-val {
+    font-weight: 700; color: var(--gold); font-size: 1.1rem;
+    min-width: 70px; text-align: right;
+  }
+  input[type=range] {
+    -webkit-appearance: none; width: 100%;
+    height: 8px; border-radius: 4px;
+    background: linear-gradient(to right, var(--gold) var(--pct,50%), rgba(255,255,255,0.15) var(--pct,50%));
+    outline: none; cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--gold), var(--deep-gold));
+    box-shadow: 0 0 10px var(--glow);
+    cursor: grab;
+  }
+
+  /* ── RESULT BOX ── */
+  .result-box {
+    background: rgba(0,0,0,0.4);
+    border: 2px solid var(--teal);
+    border-radius: 14px;
+    padding: 18px;
+    text-align: center;
+    margin-top: 16px;
+    box-shadow: 0 0 20px rgba(0,206,209,0.2);
+  }
+  .result-big {
+    font-size: clamp(2rem, 6vw, 3rem);
+    font-weight: 700;
+    color: var(--gold);
+    text-shadow: 0 0 20px var(--glow);
+    animation: numberPulse 0.3s ease;
+  }
+  @keyframes numberPulse {
+    0% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+  .result-breakdown {
+    font-size: 0.95rem; color: var(--mint); margin-top: 6px;
+  }
+
+  /* ── BANK CARDS ── */
+  .bank-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
+    gap: 14px; margin: 14px 0;
+  }
+  .bank-card {
+    background: linear-gradient(135deg, rgba(75,0,130,0.5), rgba(0,0,80,0.6));
+    border: 2px solid rgba(255,215,0,0.3);
+    border-radius: 14px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    position: relative;
+  }
+  .bank-card:hover, .bank-card.selected {
+    border-color: var(--gold);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(255,215,0,0.3);
+  }
+  .bank-card .bank-icon { font-size: 2rem; margin-bottom: 6px; }
+  .bank-card .bank-name { font-family: 'Cinzel Decorative', serif; font-size: 0.7rem; color: var(--gold); }
+  .bank-card .bank-rate { font-size: 1.5rem; font-weight: 700; color: white; margin: 4px 0; }
+  .bank-card .bank-type { font-size: 0.8rem; color: var(--mint); }
+  .bank-card.selected::after {
+    content: '✓ Selected';
+    position: absolute; top: 6px; right: 8px;
+    font-size: 0.65rem; color: var(--gold); font-weight: 700;
+  }
+
+  /* ── DRAG & DROP ── */
+  .dnd-workspace {
+    display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start;
+  }
+  .ingredient-shelf {
+    flex: 1; min-width: 220px;
+    background: rgba(0,0,0,0.3);
+    border: 1.5px dashed rgba(255,215,0,0.4);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .ingredient-shelf h4 {
+    color: var(--mint); font-size: 0.85rem; margin-bottom: 12px;
+    font-family: 'Cinzel Decorative', serif; font-size: 0.7rem; letter-spacing: 1px;
+  }
+  .ingredient {
+    display: flex; align-items: center; gap: 8px;
+    background: linear-gradient(135deg, rgba(75,0,130,0.6), rgba(0,0,80,0.6));
+    border: 1.5px solid rgba(255,215,0,0.5);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    cursor: grab;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .ingredient:hover { transform: scale(1.03); box-shadow: 0 4px 15px rgba(255,215,0,0.2); }
+  .ingredient:active { cursor: grabbing; }
+  .ingredient.dragging { opacity: 0.4; }
+  .ingredient .ing-icon { font-size: 1.4rem; }
+  .ingredient .ing-info { flex: 1; }
+  .ingredient .ing-name { font-size: 0.85rem; color: var(--gold); font-weight: 600; }
+  .ingredient .ing-val { font-size: 0.75rem; color: var(--mint); }
+
+  .cauldron-zone {
+    flex: 1.2; min-width: 240px;
+    background: rgba(0,0,0,0.4);
+    border: 2px dashed rgba(0,206,209,0.5);
+    border-radius: 16px;
+    padding: 16px;
+    min-height: 220px;
+    transition: all 0.3s;
+    position: relative;
+  }
+  .cauldron-zone.drag-over {
+    border-color: var(--teal);
+    background: rgba(0,206,209,0.1);
+    box-shadow: 0 0 25px rgba(0,206,209,0.3);
+  }
+  .cauldron-zone h4 {
+    color: var(--teal); font-family: 'Cinzel Decorative', serif;
+    font-size: 0.7rem; letter-spacing: 1px; margin-bottom: 10px;
+  }
+  .cauldron-slot {
+    background: rgba(255,255,255,0.05);
+    border: 1px dashed rgba(255,215,0,0.3);
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
+    min-height: 46px;
+    font-size: 0.85rem; color: rgba(255,255,255,0.3);
+  }
+  .cauldron-slot.filled {
+    background: rgba(75,0,130,0.4);
+    border-color: var(--gold);
+    color: var(--parchment);
+  }
+  .cauldron-slot .slot-remove {
+    margin-left: auto; background: none; border: none;
+    color: var(--crimson); cursor: pointer; font-size: 1rem;
+    padding: 0 4px;
+  }
+  .cauldron-slot .slot-remove:hover { transform: scale(1.2); }
+
+  /* ── BUTTONS ── */
+  .magic-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 0.8rem;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, var(--deep-gold), var(--gold));
+    color: var(--midnight);
+    border: none; border-radius: 30px;
+    cursor: pointer;
+    font-weight: 700;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 20px rgba(255,215,0,0.4);
+    margin-top: 12px;
+  }
+  .magic-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(255,215,0,0.6);
+  }
+  .magic-btn:active { transform: translateY(0); }
+  .magic-btn.secondary {
+    background: transparent;
+    border: 2px solid var(--teal);
+    color: var(--teal);
+    box-shadow: 0 4px 15px rgba(0,206,209,0.2);
+  }
+
+  /* ── QUIZ ── */
+  .quiz-question {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    padding: 14px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+    border-left: 4px solid var(--gold);
+  }
+  .quiz-input {
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+    margin-top: 10px;
+  }
+  .magic-input {
+    background: rgba(0,0,0,0.5);
+    border: 2px solid rgba(255,215,0,0.4);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: white;
+    font-size: 1rem;
+    font-family: 'Crimson Pro', serif;
+    width: 130px;
+    transition: all 0.3s;
+  }
+  .magic-input:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 15px rgba(255,215,0,0.3);
+  }
+  .feedback {
+    padding: 12px 16px; border-radius: 10px;
+    font-size: 0.95rem; margin-top: 10px;
+    display: none;
+  }
+  .feedback.correct {
+    display: block;
+    background: rgba(0,200,100,0.15);
+    border: 1.5px solid #00C864;
+    color: #00FF80;
+  }
+  .feedback.wrong {
+    display: block;
+    background: rgba(220,20,60,0.15);
+    border: 1.5px solid var(--crimson);
+    color: #FF6B8A;
+  }
+
+  /* ── PROGRESS ── */
+  .progress-bar-wrap {
+    background: rgba(255,255,255,0.1);
+    border-radius: 20px; height: 8px; margin: 16px 0 4px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%; border-radius: 20px;
+    background: linear-gradient(to right, var(--teal), var(--gold));
+    transition: width 0.5s ease;
+    box-shadow: 0 0 10px rgba(255,215,0,0.4);
+  }
+  .score-display {
+    font-family: 'Cinzel Decorative', serif;
+    color: var(--gold); font-size: 0.85rem; text-align: right;
+  }
+
+  /* ── BANK COMPARISON TABLE ── */
+  .comparison-table {
+    width: 100%; border-collapse: collapse; margin-top: 14px;
+    font-size: 0.9rem;
+  }
+  .comparison-table th {
+    background: rgba(255,215,0,0.1);
+    border: 1px solid rgba(255,215,0,0.3);
+    padding: 10px 12px;
+    color: var(--gold);
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 0.7rem; letter-spacing: 0.5px;
+  }
+  .comparison-table td {
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 9px 12px;
+    color: var(--parchment);
+    text-align: center;
+  }
+  .comparison-table tr:hover td { background: rgba(255,215,0,0.05); }
+  .best-td { color: var(--gold) !important; font-weight: 700; }
+
+  /* ── SPARKLES ── */
+  .sparkle {
+    position: fixed; pointer-events: none; z-index: 999;
+    font-size: 1.2rem;
+    animation: sparkleAnim 0.8s ease-out forwards;
+  }
+  @keyframes sparkleAnim {
+    0%   { transform: scale(0) translateY(0); opacity: 1; }
+    50%  { transform: scale(1.5) translateY(-30px); opacity: 1; }
+    100% { transform: scale(0) translateY(-60px); opacity: 0; }
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--midnight); }
+  ::-webkit-scrollbar-thumb { background: var(--deep-gold); border-radius: 4px; }
+
+  /* ── COMPLETION ── */
+  .completion-overlay {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,0.85);
+    display: none; place-items: center;
+    text-align: center;
+  }
+  .completion-overlay.show { display: grid; }
+  .completion-card {
+    background: linear-gradient(145deg, rgba(75,0,130,0.9), rgba(0,0,60,0.9));
+    border: 3px solid var(--gold);
+    border-radius: 24px;
+    padding: 40px 48px;
+    max-width: 460px;
+    box-shadow: 0 0 60px var(--glow);
+    animation: popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275);
+  }
+  @keyframes popIn {
+    from { transform: scale(0.5); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+  .completion-card h2 {
+    font-family: 'Cinzel Decorative', serif;
+    color: var(--gold); font-size: 1.6rem; margin: 10px 0;
+  }
+  .completion-card p { color: var(--mint); font-size: 1.05rem; margin: 8px 0; }
+
+  @media (max-width: 600px) {
+    .dnd-workspace { flex-direction: column; }
+    .bank-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- BACKGROUND LAYERS -->
+<div class="bg-layer"></div>
+<div class="stars" id="stars"></div>
+<div class="floaties" id="floaties"></div>
+
+<!-- COMPLETION OVERLAY -->
+<div class="completion-overlay" id="completionOverlay">
+  <div class="completion-card">
+    <div style="font-size:4rem">🏆</div>
+    <h2>Wizard of Finance!</h2>
+    <p>You've mastered all three enchantments of Simple Interest!</p>
+    <p id="finalScore" style="font-size:1.3rem; color:var(--gold); font-weight:700;"></p>
+    <button class="magic-btn" style="margin-top:20px" onclick="document.getElementById('completionOverlay').classList.remove('show')">✨ Keep Practising</button>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="academy-badge">🧙</div>
+    <h1>Simple Interest</h1>
+    <p class="subtitle">Master the Ancient Spell of Simple Interest</p>
+  </header>
+
+  <!-- FORMULA BANNER -->
+  <div class="formula-banner">
+    <h2>⚗️ The Grand Formula Scroll</h2>
+    <div class="formula-text">
+      <span>SI</span> = <span>P</span> × <span>R</span> × <span>T</span> ÷ 100
+    </div>
+    <div class="formula-legend">
+      <span>📜 SI = Simple Interest earned</span>
+      <span>💰 P = Principal (money invested)</span>
+      <span>📈 R = Rate of Interest (%)</span>
+      <span>⏳ T = Time (in years)</span>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('lab')">🔮 Activity 1: Potion Lab</button>
+    <button class="tab-btn" onclick="switchTab('bank')">🏦 Activity 2: Bank Quest</button>
+    <button class="tab-btn" onclick="switchTab('scroll')">📜 Activity 3: Spell Scrolls</button>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       ACTIVITY 1 — POTION LAB (Sliders + Drag)
+  ══════════════════════════════════════ -->
+  <div class="activity active" id="tab-lab">
+
+    <div class="panel">
+      <h3>🧪 The Interest Potion Mixer</h3>
+      <p style="font-size:0.9rem; color:var(--mint); margin-bottom:16px;">
+        Brew your interest potion! Drag the three magical ingredients into the cauldron, then adjust their power with the sliders to see how much interest you earn.
+      </p>
+
+      <div class="dnd-workspace">
+        <!-- Ingredient Shelf -->
+        <div class="ingredient-shelf">
+          <h4>🧺 Ingredient Shelf</h4>
+          <div class="ingredient" draggable="true" data-slot="principal" id="ing-principal">
+            <span class="ing-icon">💰</span>
+            <div class="ing-info">
+              <div class="ing-name">Principal Gold</div>
+              <div class="ing-val" id="shelf-p-val">₹5,000</div>
+            </div>
+          </div>
+          <div class="ingredient" draggable="true" data-slot="rate" id="ing-rate">
+            <span class="ing-icon">🌡️</span>
+            <div class="ing-info">
+              <div class="ing-name">Rate Crystal</div>
+              <div class="ing-val" id="shelf-r-val">6% p.a.</div>
+            </div>
+          </div>
+          <div class="ingredient" draggable="true" data-slot="time" id="ing-time">
+            <span class="ing-icon">⏳</span>
+            <div class="ing-info">
+              <div class="ing-name">Time Sand</div>
+              <div class="ing-val" id="shelf-t-val">3 years</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cauldron Drop Zone -->
+        <div class="cauldron-zone" id="cauldronZone">
+          <h4>🔮 Brew Cauldron — Drop Ingredients Here</h4>
+          <div class="cauldron-slot" id="slot-principal" data-slot="principal">
+            <span>💰</span> Drop Principal Gold here…
+          </div>
+          <div class="cauldron-slot" id="slot-rate" data-slot="rate">
+            <span>🌡️</span> Drop Rate Crystal here…
+          </div>
+          <div class="cauldron-slot" id="slot-time" data-slot="time">
+            <span>⏳</span> Drop Time Sand here…
+          </div>
+          <div id="brew-status" style="text-align:center;color:rgba(255,255,255,0.3);font-size:0.85rem;margin-top:8px;">
+            Add all 3 ingredients to brew!
+          </div>
+        </div>
+      </div>
+
+      <!-- Sliders -->
+      <div style="margin-top:20px;">
+        <div class="slider-group">
+          <div class="slider-label">
+            <span>💰 Principal (₹)</span>
+            <span class="slider-val" id="pVal">₹5,000</span>
+          </div>
+          <input type="range" id="pSlider" min="1000" max="50000" step="500" value="5000"
+            oninput="updateLab()">
+        </div>
+        <div class="slider-group" style="margin-top:12px;">
+          <div class="slider-label">
+            <span>📈 Interest Rate (%)</span>
+            <span class="slider-val" id="rVal">6%</span>
+          </div>
+          <input type="range" id="rSlider" min="1" max="20" step="0.5" value="6"
+            oninput="updateLab()">
+        </div>
+        <div class="slider-group" style="margin-top:12px;">
+          <div class="slider-label">
+            <span>⏳ Time (Years)</span>
+            <span class="slider-val" id="tVal">3 yrs</span>
+          </div>
+          <input type="range" id="tSlider" min="1" max="30" step="1" value="3"
+            oninput="updateLab()">
+        </div>
+      </div>
+
+      <!-- Result -->
+      <div class="result-box" id="lab-result">
+        <div style="font-size:0.85rem; color:rgba(255,255,255,0.5); margin-bottom:6px;">
+          🧪 Drop all ingredients & adjust sliders to see your potion result!
+        </div>
+        <div class="result-big" id="si-result" style="display:none"></div>
+        <div class="result-breakdown" id="si-breakdown" style="display:none"></div>
+        <div style="margin-top:10px; font-size:0.85rem; color:var(--mint)" id="amount-result" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- Mini challenge -->
+    <div class="panel">
+      <h3>🌟 Potion Challenge</h3>
+      <p style="font-size:0.95rem; margin-bottom:10px;">
+        Priya invests <strong style="color:var(--gold)">₹8,000</strong> at <strong style="color:var(--gold)">5% per annum</strong> for <strong style="color:var(--gold)">4 years</strong>. Use the sliders above to find her Simple Interest, then type your answer:
+      </p>
+      <div class="quiz-input">
+        <span>SI = ₹</span>
+        <input type="number" class="magic-input" id="challenge1-ans" placeholder="e.g. 1600">
+        <button class="magic-btn" onclick="checkChallenge1()">⚡ Cast Spell</button>
+      </div>
+      <div class="feedback" id="challenge1-fb"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       ACTIVITY 2 — BANK QUEST
+  ══════════════════════════════════════ -->
+  <div class="activity" id="tab-bank">
+
+    <div class="panel">
+      <h3>🏦 The Grand Bank Quest</h3>
+      <p style="font-size:0.9rem; color:var(--mint); margin-bottom:16px;">
+        You have <strong style="color:var(--gold)">₹10,000</strong> to invest for <strong style="color:var(--gold)">5 years</strong>. Pick the best bank and discover which one grows your gold the most! These are real-world inspired savings rates.
+      </p>
+
+      <div class="bank-grid" id="bankGrid">
+        <!-- Cards injected by JS -->
+      </div>
+
+      <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:4px;">
+        <button class="magic-btn" onclick="compareAllBanks()">🔮 Compare All Banks</button>
+        <button class="magic-btn secondary" onclick="resetBankQuest()">↺ Reset</button>
+      </div>
+    </div>
+
+    <!-- Comparison Table -->
+    <div class="panel" id="comparisonPanel" style="display:none;">
+      <h3>📊 Interest Comparison Scroll</h3>
+      <p style="font-size:0.85rem; color:var(--mint); margin-bottom:10px;">
+        Principal: <strong style="color:var(--gold)">₹10,000</strong> for <strong style="color:var(--gold)">5 years</strong>
+      </p>
+      <div style="overflow-x:auto;">
+        <table class="comparison-table" id="compTable"></table>
+      </div>
+      <div id="bankWinner" style="margin-top:14px; padding:12px; background:rgba(255,215,0,0.08); border-radius:10px; border:1.5px solid var(--gold); display:none;"></div>
+
+      <!-- Experiment sliders -->
+      <div style="margin-top:20px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.1);">
+        <h3>🧪 Experiment: Change Your Investment</h3>
+        <div class="slider-group" style="margin-top:10px;">
+          <div class="slider-label">
+            <span>💰 Your Principal (₹)</span>
+            <span class="slider-val" id="bankP-val">₹10,000</span>
+          </div>
+          <input type="range" id="bankPSlider" min="1000" max="100000" step="1000" value="10000"
+            oninput="compareAllBanks()">
+        </div>
+        <div class="slider-group" style="margin-top:10px;">
+          <div class="slider-label">
+            <span>⏳ Time (Years)</span>
+            <span class="slider-val" id="bankT-val">5 yrs</span>
+          </div>
+          <input type="range" id="bankTSlider" min="1" max="20" step="1" value="5"
+            oninput="compareAllBanks()">
+        </div>
+      </div>
+    </div>
+
+    <!-- Bank challenge -->
+    <div class="panel">
+      <h3>🌟 Bank Wizard Challenge</h3>
+      <div class="quiz-question">
+        Ravi puts <strong style="color:var(--gold)">₹15,000</strong> in Mystic Bank (rate: <strong style="color:var(--gold)">7.5% p.a.</strong>) for <strong style="color:var(--gold)">3 years</strong>. What is the total amount he gets back?
+      </div>
+      <div class="quiz-input">
+        <span>Total Amount = ₹</span>
+        <input type="number" class="magic-input" id="bankQ-ans" placeholder="e.g. 18375">
+        <button class="magic-btn" onclick="checkBankQ()">⚡ Cast Spell</button>
+      </div>
+      <div class="feedback" id="bankQ-fb"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       ACTIVITY 3 — SPELL SCROLLS (Quiz)
+  ══════════════════════════════════════ -->
+  <div class="activity" id="tab-scroll">
+    <div class="panel">
+      <h3>📜 The Seven Spell Scrolls</h3>
+      <p style="font-size:0.9rem; color:var(--mint); margin-bottom:6px;">
+        Solve all 7 enchanted problems to earn your Finance Wizard badge! Show your working with the formula: SI = P × R × T ÷ 100
+      </p>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="quizProgress" style="width:0%"></div>
+      </div>
+      <div class="score-display" id="scoreDisplay">Score: 0 / 7</div>
+
+      <div id="scrollsContainer"></div>
+
+      <div style="text-align:center; margin-top:16px;">
+        <button class="magic-btn" onclick="revealAllScrolls()">✨ Reveal All Answers</button>
+        <button class="magic-btn secondary" onclick="resetScrolls()">↺ Try Again</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ══════════════════════════════════════
+// BACKGROUND GENERATORS
+// ══════════════════════════════════════
+(function generateStars() {
+  const s = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const el = document.createElement('div');
+    el.className = 'star';
+    const sz = Math.random() * 3 + 1;
+    el.style.cssText = `
+      width:${sz}px; height:${sz}px;
+      top:${Math.random()*100}%;
+      left:${Math.random()*100}%;
+      --d:${2+Math.random()*4}s;
+      --delay:${Math.random()*5}s;
+    `;
+    s.appendChild(el);
+  }
+})();
+
+(function generateFloaties() {
+  const objs = ['📚','🦉','🧙','⭐','🌟','✨','🧪','⚗️','🪄','🔮','💫','🌙','🪙','💰','📜','🌿','🍄'];
+  const f = document.getElementById('floaties');
+  for (let i = 0; i < 22; i++) {
+    const el = document.createElement('div');
+    el.className = 'float-obj';
+    el.textContent = objs[Math.floor(Math.random()*objs.length)];
+    el.style.cssText = `
+      left:${Math.random()*100}%;
+      --dur:${12+Math.random()*18}s;
+      --delay:${Math.random()*15}s;
+      font-size:${1.2+Math.random()*1.4}rem;
+    `;
+    f.appendChild(el);
+  }
+})();
+
+// ══════════════════════════════════════
+// SPARKLE EFFECT
+// ══════════════════════════════════════
+function sparkle(x, y) {
+  const icons = ['✨','⭐','💫','🌟','🎉'];
+  for (let i = 0; i < 6; i++) {
+    const el = document.createElement('div');
+    el.className = 'sparkle';
+    el.textContent = icons[Math.floor(Math.random()*icons.length)];
+    el.style.cssText = `left:${x + (Math.random()-0.5)*80}px; top:${y + (Math.random()-0.5)*80}px;`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 900);
+  }
+}
+
+// ══════════════════════════════════════
+// TABS
+// ══════════════════════════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.activity').forEach(a => a.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ══════════════════════════════════════
+// ACTIVITY 1 — POTION LAB
+// ══════════════════════════════════════
+const slots = { principal: false, rate: false, time: false };
+
+// Update slider fills
+function updateSliderFill(el) {
+  const min = +el.min, max = +el.max, val = +el.value;
+  const pct = ((val - min) / (max - min)) * 100;
+  el.style.setProperty('--pct', pct + '%');
+}
+
+function updateLab() {
+  const p = +document.getElementById('pSlider').value;
+  const r = +document.getElementById('rSlider').value;
+  const t = +document.getElementById('tSlider').value;
+
+  document.getElementById('pVal').textContent = '₹' + p.toLocaleString();
+  document.getElementById('rVal').textContent = r + '%';
+  document.getElementById('tVal').textContent = t + ' yr' + (t!==1?'s':'');
+
+  // Update shelf labels
+  document.getElementById('shelf-p-val').textContent = '₹' + p.toLocaleString();
+  document.getElementById('shelf-r-val').textContent = r + '% p.a.';
+  document.getElementById('shelf-t-val').textContent = t + ' year' + (t!==1?'s':'');
+
+  // Update filled slots labels
+  if (slots.principal) {
+    document.getElementById('slot-principal').innerHTML = `<span>💰</span> ₹${p.toLocaleString()} Principal <button class="slot-remove" onclick="removeSlot('principal')">✕</button>`;
+    document.getElementById('slot-principal').classList.add('filled');
+  }
+  if (slots.rate) {
+    document.getElementById('slot-rate').innerHTML = `<span>🌡️</span> ${r}% Rate Crystal <button class="slot-remove" onclick="removeSlot('rate')">✕</button>`;
+    document.getElementById('slot-rate').classList.add('filled');
+  }
+  if (slots.time) {
+    document.getElementById('slot-time').innerHTML = `<span>⏳</span> ${t} year${t!==1?'s':''} Time Sand <button class="slot-remove" onclick="removeSlot('time')">✕</button>`;
+    document.getElementById('slot-time').classList.add('filled');
+    document.getElementById('slot-time').classList.add('filled');
+  }
+
+  // Update fill visuals
+  ['pSlider','rSlider','tSlider'].forEach(id => updateSliderFill(document.getElementById(id)));
+
+  // Calculate if all slots filled
+  if (slots.principal && slots.rate && slots.time) {
+    const si = (p * r * t) / 100;
+    const total = p + si;
+    document.getElementById('brew-status').textContent = '🧪 Brewing…';
+    document.getElementById('si-result').style.display = 'block';
+    document.getElementById('si-breakdown').style.display = 'block';
+    document.getElementById('amount-result').style.display = 'block';
+    document.getElementById('si-result').textContent = '₹' + si.toLocaleString('en-IN', {maximumFractionDigits:2});
+    document.getElementById('si-breakdown').textContent = `SI = ${p.toLocaleString()} × ${r} × ${t} ÷ 100`;
+    document.getElementById('amount-result').textContent = `💎 Total Amount = ₹${p.toLocaleString()} + ₹${si.toFixed(2)} = ₹${total.toLocaleString('en-IN',{maximumFractionDigits:2})}`;
+  }
+}
+
+// Drag & Drop
+document.querySelectorAll('.ingredient').forEach(ing => {
+  ing.addEventListener('dragstart', e => {
+    e.dataTransfer.setData('slot', ing.dataset.slot);
+    ing.classList.add('dragging');
+  });
+  ing.addEventListener('dragend', () => ing.classList.remove('dragging'));
+});
+
+const cz = document.getElementById('cauldronZone');
+cz.addEventListener('dragover', e => { e.preventDefault(); cz.classList.add('drag-over'); });
+cz.addEventListener('dragleave', () => cz.classList.remove('drag-over'));
+cz.addEventListener('drop', e => {
+  e.preventDefault();
+  cz.classList.remove('drag-over');
+  const slotKey = e.dataTransfer.getData('slot');
+  addToSlot(slotKey);
+  sparkle(e.clientX, e.clientY);
+});
+
+function addToSlot(key) {
+  slots[key] = true;
+  const el = document.getElementById('slot-' + key);
+  el.classList.add('filled');
+  updateLab();
+  checkAllFilled();
+}
+
+function removeSlot(key) {
+  slots[key] = false;
+  const el = document.getElementById('slot-' + key);
+  el.classList.remove('filled');
+  const labels = { principal:'<span>💰</span> Drop Principal Gold here…', rate:'<span>🌡️</span> Drop Rate Crystal here…', time:'<span>⏳</span> Drop Time Sand here…' };
+  el.innerHTML = labels[key];
+  document.getElementById('si-result').style.display = 'none';
+  document.getElementById('si-breakdown').style.display = 'none';
+  document.getElementById('amount-result').style.display = 'none';
+  document.getElementById('brew-status').textContent = 'Add all 3 ingredients to brew!';
+}
+
+function checkAllFilled() {
+  if (slots.principal && slots.rate && slots.time) {
+    document.getElementById('brew-status').innerHTML = '✅ All ingredients in the cauldron! Scroll down to see your potion!';
+    document.getElementById('brew-status').style.color = 'var(--gold)';
+  }
+}
+
+function checkChallenge1() {
+  const ans = +document.getElementById('challenge1-ans').value;
+  const correct = (8000 * 5 * 4) / 100; // 1600
+  const fb = document.getElementById('challenge1-fb');
+  if (ans === correct) {
+    fb.className = 'feedback correct';
+    fb.textContent = `🎉 Brilliant! SI = ₹8,000 × 5% × 4 ÷ 100 = ₹${correct}. Your potion is perfect!`;
+    sparkle(300, 400);
+  } else {
+    fb.className = 'feedback wrong';
+    fb.textContent = `🔮 Not quite! Try: SI = P × R × T ÷ 100 = 8000 × 5 × 4 ÷ 100 = ₹${correct}. Set sliders to P=8000, R=5%, T=4!`;
+  }
+}
+
+// Initialise sliders
+['pSlider','rSlider','tSlider'].forEach(id => {
+  const el = document.getElementById(id);
+  updateSliderFill(el);
+  el.addEventListener('input', () => updateSliderFill(el));
+});
+
+// ══════════════════════════════════════
+// ACTIVITY 2 — BANK QUEST
+// ══════════════════════════════════════
+const banks = [
+  { name: 'State Wizard Bank', icon: '🏛️', rate: 6.5,  type: 'Govt Savings' },
+  { name: 'Mystic Bank',       icon: '🔮', rate: 7.5,  type: 'Private Savings' },
+  { name: 'Dragon Treasury',   icon: '🐉', rate: 8.0,  type: 'NBFC Deposit' },
+  { name: 'Owl Finance',       icon: '🦉', rate: 5.5,  type: 'Post Office' },
+  { name: 'Phoenix Credit',    icon: '🔥', rate: 9.0,  type: 'Co-op Bank' },
+  { name: 'Crystal Co-op',     icon: '💎', rate: 7.0,  type: 'Small Bank' },
+];
+
+(function renderBankCards() {
+  const grid = document.getElementById('bankGrid');
+  banks.forEach((b, i) => {
+    const card = document.createElement('div');
+    card.className = 'bank-card';
+    card.id = 'bank-'+i;
+    card.innerHTML = `
+      <div class="bank-icon">${b.icon}</div>
+      <div class="bank-name">${b.name}</div>
+      <div class="bank-rate">${b.rate}%</div>
+      <div class="bank-type">${b.type}</div>
+    `;
+    card.onclick = () => { card.classList.toggle('selected'); };
+    grid.appendChild(card);
+  });
+})();
+
+function compareAllBanks() {
+  const p = +document.getElementById('bankPSlider').value;
+  const t = +document.getElementById('bankTSlider').value;
+  document.getElementById('bankP-val').textContent = '₹' + p.toLocaleString();
+  document.getElementById('bankT-val').textContent = t + ' yr' + (t!==1?'s':'');
+  updateSliderFill(document.getElementById('bankPSlider'));
+  updateSliderFill(document.getElementById('bankTSlider'));
+
+  // Select all cards
+  document.querySelectorAll('.bank-card').forEach(c => c.classList.add('selected'));
+
+  const panel = document.getElementById('comparisonPanel');
+  panel.style.display = 'block';
+  panel.scrollIntoView({ behavior:'smooth', block:'nearest' });
+
+  const data = banks.map(b => ({
+    ...b,
+    si: (p * b.rate * t) / 100,
+    total: p + (p * b.rate * t) / 100
+  }));
+  data.sort((a,b) => b.si - a.si);
+
+  const table = document.getElementById('compTable');
+  table.innerHTML = `
+    <thead><tr>
+      <th>Bank</th><th>Rate</th><th>Simple Interest</th><th>Total Amount</th>
+    </tr></thead>
+    <tbody>
+      ${data.map((b,i) => `
+        <tr>
+          <td>${b.icon} ${b.name}</td>
+          <td>${b.rate}%</td>
+          <td class="${i===0?'best-td':''}">₹${b.si.toFixed(2)}</td>
+          <td class="${i===0?'best-td':''}">₹${b.total.toFixed(2)}</td>
+        </tr>
+      `).join('')}
+    </tbody>
+  `;
+
+  const winner = data[0];
+  const winnerEl = document.getElementById('bankWinner');
+  winnerEl.style.display = 'block';
+  winnerEl.innerHTML = `
+    <strong style="color:var(--gold)">${winner.icon} Best Choice: ${winner.name}</strong><br>
+    <span style="color:var(--mint)">At ${winner.rate}% for ${t} years, you earn <strong style="color:var(--gold)">₹${winner.si.toFixed(2)}</strong> interest! Total back: ₹${winner.total.toFixed(2)}</span>
+  `;
+  sparkle(500, 300);
+}
+
+function resetBankQuest() {
+  document.querySelectorAll('.bank-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('comparisonPanel').style.display = 'none';
+}
+
+function checkBankQ() {
+  const ans = +document.getElementById('bankQ-ans').value;
+  const si = (15000 * 7.5 * 3) / 100; // 3375
+  const total = 15000 + si; // 18375
+  const fb = document.getElementById('bankQ-fb');
+  if (Math.abs(ans - total) < 1) {
+    fb.className = 'feedback correct';
+    fb.textContent = `🎉 Excellent! SI = 15,000 × 7.5 × 3 ÷ 100 = ₹${si}. Total = ₹${total}. Ravi is a happy wizard! 🧙`;
+    sparkle(400, 400);
+  } else {
+    fb.className = 'feedback wrong';
+    fb.textContent = `🔮 Try again! Step 1: SI = 15000 × 7.5 × 3 ÷ 100 = ₹${si}. Step 2: Total = 15000 + ${si} = ₹${total}.`;
+  }
+}
+
+// Init bank sliders
+['bankPSlider','bankTSlider'].forEach(id => {
+  const el = document.getElementById(id);
+  updateSliderFill(el);
+  el.addEventListener('input', () => updateSliderFill(el));
+});
+
+// ══════════════════════════════════════
+// ACTIVITY 3 — SPELL SCROLLS (Quiz)
+// ══════════════════════════════════════
+const scrollQuestions = [
+  { q: "🏠 Aarav deposits ₹6,000 in a bank at 8% per annum for 2 years. What is the Simple Interest?", p:6000, r:8, t:2 },
+  { q: "🌻 Sneha lends ₹12,500 to her friend at 4% per annum for 3 years. How much interest does she earn?", p:12500, r:4, t:3 },
+  { q: "🚂 A railway savings bond of ₹20,000 offers 6.5% per annum for 5 years. Find the Simple Interest.", p:20000, r:6.5, t:5 },
+  { q: "🦜 Meera's grandfather invested ₹1,500 at 10% per annum. After how many years will he earn ₹750 as interest? (Hint: T = SI×100 ÷ P×R)", p:1500, r:10, t:5, customAns:5, customQ:'T = SI×100 ÷ P×R = 750×100 ÷ 1500×10 = 5 years' },
+  { q: "🌊 A boat loan of ₹25,000 is taken at 9% per annum for 4 years. What is the total amount to be repaid?", p:25000, r:9, t:4, totalAns:true },
+  { q: "🔭 Vikram puts ₹8,400 at an unknown rate for 3 years and earns ₹1,512. What is the rate? (Hint: R = SI×100 ÷ P×T)", p:8400, r:6, t:3, customAns:6, customQ:'R = 1512×100 ÷ 8400×3 = 6%' },
+  { q: "🎓 A scholarship fund of ₹50,000 grows at 7% per annum. After 10 years, what is the total amount?", p:50000, r:7, t:10, totalAns:true },
+];
+
+let scrollScores = new Array(scrollQuestions.length).fill(false);
+
+function renderScrolls() {
+  const c = document.getElementById('scrollsContainer');
+  c.innerHTML = '';
+  scrollQuestions.forEach((q, i) => {
+    const si = (q.p * q.r * q.t) / 100;
+    const total = q.p + si;
+    const correctAns = q.customAns !== undefined ? q.customAns : q.totalAns ? total : si;
+
+    const div = document.createElement('div');
+    div.className = 'panel';
+    div.style.marginTop = '16px';
+    div.innerHTML = `
+      <h3>📜 Scroll ${i+1}</h3>
+      <div class="quiz-question">${q.q}</div>
+      <div style="font-size:0.82rem; color:rgba(255,215,0,0.6); margin-bottom:8px;">
+        ${q.totalAns ? 'Enter Total Amount (₹)' : q.customAns !== undefined ? 'Enter the value' : 'Enter Simple Interest (₹)'}
+      </div>
+      <div class="quiz-input">
+        <input type="number" class="magic-input" id="scroll-ans-${i}" placeholder="Your answer">
+        <button class="magic-btn" onclick="checkScroll(${i}, ${correctAns})">⚡ Cast</button>
+      </div>
+      <div class="feedback" id="scroll-fb-${i}"></div>
+    `;
+    c.appendChild(div);
+  });
+}
+
+function checkScroll(i, correct) {
+  const ans = +document.getElementById(`scroll-ans-${i}`).value;
+  const fb = document.getElementById(`scroll-fb-${i}`);
+  const q = scrollQuestions[i];
+  const si = (q.p * q.r * q.t) / 100;
+  const total = q.p + si;
+
+  if (Math.abs(ans - correct) < 0.5) {
+    if (!scrollScores[i]) {
+      scrollScores[i] = true;
+      updateScrollProgress();
+    }
+    fb.className = 'feedback correct';
+    let explanation = q.customQ
+      ? `✅ Correct! ${q.customQ}`
+      : q.totalAns
+        ? `✅ Brilliant! SI = ${q.p.toLocaleString()} × ${q.r} × ${q.t} ÷ 100 = ₹${si.toFixed(2)}. Total = ₹${total.toFixed(2)}`
+        : `✅ Brilliant! SI = ${q.p.toLocaleString()} × ${q.r} × ${q.t} ÷ 100 = ₹${si.toFixed(2)}`;
+    fb.textContent = explanation;
+    sparkle(300, 200 + i * 60);
+    checkCompletion();
+  } else {
+    fb.className = 'feedback wrong';
+    fb.textContent = `🔮 Not quite! Hint: Use SI = P × R × T ÷ 100. P=₹${q.p.toLocaleString()}, R=${q.r}%, T=${q.t}yrs → SI=₹${si.toFixed(2)}.`;
+  }
+}
+
+function updateScrollProgress() {
+  const score = scrollScores.filter(Boolean).length;
+  const pct = (score / scrollQuestions.length) * 100;
+  document.getElementById('quizProgress').style.width = pct + '%';
+  document.getElementById('scoreDisplay').textContent = `Score: ${score} / ${scrollQuestions.length}`;
+}
+
+function checkCompletion() {
+  const score = scrollScores.filter(Boolean).length;
+  if (score === scrollQuestions.length) {
+    setTimeout(() => {
+      document.getElementById('finalScore').textContent = `🌟 All 7 Scrolls Solved! You're a True Money Wizard!`;
+      document.getElementById('completionOverlay').classList.add('show');
+    }, 600);
+  }
+}
+
+function revealAllScrolls() {
+  scrollQuestions.forEach((q, i) => {
+    const si = (q.p * q.r * q.t) / 100;
+    const total = q.p + si;
+    const fb = document.getElementById(`scroll-fb-${i}`);
+    const correctAns = q.customAns !== undefined ? q.customAns : q.totalAns ? total : si;
+    document.getElementById(`scroll-ans-${i}`).value = correctAns;
+    fb.className = 'feedback correct';
+    fb.textContent = q.customQ ? `Answer: ${q.customQ}` : q.totalAns
+      ? `Answer: SI = ₹${si.toFixed(2)} → Total Amount = ₹${total.toFixed(2)}`
+      : `Answer: SI = ${q.p.toLocaleString()} × ${q.r} × ${q.t} ÷ 100 = ₹${si.toFixed(2)}`;
+    if (!scrollScores[i]) { scrollScores[i] = true; }
+  });
+  updateScrollProgress();
+}
+
+function resetScrolls() {
+  scrollScores = new Array(scrollQuestions.length).fill(false);
+  updateScrollProgress();
+  renderScrolls();
+}
+
+renderScrolls();
+updateLab();
+</script>
+</body>
+</html>

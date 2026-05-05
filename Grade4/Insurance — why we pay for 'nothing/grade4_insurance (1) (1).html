@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Insurance Explorer – Grade 4</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --sky:#0a1a4e;
+    --sky2:#1a3a7a;
+    --cloud:#e8f4fd;
+    --gold:#ffd700;
+    --coral:#ff6b6b;
+    --mint:#4ecdc4;
+    --purple:#a855f7;
+    --green:#22c55e;
+    --orange:#f97316;
+    --pink:#ec4899;
+    --white:#ffffff;
+    --card:#1e3a6e;
+    --card2:#162d57;
+    --text:#ffffff;
+    --accent:#ffd700;
+  }
+
+  body{
+    font-family:'Nunito',sans-serif;
+    background:linear-gradient(160deg,#0a1a4e 0%,#1a3a7a 40%,#0e4d6b 70%,#0a2f4e 100%);
+    min-height:100vh;
+    color:var(--text);
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  /* ======= CANVAS BACKGROUND ======= */
+  #bgCanvas{
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    pointer-events:none;z-index:0;
+  }
+
+  /* ======= LAYOUT ======= */
+  .page{position:relative;z-index:2;max-width:960px;margin:0 auto;padding:20px 16px 60px;}
+
+  /* ======= HEADER ======= */
+  .hero{
+    text-align:center;
+    padding:20px 20px 16px;
+    animation:fadeDown .8s ease;
+  }
+  .hero-badge{
+    display:inline-block;
+    background:linear-gradient(135deg,#ffd700,#ff9500);
+    color:#1a1a2e;
+    font-family:'Fredoka One',cursive;
+    font-size:14px;
+    padding:6px 20px;
+    border-radius:30px;
+    margin-bottom:16px;
+    letter-spacing:1px;
+    box-shadow:0 4px 20px rgba(255,213,0,.4);
+  }
+  .hero h1{
+    font-family:'Fredoka One',cursive;
+    font-size:clamp(2.2rem,6vw,3.6rem);
+    line-height:1.1;
+    background:linear-gradient(135deg,#ffd700 0%,#ff9500 40%,#ff6b6b 80%);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+    text-shadow:none;
+    margin-bottom:12px;
+    filter:drop-shadow(0 2px 12px rgba(255,213,0,.3));
+  }
+  .hero p{
+    font-size:1.1rem;
+    color:rgba(255,255,255,.85);
+    max-width:560px;
+    margin:0 auto 24px;
+    line-height:1.6;
+  }
+  .hero-emoji{font-size:2rem;display:block;margin-bottom:6px;animation:bounce 2s infinite;}
+
+  /* ======= INTRO CARDS ======= */
+  .intro-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:16px;
+    margin-bottom:16px;
+  }
+  .intro-card{
+    background:rgba(255,255,255,.08);
+    border:1.5px solid rgba(255,255,255,.15);
+    border-radius:20px;
+    padding:22px 18px;
+    text-align:center;
+    backdrop-filter:blur(10px);
+    transition:transform .3s,box-shadow .3s;
+    animation:fadeUp .6s ease both;
+  }
+  .intro-card:hover{transform:translateY(-6px);box-shadow:0 12px 40px rgba(0,0,0,.3);}
+  .intro-card:nth-child(1){animation-delay:.1s;}
+  .intro-card:nth-child(2){animation-delay:.2s;}
+  .intro-card:nth-child(3){animation-delay:.3s;}
+  .intro-card:nth-child(4){animation-delay:.4s;}
+  .intro-card .ic-emoji{font-size:2.4rem;margin-bottom:10px;display:block;}
+  .intro-card h3{font-family:'Fredoka One',cursive;font-size:1.15rem;color:#ffd700;margin-bottom:6px;}
+  .intro-card p{font-size:.88rem;color:rgba(255,255,255,.75);line-height:1.5;}
+
+  /* ======= SECTION HEADER ======= */
+  .section-head{
+    display:flex;align-items:center;gap:12px;
+    margin-bottom:20px;margin-top:40px;
+  }
+  .section-head .num{
+    width:44px;height:44px;border-radius:50%;
+    background:linear-gradient(135deg,#ffd700,#ff9500);
+    color:#1a1a2e;
+    font-family:'Fredoka One',cursive;
+    font-size:1.4rem;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 16px rgba(255,213,0,.4);
+    flex-shrink:0;
+  }
+  .section-head h2{
+    font-family:'Fredoka One',cursive;
+    font-size:1.6rem;
+    color:#ffd700;
+  }
+  .section-head p{font-size:.9rem;color:rgba(255,255,255,.7);margin-top:2px;}
+
+  /* ======= ACTIVITY CARD ======= */
+  .activity-wrap{
+    background:rgba(255,255,255,.06);
+    border:1.5px solid rgba(255,255,255,.12);
+    border-radius:24px;
+    padding:28px 24px;
+    backdrop-filter:blur(12px);
+    margin-bottom:12px;
+  }
+
+  /* ======= ACT 1: MATCH ======= */
+  .match-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .match-col{display:flex;flex-direction:column;gap:10px;}
+  .match-col-title{font-family:'Fredoka One',cursive;font-size:1rem;color:#ffd700;margin-bottom:4px;text-align:center;}
+  .term-item{
+    background:linear-gradient(135deg,rgba(168,85,247,.25),rgba(168,85,247,.1));
+    border:2px solid rgba(168,85,247,.5);
+    border-radius:14px;
+    padding:12px 16px;
+    font-size:.92rem;
+    font-weight:700;
+    cursor:grab;
+    transition:transform .2s,box-shadow .2s,border-color .2s;
+    text-align:center;
+    user-select:none;
+    position:relative;
+  }
+  .term-item:active{cursor:grabbing;transform:scale(1.05);}
+  .term-item.dragging{opacity:.5;transform:scale(1.08);box-shadow:0 8px 30px rgba(168,85,247,.5);}
+  .term-item.matched{
+    background:linear-gradient(135deg,rgba(34,197,94,.3),rgba(34,197,94,.1));
+    border-color:rgba(34,197,94,.7);
+    cursor:default;
+  }
+  .def-drop{
+    background:rgba(255,255,255,.04);
+    border:2px dashed rgba(255,255,255,.25);
+    border-radius:14px;
+    padding:12px 16px;
+    font-size:.88rem;
+    color:rgba(255,255,255,.75);
+    min-height:56px;
+    display:flex;align-items:center;
+    transition:border-color .2s,background .2s;
+    position:relative;
+    gap:8px;
+  }
+  .def-drop.over{border-color:#ffd700;background:rgba(255,213,0,.08);}
+  .def-drop.correct{border-color:#22c55e;background:rgba(34,197,94,.1);}
+  .def-drop.wrong{border-color:#ef4444;background:rgba(239,68,68,.1);}
+  .def-drop .placed-term{
+    background:linear-gradient(135deg,rgba(34,197,94,.3),rgba(34,197,94,.1));
+    border:1.5px solid #22c55e;
+    border-radius:8px;
+    padding:4px 10px;
+    font-size:.82rem;
+    font-weight:700;
+    flex-shrink:0;
+  }
+  .match-btn{
+    display:block;margin:18px auto 0;
+    background:linear-gradient(135deg,#ffd700,#ff9500);
+    color:#1a1a2e;
+    border:none;
+    font-family:'Fredoka One',cursive;
+    font-size:1rem;
+    padding:10px 30px;
+    border-radius:30px;
+    cursor:pointer;
+    box-shadow:0 4px 16px rgba(255,213,0,.35);
+    transition:transform .2s,box-shadow .2s;
+  }
+  .match-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,213,0,.5);}
+  #match-feedback{text-align:center;margin-top:12px;font-weight:700;font-size:1rem;min-height:24px;}
+
+  /* ======= ACT 2: SORT ======= */
+  .sort-bank{
+    display:flex;flex-wrap:wrap;gap:10px;
+    background:rgba(255,255,255,.04);
+    border:2px dashed rgba(255,255,255,.2);
+    border-radius:16px;
+    padding:16px;
+    min-height:70px;
+    margin-bottom:20px;
+  }
+  .sort-bank.over{border-color:#ffd700;background:rgba(255,213,0,.06);}
+  .sort-zones{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .sort-zone{
+    border-radius:18px;
+    border:2px dashed rgba(255,255,255,.25);
+    padding:14px;
+    min-height:130px;
+  }
+  .sort-zone.over{border-style:solid;border-color:#ffd700;}
+  .sort-zone-title{
+    font-family:'Fredoka One',cursive;
+    font-size:1.1rem;
+    margin-bottom:10px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .scenario-chip{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:8px 14px;
+    border-radius:30px;
+    font-size:.83rem;
+    font-weight:700;
+    cursor:grab;
+    user-select:none;
+    transition:transform .2s,box-shadow .2s;
+    margin:4px;
+  }
+  .scenario-chip:active{cursor:grabbing;}
+  .scenario-chip.dragging{opacity:.45;transform:scale(1.06);}
+  .scenario-chip.bank-chip{
+    background:rgba(168,85,247,.25);
+    border:2px solid rgba(168,85,247,.5);
+    color:#d8b4fe;
+  }
+  #sort-feedback{text-align:center;margin-top:12px;font-weight:700;font-size:1rem;min-height:24px;}
+
+  /* ======= ACT 3: QUIZ ======= */
+  .quiz-q{
+    background:rgba(255,255,255,.06);
+    border-radius:16px;
+    border:1.5px solid rgba(255,255,255,.12);
+    padding:18px 20px;
+    margin-bottom:14px;
+    animation:fadeUp .5s ease both;
+  }
+  .quiz-q h4{font-size:.95rem;font-weight:700;margin-bottom:12px;color:#e2e8f0;}
+  .quiz-opts{display:flex;flex-direction:column;gap:8px;}
+  .quiz-opt{
+    background:rgba(255,255,255,.05);
+    border:1.5px solid rgba(255,255,255,.15);
+    border-radius:10px;
+    padding:10px 14px;
+    font-size:.88rem;
+    cursor:pointer;
+    transition:background .2s,border-color .2s,transform .15s;
+    text-align:left;
+    color:#e2e8f0;
+    font-family:'Nunito',sans-serif;
+    font-weight:600;
+  }
+  .quiz-opt:hover:not(.locked){background:rgba(255,213,0,.1);border-color:rgba(255,213,0,.4);transform:translateX(4px);}
+  .quiz-opt.correct-ans{background:rgba(34,197,94,.2);border-color:#22c55e;color:#86efac;}
+  .quiz-opt.wrong-ans{background:rgba(239,68,68,.15);border-color:#ef4444;color:#fca5a5;}
+  .quiz-score{
+    text-align:center;
+    font-family:'Fredoka One',cursive;
+    font-size:1.5rem;
+    color:#ffd700;
+    margin-top:16px;
+  }
+  .quiz-reset{
+    display:block;margin:12px auto 0;
+    background:linear-gradient(135deg,#ec4899,#a855f7);
+    color:white;
+    border:none;
+    font-family:'Fredoka One',cursive;
+    font-size:.95rem;
+    padding:9px 26px;
+    border-radius:30px;
+    cursor:pointer;
+    box-shadow:0 4px 16px rgba(168,85,247,.35);
+    transition:transform .2s;
+  }
+  .quiz-reset:hover{transform:translateY(-2px);}
+
+  /* ======= SCORE BADGE ======= */
+  .score-bar{
+    display:flex;justify-content:center;gap:20px;flex-wrap:wrap;
+    margin:32px 0 10px;
+  }
+  .score-pill{
+    background:rgba(255,255,255,.1);
+    border:1.5px solid rgba(255,255,255,.2);
+    border-radius:30px;
+    padding:10px 22px;
+    font-family:'Fredoka One',cursive;
+    font-size:1rem;
+    display:flex;align-items:center;gap:8px;
+    backdrop-filter:blur(8px);
+  }
+  .score-pill span{color:#ffd700;font-size:1.3rem;}
+
+  /* ======= FOOTER ======= */
+  .footer{text-align:center;padding:30px 0 10px;color:rgba(255,255,255,.4);font-size:.82rem;}
+
+  /* ======= TABS ======= */
+  .tabs-nav{
+    display:flex;gap:8px;flex-wrap:wrap;justify-content:center;
+    margin:0 0 20px;
+  }
+  .tab-btn{
+    background:rgba(255,255,255,.08);
+    border:2px solid rgba(255,255,255,.15);
+    border-radius:30px;
+    padding:10px 22px;
+    font-family:'Fredoka One',cursive;
+    font-size:1rem;
+    color:rgba(255,255,255,.7);
+    cursor:pointer;
+    transition:all .25s;
+    display:flex;align-items:center;gap:8px;
+    backdrop-filter:blur(8px);
+  }
+  .tab-btn:hover{background:rgba(255,255,255,.14);color:#fff;}
+  .tab-btn.active{
+    background:linear-gradient(135deg,#ffd700,#ff9500);
+    border-color:transparent;
+    color:#1a1a2e;
+    box-shadow:0 4px 20px rgba(255,213,0,.4);
+  }
+  .tab-panel{display:none;animation:fadeUp .35s ease;}
+  .tab-panel.active{display:block;}
+
+  /* ======= ANIMATIONS ======= */
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-30px);}to{opacity:1;transform:none;}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
+  @keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+  @keyframes twinkle{0%,100%{opacity:.6;transform:scale(.9);}50%{opacity:1;transform:scale(1.2);}}
+  @keyframes pop{0%{transform:scale(.8);}60%{transform:scale(1.2);}100%{transform:scale(1);}}
+
+  .pop-anim{animation:pop .4s ease;}
+
+  @media(max-width:600px){
+    .match-grid,.sort-zones{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="hero-emoji">🛡️</span>
+    <h1>What is Insurance?</h1>
+    <p>Learn how insurance protects people, families, and their things — and why it matters for everyone!</p>
+  </div>
+
+  <!-- TAB NAVIGATION -->
+  <div class="tabs-nav">
+    <button class="tab-btn active" onclick="switchTab('intro',this)">📚 Learn</button>
+    <button class="tab-btn" onclick="switchTab('match',this)">🔗 Match</button>
+    <button class="tab-btn" onclick="switchTab('sort',this)">🗂️ Sort</button>
+    <button class="tab-btn" onclick="switchTab('quiz',this)">🧠 Quiz</button>
+    <button class="tab-btn" onclick="switchTab('scores',this)">🏆 Scores</button>
+  </div>
+
+  <!-- TAB: INTRO CONCEPTS -->
+  <div class="tab-panel active" id="tab-intro">
+    <div class="intro-grid">
+      <div class="intro-card">
+        <span class="ic-emoji">🤝</span>
+        <h3>What is Insurance?</h3>
+        <p>A promise to help pay for big unexpected costs — like a safety net for life's surprises!</p>
+      </div>
+      <div class="intro-card">
+        <span class="ic-emoji">💰</span>
+        <h3>Premium</h3>
+        <p>The regular amount you pay to keep your insurance active — like a subscription for protection.</p>
+      </div>
+      <div class="intro-card">
+        <span class="ic-emoji">📋</span>
+        <h3>Policy</h3>
+        <p>The written agreement between you and the insurance company that explains what's covered.</p>
+      </div>
+      <div class="intro-card">
+        <span class="ic-emoji">📣</span>
+        <h3>Claim</h3>
+        <p>When something bad happens, you ask your insurance company for help — that's a claim!</p>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:16px;">
+      <button class="match-btn" onclick="switchTab('match',document.querySelectorAll('.tab-btn')[1])">Start Activities →</button>
+    </div>
+  </div>
+
+  <!-- TAB: ACTIVITY 1: MATCH -->
+  <div class="tab-panel" id="tab-match">
+    <div class="section-head">
+      <div class="num">1</div>
+      <div>
+        <h2>🔗 Match the Terms!</h2>
+        <p>Drag each word on the left to its matching definition on the right.</p>
+      </div>
+    </div>
+    <div class="activity-wrap">
+      <div class="match-grid">
+        <div class="match-col">
+          <div class="match-col-title">📝 Insurance Words</div>
+          <div class="term-item" draggable="true" data-term="Deductible" id="t1">Deductible</div>
+          <div class="term-item" draggable="true" data-term="Beneficiary" id="t2">Beneficiary</div>
+          <div class="term-item" draggable="true" data-term="Coverage" id="t3">Coverage</div>
+          <div class="term-item" draggable="true" data-term="Risk" id="t4">Risk</div>
+          <div class="term-item" draggable="true" data-term="Insurer" id="t5">Insurer</div>
+        </div>
+        <div class="match-col">
+          <div class="match-col-title">📖 Definitions</div>
+          <div class="def-drop" data-answer="Risk">⚡ The chance that something bad might happen</div>
+          <div class="def-drop" data-answer="Insurer">🏢 The company that provides the insurance</div>
+          <div class="def-drop" data-answer="Deductible">💵 The amount YOU pay first before insurance kicks in</div>
+          <div class="def-drop" data-answer="Coverage">🛡️ The protection provided by your insurance plan</div>
+          <div class="def-drop" data-answer="Beneficiary">🎁 The person who receives the insurance money</div>
+        </div>
+      </div>
+      <button class="match-btn" onclick="checkMatch()">✅ Check My Answers!</button>
+      <div id="match-feedback"></div>
+    </div>
+  </div>
+
+  <!-- TAB: ACTIVITY 2: SORT -->
+  <div class="tab-panel" id="tab-sort">
+    <div class="section-head">
+      <div class="num">2</div>
+      <div>
+        <h2>🗂️ Sort the Scenarios!</h2>
+        <p>Drag each situation to the correct type of insurance it belongs to.</p>
+      </div>
+    </div>
+    <div class="activity-wrap">
+      <p style="font-size:.88rem;color:rgba(255,255,255,.6);margin-bottom:12px;">Drag cards from the bank below into the correct category:</p>
+      <div class="sort-bank" id="sort-bank">
+        <div class="scenario-chip bank-chip" draggable="true" data-type="health" style="background:rgba(236,72,153,.2);border-color:rgba(236,72,153,.5);color:#f9a8d4;">🏥 Broken arm X-ray</div>
+        <div class="scenario-chip bank-chip" draggable="true" data-type="car" style="background:rgba(59,130,246,.2);border-color:rgba(59,130,246,.5);color:#93c5fd;">🚗 Car fender bender</div>
+        <div class="scenario-chip bank-chip" draggable="true" data-type="home" style="background:rgba(34,197,94,.2);border-color:rgba(34,197,94,.5);color:#86efac;">🏠 House roof damaged by storm</div>
+        <div class="scenario-chip bank-chip" draggable="true" data-type="health" style="background:rgba(236,72,153,.2);border-color:rgba(236,72,153,.5);color:#f9a8d4;">💊 Doctor prescription</div>
+        <div class="scenario-chip bank-chip" draggable="true" data-type="car" style="background:rgba(59,130,246,.2);border-color:rgba(59,130,246,.5);color:#93c5fd;">🔑 Car stolen from parking</div>
+        <div class="scenario-chip bank-chip" draggable="true" data-type="home" style="background:rgba(34,197,94,.2);border-color:rgba(34,197,94,.5);color:#86efac;">🔥 Kitchen fire damage</div>
+      </div>
+      <div class="sort-zones">
+        <div class="sort-zone" id="zone-health" data-type="health" style="background:rgba(236,72,153,.08);border-color:rgba(236,72,153,.3);">
+          <div class="sort-zone-title" style="color:#f9a8d4;">❤️ Health Insurance</div>
+        </div>
+        <div class="sort-zone" id="zone-car" data-type="car" style="background:rgba(59,130,246,.08);border-color:rgba(59,130,246,.3);">
+          <div class="sort-zone-title" style="color:#93c5fd;">🚙 Car Insurance</div>
+        </div>
+        <div class="sort-zone" id="zone-home" data-type="home" style="background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.3);">
+          <div class="sort-zone-title" style="color:#86efac;">🏡 Home Insurance</div>
+        </div>
+        <div class="sort-zone" id="zone-life" data-type="life" style="background:rgba(250,204,21,.08);border-color:rgba(250,204,21,.3);">
+          <div class="sort-zone-title" style="color:#fde68a;">⭐ Life Insurance</div>
+          <p style="font-size:.78rem;color:rgba(255,255,255,.4);margin-top:4px;">Hint: protects your family's future</p>
+        </div>
+      </div>
+      <div id="sort-feedback"></div>
+    </div>
+  </div>
+
+  <!-- TAB: ACTIVITY 3: QUIZ -->
+  <div class="tab-panel" id="tab-quiz">
+    <div class="section-head">
+      <div class="num">3</div>
+      <div>
+        <h2>🧠 Quick-Fire Quiz!</h2>
+        <p>Tap the best answer for each question — no dragging required!</p>
+      </div>
+    </div>
+    <div class="activity-wrap">
+      <div id="quiz-container"></div>
+      <div class="quiz-score" id="quiz-score"></div>
+      <button class="quiz-reset" id="quiz-reset-btn" onclick="resetQuiz()" style="display:none;">🔄 Try Again!</button>
+    </div>
+  </div>
+
+  <!-- TAB: SCORES -->
+  <div class="tab-panel" id="tab-scores">
+    <div class="section-head" style="justify-content:center;">
+      <div><h2 style="text-align:center;">🏆 Your Scores</h2></div>
+    </div>
+    <div class="score-bar" style="flex-direction:column;align-items:center;gap:16px;margin-top:10px;">
+      <div class="score-pill" style="font-size:1.2rem;padding:16px 32px;">🔗 Match the Terms: <span id="sc-match">—</span></div>
+      <div class="score-pill" style="font-size:1.2rem;padding:16px 32px;">🗂️ Sort Scenarios: <span id="sc-sort">—</span></div>
+      <div class="score-pill" style="font-size:1.2rem;padding:16px 32px;">🧠 Quick Quiz: <span id="sc-quiz">—</span></div>
+    </div>
+    <div class="footer" style="margin-top:32px;">Made with ❤️ for curious Grade 4 learners • Insurance Explorer</div>
+  </div>
+</div>
+
+<!-- ================================================
+     JAVASCRIPT
+     ================================================ -->
+<script>
+/* ===== ANIMATED CANVAS BACKGROUND ===== */
+const canvas=document.getElementById('bgCanvas');
+const ctx=canvas.getContext('2d');
+let W,H;
+
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+resize();
+window.addEventListener('resize',resize);
+
+// Stars
+const stars=Array.from({length:160},()=>({
+  x:Math.random()*W,y:Math.random()*H,
+  r:Math.random()*2.2+.4,
+  base:Math.random()*.7+.3,
+  speed:Math.random()*2+1,
+  phase:Math.random()*Math.PI*2,
+  color:`hsl(${Math.random()*60+200},80%,80%)`
+}));
+
+// Shooting stars
+const shooters=Array.from({length:4},()=>newShooter());
+function newShooter(){
+  return{
+    x:Math.random()*W*.7,y:Math.random()*H*.4,
+    vx:Math.random()*6+4,vy:Math.random()*3+1.5,
+    life:0,maxLife:80+Math.random()*60,
+    len:120+Math.random()*80
+  };
+}
+
+// Birds (simple flapping silhouettes)
+const birds=Array.from({length:12},()=>newBird());
+function newBird(){
+  const goRight=Math.random()>.5;
+  return{
+    x:goRight?-80:W+80,
+    y:Math.random()*H*.55+40,
+    speed:(Math.random()*1.2+.6)*(goRight?1:-1),
+    flap:Math.random()*Math.PI*2,
+    flapSpeed:Math.random()*.12+.08,
+    size:Math.random()*8+7,
+    goRight
+  };
+}
+
+function drawBird(b,t){
+  const wing=Math.sin(b.flap)*0.7;
+  ctx.save();
+  ctx.translate(b.x,b.y);
+  if(!b.goRight)ctx.scale(-1,1);
+  ctx.beginPath();
+  // Body
+  ctx.moveTo(0,0);
+  ctx.quadraticCurveTo(b.size*.7,b.size*.15,b.size*1.5,0);
+  // Left wing up
+  ctx.moveTo(b.size*.3,-b.size*.1);
+  ctx.quadraticCurveTo(b.size*.6,-b.size*(.5+wing*.6),b.size*1.1,-b.size*(.2+wing*.3));
+  // Right wing up
+  ctx.moveTo(b.size*.3,-b.size*.1);
+  ctx.quadraticCurveTo(0,-b.size*(.5+wing*.6),-b.size*.4,-b.size*(.2+wing*.3));
+  ctx.strokeStyle='rgba(255,255,255,0.6)';
+  ctx.lineWidth=1.5;
+  ctx.stroke();
+  ctx.restore();
+  b.flap+=b.flapSpeed;
+  b.x+=b.speed;
+  if(b.goRight&&b.x>W+100) Object.assign(b,newBird(),{x:-80,goRight:true,speed:Math.abs(Math.random()*1.2+.6)});
+  if(!b.goRight&&b.x<-100) Object.assign(b,newBird(),{x:W+80,goRight:false,speed:-Math.abs(Math.random()*1.2+.6)});
+}
+
+// Clouds (parallax)
+const clouds=Array.from({length:5},()=>({
+  x:Math.random()*W,
+  y:Math.random()*H*.3+20,
+  w:Math.random()*120+80,
+  speed:Math.random()*.15+.05,
+  alpha:Math.random()*.12+.05
+}));
+
+let frame=0;
+function draw(){
+  frame++;
+  ctx.clearRect(0,0,W,H);
+
+  // Gradient sky
+  const g=ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,'#06102e');
+  g.addColorStop(.4,'#0e2a5e');
+  g.addColorStop(.75,'#0a3d52');
+  g.addColorStop(1,'#04192e');
+  ctx.fillStyle=g;
+  ctx.fillRect(0,0,W,H);
+
+  // Clouds
+  clouds.forEach(c=>{
+    ctx.save();
+    ctx.globalAlpha=c.alpha;
+    ctx.fillStyle='#c8e4f5';
+    ctx.beginPath();
+    ctx.ellipse(c.x,c.y,c.w,c.w*.38,0,0,Math.PI*2);
+    ctx.ellipse(c.x-c.w*.28,c.y+c.w*.08,c.w*.42,c.w*.28,0,0,Math.PI*2);
+    ctx.ellipse(c.x+c.w*.28,c.y+c.w*.06,c.w*.38,c.w*.25,0,0,Math.PI*2);
+    ctx.fill();
+    ctx.restore();
+    c.x+=c.speed;
+    if(c.x-c.w>W)c.x=-c.w;
+  });
+
+  // Stars
+  const t=frame/60;
+  stars.forEach(s=>{
+    const a=s.base+Math.sin(t*s.speed+s.phase)*.35;
+    ctx.beginPath();
+    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle=s.color;
+    ctx.globalAlpha=Math.max(0,Math.min(1,a));
+    ctx.fill();
+    ctx.globalAlpha=1;
+  });
+
+  // Shooting stars
+  shooters.forEach(s=>{
+    s.life++;
+    if(s.life>s.maxLife){Object.assign(s,newShooter());return;}
+    const prog=s.life/s.maxLife;
+    const alpha=prog<.2?prog/.2:prog>.8?(1-prog)/.2:1;
+    const cx=s.x+s.vx*s.life;
+    const cy=s.y+s.vy*s.life;
+    const grad=ctx.createLinearGradient(cx-s.len*s.vx/8,cy-s.len*s.vy/8,cx,cy);
+    grad.addColorStop(0,'rgba(255,255,255,0)');
+    grad.addColorStop(1,`rgba(255,255,200,${alpha*.9})`);
+    ctx.beginPath();
+    ctx.moveTo(cx-s.len*(s.vx/8),cy-s.len*(s.vy/8));
+    ctx.lineTo(cx,cy);
+    ctx.strokeStyle=grad;
+    ctx.lineWidth=1.8;
+    ctx.globalAlpha=alpha;
+    ctx.stroke();
+    ctx.globalAlpha=1;
+    // Head glow
+    ctx.beginPath();
+    ctx.arc(cx,cy,2.5,0,Math.PI*2);
+    ctx.fillStyle=`rgba(255,255,200,${alpha})`;
+    ctx.fill();
+  });
+
+  // Birds
+  birds.forEach(b=>drawBird(b,t));
+
+  requestAnimationFrame(draw);
+}
+draw();
+
+/* ===== ACTIVITY 1: DRAG & DROP MATCH ===== */
+let draggedTerm=null;
+
+document.querySelectorAll('.term-item').forEach(el=>{
+  el.addEventListener('dragstart',e=>{
+    draggedTerm=el;
+    setTimeout(()=>el.classList.add('dragging'),0);
+  });
+  el.addEventListener('dragend',()=>{
+    el.classList.remove('dragging');
+    draggedTerm=null;
+  });
+});
+
+document.querySelectorAll('.def-drop').forEach(drop=>{
+  drop.addEventListener('dragover',e=>{
+    e.preventDefault();
+    drop.classList.add('over');
+  });
+  drop.addEventListener('dragleave',()=>drop.classList.remove('over'));
+  drop.addEventListener('drop',e=>{
+    e.preventDefault();
+    drop.classList.remove('over');
+    if(!draggedTerm)return;
+    if(drop.querySelector('.placed-term'))return;
+    const span=document.createElement('span');
+    span.className='placed-term';
+    span.textContent=draggedTerm.dataset.term;
+    span.dataset.term=draggedTerm.dataset.term;
+    drop.insertBefore(span,drop.firstChild);
+    draggedTerm.style.visibility='hidden';
+    draggedTerm.draggable=false;
+  });
+});
+
+function checkMatch(){
+  let correct=0,total=0;
+  document.querySelectorAll('.def-drop').forEach(drop=>{
+    const placed=drop.querySelector('.placed-term');
+    if(!placed)return;
+    total++;
+    if(placed.dataset.term===drop.dataset.answer){
+      correct++;
+      drop.classList.add('correct');
+      drop.classList.remove('wrong');
+      placed.style.background='rgba(34,197,94,.3)';
+      placed.style.borderColor='#22c55e';
+    }else{
+      drop.classList.add('wrong');
+      drop.classList.remove('correct');
+      placed.style.background='rgba(239,68,68,.25)';
+      placed.style.borderColor='#ef4444';
+    }
+  });
+  const fb=document.getElementById('match-feedback');
+  if(total===0){fb.textContent='💡 Drag some words first!';fb.style.color='#ffd700';return;}
+  const msgs=['Keep going! You can do it! 💪','Not bad! Try again! 🔄','Good effort! Almost there! ⭐','Great job! Nearly perfect! 🌟','PERFECT MATCH! You\'re amazing! 🎉'];
+  const pct=correct/5;
+  const idx=Math.min(4,Math.floor(pct*5));
+  fb.textContent=`${correct}/5 correct — ${msgs[idx]}`;
+  fb.style.color=correct===5?'#22c55e':correct>=3?'#ffd700':'#f97316';
+  document.getElementById('sc-match').textContent=`${correct}/5`;
+  document.getElementById('sc-match').parentElement.classList.add('pop-anim');
+  setTimeout(()=>document.getElementById('sc-match').parentElement.classList.remove('pop-anim'),400);
+}
+
+/* ===== ACTIVITY 2: SORT DRAG & DROP ===== */
+let draggedChip=null;
+
+function setupSortDrag(){
+  document.querySelectorAll('.scenario-chip').forEach(chip=>{
+    chip.addEventListener('dragstart',()=>{
+      draggedChip=chip;
+      setTimeout(()=>chip.classList.add('dragging'),0);
+    });
+    chip.addEventListener('dragend',()=>{
+      chip.classList.remove('dragging');
+      draggedChip=null;
+      checkSort();
+    });
+  });
+
+  const zones=[document.getElementById('sort-bank'),...document.querySelectorAll('.sort-zone')];
+  zones.forEach(zone=>{
+    zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('over');});
+    zone.addEventListener('dragleave',()=>zone.classList.remove('over'));
+    zone.addEventListener('drop',e=>{
+      e.preventDefault();
+      zone.classList.remove('over');
+      if(!draggedChip)return;
+      zone.appendChild(draggedChip);
+    });
+  });
+}
+setupSortDrag();
+
+const SORT_ANSWERS={health:['health','health'],car:['car','car'],home:['home','home']};
+function checkSort(){
+  let correct=0,placed=0;
+  document.querySelectorAll('.sort-zone').forEach(zone=>{
+    const type=zone.dataset.type;
+    zone.querySelectorAll('.scenario-chip').forEach(chip=>{
+      placed++;
+      if(chip.dataset.type===type)correct++;
+    });
+  });
+  if(placed===0){document.getElementById('sort-feedback').textContent='';return;}
+  const total=document.querySelectorAll('.scenario-chip').length;
+  const allPlaced=placed===total;
+  const fb=document.getElementById('sort-feedback');
+  if(allPlaced){
+    fb.textContent=correct===total?`🎉 Perfect! All ${total} sorted correctly!`:`${correct}/${total} correct — try moving some cards!`;
+    fb.style.color=correct===total?'#22c55e':'#ffd700';
+    document.getElementById('sc-sort').textContent=`${correct}/${total}`;
+  }
+}
+
+/* ===== ACTIVITY 3: QUIZ ===== */
+const questions=[
+  {
+    q:'Why do people buy insurance?',
+    opts:['To save money in a bank','To protect against unexpected costs','To invest in the stock market','To get free vacations'],
+    ans:1
+  },
+  {
+    q:'What is a "premium" in insurance?',
+    opts:['The insurance company\'s profit','The money you get after an accident','The regular payment you make to keep your insurance','The list of things covered'],
+    ans:2
+  },
+  {
+    q:'Mia\'s house was damaged in a flood. She called her insurance company. What is this called?',
+    opts:['A deductible','A premium','A policy','A claim'],
+    ans:3
+  },
+  {
+    q:'Which type of insurance helps pay doctor and hospital bills?',
+    opts:['Car insurance','Home insurance','Health insurance','Life insurance'],
+    ans:2
+  },
+  {
+    q:'What does a "deductible" mean?',
+    opts:['The total value of your insurance','The amount you pay before insurance covers the rest','The name of your insurance company','The date your policy ends'],
+    ans:1
+  }
+];
+
+let quizAnswers=[];
+let quizScore=0;
+
+function buildQuiz(){
+  const c=document.getElementById('quiz-container');
+  c.innerHTML='';
+  quizAnswers=[];
+  quizScore=0;
+  document.getElementById('quiz-score').textContent='';
+  document.getElementById('quiz-reset-btn').style.display='none';
+  questions.forEach((q,qi)=>{
+    const div=document.createElement('div');
+    div.className='quiz-q';
+    div.style.animationDelay=`${qi*.1}s`;
+    div.innerHTML=`<h4>Q${qi+1}: ${q.q}</h4><div class="quiz-opts">${q.opts.map((o,oi)=>`<button class="quiz-opt" onclick="selectOpt(${qi},${oi},this)" id="q${qi}o${oi}">${o}</button>`).join('')}</div>`;
+    c.appendChild(div);
+  });
+}
+
+function selectOpt(qi,oi,btn){
+  if(quizAnswers[qi]!==undefined)return;
+  quizAnswers[qi]=oi;
+  const correct=questions[qi].ans;
+  const opts=btn.parentElement.querySelectorAll('.quiz-opt');
+  opts.forEach(o=>o.classList.add('locked'));
+  if(oi===correct){
+    btn.classList.add('correct-ans');
+    quizScore++;
+  }else{
+    btn.classList.add('wrong-ans');
+    opts[correct].classList.add('correct-ans');
+  }
+  if(quizAnswers.filter(a=>a!==undefined).length===questions.length){
+    setTimeout(showQuizResult,400);
+  }
+}
+
+function showQuizResult(){
+  const emojis=['😅','🙂','😊','⭐','🌟','🎉'];
+  const idx=Math.min(5,Math.floor(quizScore/questions.length*5));
+  const sc=document.getElementById('quiz-score');
+  sc.textContent=`${emojis[idx]} You scored ${quizScore}/${questions.length}!`;
+  document.getElementById('quiz-reset-btn').style.display='block';
+  document.getElementById('sc-quiz').textContent=`${quizScore}/${questions.length}`;
+  document.getElementById('sc-quiz').parentElement.classList.add('pop-anim');
+  setTimeout(()=>document.getElementById('sc-quiz').parentElement.classList.remove('pop-anim'),400);
+}
+
+function resetQuiz(){buildQuiz();}
+
+buildQuiz();
+
+/* ===== TAB SWITCHING ===== */
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>

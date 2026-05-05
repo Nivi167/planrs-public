@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neural Networks 🧙‍♂️</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Nunito:wght@400;600;700;800&family=MedievalSharp&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --deep-navy: #0a0a2e;
+    --midnight: #0d0d3b;
+    --purple: #6c2bd9;
+    --violet: #9b59b6;
+    --gold: #f0c040;
+    --amber: #f59e0b;
+    --teal: #00e5d4;
+    --pink: #ff6eb4;
+    --green: #39ff6a;
+    --white: #eef0ff;
+    --card-bg: rgba(20, 10, 60, 0.85);
+    --glow-purple: 0 0 20px #9b59b680, 0 0 40px #6c2bd940;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--deep-navy);
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ===== ANIMATED BACKGROUND ===== */
+  #bg-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .floating-obj {
+    position: fixed;
+    font-size: 2rem;
+    z-index: 1;
+    pointer-events: none;
+    animation: floatAround linear infinite;
+    opacity: 0.7;
+    filter: drop-shadow(0 0 8px var(--gold));
+  }
+
+  @keyframes floatAround {
+    0%   { transform: translateY(0px) rotate(0deg); opacity: 0.5; }
+    25%  { transform: translateY(-25px) rotate(10deg); opacity: 0.8; }
+    50%  { transform: translateY(-10px) rotate(-8deg); opacity: 0.6; }
+    75%  { transform: translateY(-30px) rotate(5deg); opacity: 0.9; }
+    100% { transform: translateY(0px) rotate(0deg); opacity: 0.5; }
+  }
+
+  /* ===== PAGE STRUCTURE ===== */
+  .page-wrapper {
+    position: relative;
+    z-index: 2;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    text-align: center;
+    padding: 40px 20px 20px;
+    position: relative;
+  }
+  header h1 {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: clamp(1.5rem, 4vw, 2.8rem);
+    color: var(--gold);
+    text-shadow: 0 0 20px var(--gold), 0 0 40px #f0c04060;
+    line-height: 1.2;
+    letter-spacing: 2px;
+  }
+  header p {
+    font-size: 1.1rem;
+    color: #c4b8ff;
+    margin-top: 10px;
+    font-weight: 600;
+  }
+  .sparkle-row {
+    font-size: 1.6rem;
+    margin: 6px 0;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity:0.6; } 50% { opacity:1; } }
+
+  /* ===== TAB NAV ===== */
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 24px 0 10px;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.95rem;
+    padding: 12px 22px;
+    border-radius: 50px;
+    border: 2px solid var(--purple);
+    background: var(--card-bg);
+    color: #c4b8ff;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .tab-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--purple)80, var(--violet)60);
+    opacity: 0;
+    transition: opacity 0.3s;
+    border-radius: 50px;
+  }
+  .tab-btn:hover::before, .tab-btn.active::before { opacity: 1; }
+  .tab-btn span { position: relative; z-index: 1; }
+  .tab-btn.active { color: white; border-color: var(--gold); box-shadow: 0 0 15px var(--purple); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ===== CARDS ===== */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid rgba(108, 43, 217, 0.4);
+    border-radius: 20px;
+    padding: 28px;
+    margin-bottom: 20px;
+    box-shadow: var(--glow-purple), inset 0 1px 0 rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+  }
+  .card-title {
+    font-family: 'Cinzel Decorative', cursive;
+    color: var(--gold);
+    font-size: 1.15rem;
+    margin-bottom: 10px;
+    text-shadow: 0 0 10px var(--gold);
+  }
+  .card-desc {
+    color: #b8b0e8;
+    font-size: 0.95rem;
+    margin-bottom: 16px;
+    line-height: 1.6;
+  }
+
+  /* ===== BUTTONS ===== */
+  .btn {
+    padding: 11px 26px;
+    border-radius: 30px;
+    border: none;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-gold {
+    background: linear-gradient(135deg, var(--gold), var(--amber));
+    color: #1a0a00;
+    box-shadow: 0 0 18px #f0c04060;
+  }
+  .btn-gold:hover { transform: scale(1.06); box-shadow: 0 0 28px #f0c040; }
+  .btn-teal {
+    background: linear-gradient(135deg, var(--teal), #00b3a8);
+    color: #001a18;
+    box-shadow: 0 0 15px #00e5d460;
+  }
+  .btn-teal:hover { transform: scale(1.06); }
+  .btn-pink {
+    background: linear-gradient(135deg, var(--pink), #e040a0);
+    color: white;
+    box-shadow: 0 0 15px #ff6eb460;
+  }
+  .btn-pink:hover { transform: scale(1.06); }
+  .btn-sm { padding: 7px 16px; font-size: 0.85rem; }
+
+  .result-box {
+    margin-top: 14px;
+    padding: 14px 18px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 1rem;
+    text-align: center;
+    transition: all 0.3s;
+  }
+  .result-correct { background: rgba(57, 255, 106, 0.18); border: 1.5px solid var(--green); color: var(--green); }
+  .result-wrong   { background: rgba(255, 80, 80, 0.18); border: 1.5px solid #ff5050; color: #ff7070; }
+  .result-info    { background: rgba(0, 229, 212, 0.13); border: 1.5px solid var(--teal); color: var(--teal); }
+
+  /* ===========================
+     ACTIVITY 1 — SPELL BLENDER
+  =========================== */
+  .spell-grid {
+    display: grid;
+    grid-template-columns: 1fr 60px 1fr 60px 1fr;
+    gap: 12px;
+    align-items: start;
+    margin: 18px 0;
+  }
+  @media(max-width:700px) {
+    .spell-grid { grid-template-columns: 1fr; }
+    .arrow-col { display: none; }
+  }
+  .layer-col {
+    background: rgba(30, 15, 80, 0.7);
+    border-radius: 16px;
+    border: 1.5px solid rgba(108,43,217,0.5);
+    padding: 14px;
+    min-height: 160px;
+    position: relative;
+  }
+  .layer-col h4 {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: 0.78rem;
+    color: var(--gold);
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  .arrow-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: var(--purple);
+    filter: drop-shadow(0 0 6px var(--purple));
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  .neuron-slot {
+    width: 100%;
+    min-height: 50px;
+    border: 2px dashed rgba(155,89,182,0.5);
+    border-radius: 12px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    color: #9b8ec4;
+    transition: all 0.2s;
+    position: relative;
+    cursor: default;
+  }
+  .neuron-slot.drag-over {
+    border-color: var(--gold);
+    background: rgba(240,192,64,0.12);
+    box-shadow: 0 0 14px rgba(240,192,64,0.4);
+  }
+  .neuron-slot.filled {
+    border-color: var(--teal);
+    background: rgba(0,229,212,0.1);
+    color: var(--teal);
+    font-weight: 700;
+  }
+
+  .ingredient-shelf {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 14px 0;
+  }
+  .ingredient {
+    padding: 9px 16px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: grab;
+    user-select: none;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+  }
+  .ingredient:active { cursor: grabbing; }
+  .ingredient.ing-purple { background: rgba(108,43,217,0.4); border-color: var(--purple); color: #d4aaff; }
+  .ingredient.ing-teal   { background: rgba(0,229,212,0.2); border-color: var(--teal);   color: var(--teal); }
+  .ingredient.ing-pink   { background: rgba(255,110,180,0.2); border-color: var(--pink); color: var(--pink); }
+  .ingredient.ing-gold   { background: rgba(240,192,64,0.2); border-color: var(--gold);  color: var(--gold); }
+  .ingredient.ing-green  { background: rgba(57,255,106,0.18); border-color: var(--green); color: var(--green); }
+  .ingredient:hover { transform: scale(1.08) translateY(-2px); box-shadow: 0 4px 18px rgba(0,0,0,0.4); }
+  .ingredient.used { opacity: 0.35; pointer-events: none; }
+
+  .output-display {
+    background: rgba(0,0,0,0.3);
+    border-radius: 14px;
+    padding: 14px;
+    margin-top: 12px;
+    min-height: 60px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1rem;
+    border: 1.5px solid rgba(240,192,64,0.3);
+    color: var(--gold);
+  }
+
+  /* ===========================
+     ACTIVITY 2 — WEIGHT WIZARD
+  =========================== */
+  .weight-network {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 0;
+    flex-wrap: wrap;
+  }
+  .wn-layer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+  }
+  .wn-label {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: 0.7rem;
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: 4px;
+  }
+  .wn-node {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 1rem;
+    border: 2.5px solid;
+    transition: all 0.4s;
+    position: relative;
+    cursor: default;
+  }
+  .wn-node.input-node  { border-color: var(--teal); background: rgba(0,229,212,0.15); color: var(--teal); }
+  .wn-node.hidden-node { border-color: var(--purple); background: rgba(108,43,217,0.2); color: #d4aaff; }
+  .wn-node.output-node { border-color: var(--gold); background: rgba(240,192,64,0.15); color: var(--gold); }
+  .wn-node.active { box-shadow: 0 0 20px currentColor; transform: scale(1.12); }
+
+  .weight-arrows {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
+  .w-slider-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(20,10,60,0.8);
+    border-radius: 30px;
+    padding: 5px 12px;
+    border: 1px solid rgba(155,89,182,0.4);
+  }
+  .w-slider-wrap label { font-size: 0.78rem; color: #b0a8d8; min-width: 40px; }
+  .w-slider {
+    -webkit-appearance: none;
+    width: 90px; height: 5px;
+    border-radius: 5px;
+    background: linear-gradient(to right, var(--purple), var(--violet));
+    outline: none;
+    cursor: pointer;
+  }
+  .w-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 8px var(--gold);
+    cursor: grab;
+  }
+  .w-val { font-size: 0.82rem; font-weight: 700; color: var(--gold); min-width: 24px; text-align: right; }
+
+  .signal-bar {
+    height: 20px;
+    border-radius: 10px;
+    transition: width 0.5s ease, background 0.5s;
+    min-width: 6px;
+  }
+
+  .prediction-emoji {
+    font-size: 3rem;
+    transition: all 0.4s;
+    filter: drop-shadow(0 0 12px var(--gold));
+  }
+
+  /* ===========================
+     ACTIVITY 3 — POTION TRAINER
+  =========================== */
+  .potion-workspace {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  @media(max-width:650px) { .potion-workspace { grid-template-columns: 1fr; } }
+
+  .potion-input-board {
+    background: rgba(15,8,50,0.8);
+    border-radius: 16px;
+    padding: 18px;
+    border: 1.5px solid rgba(0,229,212,0.3);
+  }
+  .potion-input-board h4 {
+    font-family: 'Cinzel Decorative', cursive;
+    color: var(--teal);
+    font-size: 0.85rem;
+    margin-bottom: 14px;
+  }
+  .pixel-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+    max-width: 200px;
+    margin: 0 auto;
+  }
+  .px-cell {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 6px;
+    background: rgba(30,15,80,0.7);
+    border: 1.5px solid rgba(108,43,217,0.3);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .px-cell.lit {
+    background: var(--teal);
+    box-shadow: 0 0 10px var(--teal);
+    border-color: var(--teal);
+  }
+  .px-cell:hover { transform: scale(1.08); border-color: var(--gold); }
+
+  .training-log {
+    background: rgba(5,2,25,0.9);
+    border-radius: 12px;
+    padding: 12px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.78rem;
+    color: #00e5d4;
+    height: 130px;
+    overflow-y: auto;
+    margin-top: 10px;
+    border: 1px solid rgba(0,229,212,0.2);
+    line-height: 1.6;
+  }
+
+  .guess-display {
+    font-size: 5rem;
+    text-align: center;
+    margin: 10px 0;
+    filter: drop-shadow(0 0 18px var(--gold));
+    min-height: 80px;
+    transition: all 0.4s;
+  }
+  .confidence-bars { margin-top: 8px; }
+  .conf-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+    font-size: 0.82rem;
+  }
+  .conf-label { min-width: 30px; color: #b0a8d8; }
+  .conf-bar-bg {
+    flex: 1;
+    height: 12px;
+    background: rgba(30,15,80,0.7);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .conf-bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 0.6s ease;
+    background: linear-gradient(to right, var(--purple), var(--violet));
+  }
+  .conf-bar-fill.top { background: linear-gradient(to right, var(--gold), var(--amber)); box-shadow: 0 0 8px var(--gold); }
+  .conf-pct { min-width: 38px; text-align: right; font-weight: 700; color: var(--gold); font-size: 0.8rem; }
+
+  /* ===== STAR PARTICLES ===== */
+  .star-particle {
+    position: fixed;
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: var(--gold);
+    pointer-events: none;
+    z-index: 999;
+    animation: starFly 1s ease-out forwards;
+  }
+  @keyframes starFly {
+    0%   { transform: scale(1); opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+  }
+
+  /* ===== PROGRESS ===== */
+  .progress-track {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 6px 0 20px;
+  }
+  .prog-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: rgba(108,43,217,0.3);
+    border: 1.5px solid var(--purple);
+    transition: all 0.3s;
+  }
+  .prog-dot.done { background: var(--gold); border-color: var(--gold); box-shadow: 0 0 10px var(--gold); }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- Animated background canvas -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- Floating decorative emojis -->
+<div id="float-objects"></div>
+
+<div class="page-wrapper">
+  <header>
+    <div class="sparkle-row">🌟 🧙‍♂️ 🪄 🦉 🌟</div>
+    <h1>Neural Networks</h1>
+
+    <div class="sparkle-row">⚗️ 📚 ✨ 🍵 ✨ 📚 ⚗️</div>
+  </header>
+
+  <div class="progress-track">
+    <div class="prog-dot" id="dot1"></div>
+    <div class="prog-dot" id="dot2"></div>
+    <div class="prog-dot" id="dot3"></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab(0)"><span>🧪 Exp 1: Build the Brain</span></button>
+    <button class="tab-btn"        onclick="switchTab(1)"><span>⚡ Exp 2: Weight Wizard</span></button>
+    <button class="tab-btn"        onclick="switchTab(2)"><span>🎨 Exp 3: Pixel Potion</span></button>
+  </div>
+
+  <!-- ================================================================
+       ACTIVITY 1: BUILD THE NEURAL NETWORK BRAIN
+  ================================================================ -->
+  <div class="tab-panel active" id="tab0">
+    <div class="card">
+      <div class="card-title">🧪 Experiment 1: Brew the Neural Network!</div>
+      <div class="card-desc">
+        A neural network has 3 magical layers: <strong style="color:var(--teal)">Input Layer</strong> (receives info), <strong style="color:#d4aaff">Hidden Layer</strong> (thinks!), and <strong style="color:var(--gold)">Output Layer</strong> (gives the answer). Drag the right ingredients into each layer to brew a working neural network!
+      </div>
+
+      <p style="font-size:0.85rem;color:var(--gold);margin-bottom:12px;">🪄 Drag each ingredient into the correct layer slot:</p>
+
+      <div class="ingredient-shelf" id="ingredient-shelf">
+        <div class="ingredient ing-teal"   draggable="true" data-id="pixels"    data-layer="input">🖼️ Pixel Data</div>
+        <div class="ingredient ing-teal"   draggable="true" data-id="numbers"   data-layer="input">🔢 Numbers</div>
+        <div class="ingredient ing-purple" draggable="true" data-id="relu"       data-layer="hidden">🔥 ReLU Magic</div>
+        <div class="ingredient ing-purple" draggable="true" data-id="weights"    data-layer="hidden">⚖️ Weights</div>
+        <div class="ingredient ing-purple" draggable="true" data-id="bias"       data-layer="hidden">🎯 Bias Spell</div>
+        <div class="ingredient ing-gold"   draggable="true" data-id="softmax"    data-layer="output">✨ Softmax</div>
+        <div class="ingredient ing-gold"   draggable="true" data-id="prediction" data-layer="output">🎱 Prediction</div>
+        <div class="ingredient ing-pink"   draggable="true" data-id="gradient"   data-layer="hidden">📉 Gradient</div>
+        <div class="ingredient ing-green"  draggable="true" data-id="noise"      data-layer="trash">🌀 Random Noise</div>
+        <div class="ingredient ing-pink"   draggable="true" data-id="potion"     data-layer="trash">🧪 Mystery Potion</div>
+      </div>
+
+      <div class="spell-grid">
+        <div class="layer-col" id="layer-input">
+          <h4>🌊 Input Layer</h4>
+          <div class="neuron-slot" data-layer="input" data-slot="0">Drop here</div>
+          <div class="neuron-slot" data-layer="input" data-slot="1">Drop here</div>
+        </div>
+        <div class="arrow-col">➡️</div>
+        <div class="layer-col" id="layer-hidden">
+          <h4>🧠 Hidden Layer</h4>
+          <div class="neuron-slot" data-layer="hidden" data-slot="0">Drop here</div>
+          <div class="neuron-slot" data-layer="hidden" data-slot="1">Drop here</div>
+          <div class="neuron-slot" data-layer="hidden" data-slot="2">Drop here</div>
+        </div>
+        <div class="arrow-col">➡️</div>
+        <div class="layer-col" id="layer-output">
+          <h4>💡 Output Layer</h4>
+          <div class="neuron-slot" data-layer="output" data-slot="0">Drop here</div>
+          <div class="neuron-slot" data-layer="output" data-slot="1">Drop here</div>
+        </div>
+      </div>
+
+      <div style="text-align:center;margin-top:14px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn btn-gold" onclick="checkSpellBrew()">🪄 Cast the Spell!</button>
+        <button class="btn btn-teal btn-sm" onclick="resetBrew()">🔄 Reset</button>
+      </div>
+
+      <div id="brew-result" class="result-box" style="display:none"></div>
+
+      <div class="output-display" id="brew-output" style="display:none"></div>
+    </div>
+
+    <div class="card" style="margin-top:0">
+      <div class="card-title">📚 Wizard's Codex</div>
+      <div class="card-desc">
+        🔵 <strong style="color:var(--teal)">Input Layer</strong>: The eyes and ears of your AI! It receives raw data like pixels or numbers.<br>
+        🟣 <strong style="color:#d4aaff)">Hidden Layer</strong>: The brain! It transforms data using weights, biases, and activation functions like ReLU.<br>
+        🟡 <strong style="color:var(--gold)">Output Layer</strong>: The answer! Softmax converts numbers into probabilities.
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       ACTIVITY 2: WEIGHT WIZARD — TUNE THE NETWORK
+  ================================================================ -->
+  <div class="tab-panel" id="tab1">
+    <div class="card">
+      <div class="card-title">⚡ Experiment 2: Tune the Weight Wizard!</div>
+      <div class="card-desc">
+        Weights control how STRONGLY neurons talk to each other! Drag the sliders to adjust the weights between neurons. Watch how the network's prediction changes. Can you make the network predict "🌙 Night" correctly?
+      </div>
+
+      <div class="weight-network">
+        <!-- Input layer -->
+        <div class="wn-layer">
+          <div class="wn-label">Inputs</div>
+          <div class="wn-node input-node" id="ni1" title="Darkness level">🌑</div>
+          <div class="wn-node input-node" id="ni2" title="Star count">⭐</div>
+          <div class="wn-node input-node" id="ni3" title="Temperature">🌡️</div>
+        </div>
+
+        <!-- Weights 1 -->
+        <div class="weight-arrows">
+          <div style="font-family:'Cinzel Decorative',cursive;font-size:0.68rem;color:var(--violet);margin-bottom:4px;">Weights</div>
+          <div class="w-slider-wrap">
+            <label>W1</label>
+            <input type="range" class="w-slider" id="w1" min="0" max="10" value="5" oninput="updateWeights()">
+            <div class="w-val" id="wv1">5</div>
+          </div>
+          <div class="w-slider-wrap">
+            <label>W2</label>
+            <input type="range" class="w-slider" id="w2" min="0" max="10" value="3" oninput="updateWeights()">
+            <div class="w-val" id="wv2">3</div>
+          </div>
+          <div class="w-slider-wrap">
+            <label>W3</label>
+            <input type="range" class="w-slider" id="w3" min="0" max="10" value="2" oninput="updateWeights()">
+            <div class="w-val" id="wv3">2</div>
+          </div>
+        </div>
+
+        <!-- Hidden layer -->
+        <div class="wn-layer">
+          <div class="wn-label">Hidden</div>
+          <div class="wn-node hidden-node" id="nh1">H1</div>
+          <div class="wn-node hidden-node" id="nh2">H2</div>
+        </div>
+
+        <!-- Weights 2 -->
+        <div class="weight-arrows">
+          <div style="font-family:'Cinzel Decorative',cursive;font-size:0.68rem;color:var(--violet);margin-bottom:4px;">Weights</div>
+          <div class="w-slider-wrap">
+            <label>W4</label>
+            <input type="range" class="w-slider" id="w4" min="0" max="10" value="7" oninput="updateWeights()">
+            <div class="w-val" id="wv4">7</div>
+          </div>
+          <div class="w-slider-wrap">
+            <label>W5</label>
+            <input type="range" class="w-slider" id="w5" min="0" max="10" value="4" oninput="updateWeights()">
+            <div class="w-val" id="wv5">4</div>
+          </div>
+        </div>
+
+        <!-- Output -->
+        <div class="wn-layer">
+          <div class="wn-label">Output</div>
+          <div class="wn-node output-node" id="no1">☀️</div>
+          <div class="wn-node output-node" id="no2">🌙</div>
+        </div>
+      </div>
+
+      <!-- Signal strength bars -->
+      <div style="margin-top:18px;">
+        <p style="font-size:0.85rem;color:var(--violet);margin-bottom:8px;font-weight:700;">🔋 Signal Strength:</p>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+          <span style="font-size:0.85rem;min-width:70px;color:#b0a8d8;">☀️ Day</span>
+          <div style="flex:1;background:rgba(30,15,80,0.7);border-radius:6px;height:18px;overflow:hidden;">
+            <div class="signal-bar" id="sig-day" style="background:linear-gradient(to right,var(--amber),var(--gold));width:40%;"></div>
+          </div>
+          <span id="sig-day-pct" style="min-width:40px;font-weight:700;color:var(--gold);font-size:0.85rem;">40%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:0.85rem;min-width:70px;color:#b0a8d8;">🌙 Night</span>
+          <div style="flex:1;background:rgba(30,15,80,0.7);border-radius:6px;height:18px;overflow:hidden;">
+            <div class="signal-bar" id="sig-night" style="background:linear-gradient(to right,var(--purple),var(--violet));width:60%;"></div>
+          </div>
+          <span id="sig-night-pct" style="min-width:40px;font-weight:700;color:#d4aaff;font-size:0.85rem;">60%</span>
+        </div>
+      </div>
+
+      <!-- Prediction display -->
+      <div style="text-align:center;margin-top:18px;">
+        <p style="color:#9b8ec4;font-size:0.88rem;font-weight:600;">Network thinks it is...</p>
+        <div class="prediction-emoji" id="pred-emoji">🌙</div>
+        <div id="pred-label" style="font-family:'Cinzel Decorative',cursive;font-size:1rem;color:var(--gold);">Night Time!</div>
+      </div>
+
+      <div id="weight-result" class="result-box" style="display:none;margin-top:14px;"></div>
+
+      <div style="text-align:center;margin-top:14px;">
+        <button class="btn btn-gold" onclick="checkWeights()">🔮 Test My Prediction!</button>
+        <p style="font-size:0.8rem;color:#7a6eb8;margin-top:8px;">💡 Tip: High W1 + W2 + W4 = Night! Low all = Day!</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:0">
+      <div class="card-title">🪄 How Weights Work</div>
+      <div class="card-desc">
+        Imagine weights like volume knobs on a magical radio 📻. A high weight means "LISTEN to this signal!". A low weight means "ignore it". The network multiplies each input by its weight and adds them up. That's how it decides what it sees! 🧙‍♂️
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       ACTIVITY 3: PIXEL POTION — TRAIN YOUR OWN RECOGNIZER
+  ================================================================ -->
+  <div class="tab-panel" id="tab2">
+    <div class="card">
+      <div class="card-title">🎨 Experiment 3: Brew the Pixel Potion!</div>
+      <div class="card-desc">
+        Draw a simple shape on the 5×5 grid by clicking cells. The neural network will try to guess what you drew! Train it by drawing shapes multiple times and clicking <strong style="color:var(--gold)">"Train!"</strong>. Watch the network get smarter! 🧠✨
+      </div>
+
+      <div class="potion-workspace">
+        <!-- Left: drawing pad -->
+        <div class="potion-input-board">
+          <h4>🖌️ Draw Your Shape</h4>
+          <div class="pixel-grid" id="pixel-grid">
+            <!-- generated by JS -->
+          </div>
+          <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-teal btn-sm" onclick="clearGrid()">🗑️ Clear</button>
+            <button class="btn btn-pink btn-sm" onclick="trainNetwork()">🔥 Train!</button>
+            <button class="btn btn-gold btn-sm" onclick="recognizeShape()">🔮 Recognize!</button>
+          </div>
+
+          <p style="font-size:0.8rem;color:#7a6eb8;margin-top:10px;">Try drawing: ➕ Cross, ⬡ Oval, ⬛ Square, ↗ Diagonal</p>
+
+          <div style="margin-top:10px;">
+            <p style="font-size:0.78rem;color:var(--teal);font-weight:700;">Current drawing:</p>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;" id="shape-select">
+              <button class="btn btn-sm" style="background:rgba(0,229,212,0.2);border:1.5px solid var(--teal);color:var(--teal);border-radius:20px;" onclick="setLabel('Cross')">➕ Cross</button>
+              <button class="btn btn-sm" style="background:rgba(255,110,180,0.2);border:1.5px solid var(--pink);color:var(--pink);border-radius:20px;" onclick="setLabel('Circle')">⭕ Circle</button>
+              <button class="btn btn-sm" style="background:rgba(240,192,64,0.2);border:1.5px solid var(--gold);color:var(--gold);border-radius:20px;" onclick="setLabel('Square')">⬛ Square</button>
+              <button class="btn btn-sm" style="background:rgba(57,255,106,0.2);border:1.5px solid var(--green);color:var(--green);border-radius:20px;" onclick="setLabel('Diagonal')">↗️ Diagonal</button>
+            </div>
+            <p style="font-size:0.82rem;color:var(--gold);margin-top:6px;">Selected: <span id="current-label" style="font-weight:700;">Cross</span></p>
+          </div>
+
+          <div class="training-log" id="training-log">
+            🧙 Welcome to the Pixel Potion Lab!<br>
+            📝 1. Click cells to draw a shape<br>
+            🏷️ 2. Select what you drew above<br>
+            🔥 3. Click Train! to teach the network<br>
+            🔮 4. Click Recognize! to test it!<br>
+          </div>
+        </div>
+
+        <!-- Right: predictions -->
+        <div>
+          <div class="card" style="padding:18px;margin-bottom:0">
+            <h4 style="font-family:'Cinzel Decorative',cursive;font-size:0.8rem;color:var(--gold);margin-bottom:8px;">🔮 Network's Guess</h4>
+            <div class="guess-display" id="guess-display">🤔</div>
+            <div id="guess-label" style="text-align:center;font-weight:700;color:var(--violet);font-size:0.95rem;margin-bottom:12px;">Draw something!</div>
+            <div class="confidence-bars" id="confidence-bars">
+              <div class="conf-row">
+                <span class="conf-label">➕</span>
+                <div class="conf-bar-bg"><div class="conf-bar-fill" id="bar-cross" style="width:25%"></div></div>
+                <span class="conf-pct" id="pct-cross">25%</span>
+              </div>
+              <div class="conf-row">
+                <span class="conf-label">⭕</span>
+                <div class="conf-bar-bg"><div class="conf-bar-fill" id="bar-circle" style="width:25%"></div></div>
+                <span class="conf-pct" id="pct-circle">25%</span>
+              </div>
+              <div class="conf-row">
+                <span class="conf-label">⬛</span>
+                <div class="conf-bar-bg"><div class="conf-bar-fill" id="bar-square" style="width:25%"></div></div>
+                <span class="conf-pct" id="pct-square">25%</span>
+              </div>
+              <div class="conf-row">
+                <span class="conf-label">↗️</span>
+                <div class="conf-bar-bg"><div class="conf-bar-fill" id="bar-diag" style="width:25%"></div></div>
+                <span class="conf-pct" id="pct-diag">25%</span>
+              </div>
+            </div>
+            <div style="margin-top:12px;font-size:0.78rem;color:#7a6eb8;text-align:center;" id="train-count">
+              🎓 Trained: 0 times | Accuracy: —
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:0">
+      <div class="card-title">🦉 Owl's Wisdom: How Training Works</div>
+      <div class="card-desc">
+        When you train the network, it studies your drawing and adjusts its magical weights ⚖️. More training = smarter network! This is exactly how real AI learns — it sees thousands of examples and slowly gets better and better. The "confidence bars" show how SURE the network is about each answer!
+      </div>
+    </div>
+  </div>
+
+</div><!-- end page-wrapper -->
+
+<script>
+// ============================================================
+// BACKGROUND ANIMATIONS
+// ============================================================
+(function() {
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, stars = [];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < 120; i++) {
+    stars.push({
+      x: Math.random() * 2000,
+      y: Math.random() * 2000,
+      r: Math.random() * 1.5 + 0.3,
+      a: Math.random(),
+      speed: Math.random() * 0.008 + 0.003,
+      phase: Math.random() * Math.PI * 2
+    });
+  }
+
+  function drawBg(t) {
+    ctx.clearRect(0, 0, W, H);
+    // Deep space gradient
+    const grad = ctx.createRadialGradient(W/2,H/2,0, W/2,H/2,Math.max(W,H)*0.8);
+    grad.addColorStop(0, '#12083a');
+    grad.addColorStop(0.5,'#0a0a2e');
+    grad.addColorStop(1, '#050518');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0,0,W,H);
+
+    // Nebula blobs
+    [
+      { x:0.15, y:0.3,  r:0.25, c:'#6c2bd9' },
+      { x:0.85, y:0.7,  r:0.2,  c:'#9b59b6' },
+      { x:0.5,  y:0.15, r:0.18, c:'#2b6cb0' },
+    ].forEach(n => {
+      const g2 = ctx.createRadialGradient(n.x*W,n.y*H,0, n.x*W,n.y*H,n.r*Math.min(W,H));
+      g2.addColorStop(0, n.c + '25');
+      g2.addColorStop(1, 'transparent');
+      ctx.fillStyle = g2;
+      ctx.fillRect(0,0,W,H);
+    });
+
+    // Stars
+    stars.forEach(s => {
+      s.a = 0.3 + 0.6 * (0.5 + 0.5 * Math.sin(t * s.speed + s.phase));
+      ctx.beginPath();
+      ctx.arc(s.x % W, s.y % H, s.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(255,245,200,${s.a})`;
+      ctx.fill();
+    });
+
+    requestAnimationFrame(drawBg);
+  }
+  requestAnimationFrame(drawBg);
+})();
+
+// Floating objects
+(function() {
+  const items = ['📚','🪄','⚗️','🦉','🌟','✨','🔮','💫','🌙','⭐','🧪','📖'];
+  const cont = document.getElementById('float-objects');
+  for (let i = 0; i < 18; i++) {
+    const el = document.createElement('div');
+    el.className = 'floating-obj';
+    el.textContent = items[Math.floor(Math.random() * items.length)];
+    el.style.left   = Math.random() * 95 + '%';
+    el.style.top    = Math.random() * 90 + '%';
+    el.style.fontSize = (1.2 + Math.random() * 1.4) + 'rem';
+    el.style.animationDuration  = (5 + Math.random() * 8) + 's';
+    el.style.animationDelay     = -(Math.random() * 10) + 's';
+    cont.appendChild(el);
+  }
+})();
+
+// ============================================================
+// STAR BURST EFFECT
+// ============================================================
+function burstStars(x, y) {
+  for (let i = 0; i < 14; i++) {
+    const s = document.createElement('div');
+    s.className = 'star-particle';
+    const angle = (i / 14) * Math.PI * 2;
+    const dist  = 40 + Math.random() * 60;
+    s.style.left = x + 'px';
+    s.style.top  = y + 'px';
+    s.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
+    s.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+    s.style.background = ['#f0c040','#ff6eb4','#00e5d4','#39ff6a','#fff'][Math.floor(Math.random()*5)];
+    s.style.width = s.style.height = (2 + Math.random() * 4) + 'px';
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 1000);
+  }
+}
+
+// ============================================================
+// TABS
+// ============================================================
+const panels = document.querySelectorAll('.tab-panel');
+const tabBtns = document.querySelectorAll('.tab-btn');
+const dots    = [document.getElementById('dot1'), document.getElementById('dot2'), document.getElementById('dot3')];
+let completedTabs = [false, false, false];
+
+function switchTab(i) {
+  panels.forEach((p,j) => p.classList.toggle('active', j === i));
+  tabBtns.forEach((b,j) => b.classList.toggle('active', j === i));
+}
+
+function markDone(i) {
+  completedTabs[i] = true;
+  dots[i].classList.add('done');
+}
+
+// ============================================================
+// ACTIVITY 1 — SPELL BREW (Drag-and-Drop)
+// ============================================================
+let brewState = {}; // slot -> ingredient id
+let slotFilled = {}; // slot key -> bool
+
+function initDragDrop() {
+  document.querySelectorAll('.ingredient').forEach(ing => {
+    ing.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', JSON.stringify({
+        id:    ing.dataset.id,
+        layer: ing.dataset.layer,
+        name:  ing.textContent.trim()
+      }));
+      ing.style.opacity = '0.5';
+    });
+    ing.addEventListener('dragend', e => { ing.style.opacity = ''; });
+  });
+
+  document.querySelectorAll('.neuron-slot').forEach(slot => {
+    slot.addEventListener('dragover', e => {
+      e.preventDefault();
+      slot.classList.add('drag-over');
+    });
+    slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
+    slot.addEventListener('drop', e => {
+      e.preventDefault();
+      slot.classList.remove('drag-over');
+      if (slot.classList.contains('filled')) return;
+
+      const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+      const slotLayer = slot.dataset.layer;
+      const key = slotLayer + '-' + slot.dataset.slot;
+
+      slot.textContent = data.name;
+      slot.classList.add('filled');
+      slot.dataset.placed = data.id;
+      slot.dataset.placedLayer = data.layer;
+
+      // Mark ingredient as used
+      document.querySelector(`.ingredient[data-id="${data.id}"]`)?.classList.add('used');
+
+      brewState[key] = data;
+      burstStars(e.clientX, e.clientY);
+    });
+  });
+}
+initDragDrop();
+
+function checkSpellBrew() {
+  // Expected: input slots have input-layer items, hidden slots have hidden, output have output
+  let correct = 0, total = 0, wrong = 0;
+  document.querySelectorAll('.neuron-slot').forEach(slot => {
+    if (!slot.dataset.placed) return;
+    total++;
+    if (slot.dataset.placedLayer === slot.dataset.layer) correct++;
+    else wrong++;
+  });
+
+  const rb = document.getElementById('brew-result');
+  const ob = document.getElementById('brew-output');
+  rb.style.display = 'block';
+  ob.style.display = 'block';
+
+  if (total === 0) {
+    rb.className = 'result-box result-info';
+    rb.textContent = '🌟 Drag ingredients from the shelf into the layer slots first!';
+    return;
+  }
+
+  if (wrong === 0 && correct >= 4) {
+    rb.className = 'result-box result-correct';
+    rb.textContent = `🎉 BRILLIANT! You placed ${correct} ingredients correctly! Your neural network is brewing! ✨`;
+    ob.textContent = '🧠 → Input: Pixels & Numbers → Hidden: ReLU + Weights + Bias → Output: Softmax + Prediction! 🎯';
+    markDone(0);
+    burstStars(window.innerWidth/2, 300);
+  } else if (wrong > 0) {
+    rb.className = 'result-box result-wrong';
+    rb.textContent = `⚠️ ${wrong} ingredient(s) are in the wrong layer! Check the Wizard's Codex below for hints! 🔍`;
+    ob.textContent = '💭 Remember: Data goes IN, processing happens HIDDEN, answers come OUT!';
+  } else {
+    rb.className = 'result-box result-info';
+    rb.textContent = `✨ Good start! ${correct} correct so far — keep adding more ingredients!`;
+    ob.textContent = '🪄 Need more! Try filling all slots...';
+  }
+}
+
+function resetBrew() {
+  document.querySelectorAll('.neuron-slot').forEach(slot => {
+    slot.textContent = 'Drop here';
+    slot.classList.remove('filled','drag-over');
+    delete slot.dataset.placed;
+    delete slot.dataset.placedLayer;
+  });
+  document.querySelectorAll('.ingredient').forEach(i => i.classList.remove('used'));
+  brewState = {};
+  document.getElementById('brew-result').style.display = 'none';
+  document.getElementById('brew-output').style.display = 'none';
+}
+
+// ============================================================
+// ACTIVITY 2 — WEIGHT WIZARD
+// ============================================================
+function updateWeights() {
+  const vals = [1,2,3,4,5].map(i => +document.getElementById('w'+i).value);
+  vals.forEach((v,i) => document.getElementById('wv'+(i+1)).textContent = v);
+
+  // Simple network calc: inputs are fixed at [dark=8, stars=7, temp=3]
+  // inputs * w1,w2,w3 -> hidden -> * w4,w5 -> softmax
+  const inputs = [8, 7, 3];
+  const h1 = Math.max(0, inputs[0]*vals[0]*0.1 + inputs[1]*vals[1]*0.1 - inputs[2]*vals[2]*0.05);
+  const h2 = Math.max(0, inputs[0]*vals[1]*0.08 + inputs[2]*vals[2]*0.1);
+
+  const out_day   = h1 * (10-vals[3]) * 0.1 + h2 * (10-vals[4]) * 0.1;
+  const out_night = h1 * vals[3] * 0.12 + h2 * vals[4] * 0.12;
+
+  const sum = out_day + out_night || 1;
+  const pDay   = Math.round((out_day / sum) * 100);
+  const pNight = Math.round((out_night / sum) * 100);
+
+  document.getElementById('sig-day').style.width   = pDay + '%';
+  document.getElementById('sig-night').style.width = pNight + '%';
+  document.getElementById('sig-day-pct').textContent   = pDay + '%';
+  document.getElementById('sig-night-pct').textContent = pNight + '%';
+
+  const isNight = pNight >= pDay;
+  document.getElementById('pred-emoji').textContent  = isNight ? '🌙' : '☀️';
+  document.getElementById('pred-label').textContent  = isNight ? 'Night Time!' : 'Day Time!';
+
+  // Animate active nodes
+  ['nh1','nh2'].forEach(id => {
+    const n = document.getElementById(id);
+    n.classList.toggle('active', Math.random() > 0.4);
+  });
+}
+updateWeights();
+
+function checkWeights() {
+  const vals = [1,2,3,4,5].map(i => +document.getElementById('w'+i).value);
+  const highW = vals[0] + vals[1] + vals[3] > 15;
+  const wr = document.getElementById('weight-result');
+  wr.style.display = 'block';
+  if (highW) {
+    wr.className = 'result-box result-correct';
+    wr.textContent = '🌙 PERFECT! High weights on darkness & stars tell the network it\'s night! You\'re a Weight Wizard! ⚡';
+    markDone(1);
+    burstStars(window.innerWidth/2, 400);
+  } else {
+    wr.className = 'result-box result-info';
+    wr.textContent = '💡 Try increasing W1 (darkness), W2 (stars), and W4 to make the network see NIGHT!';
+  }
+}
+
+// ============================================================
+// ACTIVITY 3 — PIXEL POTION
+// ============================================================
+let pixelGrid = new Array(25).fill(0);
+let currentLabel = 'Cross';
+let trainCount = 0;
+let accuracy = 0;
+
+// Simple "neural network" simulator
+// Trained patterns for each shape
+const shapePatterns = {
+  Cross: [0,0,1,0,0, 0,0,1,0,0, 1,1,1,1,1, 0,0,1,0,0, 0,0,1,0,0],
+  Circle:[0,1,1,1,0, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 0,1,1,1,0],
+  Square:[1,1,1,1,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,0,1, 1,1,1,1,1],
+  Diagonal:[1,0,0,0,0, 0,1,0,0,0, 0,0,1,0,0, 0,0,0,1,0, 0,0,0,0,1]
+};
+
+const shapeEmojis   = { Cross:'➕', Circle:'⭕', Square:'⬛', Diagonal:'↗️' };
+const shapeLabels   = ['Cross','Circle','Square','Diagonal'];
+const barIds        = { Cross:'cross', Circle:'circle', Square:'square', Diagonal:'diag' };
+let trainingData    = { Cross:[], Circle:[], Square:[], Diagonal:[] };
+
+function initPixelGrid() {
+  const grid = document.getElementById('pixel-grid');
+  grid.innerHTML = '';
+  for (let i = 0; i < 25; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'px-cell';
+    cell.dataset.idx = i;
+    let isDown = false;
+    cell.addEventListener('mousedown',  e => { isDown=true; toggleCell(cell, i); });
+    cell.addEventListener('mouseover',  e => { if (isDown) toggleCell(cell, i); });
+    cell.addEventListener('touchstart', e => { e.preventDefault(); toggleCell(cell, i); }, {passive:false});
+    grid.appendChild(cell);
+  }
+  document.addEventListener('mouseup', () => isDown = false);
+}
+
+function toggleCell(cell, i) {
+  pixelGrid[i] = pixelGrid[i] ? 0 : 1;
+  cell.classList.toggle('lit', !!pixelGrid[i]);
+}
+
+function clearGrid() {
+  pixelGrid = new Array(25).fill(0);
+  document.querySelectorAll('.px-cell').forEach(c => c.classList.remove('lit'));
+}
+
+function setLabel(label) {
+  currentLabel = label;
+  document.getElementById('current-label').textContent = label;
+}
+
+function dotProduct(a, b) {
+  return a.reduce((sum, v, i) => sum + v * b[i], 0);
+}
+
+function recognize(grid) {
+  // Compute similarity to each trained pattern
+  const scores = {};
+  const trainBoost = {};
+
+  shapeLabels.forEach(label => {
+    // Similarity to ideal pattern
+    const ideal = shapePatterns[label];
+    let sim = dotProduct(grid, ideal);
+
+    // Boost from training data
+    let trained = 0;
+    if (trainingData[label].length > 0) {
+      trainingData[label].forEach(sample => {
+        trained += dotProduct(grid, sample) / (shapePatterns[label].reduce((s,v)=>s+v,0) + 1);
+      });
+      trained /= trainingData[label].length;
+    }
+    scores[label] = sim + trained * trainingCount(label) * 2;
+  });
+
+  // Softmax
+  const maxScore = Math.max(...Object.values(scores));
+  let expScores = {};
+  let expSum = 0;
+  shapeLabels.forEach(l => {
+    expScores[l] = Math.exp((scores[l] - maxScore) * 0.3);
+    expSum += expScores[l];
+  });
+  const probs = {};
+  shapeLabels.forEach(l => { probs[l] = expScores[l] / expSum; });
+  return probs;
+}
+
+function trainingCount(label) {
+  return trainingData[label].length;
+}
+
+function trainNetwork() {
+  const pixelsCopy = [...pixelGrid];
+  const litCount = pixelsCopy.reduce((s,v) => s+v, 0);
+  if (litCount < 2) {
+    log('⚠️ Draw something first before training!'); return;
+  }
+  trainingData[currentLabel].push(pixelsCopy);
+  trainCount++;
+
+  // Estimate accuracy based on training count
+  const totalSamples = shapeLabels.reduce((s,l) => s + trainingData[l].length, 0);
+  accuracy = Math.min(95, 30 + totalSamples * 8);
+
+  document.getElementById('train-count').textContent =
+    `🎓 Trained: ${trainCount} times | Accuracy: ${Math.round(accuracy)}%`;
+
+  log(`✅ Learned "${currentLabel}"! (${trainingData[currentLabel].length} samples)`);
+  log(`📊 Total training: ${trainCount} | Est. accuracy: ${Math.round(accuracy)}%`);
+
+  if (trainCount >= 3) markDone(2);
+}
+
+function recognizeShape() {
+  const litCount = pixelGrid.reduce((s,v)=>s+v,0);
+  if (litCount < 2) { log('⚠️ Draw a shape first!'); return; }
+
+  const probs = recognize(pixelGrid);
+  const best  = shapeLabels.reduce((a,b) => probs[a] > probs[b] ? a : b);
+
+  document.getElementById('guess-display').textContent = shapeEmojis[best];
+  document.getElementById('guess-label').textContent   = `I think it's a ${best}!`;
+
+  shapeLabels.forEach(label => {
+    const pct = Math.round(probs[label] * 100);
+    const barId = barIds[label];
+    const bar = document.getElementById('bar-' + barId);
+    const pctEl = document.getElementById('pct-' + barId);
+    bar.style.width = pct + '%';
+    pctEl.textContent = pct + '%';
+    bar.classList.toggle('top', label === best);
+  });
+
+  log(`🔮 Recognized: ${shapeEmojis[best]} ${best} (${Math.round(probs[best]*100)}% confident)`);
+  burstStars(window.innerWidth * 0.75, 400);
+}
+
+function log(msg) {
+  const el = document.getElementById('training-log');
+  el.innerHTML += msg + '<br>';
+  el.scrollTop = el.scrollHeight;
+}
+
+// Init all activities
+initPixelGrid();
+</script>
+</body>
+</html>

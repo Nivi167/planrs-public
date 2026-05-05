@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✨ Master the Ancient Art of 2-Digit Multiplication</title>
+<link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #f5c842;
+    --deep-purple: #1a0a2e;
+    --purple-mid: #2d1b5e;
+    --purple-light: #4a2d8f;
+    --teal: #00d4aa;
+    --pink-glow: #ff6ec7;
+    --blue-glow: #4fc3f7;
+    --green-potion: #39ff14;
+    --amber: #ff9f1c;
+    --cream: #fff8e7;
+    --star-white: #fffde7;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Crimson Text', serif;
+    background: var(--deep-purple);
+    color: var(--cream);
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Ccircle cx='10' cy='10' r='4' fill='%23f5c842' opacity='0.9'/%3E%3C/svg%3E") 10 10, auto;
+  }
+
+  /* ========= ANIMATED BACKGROUND ========= */
+  #bg-canvas {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 0;
+    overflow: hidden;
+  }
+
+  .float-obj {
+    position: absolute;
+    animation: floatAnim linear infinite;
+    pointer-events: none;
+    font-size: 1.6rem;
+    opacity: 0.18;
+    filter: blur(0.5px);
+  }
+
+  @keyframes floatAnim {
+    0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.18; }
+    90%  { opacity: 0.15; }
+    100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+  }
+
+  .star-twinkle {
+    position: absolute;
+    border-radius: 50%;
+    animation: twinkle ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  @keyframes twinkle {
+    0%   { opacity: 0.05; transform: scale(0.7); }
+    100% { opacity: 0.85; transform: scale(1.3); }
+  }
+
+  /* Nebula glow orbs */
+  .nebula {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.12;
+    animation: nebulaMove ease-in-out infinite alternate;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes nebulaMove {
+    0%   { transform: translate(0,0) scale(1); }
+    100% { transform: translate(40px, 30px) scale(1.08); }
+  }
+
+  /* ========= HEADER ========= */
+  header {
+    position: relative; z-index: 10;
+    text-align: center;
+    padding: 2rem 1.5rem 1.5rem;
+    background: linear-gradient(180deg, rgba(45,27,94,0.98) 0%, rgba(26,10,46,0.85) 100%);
+    border-bottom: 2px solid rgba(245,200,66,0.3);
+  }
+
+  .academy-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    background: linear-gradient(135deg, rgba(74,45,143,0.8), rgba(26,10,46,0.9));
+    border: 2px solid var(--gold);
+    border-radius: 50px;
+    padding: 0.4rem 1.4rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    box-shadow: 0 0 20px rgba(245,200,66,0.3);
+  }
+
+  h1 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.8rem, 5vw, 3.2rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--gold) 0%, #fff8e7 50%, var(--amber) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    line-height: 1.2;
+    margin-bottom: 0.4rem;
+    filter: drop-shadow(0 0 12px rgba(245,200,66,0.5));
+  }
+
+  .subtitle {
+    color: rgba(255,248,231,0.7);
+    font-style: italic;
+    font-size: 1.1rem;
+  }
+
+  /* ========= TAB NAV ========= */
+  .tabs {
+    position: relative; z-index: 10;
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 1.2rem 1rem 0.8rem;
+    flex-wrap: wrap;
+    background: rgba(26,10,46,0.6);
+    border-bottom: 1px solid rgba(245,200,66,0.15);
+  }
+
+  .tab-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    padding: 0.7rem 1.5rem;
+    border: 2px solid rgba(245,200,66,0.4);
+    border-radius: 40px;
+    background: rgba(45,27,94,0.7);
+    color: rgba(255,248,231,0.75);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .tab-btn:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+    box-shadow: 0 0 18px rgba(245,200,66,0.3);
+    transform: translateY(-2px);
+  }
+
+  .tab-btn.active {
+    background: linear-gradient(135deg, var(--purple-light), var(--purple-mid));
+    border-color: var(--gold);
+    color: var(--gold);
+    box-shadow: 0 0 25px rgba(245,200,66,0.4), inset 0 0 15px rgba(245,200,66,0.1);
+  }
+
+  /* ========= MAIN CONTENT ========= */
+  main {
+    position: relative; z-index: 5;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .activity-panel {
+    display: none;
+    animation: fadeIn 0.5s ease;
+    position: relative;
+    z-index: 5;
+  }
+
+  .activity-panel.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ========= SPELL CARD (shared) ========= */
+  .spell-card {
+    background: linear-gradient(135deg, rgba(45,27,94,0.92), rgba(26,10,46,0.95));
+    border: 1.5px solid rgba(245,200,66,0.3);
+    border-radius: 20px;
+    padding: 1.8rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5), inset 0 0 30px rgba(74,45,143,0.2);
+    position: relative;
+    z-index: 5;
+    overflow: hidden;
+  }
+
+  .spell-card::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle at center, rgba(245,200,66,0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .card-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.15rem;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  /* ========= ACTIVITY 1: STEP BUILDER ========= */
+  .problem-display {
+    font-family: 'Cinzel', serif;
+    font-size: 3rem;
+    text-align: center;
+    color: var(--gold);
+    padding: 1rem;
+    text-shadow: 0 0 20px rgba(245,200,66,0.6);
+    letter-spacing: 4px;
+  }
+
+  .step-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .step-box {
+    background: rgba(74,45,143,0.3);
+    border: 1.5px dashed rgba(245,200,66,0.3);
+    border-radius: 14px;
+    padding: 1rem;
+    min-height: 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+  }
+
+  .step-box.drop-zone {
+    border: 2px dashed var(--teal);
+    background: rgba(0,212,170,0.08);
+  }
+
+  .step-box.drop-zone.drag-over {
+    background: rgba(0,212,170,0.2);
+    box-shadow: 0 0 20px rgba(0,212,170,0.4);
+    transform: scale(1.02);
+  }
+
+  .step-box.filled {
+    border-color: var(--gold);
+    background: rgba(245,200,66,0.1);
+  }
+
+  .step-label {
+    font-size: 0.7rem;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 2px;
+    color: rgba(255,248,231,0.5);
+    margin-bottom: 0.4rem;
+  }
+
+  .step-value {
+    font-family: 'Cinzel', serif;
+    font-size: 1.6rem;
+    color: var(--cream);
+  }
+
+  .step-sub { font-size: 0.8rem; color: rgba(255,248,231,0.5); margin-top: 0.2rem; }
+
+  /* Draggable chips */
+  .chips-pool {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(26,10,46,0.6);
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.08);
+    min-height: 60px;
+  }
+
+  .chip {
+    background: linear-gradient(135deg, var(--purple-light), #6a3daf);
+    border: 1.5px solid rgba(245,200,66,0.5);
+    border-radius: 30px;
+    padding: 0.45rem 1.1rem;
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    color: var(--cream);
+    cursor: grab;
+    user-select: none;
+    transition: all 0.2s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  }
+
+  .chip:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(245,200,66,0.3);
+    border-color: var(--gold);
+  }
+
+  .chip.dragging {
+    opacity: 0.4;
+    transform: scale(0.95);
+  }
+
+  /* ========= ACTIVITY 2: POTION BUILDER (fill in grid) ========= */
+  .mult-grid-wrap {
+    overflow-x: auto;
+  }
+
+  .mult-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+    margin: 1rem 0;
+    min-width: 300px;
+  }
+
+  .grid-cell {
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+
+  .grid-cell.header {
+    background: rgba(245,200,66,0.15);
+    border: 1px solid rgba(245,200,66,0.4);
+    color: var(--gold);
+  }
+
+  .grid-cell.operator {
+    background: rgba(255,110,199,0.15);
+    border: 1px solid rgba(255,110,199,0.3);
+    color: var(--pink-glow);
+  }
+
+  .grid-cell.blank {
+    background: rgba(74,45,143,0.3);
+    border: 2px dashed rgba(79,195,247,0.5);
+    cursor: pointer;
+  }
+
+  .grid-cell.blank:hover { background: rgba(79,195,247,0.15); }
+
+  .grid-cell input {
+    width: 100%; height: 100%;
+    background: transparent;
+    border: none; outline: none;
+    text-align: center;
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+    color: var(--teal);
+    caret-color: var(--gold);
+  }
+
+  .grid-cell.correct { background: rgba(57,255,20,0.15); border-color: var(--green-potion); }
+  .grid-cell.wrong   { background: rgba(255,50,50,0.15); border-color: #ff4444; }
+
+  /* ========= ACTIVITY 3: SPELL SCROLL (pick method) ========= */
+  .scroll-problem {
+    font-family: 'Cinzel', serif;
+    font-size: 2.2rem;
+    text-align: center;
+    color: var(--gold);
+    margin: 1rem 0;
+    text-shadow: 0 0 15px rgba(245,200,66,0.5);
+  }
+
+  .method-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .method-card {
+    background: rgba(45,27,94,0.8);
+    border: 2px solid rgba(245,200,66,0.25);
+    border-radius: 18px;
+    padding: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .method-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(245,200,66,0.08), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .method-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.4), 0 0 20px rgba(245,200,66,0.2);
+  }
+
+  .method-card:hover::after { opacity: 1; }
+
+  .method-card.selected-correct {
+    border-color: var(--green-potion);
+    background: rgba(57,255,20,0.1);
+    box-shadow: 0 0 30px rgba(57,255,20,0.3);
+  }
+
+  .method-card.selected-wrong {
+    border-color: #ff4444;
+    background: rgba(255,68,68,0.1);
+    box-shadow: 0 0 30px rgba(255,68,68,0.3);
+    animation: shake 0.4s ease;
+  }
+
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25%      { transform: translateX(-8px); }
+    75%      { transform: translateX(8px); }
+  }
+
+  .method-icon { font-size: 2rem; margin-bottom: 0.6rem; }
+
+  .method-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+    letter-spacing: 1px;
+  }
+
+  .method-workings {
+    font-size: 0.9rem;
+    color: rgba(255,248,231,0.7);
+    line-height: 1.5;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* ========= BUTTONS ========= */
+  .magic-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    letter-spacing: 1.5px;
+    padding: 0.75rem 2rem;
+    border: 2px solid var(--gold);
+    border-radius: 40px;
+    background: linear-gradient(135deg, rgba(74,45,143,0.8), rgba(45,27,94,0.9));
+    color: var(--gold);
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 1rem;
+    box-shadow: 0 0 15px rgba(245,200,66,0.2);
+  }
+
+  .magic-btn:hover {
+    background: linear-gradient(135deg, var(--purple-light), var(--purple-mid));
+    box-shadow: 0 0 30px rgba(245,200,66,0.4), 0 6px 20px rgba(0,0,0,0.3);
+    transform: translateY(-2px);
+  }
+
+  .magic-btn.secondary {
+    border-color: var(--teal);
+    color: var(--teal);
+    box-shadow: 0 0 15px rgba(0,212,170,0.2);
+  }
+
+  .magic-btn.secondary:hover {
+    box-shadow: 0 0 30px rgba(0,212,170,0.4);
+  }
+
+  /* ========= FEEDBACK & SCORE ========= */
+  .feedback-msg {
+    border-radius: 14px;
+    padding: 1rem 1.5rem;
+    margin-top: 1rem;
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    text-align: center;
+    display: none;
+    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0.7); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+
+  .feedback-msg.success {
+    display: block;
+    background: rgba(57,255,20,0.1);
+    border: 1.5px solid var(--green-potion);
+    color: var(--green-potion);
+  }
+
+  .feedback-msg.error {
+    display: block;
+    background: rgba(255,68,68,0.1);
+    border: 1.5px solid #ff4444;
+    color: #ff6666;
+  }
+
+  .score-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 1.2rem;
+    background: rgba(26,10,46,0.8);
+    border: 1px solid rgba(245,200,66,0.2);
+    border-radius: 50px;
+    margin-bottom: 1.2rem;
+  }
+
+  .score-stars { font-size: 1.2rem; letter-spacing: 3px; }
+
+  .score-num {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    color: var(--gold);
+    letter-spacing: 1px;
+  }
+
+  /* ========= STEP INDICATOR ========= */
+  .step-indicator {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .step-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    transition: all 0.3s;
+  }
+
+  .step-dot.active {
+    background: var(--gold);
+    box-shadow: 0 0 8px var(--gold);
+    transform: scale(1.3);
+  }
+
+  .step-dot.done {
+    background: var(--teal);
+    box-shadow: 0 0 8px var(--teal);
+  }
+
+  /* ========= LONG MULT VISUAL ========= */
+  .long-mult-visual {
+    font-family: 'Courier New', monospace;
+    font-size: 1.3rem;
+    color: var(--cream);
+    line-height: 2.2;
+    text-align: right;
+    background: rgba(26,10,46,0.7);
+    border: 1px solid rgba(245,200,66,0.2);
+    border-radius: 14px;
+    padding: 1.2rem 2rem;
+    position: relative;
+  }
+
+  .long-mult-visual .line-sep {
+    border-top: 1.5px solid rgba(245,200,66,0.4);
+    margin: 0.3rem 0;
+  }
+
+  .lm-highlight { color: var(--teal); }
+  .lm-highlight2 { color: var(--pink-glow); }
+  .lm-result { color: var(--gold); font-weight: bold; }
+
+  /* ========= RESPONSIVE ========= */
+  @media (max-width: 600px) {
+    .step-grid { grid-template-columns: 1fr; }
+    .method-cards { grid-template-columns: 1fr; }
+    .problem-display { font-size: 2rem; }
+    .mult-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  /* ========= OWL DECORATION ========= */
+  .owl-deco {
+    position: fixed;
+    font-size: 2.5rem;
+    animation: owlBlink 4s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
+    filter: drop-shadow(0 0 8px rgba(245,200,66,0.5));
+  }
+
+  @keyframes owlBlink {
+    0%,95%,100% { transform: translateY(0) rotate(-5deg); }
+    97% { transform: translateY(-8px) rotate(5deg); }
+  }
+
+  .progress-ring-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 0.5rem 0 1rem;
+  }
+
+  .xp-badge {
+    background: linear-gradient(135deg, var(--amber), var(--gold));
+    color: var(--deep-purple);
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.3rem 0.9rem;
+    border-radius: 30px;
+    letter-spacing: 1px;
+    display: inline-block;
+    margin-left: 0.5rem;
+    box-shadow: 0 0 12px rgba(245,200,66,0.5);
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== ANIMATED BACKGROUND ===== -->
+<div id="bg-canvas">
+  <!-- Nebula orbs -->
+  <div class="nebula" style="width:500px;height:500px;background:radial-gradient(circle,#4a2d8f,transparent);top:-100px;left:-100px;animation-duration:9s;"></div>
+  <div class="nebula" style="width:400px;height:400px;background:radial-gradient(circle,#00d4aa,transparent);bottom:-100px;right:-100px;animation-duration:11s;animation-delay:2s;"></div>
+  <div class="nebula" style="width:300px;height:300px;background:radial-gradient(circle,#ff6ec7,transparent);top:50%;right:10%;animation-duration:13s;animation-delay:4s;"></div>
+</div>
+
+<!-- Owl decorations -->
+<div class="owl-deco" style="bottom:60px;left:20px;">🦉</div>
+<div class="owl-deco" style="top:120px;right:25px;animation-delay:2s;font-size:2rem;">🦉</div>
+
+<!-- ===== HEADER ===== -->
+<header>
+  <div class="academy-badge">⚡ THE ANCIENT SPELLBOOK OF NUMBERS ⚡</div>
+  <h1>✨ Master the Ancient Art of 2-Digit Multiplication ✨</h1>
+  <p class="subtitle">Unlock the secrets of 2-digit × 2-digit — as the great wizards once did!</p>
+</header>
+
+<!-- ===== TABS ===== -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab(0)">🧪 Spell 1: Build the Steps</button>
+  <button class="tab-btn" onclick="switchTab(1)">⚗️ Spell 2: Potion Grid</button>
+  <button class="tab-btn" onclick="switchTab(2)">📜 Spell 3: Choose the Magic</button>
+</div>
+
+<!-- ===== MAIN ===== -->
+<main>
+
+  <!-- ============================
+       ACTIVITY 1: DRAG THE STEPS
+       ============================ -->
+  <div class="activity-panel active" id="panel-0">
+    <div class="spell-card">
+      <div class="card-title">🧙 Spell 1: Arrange the Multiplication Steps</div>
+      <p style="color:rgba(255,248,231,0.7);font-size:0.95rem;margin-bottom:1rem;">
+        Drag the correct partial products into the cauldron slots to complete the long multiplication!
+      </p>
+      <div class="score-bar">
+        <span class="score-stars" id="a1-stars">⭐⭐⭐</span>
+        <span>SCORE: <span class="xp-badge" id="a1-score">0 XP</span></span>
+      </div>
+
+      <div class="step-indicator" id="a1-dots"></div>
+
+      <div class="problem-display" id="a1-problem"></div>
+
+      <p style="text-align:center;font-size:0.85rem;color:rgba(255,248,231,0.5);margin-bottom:0.5rem;">
+        💡 Drag the magic chips below into the correct spell slots!
+      </p>
+
+      <div class="step-grid">
+        <div class="step-box drop-zone" id="slot-ones" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropChip(event,'ones')">
+          <div class="step-label">STEP 1 — ONES DIGIT ROW</div>
+          <div class="step-value" id="slot-ones-val">Drop here</div>
+          <div class="step-sub" id="slot-ones-sub"></div>
+        </div>
+        <div class="step-box drop-zone" id="slot-tens" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropChip(event,'tens')">
+          <div class="step-label">STEP 2 — TENS DIGIT ROW</div>
+          <div class="step-value" id="slot-tens-val">Drop here</div>
+          <div class="step-sub" id="slot-tens-sub"></div>
+        </div>
+        <div class="step-box" id="slot-add" style="border-color:rgba(255,110,199,0.4);background:rgba(255,110,199,0.05);">
+          <div class="step-label">STEP 3 — ADD THEM (hint)</div>
+          <div class="step-value lm-result" id="slot-add-val">?</div>
+        </div>
+        <div class="step-box drop-zone" id="slot-ans" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropChip(event,'ans')">
+          <div class="step-label">FINAL ANSWER ✨</div>
+          <div class="step-value" id="slot-ans-val">Drop here</div>
+        </div>
+      </div>
+
+      <div class="chips-pool" id="a1-chips"></div>
+
+      <div style="display:flex;gap:0.7rem;flex-wrap:wrap;">
+        <button class="magic-btn" onclick="checkActivity1()">🔮 Cast Spell!</button>
+        <button class="magic-btn secondary" onclick="resetActivity1()">🔄 Reset Cauldron</button>
+        <button class="magic-btn secondary" onclick="nextA1Problem()">➡️ Next Problem</button>
+      </div>
+
+      <div class="feedback-msg" id="a1-feedback"></div>
+    </div>
+
+    <!-- Working visual -->
+    <div class="spell-card">
+      <div class="card-title">📖 See the Spell Scroll (Method Reminder)</div>
+      <div class="long-mult-visual" id="a1-visual"></div>
+    </div>
+  </div>
+
+
+  <!-- ============================
+       ACTIVITY 2: FILL THE GRID
+       ============================ -->
+  <div class="activity-panel" id="panel-1">
+    <div class="spell-card">
+      <div class="card-title">⚗️ Spell 2: Fill the Potion Grid</div>
+      <p style="color:rgba(255,248,231,0.7);font-size:0.95rem;margin-bottom:1rem;">
+        Complete the <strong style="color:var(--gold)">Box / Grid Method</strong> by typing the partial products in each cauldron cell!
+      </p>
+      <div class="score-bar">
+        <span class="score-stars" id="a2-stars">⭐⭐⭐</span>
+        <span>SCORE: <span class="xp-badge" id="a2-score">0 XP</span></span>
+      </div>
+
+      <div class="step-indicator" id="a2-dots"></div>
+
+      <div class="scroll-problem" id="a2-problem"></div>
+
+      <p style="font-size:0.85rem;color:rgba(255,248,231,0.5);text-align:center;margin-bottom:0.6rem;">
+        Split each number into tens & ones, then fill the 4 grid cells with partial products!
+      </p>
+
+      <div class="mult-grid-wrap">
+        <div class="mult-grid" id="a2-grid" style="grid-template-columns: repeat(3,1fr);">
+          <!-- dynamically built -->
+        </div>
+      </div>
+
+      <div id="a2-sum-row" style="margin-top:0.8rem;font-size:1rem;color:rgba(255,248,231,0.7);text-align:center;display:none;">
+        📦 Sum of partial products: <span class="lm-result" id="a2-sum-display" style="font-family:'Cinzel',serif;font-size:1.2rem;"></span>
+      </div>
+
+      <div style="display:flex;gap:0.7rem;flex-wrap:wrap;">
+        <button class="magic-btn" onclick="checkActivity2()">🔮 Brew Potion!</button>
+        <button class="magic-btn secondary" onclick="resetActivity2()">🔄 Empty Cauldron</button>
+        <button class="magic-btn secondary" onclick="nextA2Problem()">➡️ Next Problem</button>
+      </div>
+
+      <div class="feedback-msg" id="a2-feedback"></div>
+    </div>
+  </div>
+
+
+  <!-- ============================
+       ACTIVITY 3: CHOOSE METHOD
+       ============================ -->
+  <div class="activity-panel" id="panel-2">
+    <div class="spell-card">
+      <div class="card-title">📜 Spell 3: Choose the Correct Magic Scroll</div>
+      <p style="color:rgba(255,248,231,0.7);font-size:0.95rem;margin-bottom:1rem;">
+        Three wizards each used a different method. One made a mistake! Click the scroll with the <strong style="color:var(--gold)">CORRECT answer</strong> and working.
+      </p>
+      <div class="score-bar">
+        <span class="score-stars" id="a3-stars">⭐⭐⭐</span>
+        <span>SCORE: <span class="xp-badge" id="a3-score">0 XP</span></span>
+      </div>
+
+      <div class="step-indicator" id="a3-dots"></div>
+
+      <div class="scroll-problem" id="a3-problem"></div>
+
+      <div class="method-cards" id="a3-cards"></div>
+
+      <button class="magic-btn secondary" style="margin-top:1.2rem;" onclick="nextA3Problem()">➡️ Next Scroll</button>
+      <div class="feedback-msg" id="a3-feedback"></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ========== JAVASCRIPT ========== -->
+<script>
+// ===== FLOATING BACKGROUND OBJECTS =====
+const bgObjects = ['📚','🪄','🧪','⭐','🌟','🦉','✨','🔮','⚗️','💫','🌙','⚡','📖','🌀'];
+const bgCanvas = document.getElementById('bg-canvas');
+
+function spawnBgObject() {
+  const el = document.createElement('div');
+  el.classList.add('float-obj');
+  el.textContent = bgObjects[Math.floor(Math.random()*bgObjects.length)];
+  el.style.left = Math.random()*100 + 'vw';
+  el.style.fontSize = (1.2 + Math.random()*1.8) + 'rem';
+  const dur = 15 + Math.random()*20;
+  el.style.animationDuration = dur + 's';
+  el.style.animationDelay = (-Math.random()*dur) + 's';
+  bgCanvas.appendChild(el);
+  setTimeout(() => el.remove(), dur*1000 + 500);
+}
+
+// Spawn stars
+for (let i = 0; i < 80; i++) {
+  const s = document.createElement('div');
+  s.classList.add('star-twinkle');
+  const sz = 1 + Math.random()*3;
+  s.style.cssText = `width:${sz}px;height:${sz}px;background:#fff;top:${Math.random()*100}vh;left:${Math.random()*100}vw;animation-duration:${2+Math.random()*4}s;animation-delay:${Math.random()*5}s;`;
+  bgCanvas.appendChild(s);
+}
+
+setInterval(spawnBgObject, 2000);
+for (let i = 0; i < 6; i++) spawnBgObject();
+
+
+// ===== TAB SWITCHING =====
+function switchTab(idx) {
+  document.querySelectorAll('.activity-panel').forEach((p,i) => p.classList.toggle('active', i===idx));
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
+}
+
+
+// ===== SHARED PROBLEM SETS =====
+const PROBLEMS = [
+  { a:23, b:14 },
+  { a:36, b:12 },
+  { a:47, b:25 },
+  { a:58, b:31 },
+  { a:62, b:43 },
+  { a:75, b:16 },
+  { a:84, b:22 },
+  { a:93, b:37 },
+];
+
+function shuffle(arr) { return [...arr].sort(()=>Math.random()-0.5); }
+
+function buildDots(id, total, current) {
+  const el = document.getElementById(id);
+  el.innerHTML = '';
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.classList.add('step-dot');
+    if (i < current) d.classList.add('done');
+    else if (i === current) d.classList.add('active');
+    el.appendChild(d);
+  }
+}
+
+
+// ==========================================
+// ACTIVITY 1: DRAG & DROP STEP BUILDER
+// ==========================================
+let a1Index = 0;
+let a1Score = 0;
+let a1State = { ones: null, tens: null, ans: null };
+let a1Problem = {};
+
+function loadA1Problem() {
+  a1State = { ones: null, tens: null, ans: null };
+  a1Problem = PROBLEMS[a1Index % PROBLEMS.length];
+  const { a, b } = a1Problem;
+  const aOnes = a % 10, aTens = Math.floor(a/10)*10;
+  const bOnes = b % 10, bTens = Math.floor(b/10)*10;
+  const row1 = a * bOnes;
+  const row2 = a * bTens;
+  const answer = a * b;
+
+  document.getElementById('a1-problem').textContent = `${a} × ${b} = ?`;
+
+  // Slots reset
+  ['ones','tens','ans'].forEach(s => {
+    document.getElementById(`slot-${s}-val`).textContent = 'Drop here';
+    document.getElementById(`slot-${s}`).className = 'step-box drop-zone';
+    if (s !== 'ans') {
+      ['ones','tens'].includes(s) && (document.getElementById(`slot-${s}`).ondragover = function(e){e.preventDefault();this.classList.add('drag-over');});
+    }
+  });
+  if (document.getElementById('slot-ones-sub')) document.getElementById('slot-ones-sub').textContent = '';
+  if (document.getElementById('slot-tens-sub')) document.getElementById('slot-tens-sub').textContent = '';
+  document.getElementById('slot-add-val').textContent = `${row1} + ${row2} = ${answer}`;
+  document.getElementById('a1-feedback').className = 'feedback-msg';
+
+  // Drop zones re-enable
+  ['ones','tens','ans'].forEach(s => {
+    const el = document.getElementById(`slot-${s}`);
+    el.ondragover = (e) => { e.preventDefault(); el.classList.add('drag-over'); };
+    el.ondragleave = () => el.classList.remove('drag-over');
+    el.ondrop = (e) => dropChip(e, s);
+  });
+
+  // Build chips (wrong ones + correct ones shuffled)
+  const wrongSamples = [
+    a * (bOnes + 1), a * (bTens - 10), answer + 10, answer - 5,
+    row1 + 10, row2 - a, row1 - bOnes, row2 + 20,
+  ].filter(x => x !== row1 && x !== row2 && x !== answer && x > 0);
+
+  const allChips = shuffle([row1, row2, answer, ...wrongSamples.slice(0,4)]);
+
+  const pool = document.getElementById('a1-chips');
+  pool.innerHTML = '';
+  allChips.forEach(val => {
+    const chip = document.createElement('div');
+    chip.classList.add('chip');
+    chip.textContent = val;
+    chip.draggable = true;
+    chip.dataset.val = val;
+    chip.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', val);
+      chip.classList.add('dragging');
+    });
+    chip.addEventListener('dragend', () => chip.classList.remove('dragging'));
+    pool.appendChild(chip);
+  });
+
+  // Visual
+  const zero = bTens > 0 ? '0' : '';
+  document.getElementById('a1-visual').innerHTML = `
+    <div style="color:rgba(255,248,231,0.5);font-size:0.8rem;margin-bottom:0.5rem;text-align:left;font-family:'Cinzel',serif;">Standard Long Multiplication:</div>
+    <span style="color:rgba(255,248,231,0.7);">&nbsp;&nbsp;&nbsp;${a}</span><br>
+    <span style="color:rgba(255,248,231,0.7);">× ${b}</span>
+    <div class="line-sep"></div>
+    <span class="lm-highlight">&nbsp;&nbsp;${row1}</span>&nbsp;&nbsp;<span style="font-size:0.7rem;color:rgba(255,248,231,0.4);">(${a} × ${bOnes})</span><br>
+    <span class="lm-highlight2">${row2}${zero.length>0?'&nbsp;':''}</span>&nbsp;&nbsp;<span style="font-size:0.7rem;color:rgba(255,248,231,0.4);">(${a} × ${bTens}) shift left</span>
+    <div class="line-sep"></div>
+    <span class="lm-result">&nbsp;&nbsp;${answer}</span>
+  `;
+
+  a1State._correct = { ones: row1, tens: row2, ans: answer };
+  buildDots('a1-dots', PROBLEMS.length, a1Index % PROBLEMS.length);
+}
+
+window.dropChip = function(event, slot) {
+  event.preventDefault();
+  const val = parseInt(event.dataTransfer.getData('text/plain'));
+  const slotEl = document.getElementById(`slot-${slot}`);
+  slotEl.classList.remove('drag-over');
+  slotEl.classList.add('filled');
+  document.getElementById(`slot-${slot}-val`).textContent = val;
+  a1State[slot] = val;
+
+  if (slot === 'ones') document.getElementById('slot-ones-sub').textContent = `(${a1Problem.a} × ${a1Problem.b % 10})`;
+  if (slot === 'tens') document.getElementById('slot-tens-sub').textContent = `(${a1Problem.a} × ${Math.floor(a1Problem.b/10)*10})`;
+};
+
+window.checkActivity1 = function() {
+  const c = a1State._correct;
+  const fb = document.getElementById('a1-feedback');
+  if (a1State.ones === null || a1State.tens === null || a1State.ans === null) {
+    fb.className = 'feedback-msg error';
+    fb.textContent = '⚠️ Fill all three spell slots before casting!';
+    return;
+  }
+  if (a1State.ones === c.ones && a1State.tens === c.tens && a1State.ans === c.ans) {
+    fb.className = 'feedback-msg success';
+    fb.textContent = `🎉 Brilliant spell! ${a1Problem.a} × ${a1Problem.b} = ${c.ans} — perfectly brewed! ✨`;
+    a1Score += 10;
+    document.getElementById('a1-score').textContent = a1Score + ' XP';
+    sparkle();
+  } else {
+    fb.className = 'feedback-msg error';
+    fb.textContent = `🔥 Something's off! Check your partial products. Row 1 = ${c.ones}, Row 2 = ${c.tens}.`;
+  }
+};
+
+window.resetActivity1 = function() { loadA1Problem(); };
+
+window.nextA1Problem = function() {
+  a1Index++;
+  loadA1Problem();
+};
+
+
+// ==========================================
+// ACTIVITY 2: GRID / BOX METHOD
+// ==========================================
+let a2Index = 0;
+let a2Score = 0;
+let a2Problem = {};
+
+function loadA2Problem() {
+  a2Problem = PROBLEMS[a2Index % PROBLEMS.length];
+  const { a, b } = a2Problem;
+  const aOnes = a % 10, aTens = Math.floor(a/10)*10;
+  const bOnes = b % 10, bTens = Math.floor(b/10)*10;
+
+  document.getElementById('a2-problem').textContent = `${a} × ${b}`;
+  document.getElementById('a2-feedback').className = 'feedback-msg';
+  document.getElementById('a2-sum-row').style.display = 'none';
+
+  // Build 3×3 grid: corner blank, then aTens, aOnes across top; bTens row, bOnes row
+  const grid = document.getElementById('a2-grid');
+  grid.innerHTML = '';
+  grid.style.gridTemplateColumns = 'repeat(3,1fr)';
+
+  // Row 0: [blank], [aTens], [aOnes]
+  addCell(grid,'header','×');
+  addCell(grid,'header', aTens);
+  addCell(grid,'header', aOnes);
+
+  // Row 1: [bTens], [input pp1], [input pp2]
+  addCell(grid,'operator', bTens);
+  addInputCell(grid, aTens * bTens, 'pp-tt');
+  addInputCell(grid, aOnes * bTens, 'pp-ot');
+
+  // Row 2: [bOnes], [input pp3], [input pp4]
+  addCell(grid,'operator', bOnes);
+  addInputCell(grid, aTens * bOnes, 'pp-to');
+  addInputCell(grid, aOnes * bOnes, 'pp-oo');
+
+  buildDots('a2-dots', PROBLEMS.length, a2Index % PROBLEMS.length);
+}
+
+function addCell(parent, type, val) {
+  const d = document.createElement('div');
+  d.classList.add('grid-cell', type);
+  d.textContent = val;
+  parent.appendChild(d);
+}
+
+function addInputCell(parent, correct, id) {
+  const d = document.createElement('div');
+  d.classList.add('grid-cell','blank');
+  const inp = document.createElement('input');
+  inp.type = 'number';
+  inp.id = id;
+  inp.placeholder = '?';
+  inp.dataset.correct = correct;
+  inp.addEventListener('input', () => { d.classList.remove('correct','wrong'); });
+  d.appendChild(inp);
+  parent.appendChild(d);
+}
+
+window.checkActivity2 = function() {
+  const ids = ['pp-tt','pp-ot','pp-to','pp-oo'];
+  let allOk = true;
+  let total = 0;
+
+  ids.forEach(id => {
+    const inp = document.getElementById(id);
+    const cell = inp.parentElement;
+    const correct = parseInt(inp.dataset.correct);
+    const val = parseInt(inp.value);
+    if (val === correct) {
+      cell.classList.add('correct');
+      cell.classList.remove('wrong');
+      total += correct;
+    } else {
+      cell.classList.add('wrong');
+      cell.classList.remove('correct');
+      allOk = false;
+    }
+  });
+
+  const fb = document.getElementById('a2-feedback');
+  const sumRow = document.getElementById('a2-sum-row');
+
+  if (allOk) {
+    fb.className = 'feedback-msg success';
+    fb.textContent = `🧪 Potion complete! All partial products correct. Sum = ${total} = ${a2Problem.a * a2Problem.b} ✨`;
+    sumRow.style.display = 'block';
+    document.getElementById('a2-sum-display').textContent = `${total} = ${a2Problem.a * a2Problem.b}`;
+    a2Score += 10;
+    document.getElementById('a2-score').textContent = a2Score + ' XP';
+    sparkle();
+  } else {
+    fb.className = 'feedback-msg error';
+    fb.textContent = '⚗️ Some cells have wrong ingredients! Each cell = (column header) × (row header).';
+  }
+};
+
+window.resetActivity2 = function() {
+  document.querySelectorAll('#a2-grid input').forEach(i => { i.value=''; i.parentElement.classList.remove('correct','wrong'); });
+  document.getElementById('a2-feedback').className = 'feedback-msg';
+  document.getElementById('a2-sum-row').style.display = 'none';
+};
+
+window.nextA2Problem = function() {
+  a2Index++;
+  loadA2Problem();
+};
+
+
+// ==========================================
+// ACTIVITY 3: CHOOSE THE CORRECT METHOD
+// ==========================================
+let a3Index = 0;
+let a3Score = 0;
+let a3Answered = false;
+
+function loadA3Problem() {
+  a3Answered = false;
+  const p = PROBLEMS[a3Index % PROBLEMS.length];
+  const { a, b } = p;
+  const correct = a * b;
+
+  document.getElementById('a3-problem').textContent = `${a} × ${b} = ?`;
+  document.getElementById('a3-feedback').className = 'feedback-msg';
+  buildDots('a3-dots', PROBLEMS.length, a3Index % PROBLEMS.length);
+
+  const aOnes = a % 10, aTens = Math.floor(a/10)*10;
+  const bOnes = b % 10, bTens = Math.floor(b/10)*10;
+  const row1 = a * bOnes;
+  const row2 = a * bTens;
+
+  // Three options: correct standard, correct grid, one wrong
+  const wrongAns = correct + (Math.random()<0.5 ? 10 : -10);
+  const wrongRow1 = row1 + (bOnes * 2);
+  const wrongRow2 = row2 - aTens;
+
+  const options = shuffle([
+    {
+      icon: '📜',
+      name: 'Standard Long Multiplication',
+      isCorrect: true,
+      working: `    ${a}\n  × ${b}\n ------\n  ${row1}   (${a}×${bOnes})\n${row2}    (${a}×${bTens})\n ------\n  ${correct} ✓`
+    },
+    {
+      icon: '🗺️',
+      name: 'Grid / Box Method',
+      isCorrect: true,
+      working: `|   | ${aTens}  | ${aOnes} |\n|${bTens}| ${aTens*bTens} | ${aOnes*bTens} |\n|${bOnes}|  ${aTens*bOnes}  |  ${aOnes*bOnes} |\nSum: ${aTens*bTens}+${aOnes*bTens}+${aTens*bOnes}+${aOnes*bOnes} = ${correct} ✓`
+    },
+    {
+      icon: '🧟',
+      name: 'Wizard Wrongus Method',
+      isCorrect: false,
+      working: `    ${a}\n  × ${b}\n ------\n  ${wrongRow1}  ← error here!\n${wrongRow2}   \n ------\n  ${wrongAns} ✗`
+    }
+  ]);
+
+  // Only one correct among 3 shown — but above has 2 correct. Let's keep only one labeled correct.
+  // Re-shuffle so exactly 1 is correct
+  const finalOptions = [
+    { icon:'📜', name:'Standard Method', isCorrect:true,
+      working:`    ${a}\n  × ${b}\n ------\n  ${row1}   (${a}×${bOnes})\n${row2}    (${a}×${bTens})\n ------\n  ${correct}` },
+    { icon:'🗺️', name:'Grid Method',    isCorrect:false,
+      working:`|   | ${aTens}  | ${aOnes} |\n|${bTens}| ${aTens*bTens} | ${aOnes*bTens} |\n|${bOnes}|  ${aTens*bOnes+5}  |  ${aOnes*bOnes} |\nSum: ${aTens*bTens+aOnes*bTens+(aTens*bOnes+5)+aOnes*bOnes} ← wrong!` },
+    { icon:'🧟', name:'Goblin Method',  isCorrect:false,
+      working:`    ${a}\n  × ${b}\n ------\n  ${wrongRow1}  ← miscalculated\n${wrongRow2}\n ------\n  ${wrongAns}` },
+  ];
+
+  const cards = document.getElementById('a3-cards');
+  cards.innerHTML = '';
+  shuffle(finalOptions).forEach((opt, i) => {
+    const card = document.createElement('div');
+    card.classList.add('method-card');
+    card.innerHTML = `
+      <div class="method-icon">${opt.icon}</div>
+      <div class="method-name">${opt.name}</div>
+      <pre class="method-workings">${opt.working}</pre>
+    `;
+    card.addEventListener('click', () => {
+      if (a3Answered) return;
+      a3Answered = true;
+      const fb = document.getElementById('a3-feedback');
+      if (opt.isCorrect) {
+        card.classList.add('selected-correct');
+        fb.className = 'feedback-msg success';
+        fb.textContent = `🌟 Excellent! You found the correct scroll! ${a} × ${b} = ${correct}`;
+        a3Score += 10;
+        document.getElementById('a3-score').textContent = a3Score + ' XP';
+        sparkle();
+      } else {
+        card.classList.add('selected-wrong');
+        fb.className = 'feedback-msg error';
+        fb.textContent = `🔮 Not quite! Look for the Standard Method scroll — ${a} × ${b} = ${correct}.`;
+        // highlight correct
+        document.querySelectorAll('.method-card').forEach(c => {
+          const pre = c.querySelector('pre');
+          if (pre && pre.textContent.includes(String(correct)) && !c.classList.contains('selected-wrong')) {
+            c.style.borderColor = 'var(--green-potion)';
+          }
+        });
+      }
+    });
+    cards.appendChild(card);
+  });
+}
+
+window.nextA3Problem = function() {
+  a3Index++;
+  loadA3Problem();
+};
+
+
+// ===== SPARKLE EFFECT =====
+function sparkle() {
+  for (let i = 0; i < 18; i++) {
+    setTimeout(() => {
+      const s = document.createElement('div');
+      s.style.cssText = `position:fixed;pointer-events:none;z-index:9999;font-size:${1+Math.random()*1.5}rem;
+        top:${20+Math.random()*60}vh;left:${20+Math.random()*60}vw;
+        animation:floatAnim 1.5s ease forwards;`;
+      s.textContent = ['✨','⭐','💫','🌟'][Math.floor(Math.random()*4)];
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), 1500);
+    }, i * 80);
+  }
+}
+
+
+// ===== INIT =====
+loadA1Problem();
+loadA2Problem();
+loadA3Problem();
+</script>
+</body>
+</html>

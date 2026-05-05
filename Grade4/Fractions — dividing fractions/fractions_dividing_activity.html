@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fractions — Dividing Fractions</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap');
+
+:root {
+  --sky: #0d1b4b;
+  --deep: #060d2e;
+  --violet: #7b2fff;
+  --purple: #4a1a9e;
+  --glow: #bf6fff;
+  --gold: #ffcc00;
+  --mint: #00e5b0;
+  --pink: #ff5fa0;
+  --blue: #38d4f5;
+  --orange: #ff8c42;
+  --card: rgba(20,10,55,0.88);
+  --border: rgba(191,111,255,0.3);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--deep);
+  color:#e8d5ff;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── BACKGROUND ── */
+.bg{position:fixed;inset:0;z-index:0;overflow:hidden;}
+.bg-grad{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse at 15% 20%, #1a0555 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 60%, #0a0a40 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 90%, #1a0444 0%, transparent 50%),
+    linear-gradient(160deg,#060d2e 0%,#0d1b4b 100%);
+}
+.stars{position:absolute;inset:0;}
+.stars span{
+  position:absolute;border-radius:50%;
+  background:#fff;animation:twinkle var(--d,3s) ease-in-out infinite alternate;
+}
+@keyframes twinkle{from{opacity:.15;transform:scale(1);}to{opacity:1;transform:scale(1.4);}}
+
+.floater{
+  position:fixed;font-size:var(--fs,1.8rem);
+  animation:rise var(--dur,16s) linear infinite;
+  pointer-events:none;z-index:1;opacity:.6;
+  filter:drop-shadow(0 0 8px var(--glow));
+  left:var(--x,50%);bottom:-10%;
+  animation-delay:var(--delay,0s);
+}
+@keyframes rise{
+  0%{transform:translateY(0) rotate(0deg);opacity:0;}
+  10%{opacity:.6;}
+  90%{opacity:.6;}
+  100%{transform:translateY(-110vh) rotate(360deg);opacity:0;}
+}
+
+/* ── LAYOUT ── */
+.wrap{position:relative;z-index:2;max-width:980px;margin:0 auto;padding:0 18px 60px;}
+
+/* ── HEADER ── */
+header{text-align:center;padding:32px 10px 24px;}
+header h1{
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(1.6rem,5vw,2.8rem);
+  background:linear-gradient(130deg,#ffcc00 0%,#ff8c42 35%,#bf6fff 70%,#38d4f5 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 18px rgba(191,111,255,.6));
+  animation:hpulse 3s ease-in-out infinite alternate;
+  line-height:1.2;
+}
+@keyframes hpulse{
+  from{filter:drop-shadow(0 0 8px rgba(255,204,0,.5));}
+  to{filter:drop-shadow(0 0 28px rgba(191,111,255,.9));}
+}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:26px;}
+.tab{
+  font-family:'Fredoka One',cursive;
+  font-size:.95rem;padding:10px 22px;
+  border-radius:50px;border:2px solid var(--border);
+  background:var(--card);color:#c9b9ff;cursor:pointer;
+  transition:all .3s;white-space:nowrap;
+}
+.tab:hover,.tab.on{
+  background:linear-gradient(135deg,#7b2fff,#4a1a9e);
+  border-color:var(--glow);color:#fff;
+  box-shadow:0 0 22px rgba(191,111,255,.5);transform:translateY(-2px);
+}
+
+/* ── SCORE BAR ── */
+.scorebar{
+  display:flex;gap:10px;justify-content:center;flex-wrap:wrap;
+  background:rgba(0,0,0,.3);border:1px solid var(--border);
+  border-radius:16px;padding:12px 20px;margin-bottom:22px;
+}
+.si{text-align:center;min-width:70px;}
+.si .v{font-family:'Fredoka One',cursive;font-size:1.8rem;color:var(--gold);}
+.si .l{font-size:.65rem;color:#7a6aaa;text-transform:uppercase;letter-spacing:.08em;}
+
+/* ── PANELS ── */
+.panel{display:none;animation:fadeUp .45s ease;}
+.panel.on{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── CARD ── */
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:22px;padding:26px;margin-bottom:22px;
+  backdrop-filter:blur(14px);
+  box-shadow:0 10px 45px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.06);
+  position:relative;overflow:hidden;
+}
+.card::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--glow),var(--gold),var(--glow),transparent);
+  animation:sweep 4s linear infinite;
+}
+@keyframes sweep{0%{opacity:0;transform:scaleX(0) translateX(-100%);}50%{opacity:1;transform:scaleX(1);}100%{opacity:0;transform:scaleX(0) translateX(100%);}}
+
+.card h2{
+  font-family:'Fredoka One',cursive;font-size:1.25rem;
+  color:var(--gold);margin-bottom:6px;
+  display:flex;align-items:center;gap:8px;
+}
+
+/* ── PROGRESS ── */
+.pbar{height:7px;background:rgba(255,255,255,.08);border-radius:99px;margin-bottom:18px;overflow:hidden;}
+.pfill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--violet),var(--glow));transition:width .6s ease;}
+
+/* ── BUTTONS ── */
+.btn{
+  padding:11px 26px;border-radius:30px;
+  font-family:'Fredoka One',cursive;font-size:.95rem;
+  border:none;cursor:pointer;transition:all .3s;
+}
+.btn-p{
+  background:linear-gradient(135deg,#7b2fff,#4a1a9e);
+  color:#fff;border:2px solid var(--glow);
+  box-shadow:0 0 14px rgba(191,111,255,.3);
+}
+.btn-p:hover{box-shadow:0 0 26px rgba(191,111,255,.6);transform:translateY(-2px);}
+.btn-s{background:transparent;color:#c9b9ff;border:2px solid var(--border);}
+.btn-s:hover{border-color:var(--glow);color:#fff;}
+.brow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+
+/* ── FEEDBACK ── */
+.fb{
+  padding:12px 18px;border-radius:14px;
+  font-weight:800;font-size:.9rem;margin-top:14px;
+  display:none;animation:fadeUp .4s ease;
+}
+.fb.ok{background:rgba(0,229,176,.12);border:1.5px solid var(--mint);color:var(--mint);display:block;}
+.fb.no{background:rgba(255,95,160,.12);border:1.5px solid var(--pink);color:var(--pink);display:block;}
+.fb.hint{background:rgba(255,204,0,.12);border:1.5px solid var(--gold);color:var(--gold);display:block;}
+
+/* ─────────────────────────────────────────
+   ACTIVITY 1  — PIZZA SLICER (drag pieces)
+───────────────────────────────────────── */
+.pizza-wrap{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;margin-bottom:16px;}
+.pizza-box{
+  flex:1;min-width:200px;
+  background:rgba(0,0,0,.25);border-radius:16px;padding:16px;
+  border:1px dashed var(--border);text-align:center;
+}
+.pizza-box h3{font-family:'Fredoka One',cursive;font-size:.95rem;color:var(--blue);margin-bottom:10px;}
+
+.pizza-svg{display:block;margin:0 auto 10px;}
+
+.slices-pool{
+  display:flex;flex-wrap:wrap;gap:8px;
+  justify-content:center;min-height:54px;
+  background:rgba(0,0,0,.2);border-radius:12px;padding:10px;
+  border:2px dashed var(--border);transition:all .3s;
+}
+.slices-pool.over{border-color:var(--mint);background:rgba(0,229,176,.08);}
+
+.slice-chip{
+  background:linear-gradient(135deg,#4a1a9e,#2a0a5e);
+  border:1.5px solid var(--glow);border-radius:10px;
+  padding:8px 14px;font-family:'Fredoka One',cursive;
+  font-size:1rem;cursor:grab;user-select:none;
+  color:#f0e0ff;transition:all .2s;
+  box-shadow:0 0 10px rgba(191,111,255,.2);
+}
+.slice-chip:hover{transform:scale(1.08);box-shadow:0 0 18px rgba(191,111,255,.5);}
+.slice-chip.ok{border-color:var(--mint);color:var(--mint);background:rgba(0,229,176,.1);}
+.slice-chip.no{border-color:var(--pink);color:var(--pink);background:rgba(255,95,160,.1);animation:shake .4s;}
+
+.drop-zone{
+  min-height:60px;border:2px dashed #5a3a8a;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  flex-wrap:wrap;gap:8px;padding:8px;
+  background:rgba(0,0,0,.2);transition:all .3s;
+  font-size:.78rem;color:#6a5a9a;font-weight:700;
+  text-transform:uppercase;letter-spacing:.06em;
+}
+.drop-zone.over{border-color:var(--mint);background:rgba(0,229,176,.08);}
+.drop-zone.filled{border-style:solid;border-color:var(--glow);}
+.drop-zone.okz{border-color:var(--mint);}
+.drop-zone.noz{border-color:var(--pink);animation:shake .4s;}
+
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+
+.step-eq{
+  font-family:'Fredoka One',cursive;
+  font-size:1.15rem;color:#e8d5ff;
+  text-align:center;margin:12px 0;
+  background:rgba(0,0,0,.3);border-radius:10px;padding:10px;
+}
+.step-eq .hl{color:var(--gold);}
+.step-eq .gr{color:var(--mint);}
+
+/* ─────────────────────────────────────────
+   ACTIVITY 2  — FLIP & MULTIPLY (KCF method)
+───────────────────────────────────────── */
+.kcf-stage{display:flex;flex-direction:column;gap:18px;}
+.kcf-problem{
+  font-family:'Fredoka One',cursive;font-size:2rem;
+  text-align:center;color:#fff;
+  background:rgba(0,0,0,.25);border-radius:14px;padding:14px;
+  border:1px solid var(--border);
+}
+.kcf-problem .div-sign{color:var(--orange);}
+
+.kcf-steps{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.kcf-step{
+  flex:1;min-width:130px;max-width:200px;
+  background:rgba(30,10,65,.7);border:2px solid var(--border);
+  border-radius:16px;padding:14px 10px;text-align:center;
+  transition:all .3s;
+}
+.kcf-step h4{font-family:'Fredoka One',cursive;font-size:.85rem;color:var(--gold);margin-bottom:8px;}
+.kcf-step .big{font-family:'Fredoka One',cursive;font-size:1.5rem;color:#e8d5ff;}
+.kcf-step.lit{border-color:var(--glow);box-shadow:0 0 18px rgba(191,111,255,.3);}
+
+.opts-grid{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:8px 0;}
+.opt{
+  flex:1;min-width:100px;max-width:160px;
+  background:rgba(30,10,65,.7);border:2px solid var(--border);
+  border-radius:14px;padding:14px 10px;text-align:center;
+  cursor:pointer;transition:all .3s;
+}
+.opt:hover{border-color:var(--glow);transform:translateY(-3px);box-shadow:0 0 18px rgba(191,111,255,.3);}
+.opt .eml{font-size:1.6rem;display:block;margin-bottom:4px;}
+.opt .lbl{font-family:'Fredoka One',cursive;font-size:.95rem;color:#e8d5ff;}
+.opt.sel{border-color:var(--gold);background:rgba(255,204,0,.1);color:var(--gold);}
+.opt.okc{border-color:var(--mint);background:rgba(0,229,176,.1);}
+.opt.noc{border-color:var(--pink);background:rgba(255,95,160,.1);animation:shake .4s;}
+
+/* ─────────────────────────────────────────
+   ACTIVITY 3  — NUMBER LINE HOPS
+───────────────────────────────────────── */
+.nl-problem{
+  font-family:'Fredoka One',cursive;font-size:1.6rem;
+  text-align:center;color:#fff;
+  background:rgba(0,0,0,.25);border-radius:14px;padding:14px;
+  border:1px solid var(--border);margin-bottom:16px;
+}
+.nl-problem .ds{color:var(--orange);}
+
+.nl-track{
+  position:relative;height:80px;margin:20px 0 10px;
+  background:rgba(0,0,0,.2);border-radius:14px;padding:0 20px;
+  display:flex;align-items:center;
+}
+.nl-line{
+  width:100%;height:4px;background:rgba(255,255,255,.15);
+  border-radius:99px;position:relative;
+}
+.nl-tick{
+  position:absolute;top:-18px;
+  display:flex;flex-direction:column;align-items:center;
+  font-family:'Fredoka One',cursive;font-size:.75rem;color:#9a8aaa;
+}
+.nl-tick::after{content:'';width:2px;height:12px;background:#5a4a7a;display:block;margin-top:2px;}
+.nl-hop{
+  position:absolute;top:-32px;
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;font-weight:800;
+  border:2px solid var(--gold);background:rgba(255,204,0,.2);color:var(--gold);
+  transition:all .5s cubic-bezier(.34,1.56,.64,1);
+  transform:translateX(-50%);
+  pointer-events:none;
+}
+.nl-hop.anim{animation:hopIn .4s ease;}
+@keyframes hopIn{0%{transform:translateX(-50%) translateY(-20px);opacity:0;}100%{transform:translateX(-50%) translateY(0);opacity:1;}}
+
+.nl-choices{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:10px;}
+.nl-btn{
+  min-width:80px;padding:12px 16px;
+  background:rgba(30,10,65,.7);border:2px solid var(--border);
+  border-radius:14px;font-family:'Fredoka One',cursive;
+  font-size:1.1rem;color:#e8d5ff;cursor:pointer;transition:all .3s;
+}
+.nl-btn:hover{border-color:var(--glow);transform:scale(1.05);}
+.nl-btn.chosen{border-color:var(--gold);background:rgba(255,204,0,.12);color:var(--gold);}
+.nl-btn.okb{border-color:var(--mint);background:rgba(0,229,176,.1);color:var(--mint);}
+.nl-btn.nob{border-color:var(--pink);background:rgba(255,95,160,.1);color:var(--pink);animation:shake .4s;}
+
+.nl-hint{
+  font-size:.82rem;color:#9a8aaa;text-align:center;
+  margin-bottom:8px;min-height:20px;
+}
+
+/* confetti */
+.burst{
+  position:fixed;top:50%;left:50%;
+  font-size:3rem;pointer-events:none;z-index:999;
+  animation:burst 1.2s ease forwards;display:none;
+  transform:translate(-50%,-50%);
+}
+@keyframes burst{
+  0%{opacity:1;transform:translate(-50%,-50%) scale(.5);}
+  60%{opacity:1;transform:translate(-50%,-55%) scale(2.2);}
+  100%{opacity:0;transform:translate(-50%,-70%) scale(1.6);}
+}
+</style>
+</head>
+<body>
+
+<!-- BG -->
+<div class="bg">
+  <div class="bg-grad"></div>
+  <div class="stars" id="stars"></div>
+</div>
+<div id="floaters"></div>
+<div class="burst" id="burst">🎉✨⭐</div>
+
+<div class="wrap">
+<header><h1>🍕 Fractions — Dividing Fractions 🔮</h1></header>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab on"  onclick="go(0)">🍕 Activity 1<br><small>Pizza Slicer</small></button>
+  <button class="tab"     onclick="go(1)">🔄 Activity 2<br><small>Flip &amp; Multiply</small></button>
+  <button class="tab"     onclick="go(2)">📏 Activity 3<br><small>Number Line Hops</small></button>
+</div>
+
+<!-- SCORE -->
+<div class="scorebar">
+  <div class="si"><div class="v" id="tot">0</div><div class="l">⭐ Stars</div></div>
+  <div class="si"><div class="v" id="s1">0/4</div><div class="l">Activity 1</div></div>
+  <div class="si"><div class="v" id="s2">0/4</div><div class="l">Activity 2</div></div>
+  <div class="si"><div class="v" id="s3">0/4</div><div class="l">Activity 3</div></div>
+</div>
+
+<!-- ══════════════════════════════════════
+     ACTIVITY 1  PIZZA SLICER
+═══════════════════════════════════════ -->
+<div class="panel on" id="p0">
+<div class="card">
+  <h2>🍕 Pizza Slicer Challenge</h2>
+
+  <div class="pbar"><div class="pfill" id="pb1" style="width:0%"></div></div>
+
+  <div id="a1body"></div>
+
+  <div class="brow">
+    <button class="btn btn-p" onclick="a1Check()">🔮 Check My Answer</button>
+    <button class="btn btn-s" onclick="a1Next()">Next Pizza →</button>
+    <button class="btn btn-s" onclick="a1Reset()">↺ Reset</button>
+  </div>
+  <div id="fb1" class="fb"></div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════
+     ACTIVITY 2  FLIP & MULTIPLY
+═══════════════════════════════════════ -->
+<div class="panel" id="p1">
+<div class="card">
+  <h2>🔄 Flip &amp; Multiply — KCF Method</h2>
+  <div class="pbar"><div class="pfill" id="pb2" style="width:0%"></div></div>
+  <div id="a2body"></div>
+  <div class="brow">
+    <button class="btn btn-p" onclick="a2Check()">🔮 Check Step</button>
+    <button class="btn btn-s" onclick="a2Next()">Next Problem →</button>
+    <button class="btn btn-s" onclick="a2Reset()">↺ Reset</button>
+  </div>
+  <div id="fb2" class="fb"></div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════
+     ACTIVITY 3  NUMBER LINE HOPS
+═══════════════════════════════════════ -->
+<div class="panel" id="p2">
+<div class="card">
+  <h2>📏 Number Line Hops</h2>
+  <div class="pbar"><div class="pfill" id="pb3" style="width:0%"></div></div>
+  <div id="a3body"></div>
+  <div class="brow">
+    <button class="btn btn-p" onclick="a3Check()">🔮 Check Hops</button>
+    <button class="btn btn-s" onclick="a3Next()">Next Problem →</button>
+    <button class="btn btn-s" onclick="a3Reset()">↺ Reset</button>
+  </div>
+  <div id="fb3" class="fb"></div>
+</div>
+</div>
+</div><!-- wrap -->
+
+<script>
+/* ══ STARS & FLOATERS ══ */
+(function(){
+  const s=document.getElementById('stars');
+  for(let i=0;i<80;i++){
+    const sp=document.createElement('span');
+    const sz=(Math.random()*2.5+.5)+'px';
+    sp.style.cssText=`width:${sz};height:${sz};top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*5}s;animation-delay:${-Math.random()*6}s;`;
+    s.appendChild(sp);
+  }
+  const em=['📚','🦉','⭐','✨','🧪','🔮','🌟','🪄','💫','🧙','🌙','⚡','🍕','🔢'];
+  const fc=document.getElementById('floaters');
+  for(let i=0;i<20;i++){
+    const d=document.createElement('div');
+    d.className='floater';
+    d.textContent=em[Math.floor(Math.random()*em.length)];
+    d.style.cssText=`--x:${Math.random()*100}vw;--dur:${12+Math.random()*20}s;--delay:${-Math.random()*30}s;--fs:${.9+Math.random()*1.4}rem;`;
+    fc.appendChild(d);
+  }
+})();
+
+/* ══ TABS ══ */
+function go(i){
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('on',j===i));
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('on',j===i));
+}
+
+/* ══ SCORES ══ */
+const SC=[0,0,0],MAX=[4,4,4];
+function addSc(act){
+  SC[act]=Math.min(SC[act]+1,MAX[act]);
+  document.getElementById('s'+(act+1)).textContent=SC[act]+'/'+MAX[act];
+  document.getElementById('tot').textContent=SC.reduce((a,b)=>a+b,0);
+}
+function confetti(){const b=document.getElementById('burst');b.style.display='block';setTimeout(()=>b.style.display='none',1300);}
+function fb(id,type,msg){const e=document.getElementById(id);e.className='fb '+type;e.innerHTML=msg;}
+function hfb(id){document.getElementById(id).className='fb';}
+
+/* ══════════════════════════════════════
+   ACTIVITY 1  PIZZA SLICER
+══════════════════════════════════════ */
+// Each round: divide a whole number by a unit fraction
+// student drags correct "number of slices" chip into the answer box
+const A1=[
+  {
+    whole:1, divisor:'1/2',
+    question:'1 pizza ÷ ½',
+    hint:'How many ½-slices fit inside 1 whole pizza?',
+    pool:['2','3','4','6'],
+    answer:'2',
+    explain:'1 ÷ ½ = 1 × 2 = 2 half-slices! Flip ½ → 2/1, then multiply.'
+  },
+  {
+    whole:2, divisor:'1/4',
+    question:'2 pizzas ÷ ¼',
+    hint:'How many ¼-slices fit inside 2 whole pizzas?',
+    pool:['4','6','8','12'],
+    answer:'8',
+    explain:'2 ÷ ¼ = 2 × 4 = 8 quarter-slices!'
+  },
+  {
+    whole:3, divisor:'1/3',
+    question:'3 pizzas ÷ ⅓',
+    hint:'How many ⅓-slices fit inside 3 whole pizzas?',
+    pool:['6','9','12','3'],
+    answer:'9',
+    explain:'3 ÷ ⅓ = 3 × 3 = 9 third-slices!'
+  },
+  {
+    whole:4, divisor:'1/2',
+    question:'4 pizzas ÷ ½',
+    hint:'How many ½-slices fit inside 4 whole pizzas?',
+    pool:['4','8','6','2'],
+    answer:'8',
+    explain:'4 ÷ ½ = 4 × 2 = 8 half-slices!'
+  }
+];
+
+let a1r=0,a1drop=null,a1done=false;
+
+function pizzaSVG(n,color){
+  // simple n-slice pizza
+  const cx=70,cy=70,r=62;
+  let paths='';
+  for(let i=0;i<n;i++){
+    const a1=((i/n)*2*Math.PI)-Math.PI/2;
+    const a2=(((i+1)/n)*2*Math.PI)-Math.PI/2;
+    const x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
+    const x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);
+    const large=n===1?1:0;
+    const fill=i%2===0?color:'rgba(255,255,255,.07)';
+    paths+=`<path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${large},1 ${x2},${y2} Z" fill="${fill}" stroke="rgba(255,255,255,.15)" stroke-width="1.5"/>`;
+  }
+  return `<svg class="pizza-svg" width="140" height="140" viewBox="0 0 140 140">${paths}<circle cx="70" cy="70" r="62" fill="none" stroke="rgba(191,111,255,.4)" stroke-width="2"/></svg>`;
+}
+
+function a1Render(){
+  const q=A1[a1r];
+  a1drop=null;a1done=false;hfb('fb1');
+  const pool=[...q.pool].sort(()=>Math.random()-.5);
+  const sliceCount=parseInt(q.answer);
+  document.getElementById('pb1').style.width=(a1r/A1.length*100)+'%';
+
+  const html=`
+  <div style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:var(--gold);margin-bottom:14px;text-align:center;">
+    🍕 ${q.question} = ?
+  </div>
+  <p style="font-size:.85rem;color:#c9b9ff;text-align:center;margin-bottom:16px;">${q.hint}</p>
+
+  <div class="pizza-wrap">
+    <div class="pizza-box">
+      <h3>🔢 Whole Pizzas</h3>
+      ${Array(q.whole).fill(pizzaSVG(1,'rgba(255,140,66,.35)')).join('')}
+      <div style="font-family:'Fredoka One',cursive;font-size:.9rem;color:var(--orange);">${q.whole} whole pizza${q.whole>1?'s':''}</div>
+    </div>
+    <div class="pizza-box" style="display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Fredoka One',cursive;font-size:2rem;color:var(--orange);">÷</div>
+    <div class="pizza-box">
+      <h3>✂️ Each Piece = ${q.divisor}</h3>
+      ${pizzaSVG(parseInt(q.divisor.split('/')[1]),'rgba(56,212,245,.3)')}
+      <div style="font-family:'Fredoka One',cursive;font-size:.9rem;color:var(--blue);">size of each slice</div>
+    </div>
+    <div class="pizza-box" style="display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Fredoka One',cursive;font-size:2rem;color:var(--orange);">=</div>
+    <div class="pizza-box">
+      <h3>📦 Drop the Answer Here</h3>
+      <div class="drop-zone" id="a1-dz"
+        ondragover="dzOver(event,'a1-dz')" ondragleave="dzLeave(event,'a1-dz')" ondrop="a1Drop(event)">
+        Drop answer chip here
+      </div>
+      <div style="font-family:'Fredoka One',cursive;font-size:.82rem;color:#9a8aaa;margin-top:6px;">slices total</div>
+    </div>
+  </div>
+
+  <div class="slices-pool" id="a1-pool"
+    ondragover="dzOver(event,'a1-pool')" ondragleave="dzLeave(event,'a1-pool')" ondrop="a1DropPool(event)">
+    ${pool.map(v=>`<div class="slice-chip" draggable="true" id="chip-${v}" ondragstart="a1DragStart(event,'${v}')">${v} slices</div>`).join('')}
+  </div>`;
+  document.getElementById('a1body').innerHTML=html;
+}
+
+let dragId=null;
+function a1DragStart(e,v){dragId=v;e.dataTransfer.effectAllowed='move';}
+function dzOver(e,id){e.preventDefault();document.getElementById(id).classList.add('over');}
+function dzLeave(e,id){document.getElementById(id).classList.remove('over');}
+
+function a1Drop(e){
+  e.preventDefault();
+  document.getElementById('a1-dz').classList.remove('over');
+  if(!dragId)return;
+  if(a1drop){document.getElementById('a1-pool').appendChild(document.getElementById('chip-'+a1drop));}
+  a1drop=dragId;
+  const chip=document.getElementById('chip-'+dragId);
+  const dz=document.getElementById('a1-dz');
+  dz.innerHTML='';dz.appendChild(chip);dz.classList.add('filled');
+  dragId=null;
+}
+function a1DropPool(e){
+  e.preventDefault();
+  document.getElementById('a1-pool').classList.remove('over');
+  if(!dragId)return;
+  for(const k in {[a1drop]:1}){if(a1drop===dragId){
+    document.getElementById('a1-dz').innerHTML='Drop answer chip here';
+    document.getElementById('a1-dz').classList.remove('filled');
+    a1drop=null;
+  }}
+  document.getElementById('a1-pool').appendChild(document.getElementById('chip-'+dragId));
+  dragId=null;
+}
+
+function a1Check(){
+  if(!a1drop){fb('fb1','hint','👆 Drag the correct number of slices into the answer box first!');return;}
+  const q=A1[a1r];
+  if(a1drop===q.answer){
+    document.getElementById('a1-dz').classList.add('okz');
+    document.getElementById('chip-'+a1drop).classList.add('ok');
+    fb('fb1','ok','🌟 Correct! '+q.explain);
+    addSc(0);confetti();a1done=true;
+  } else {
+    document.getElementById('a1-dz').classList.add('noz');
+    document.getElementById('chip-'+a1drop).classList.add('no');
+    fb('fb1','no','❌ Not quite! '+q.hint+' Try again!');
+    setTimeout(()=>{
+      document.getElementById('a1-dz').classList.remove('noz');
+      document.getElementById('chip-'+a1drop).classList.remove('no');
+    },700);
+  }
+}
+function a1Next(){a1r=(a1r+1)%A1.length;a1Render();}
+function a1Reset(){a1Render();}
+a1Render();
+
+/* ══════════════════════════════════════
+   ACTIVITY 2  FLIP & MULTIPLY  (KCF)
+══════════════════════════════════════ */
+// Keep – Change – Flip  then pick the correct reciprocal & product
+const A2=[
+  {
+    prob:'½ ÷ ¼',
+    keep:{n:1,d:2}, div:{n:1,d:4},
+    flip:{n:4,d:1},
+    prod:{n:4,d:2}, simplified:'2',
+    stage:0, // 0=pick reciprocal, 1=pick product
+    recip_opts:[{n:4,d:1,ok:true},{n:1,d:4,ok:false},{n:2,d:1,ok:false}],
+    prod_opts:['2','4','8','1'],
+    correct_prod:'2',
+    explain:'½ ÷ ¼ → keep ½, change ÷ to ×, flip ¼ to 4/1 → ½ × 4 = 4/2 = 2'
+  },
+  {
+    prob:'⅔ ÷ ⅓',
+    keep:{n:2,d:3}, div:{n:1,d:3},
+    flip:{n:3,d:1},
+    prod:{n:6,d:3}, simplified:'2',
+    stage:0,
+    recip_opts:[{n:3,d:1,ok:true},{n:1,d:3,ok:false},{n:3,d:2,ok:false}],
+    prod_opts:['2','3','6','1'],
+    correct_prod:'2',
+    explain:'⅔ ÷ ⅓ → flip ⅓ to 3 → ⅔ × 3 = 6/3 = 2'
+  },
+  {
+    prob:'¾ ÷ ½',
+    keep:{n:3,d:4}, div:{n:1,d:2},
+    flip:{n:2,d:1},
+    prod:{n:6,d:4}, simplified:'1½',
+    stage:0,
+    recip_opts:[{n:2,d:1,ok:true},{n:1,d:2,ok:false},{n:4,d:1,ok:false}],
+    prod_opts:['1½','2','3','¾'],
+    correct_prod:'1½',
+    explain:'¾ ÷ ½ → flip ½ to 2 → ¾ × 2 = 6/4 = 1½'
+  },
+  {
+    prob:'⅙ ÷ ⅓',
+    keep:{n:1,d:6}, div:{n:1,d:3},
+    flip:{n:3,d:1},
+    prod:{n:3,d:6}, simplified:'½',
+    stage:0,
+    recip_opts:[{n:3,d:1,ok:true},{n:1,d:3,ok:false},{n:6,d:1,ok:false}],
+    prod_opts:['½','3','2','⅙'],
+    correct_prod:'½',
+    explain:'⅙ ÷ ⅓ → flip ⅓ to 3 → ⅙ × 3 = 3/6 = ½'
+  }
+];
+
+let a2r=0,a2sel=null,a2stage=0,a2rdone=false,a2pseldone=false;
+
+function fracHTML(n,d,color='#e8d5ff'){
+  if(d===1)return`<span style="font-family:'Fredoka One',cursive;font-size:1.4rem;color:${color}">${n}</span>`;
+  return`<span style="display:inline-flex;flex-direction:column;align-items:center;line-height:1;font-family:'Fredoka One',cursive;color:${color}">
+    <span style="font-size:1.1rem">${n}</span>
+    <span style="font-size:.5rem;border-top:2px solid ${color};padding-top:1px;width:100%;text-align:center">${d}</span>
+  </span>`;
+}
+
+function a2Render(){
+  const q=A2[a2r];
+  a2stage=0;a2sel=null;a2rdone=false;a2pseldone=false;
+  hfb('fb2');
+  document.getElementById('pb2').style.width=(a2r/A2.length*100)+'%';
+
+  const ropts=q.recip_opts.map((o,i)=>`
+    <div class="opt" id="ro${i}" onclick="a2PickRecip(${i})">
+      <span class="eml">${fracHTML(o.n,o.d,'#e8d5ff')}</span>
+      <span class="lbl">${o.n}${o.d>1?'/'+o.d:''}</span>
+    </div>`).join('');
+
+  const popts=[...q.prod_opts].sort(()=>Math.random()-.5).map((v,i)=>`
+    <div class="opt" id="po${i}" onclick="a2PickProd('${v}',${i})" style="opacity:.4;pointer-events:none">
+      <span class="eml" style="font-family:'Fredoka One',cursive;font-size:1.5rem">${v}</span>
+      <span class="lbl">answer</span>
+    </div>`).join('');
+
+  document.getElementById('a2body').innerHTML=`
+  <div class="kcf-stage">
+    <div class="kcf-problem">
+      ${fracHTML(q.keep.n,q.keep.d,'')} 
+      <span class="div-sign"> ÷ </span>
+      ${fracHTML(q.div.n,q.div.d,'')}
+    </div>
+
+    <div style="font-family:'Fredoka One',cursive;font-size:.95rem;color:var(--blue);text-align:center;">
+      📌 Step 1 — Keep the first fraction, Change ÷ to ×, Flip the second fraction
+    </div>
+
+    <div class="kcf-steps">
+      <div class="kcf-step lit">
+        <h4>🔒 KEEP</h4>
+        <div class="big">${fracHTML(q.keep.n,q.keep.d,q.keep.d?'#38d4f5':'#38d4f5')}</div>
+      </div>
+      <div class="kcf-step lit">
+        <h4>🔄 CHANGE</h4>
+        <div class="big" style="font-family:'Fredoka One',cursive;font-size:2rem;color:var(--orange)">×</div>
+      </div>
+      <div class="kcf-step" id="kcf-flip">
+        <h4>🙃 FLIP — pick reciprocal of ${fracHTML(q.div.n,q.div.d)}</h4>
+        <div class="big" id="flip-show" style="color:#5a4a7a">?</div>
+      </div>
+    </div>
+
+    <div style="font-family:'Fredoka One',cursive;font-size:.9rem;color:var(--gold);text-align:center;">
+      👇 Choose the correct reciprocal (flipped fraction):
+    </div>
+    <div class="opts-grid" id="recip-opts">${ropts}</div>
+
+    <div style="font-family:'Fredoka One',cursive;font-size:.9rem;color:var(--gold);text-align:center;margin-top:10px;">
+      👇 Now multiply — choose the correct answer:
+    </div>
+    <div class="opts-grid" id="prod-opts">${popts}</div>
+  </div>`;
+}
+
+function a2PickRecip(i){
+  if(a2rdone)return;
+  const q=A2[a2r];
+  const opt=q.recip_opts[i];
+  document.querySelectorAll('[id^="ro"]').forEach((el,j)=>el.classList.remove('sel','okc','noc'));
+  document.getElementById('ro'+i).classList.add('sel');
+  if(opt.ok){
+    a2rdone=true;
+    document.getElementById('ro'+i).classList.replace('sel','okc');
+    document.getElementById('flip-show').innerHTML=fracHTML(opt.n,opt.d,'#00e5b0');
+    document.getElementById('kcf-flip').style.borderColor='var(--mint)';
+    // unlock product opts
+    document.querySelectorAll('[id^="po"]').forEach(el=>{el.style.opacity='1';el.style.pointerEvents='auto';});
+    fb('fb2','hint','✅ Correct flip! Now choose the final answer after multiplying.');
+  } else {
+    document.getElementById('ro'+i).classList.replace('sel','noc');
+    fb('fb2','no','❌ That\'s not the reciprocal. To flip a fraction, swap numerator and denominator!');
+    setTimeout(()=>document.getElementById('ro'+i).classList.remove('noc'),700);
+  }
+}
+
+function a2PickProd(v,i){
+  if(!a2rdone||a2pseldone)return;
+  const q=A2[a2r];
+  document.querySelectorAll('[id^="po"]').forEach(el=>el.classList.remove('sel','okc','noc'));
+  document.getElementById('po'+i).classList.add('sel');
+  if(v===q.correct_prod){
+    a2pseldone=true;
+    document.getElementById('po'+i).classList.replace('sel','okc');
+    fb('fb2','ok','🌟 Perfect! '+q.explain);
+    addSc(1);confetti();
+  } else {
+    document.getElementById('po'+i).classList.replace('sel','noc');
+    fb('fb2','no','❌ Not quite — multiply the numerators and denominators, then simplify.');
+    setTimeout(()=>document.getElementById('po'+i).classList.remove('noc'),700);
+  }
+}
+
+function a2Check(){fb('fb2','hint','👆 First click the correct reciprocal, then click the correct answer!');}
+function a2Next(){a2r=(a2r+1)%A2.length;a2Render();}
+function a2Reset(){a2Render();}
+a2Render();
+
+/* ══════════════════════════════════════
+   ACTIVITY 3  NUMBER LINE HOPS
+══════════════════════════════════════ */
+const A3=[
+  {
+    prob:'1 ÷ ¼',full:'1 ÷ ¼ = 4',
+    hops:4, unit:'¼', start:0, end:1,
+    ticks:[0,0.25,0.5,0.75,1],
+    labels:['0','¼','½','¾','1'],
+    choices:[4,2,8,3], answer:4,
+    hint:'How many ¼-hops fit from 0 to 1?',
+    explain:'1 ÷ ¼ = 4 hops of ¼ each bring us from 0 to 1!'
+  },
+  {
+    prob:'½ ÷ ⅛',full:'½ ÷ ⅛ = 4',
+    hops:4, unit:'⅛', start:0, end:0.5,
+    ticks:[0,0.125,0.25,0.375,0.5],
+    labels:['0','⅛','¼','⅜','½'],
+    choices:[4,2,6,8], answer:4,
+    hint:'How many ⅛-hops fit from 0 to ½?',
+    explain:'½ ÷ ⅛ = 4 hops of ⅛ each!'
+  },
+  {
+    prob:'¾ ÷ ¼',full:'¾ ÷ ¼ = 3',
+    hops:3, unit:'¼', start:0, end:0.75,
+    ticks:[0,0.25,0.5,0.75,1],
+    labels:['0','¼','½','¾','1'],
+    choices:[3,4,6,2], answer:3,
+    hint:'How many ¼-hops fit from 0 to ¾?',
+    explain:'¾ ÷ ¼ = 3 hops of ¼ each!'
+  },
+  {
+    prob:'1 ÷ ⅓',full:'1 ÷ ⅓ = 3',
+    hops:3, unit:'⅓', start:0, end:1,
+    ticks:[0,0.333,0.667,1],
+    labels:['0','⅓','⅔','1'],
+    choices:[3,6,2,4], answer:3,
+    hint:'How many ⅓-hops fit from 0 to 1?',
+    explain:'1 ÷ ⅓ = 3 hops of ⅓ each!'
+  }
+];
+
+let a3r=0,a3sel=null,a3done=false,a3hopsShown=0;
+
+function a3Render(){
+  const q=A3[a3r];
+  a3sel=null;a3done=false;a3hopsShown=0;hfb('fb3');
+  document.getElementById('pb3').style.width=(a3r/A3.length*100)+'%';
+
+  const choicesBtns=q.choices.map((v,i)=>`
+    <button class="nl-btn" id="nlb${i}" onclick="a3Pick(${v},${i})">${v} hops</button>`).join('');
+
+  document.getElementById('a3body').innerHTML=`
+  <div class="nl-problem">
+    <span class="ds">${q.prob}</span>
+    <span style="color:#9a8aaa;font-size:.9rem;margin-left:14px;">How many ${q.unit}-sized hops from 0 to ${q.labels[q.labels.length-1]}?</span>
+  </div>
+
+  <div class="nl-hint" id="nlhint">${q.hint}</div>
+
+  <div class="nl-track">
+    <div class="nl-line" id="nl-line">
+      ${q.ticks.map((t,i)=>{
+        const pct=((t-q.start)/(q.end-q.start)*100);
+        if(pct<0||pct>100.5)return'';
+        return`<div class="nl-tick" style="left:calc(${pct}% - 1px)">
+          ${q.labels[i]}<span></span>
+        </div>`;
+      }).join('')}
+      <div id="hop-container"></div>
+    </div>
+  </div>
+
+  <div style="font-family:'Fredoka One',cursive;font-size:.9rem;color:var(--gold);text-align:center;margin:8px 0;">
+    👇 Choose how many hops are needed:
+  </div>
+  <div class="nl-choices">${choicesBtns}</div>
+  <div id="nl-eq" style="font-family:'Fredoka One',cursive;font-size:1.1rem;text-align:center;color:var(--mint);min-height:28px;"></div>`;
+}
+
+function a3Pick(v,i){
+  if(a3done)return;
+  a3sel=v;
+  document.querySelectorAll('[id^="nlb"]').forEach(b=>b.classList.remove('chosen','okb','nob'));
+  document.getElementById('nlb'+i).classList.add('chosen');
+  // animate hops
+  a3hopsShown=0;
+  animateHops(v,i);
+}
+
+function animateHops(v,btnIdx){
+  const q=A3[a3r];
+  const hc=document.getElementById('hop-container');
+  hc.innerHTML='';
+  const correct=v===q.answer;
+  const count=Math.min(v,q.hops+(correct?0:2)); // show what was chosen
+  let shown=0;
+  function nextHop(){
+    if(shown>=Math.min(v,8)){
+      // after animation, evaluate
+      setTimeout(()=>{
+        if(correct){
+          document.getElementById('nlb'+btnIdx).classList.replace('chosen','okb');
+          document.getElementById('nl-eq').textContent='✅ '+q.full;
+          fb('fb3','ok','🌟 '+q.explain);
+          addSc(2);confetti();a3done=true;
+        } else {
+          document.getElementById('nlb'+btnIdx).classList.replace('chosen','nob');
+          fb('fb3','no','❌ Not quite! '+q.hint+' Count carefully!');
+          setTimeout(()=>{hc.innerHTML='';},800);
+        }
+      },200);
+      return;
+    }
+    const pos=(shown+1)/q.hops*100;
+    const hop=document.createElement('div');
+    hop.className='nl-hop anim';
+    hop.style.left=Math.min(pos,100)+'%';
+    hop.textContent=shown+1;
+    hc.appendChild(hop);
+    shown++;
+    setTimeout(nextHop,350);
+  }
+  nextHop();
+}
+
+function a3Check(){fb('fb3','hint','👆 Click one of the hop choices above!');}
+function a3Next(){a3r=(a3r+1)%A3.length;a3Render();}
+function a3Reset(){a3Render();}
+a3Render();
+</script>
+</body>
+</html>

@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inflation Explorer – Grade 4</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --bg1:#2d1a00;
+    --bg2:#5c2d00;
+    --bg3:#7a3b10;
+    --gold:#ffb800;
+    --amber:#ff8c00;
+    --coral:#ff5e3a;
+    --cream:#fff4e0;
+    --mint:#00d4a0;
+    --sky:#38bdf8;
+    --purple:#c084fc;
+    --red:#ef4444;
+    --green:#22c55e;
+    --white:#ffffff;
+    --card:rgba(255,255,255,.07);
+    --text:#fff8f0;
+    --accent:#ffb800;
+  }
+
+  body{
+    font-family:'Nunito',sans-serif;
+    background:linear-gradient(160deg,#1a0a00 0%,#3d1800 35%,#5c2800 65%,#1a0800 100%);
+    min-height:100vh;
+    color:var(--text);
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  #bgCanvas{
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    pointer-events:none;z-index:0;
+  }
+
+  .page{position:relative;z-index:2;max-width:960px;margin:0 auto;padding:20px 16px 60px;}
+
+  /* ======= HERO ======= */
+  .hero{
+    text-align:center;
+    padding:20px 20px 16px;
+    animation:fadeDown .8s ease;
+  }
+  .hero h1{
+    font-family:'Fredoka One',cursive;
+    font-size:clamp(2.2rem,6vw,3.6rem);
+    line-height:1.1;
+    background:linear-gradient(135deg,#ffb800 0%,#ff8c00 45%,#ff5e3a 85%);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+    margin-bottom:10px;
+    filter:drop-shadow(0 2px 14px rgba(255,184,0,.35));
+  }
+  .hero p{
+    font-size:1.05rem;
+    color:rgba(255,248,240,.82);
+    max-width:560px;
+    margin:0 auto 22px;
+    line-height:1.6;
+  }
+  .hero-emoji{font-size:2rem;display:block;margin-bottom:6px;animation:bounce 2s infinite;}
+
+  /* ======= INTRO CARDS ======= */
+  .intro-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+    gap:14px;
+    margin-bottom:16px;
+  }
+  .intro-card{
+    background:rgba(255,255,255,.08);
+    border:1.5px solid rgba(255,184,0,.2);
+    border-radius:20px;
+    padding:20px 16px;
+    text-align:center;
+    backdrop-filter:blur(10px);
+    transition:transform .3s,box-shadow .3s;
+    animation:fadeUp .6s ease both;
+  }
+  .intro-card:hover{transform:translateY(-6px);box-shadow:0 12px 40px rgba(255,140,0,.2);}
+  .intro-card:nth-child(1){animation-delay:.1s;}
+  .intro-card:nth-child(2){animation-delay:.2s;}
+  .intro-card:nth-child(3){animation-delay:.3s;}
+  .intro-card:nth-child(4){animation-delay:.4s;}
+  .intro-card .ic-emoji{font-size:2.2rem;margin-bottom:8px;display:block;}
+  .intro-card h3{font-family:'Fredoka One',cursive;font-size:1.1rem;color:#ffb800;margin-bottom:5px;}
+  .intro-card p{font-size:.86rem;color:rgba(255,248,240,.72);line-height:1.5;}
+
+  /* ======= SECTION HEAD ======= */
+  .section-head{
+    display:flex;align-items:center;gap:12px;
+    margin-bottom:18px;margin-top:32px;
+  }
+  .section-head .num{
+    width:42px;height:42px;border-radius:50%;
+    background:linear-gradient(135deg,#ffb800,#ff6a00);
+    color:#1a0800;
+    font-family:'Fredoka One',cursive;
+    font-size:1.3rem;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 16px rgba(255,184,0,.4);
+    flex-shrink:0;
+  }
+  .section-head h2{font-family:'Fredoka One',cursive;font-size:1.55rem;color:#ffb800;}
+  .section-head p{font-size:.88rem;color:rgba(255,248,240,.65);margin-top:2px;}
+
+  /* ======= ACTIVITY WRAP ======= */
+  .activity-wrap{
+    background:rgba(255,255,255,.05);
+    border:1.5px solid rgba(255,184,0,.12);
+    border-radius:24px;
+    padding:26px 22px;
+    backdrop-filter:blur(12px);
+    margin-bottom:12px;
+  }
+
+  /* ======= TABS ======= */
+  .tabs-nav{
+    display:flex;gap:8px;flex-wrap:wrap;justify-content:center;
+    margin:0 0 20px;
+  }
+  .tab-btn{
+    background:rgba(255,255,255,.08);
+    border:2px solid rgba(255,184,0,.2);
+    border-radius:30px;
+    padding:10px 20px;
+    font-family:'Fredoka One',cursive;
+    font-size:1rem;
+    color:rgba(255,248,240,.65);
+    cursor:pointer;
+    transition:all .25s;
+    display:flex;align-items:center;gap:6px;
+    backdrop-filter:blur(8px);
+  }
+  .tab-btn:hover{background:rgba(255,255,255,.14);color:#fff;}
+  .tab-btn.active{
+    background:linear-gradient(135deg,#ffb800,#ff6a00);
+    border-color:transparent;
+    color:#1a0800;
+    box-shadow:0 4px 20px rgba(255,184,0,.4);
+  }
+  .tab-panel{display:none;animation:fadeUp .35s ease;}
+  .tab-panel.active{display:block;}
+
+  /* ======= ACT 1: MATCH ======= */
+  .match-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .match-col{display:flex;flex-direction:column;gap:10px;}
+  .match-col-title{font-family:'Fredoka One',cursive;font-size:.95rem;color:#ffb800;margin-bottom:4px;text-align:center;}
+  .term-item{
+    background:linear-gradient(135deg,rgba(255,140,0,.22),rgba(255,94,58,.12));
+    border:2px solid rgba(255,140,0,.45);
+    border-radius:14px;
+    padding:11px 14px;
+    font-size:.9rem;
+    font-weight:700;
+    cursor:grab;
+    transition:transform .2s,box-shadow .2s;
+    text-align:center;
+    user-select:none;
+  }
+  .term-item:active{cursor:grabbing;transform:scale(1.05);}
+  .term-item.dragging{opacity:.5;transform:scale(1.08);box-shadow:0 8px 28px rgba(255,140,0,.45);}
+  .def-drop{
+    background:rgba(255,255,255,.04);
+    border:2px dashed rgba(255,255,255,.22);
+    border-radius:14px;
+    padding:11px 14px;
+    font-size:.86rem;
+    color:rgba(255,248,240,.72);
+    min-height:54px;
+    display:flex;align-items:center;
+    transition:border-color .2s,background .2s;
+    gap:8px;
+  }
+  .def-drop.over{border-color:#ffb800;background:rgba(255,184,0,.08);}
+  .def-drop.correct{border-color:#22c55e;background:rgba(34,197,94,.1);}
+  .def-drop.wrong{border-color:#ef4444;background:rgba(239,68,68,.1);}
+  .def-drop .placed-term{
+    background:rgba(34,197,94,.25);
+    border:1.5px solid #22c55e;
+    border-radius:8px;
+    padding:3px 10px;
+    font-size:.8rem;
+    font-weight:700;
+    flex-shrink:0;
+  }
+  .match-btn{
+    display:block;margin:16px auto 0;
+    background:linear-gradient(135deg,#ffb800,#ff6a00);
+    color:#1a0800;
+    border:none;
+    font-family:'Fredoka One',cursive;
+    font-size:1rem;
+    padding:10px 28px;
+    border-radius:30px;
+    cursor:pointer;
+    box-shadow:0 4px 16px rgba(255,184,0,.35);
+    transition:transform .2s,box-shadow .2s;
+  }
+  .match-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,184,0,.5);}
+  #match-feedback{text-align:center;margin-top:12px;font-weight:700;font-size:.95rem;min-height:22px;}
+
+  /* ======= ACT 2: PRICE TIMELINE ======= */
+  .timeline-intro{font-size:.88rem;color:rgba(255,248,240,.6);margin-bottom:16px;}
+  .price-row{
+    display:flex;align-items:center;gap:10px;
+    background:rgba(255,255,255,.05);
+    border:1.5px solid rgba(255,184,0,.12);
+    border-radius:16px;
+    padding:14px 16px;
+    margin-bottom:10px;
+    flex-wrap:wrap;
+  }
+  .price-emoji{font-size:1.6rem;flex-shrink:0;}
+  .price-item-name{
+    font-family:'Fredoka One',cursive;
+    font-size:1rem;
+    color:#ffb800;
+    min-width:120px;
+    flex-shrink:0;
+  }
+  .price-years{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;}
+  .price-tag{
+    background:rgba(255,255,255,.08);
+    border:1.5px solid rgba(255,255,255,.15);
+    border-radius:10px;
+    padding:5px 12px;
+    font-size:.8rem;
+    font-weight:700;
+    text-align:center;
+    min-width:72px;
+  }
+  .price-tag .yr{font-size:.68rem;color:rgba(255,248,240,.5);display:block;}
+  .price-tag .amt{color:#ffb800;}
+  .price-arrow{color:rgba(255,140,0,.6);font-size:1rem;flex-shrink:0;}
+  .price-tag.highlight{
+    background:linear-gradient(135deg,rgba(255,94,58,.25),rgba(255,140,0,.15));
+    border-color:rgba(255,94,58,.5);
+  }
+  .price-tag.highlight .amt{color:#ff7043;}
+  .price-change{
+    margin-left:auto;
+    background:rgba(239,68,68,.15);
+    border:1.5px solid rgba(239,68,68,.35);
+    border-radius:20px;
+    padding:4px 12px;
+    font-family:'Fredoka One',cursive;
+    font-size:.88rem;
+    color:#fca5a5;
+    flex-shrink:0;
+  }
+  .timeline-q{
+    background:rgba(255,184,0,.07);
+    border:1.5px solid rgba(255,184,0,.2);
+    border-radius:14px;
+    padding:14px 16px;
+    margin-top:16px;
+    font-size:.9rem;
+    color:rgba(255,248,240,.82);
+  }
+  .timeline-q strong{color:#ffb800;font-family:'Fredoka One',cursive;}
+  .tq-opts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+  .tq-opt{
+    background:rgba(255,255,255,.06);
+    border:1.5px solid rgba(255,255,255,.15);
+    border-radius:24px;
+    padding:7px 16px;
+    font-size:.84rem;
+    font-weight:700;
+    cursor:pointer;
+    color:rgba(255,248,240,.8);
+    font-family:'Nunito',sans-serif;
+    transition:background .2s,border-color .2s;
+  }
+  .tq-opt:hover{background:rgba(255,184,0,.12);border-color:rgba(255,184,0,.4);}
+  .tq-opt.tq-correct{background:rgba(34,197,94,.2);border-color:#22c55e;color:#86efac;}
+  .tq-opt.tq-wrong{background:rgba(239,68,68,.15);border-color:#ef4444;color:#fca5a5;}
+  #timeline-feedback{text-align:center;margin-top:12px;font-weight:700;font-size:.95rem;min-height:22px;}
+
+  /* ======= ACT 3: SORT ======= */
+  .sort-bank{
+    display:flex;flex-wrap:wrap;gap:8px;
+    background:rgba(255,255,255,.04);
+    border:2px dashed rgba(255,255,255,.18);
+    border-radius:14px;
+    padding:14px;
+    min-height:66px;
+    margin-bottom:18px;
+  }
+  .sort-bank.over{border-color:#ffb800;background:rgba(255,184,0,.05);}
+  .sort-zones{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .sort-zone{
+    border-radius:16px;
+    border:2px dashed rgba(255,255,255,.2);
+    padding:12px;
+    min-height:120px;
+  }
+  .sort-zone.over{border-style:solid;border-color:#ffb800;}
+  .sort-zone-title{
+    font-family:'Fredoka One',cursive;
+    font-size:1.05rem;
+    margin-bottom:8px;
+    display:flex;align-items:center;gap:6px;
+  }
+  .scenario-chip{
+    display:inline-flex;align-items:center;gap:5px;
+    padding:7px 12px;
+    border-radius:28px;
+    font-size:.81rem;
+    font-weight:700;
+    cursor:grab;
+    user-select:none;
+    transition:transform .2s;
+    margin:3px;
+  }
+  .scenario-chip:active{cursor:grabbing;}
+  .scenario-chip.dragging{opacity:.45;transform:scale(1.06);}
+  #sort-feedback{text-align:center;margin-top:12px;font-weight:700;font-size:.95rem;min-height:22px;}
+
+  /* ======= ACT 4: QUIZ ======= */
+  .quiz-q{
+    background:rgba(255,255,255,.05);
+    border-radius:14px;
+    border:1.5px solid rgba(255,184,0,.1);
+    padding:16px 18px;
+    margin-bottom:12px;
+    animation:fadeUp .5s ease both;
+  }
+  .quiz-q h4{font-size:.93rem;font-weight:700;margin-bottom:10px;color:#fff8f0;}
+  .quiz-opts{display:flex;flex-direction:column;gap:7px;}
+  .quiz-opt{
+    background:rgba(255,255,255,.05);
+    border:1.5px solid rgba(255,255,255,.13);
+    border-radius:10px;
+    padding:9px 13px;
+    font-size:.86rem;
+    cursor:pointer;
+    transition:background .2s,border-color .2s,transform .15s;
+    text-align:left;
+    color:#fff8f0;
+    font-family:'Nunito',sans-serif;
+    font-weight:600;
+  }
+  .quiz-opt:hover:not(.locked){background:rgba(255,184,0,.1);border-color:rgba(255,184,0,.4);transform:translateX(4px);}
+  .quiz-opt.correct-ans{background:rgba(34,197,94,.2);border-color:#22c55e;color:#86efac;}
+  .quiz-opt.wrong-ans{background:rgba(239,68,68,.15);border-color:#ef4444;color:#fca5a5;}
+  .quiz-score{
+    text-align:center;
+    font-family:'Fredoka One',cursive;
+    font-size:1.45rem;
+    color:#ffb800;
+    margin-top:14px;
+  }
+  .quiz-reset{
+    display:block;margin:10px auto 0;
+    background:linear-gradient(135deg,#ff5e3a,#c084fc);
+    color:white;
+    border:none;
+    font-family:'Fredoka One',cursive;
+    font-size:.93rem;
+    padding:9px 24px;
+    border-radius:30px;
+    cursor:pointer;
+    box-shadow:0 4px 14px rgba(192,132,252,.3);
+    transition:transform .2s;
+  }
+  .quiz-reset:hover{transform:translateY(-2px);}
+
+  /* ======= SCORES ======= */
+  .score-bar{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin:24px 0 10px;}
+  .score-pill{
+    background:rgba(255,255,255,.09);
+    border:1.5px solid rgba(255,184,0,.2);
+    border-radius:30px;
+    padding:10px 20px;
+    font-family:'Fredoka One',cursive;
+    font-size:1rem;
+    display:flex;align-items:center;gap:8px;
+    backdrop-filter:blur(8px);
+  }
+  .score-pill span{color:#ffb800;font-size:1.25rem;}
+
+  /* ======= FOOTER ======= */
+  .footer{text-align:center;padding:28px 0 10px;color:rgba(255,248,240,.35);font-size:.8rem;}
+
+  /* ======= ANIMATIONS ======= */
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-28px);}to{opacity:1;transform:none;}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
+  @keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-9px);}}
+  @keyframes pop{0%{transform:scale(.8);}60%{transform:scale(1.2);}100%{transform:scale(1);}}
+  @keyframes float{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-8px) rotate(2deg);}}
+
+  .pop-anim{animation:pop .4s ease;}
+
+  @media(max-width:600px){
+    .match-grid,.sort-zones{grid-template-columns:1fr;}
+    .price-row{flex-direction:column;align-items:flex-start;}
+    .price-change{margin-left:0;}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="hero-emoji">📈</span>
+    <h1>What is Inflation?</h1>
+    <p>Discover why things cost more every year — and what it means for your money!</p>
+  </div>
+
+  <!-- TAB NAVIGATION -->
+  <div class="tabs-nav">
+    <button class="tab-btn active" onclick="switchTab('intro',this)">📚 Learn</button>
+    <button class="tab-btn" onclick="switchTab('match',this)">🔗 Match</button>
+    <button class="tab-btn" onclick="switchTab('prices',this)">🛒 Prices</button>
+    <button class="tab-btn" onclick="switchTab('sort',this)">🗂️ Sort</button>
+    <button class="tab-btn" onclick="switchTab('quiz',this)">🧠 Quiz</button>
+    <button class="tab-btn" onclick="switchTab('scores',this)">🏆 Scores</button>
+  </div>
+
+  <!-- ===== TAB: LEARN ===== -->
+  <div class="tab-panel active" id="tab-intro">
+    <div class="intro-grid">
+      <div class="intro-card">
+        <span class="ic-emoji">📈</span>
+        <h3>What is Inflation?</h3>
+        <p>Inflation is when prices slowly rise over time — so the same ₹10 buys less than it did before!</p>
+      </div>
+      <div class="intro-card">
+        <span class="ic-emoji">🏦</span>
+        <h3>Why Does It Happen?</h3>
+        <p>When more money chases fewer goods, sellers raise prices. More demand or higher costs push prices up.</p>
+      </div>
+      <div class="intro-card">
+        <span class="ic-emoji">📊</span>
+        <h3>CPI — Price Index</h3>
+        <p>Governments track a "basket" of everyday items to measure how much prices have risen. That's the CPI!</p>
+      </div>
+      <div class="intro-card">
+        <span class="ic-emoji">💡</span>
+        <h3>Purchasing Power</h3>
+        <p>If prices rise but your allowance stays the same, you can buy fewer things. That's less purchasing power!</p>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:16px;">
+      <button class="match-btn" onclick="switchTab('match',document.querySelectorAll('.tab-btn')[1])">Start Activities →</button>
+    </div>
+  </div>
+
+  <!-- ===== TAB: MATCH ===== -->
+  <div class="tab-panel" id="tab-match">
+    <div class="section-head">
+      <div class="num">1</div>
+      <div>
+        <h2>🔗 Match the Terms!</h2>
+        <p>Drag each inflation word to its correct definition.</p>
+      </div>
+    </div>
+    <div class="activity-wrap">
+      <div class="match-grid">
+        <div class="match-col">
+          <div class="match-col-title">💬 Inflation Words</div>
+          <div class="term-item" draggable="true" data-term="Inflation" id="t1">Inflation</div>
+          <div class="term-item" draggable="true" data-term="Deflation" id="t2">Deflation</div>
+          <div class="term-item" draggable="true" data-term="CPI" id="t3">CPI</div>
+          <div class="term-item" draggable="true" data-term="Purchasing Power" id="t4">Purchasing Power</div>
+          <div class="term-item" draggable="true" data-term="Interest Rate" id="t5">Interest Rate</div>
+        </div>
+        <div class="match-col">
+          <div class="match-col-title">📖 Definitions</div>
+          <div class="def-drop" data-answer="Purchasing Power">💪 How much you can buy with your money</div>
+          <div class="def-drop" data-answer="CPI">📊 A tool that measures how much everyday prices have changed</div>
+          <div class="def-drop" data-answer="Deflation">📉 When prices fall and money buys more than before</div>
+          <div class="def-drop" data-answer="Interest Rate">🏦 The extra % charged when you borrow money</div>
+          <div class="def-drop" data-answer="Inflation">📈 A general rise in prices over time</div>
+        </div>
+      </div>
+      <button class="match-btn" onclick="checkMatch()">✅ Check My Answers!</button>
+      <div id="match-feedback"></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB: PRICE TIMELINE ===== -->
+  <div class="tab-panel" id="tab-prices">
+    <div class="section-head">
+      <div class="num">2</div>
+      <div>
+        <h2>🛒 Watch Prices Grow!</h2>
+        <p>See how everyday items got more expensive over the years.</p>
+      </div>
+    </div>
+    <div class="activity-wrap">
+      <p class="timeline-intro">These are real-world examples of how prices changed. Can you spot the pattern?</p>
+
+      <div class="price-row">
+        <div class="price-emoji">🍫</div>
+        <div class="price-item-name">Chocolate Bar</div>
+        <div class="price-years">
+          <div class="price-tag"><span class="yr">1990</span><span class="amt">₹2</span></div>
+          <div class="price-arrow">→</div>
+          <div class="price-tag"><span class="yr">2000</span><span class="amt">₹5</span></div>
+          <div class="price-arrow">→</div>
+          <div class="price-tag"><span class="yr">2010</span><span class="amt">₹10</span></div>
+          <div class="price-arrow">→</div>
+          <div class="price-tag highlight"><span class="yr">2024</span><span class="amt">₹25</span></div>
+        </div>
+        <div class="price-change">+1150%</div>
+      </div>
+
+      <div class="price-row">
+        <div class="price-emoji">🚌</div>
+        <div class="price-item-name">Bus Ticket</div>
+        <div class="price-years">
+          <div class="price-tag"><span class="yr">1990</span><span class="amt">₹1</span></div>
+          <div class="price-arrow">→</div>
+          <div class="price-tag"><span class="yr">2000</span><span class="amt">₹3</span></div>
+          <div class="price-arrow">→</div>
+          <div class="price-tag"><span class="yr">2010</span><span class="amt">₹8</span></div>
+          <div class="price-arrow">→</div>
+          <div class="price-tag highlight"><span class="yr">2024</span><span class="amt">₹20</span></div>
+        </div>
+        <div class="price-change">+1900%</div>
+      </div>
+
+      <div class="price-row">
+        <div class="price-emoji">🥛</div>
+        <div class="price-item-name">1L Milk</div>
+        <div class="price-years">
+          <div class="price-tag"><span class="yr">1990</span><span class="amt">₹6</span></div>
+          <div class="price-arrow">→</div>
+          <div class="price-tag"><span class="yr">2000</span><span class="amt">₹12</span></div>
+          <div class="price-arrow">→</div>
+          <div class="price-tag"><span class="yr">2010</span><span class="amt">₹28</span></div>
+          <div class="price-arrow">→</div>
+          <div class="price-tag highlight"><span class="yr">2024</span><span class="amt">₹62</span></div>
+        </div>
+        <div class="price-change">+933%</div>
+      </div>
+
+      <div class="price-row">
+        <div class="price-emoji">📚</div>
+        <div class="price-item-name">School Notebook</div>
+        <div class="price-years">
+          <div class="price-tag"><span class="yr">1990</span><span class="amt">₹4</span></div>
+          <div class="price-arrow">→</div>
+          <div class="price-tag"><span class="yr">2000</span><span class="amt">₹8</span></div>
+          <div class="price-arrow">→</div>
+          <div class="price-tag"><span class="yr">2010</span><span class="amt">₹20</span></div>
+          <div class="price-arrow">→</div>
+          <div class="price-tag highlight"><span class="yr">2024</span><span class="amt">₹50</span></div>
+        </div>
+        <div class="price-change">+1150%</div>
+      </div>
+
+      <!-- Thinking question -->
+      <div class="timeline-q">
+        <strong>🤔 Think About It:</strong> If your grandparent saved ₹100 in 1990 and it's still ₹100 today, can they buy as much as they could back then?
+        <div class="tq-opts">
+          <button class="tq-opt" onclick="answerTQ(this, false)">Yes — money stays the same!</button>
+          <button class="tq-opt" onclick="answerTQ(this, true)">No — prices rose so ₹100 buys less!</button>
+          <button class="tq-opt" onclick="answerTQ(this, false)">It depends on the weather!</button>
+        </div>
+        <div id="timeline-feedback"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB: SORT ===== -->
+  <div class="tab-panel" id="tab-sort">
+    <div class="section-head">
+      <div class="num">3</div>
+      <div>
+        <h2>🗂️ Sort the Causes!</h2>
+        <p>Drag each situation — does it CAUSE inflation or help STOP it?</p>
+      </div>
+    </div>
+    <div class="activity-wrap">
+      <p style="font-size:.86rem;color:rgba(255,248,240,.55);margin-bottom:12px;">Drag each card into the correct zone:</p>
+      <div class="sort-bank" id="sort-bank">
+        <div class="scenario-chip" draggable="true" data-type="cause" style="background:rgba(239,68,68,.18);border:2px solid rgba(239,68,68,.45);color:#fca5a5;">🖨️ Government prints lots of money</div>
+        <div class="scenario-chip" draggable="true" data-type="stop" style="background:rgba(56,189,248,.15);border:2px solid rgba(56,189,248,.4);color:#7dd3fc;">🏦 Bank raises interest rates</div>
+        <div class="scenario-chip" draggable="true" data-type="cause" style="background:rgba(239,68,68,.18);border:2px solid rgba(239,68,68,.45);color:#fca5a5;">⛽ Oil prices suddenly double</div>
+        <div class="scenario-chip" draggable="true" data-type="stop" style="background:rgba(56,189,248,.15);border:2px solid rgba(56,189,248,.4);color:#7dd3fc;">📉 People spend less money</div>
+        <div class="scenario-chip" draggable="true" data-type="cause" style="background:rgba(239,68,68,.18);border:2px solid rgba(239,68,68,.45);color:#fca5a5;">🛍️ Everyone wants to buy the same toy</div>
+        <div class="scenario-chip" draggable="true" data-type="stop" style="background:rgba(56,189,248,.15);border:2px solid rgba(56,189,248,.4);color:#7dd3fc;">🏭 Factories make more goods</div>
+      </div>
+      <div class="sort-zones">
+        <div class="sort-zone" id="zone-cause" data-type="cause" style="background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.3);">
+          <div class="sort-zone-title" style="color:#fca5a5;">🔥 Causes Inflation</div>
+        </div>
+        <div class="sort-zone" id="zone-stop" data-type="stop" style="background:rgba(56,189,248,.07);border-color:rgba(56,189,248,.3);">
+          <div class="sort-zone-title" style="color:#7dd3fc;">🧊 Helps Stop Inflation</div>
+        </div>
+      </div>
+      <div id="sort-feedback"></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB: QUIZ ===== -->
+  <div class="tab-panel" id="tab-quiz">
+    <div class="section-head">
+      <div class="num">4</div>
+      <div>
+        <h2>🧠 Quick-Fire Quiz!</h2>
+        <p>Pick the best answer — test what you've learned!</p>
+      </div>
+    </div>
+    <div class="activity-wrap">
+      <div id="quiz-container"></div>
+      <div class="quiz-score" id="quiz-score"></div>
+      <button class="quiz-reset" id="quiz-reset-btn" onclick="resetQuiz()" style="display:none;">🔄 Try Again!</button>
+    </div>
+  </div>
+
+  <!-- ===== TAB: SCORES ===== -->
+  <div class="tab-panel" id="tab-scores">
+    <div class="section-head" style="justify-content:center;">
+      <div><h2 style="text-align:center;">🏆 Your Scores</h2></div>
+    </div>
+    <div class="score-bar" style="flex-direction:column;align-items:center;gap:14px;margin-top:10px;">
+      <div class="score-pill" style="font-size:1.15rem;padding:14px 30px;">🔗 Match the Terms: <span id="sc-match">—</span></div>
+      <div class="score-pill" style="font-size:1.15rem;padding:14px 30px;">🛒 Price Think: <span id="sc-prices">—</span></div>
+      <div class="score-pill" style="font-size:1.15rem;padding:14px 30px;">🗂️ Sort Causes: <span id="sc-sort">—</span></div>
+      <div class="score-pill" style="font-size:1.15rem;padding:14px 30px;">🧠 Quick Quiz: <span id="sc-quiz">—</span></div>
+    </div>
+    <div class="footer" style="margin-top:32px;">Made with ❤️ for curious Grade 4 learners • Inflation Explorer</div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+/* ===== CANVAS BACKGROUND ===== */
+const canvas=document.getElementById('bgCanvas');
+const ctx=canvas.getContext('2d');
+let W,H;
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+resize();
+window.addEventListener('resize',resize);
+
+// Floating coins
+const coins=Array.from({length:28},()=>newCoin());
+function newCoin(){
+  return{
+    x:Math.random()*W,
+    y:Math.random()*H,
+    r:Math.random()*14+5,
+    vy:-(Math.random()*.4+.1),
+    vx:(Math.random()-.5)*.3,
+    alpha:Math.random()*.18+.04,
+    spin:Math.random()*Math.PI*2,
+    spinSpeed:(Math.random()-.5)*.04
+  };
+}
+
+// Stars/sparks
+const sparks=Array.from({length:120},()=>({
+  x:Math.random()*W,y:Math.random()*H,
+  r:Math.random()*1.8+.3,
+  base:Math.random()*.55+.2,
+  speed:Math.random()*2+1,
+  phase:Math.random()*Math.PI*2,
+  color:`hsl(${Math.random()*40+25},90%,75%)`
+}));
+
+let frame=0;
+function draw(){
+  frame++;
+  ctx.clearRect(0,0,W,H);
+
+  // Sky gradient — warm amber/charcoal
+  const g=ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,'#0d0500');
+  g.addColorStop(.35,'#2a0f00');
+  g.addColorStop(.65,'#4a1e00');
+  g.addColorStop(1,'#0d0300');
+  ctx.fillStyle=g;
+  ctx.fillRect(0,0,W,H);
+
+  // Horizon glow
+  const hg=ctx.createRadialGradient(W/2,H*.72,0,W/2,H*.72,W*.55);
+  hg.addColorStop(0,'rgba(255,120,0,.12)');
+  hg.addColorStop(1,'rgba(255,120,0,0)');
+  ctx.fillStyle=hg;
+  ctx.fillRect(0,0,W,H);
+
+  // Sparks
+  const t=frame/60;
+  sparks.forEach(s=>{
+    const a=s.base+Math.sin(t*s.speed+s.phase)*.3;
+    ctx.beginPath();
+    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle=s.color;
+    ctx.globalAlpha=Math.max(0,Math.min(1,a));
+    ctx.fill();
+    ctx.globalAlpha=1;
+  });
+
+  // Floating coins
+  coins.forEach(c=>{
+    c.y+=c.vy;
+    c.x+=c.vx;
+    c.spin+=c.spinSpeed;
+    if(c.y+c.r<0)Object.assign(c,newCoin(),{y:H+c.r});
+
+    ctx.save();
+    ctx.translate(c.x,c.y);
+    ctx.rotate(c.spin);
+    ctx.globalAlpha=c.alpha;
+
+    // Coin body
+    ctx.beginPath();
+    ctx.ellipse(0,0,c.r,c.r*.35,0,0,Math.PI*2);
+    const cg=ctx.createRadialGradient(-c.r*.3,-c.r*.1,0,0,0,c.r);
+    cg.addColorStop(0,'#ffe066');
+    cg.addColorStop(.6,'#ffb800');
+    cg.addColorStop(1,'#a06000');
+    ctx.fillStyle=cg;
+    ctx.fill();
+    ctx.strokeStyle='rgba(255,200,0,.4)';
+    ctx.lineWidth=.8;
+    ctx.stroke();
+
+    ctx.globalAlpha=1;
+    ctx.restore();
+  });
+
+  requestAnimationFrame(draw);
+}
+draw();
+
+/* ===== TAB SWITCHING ===== */
+function switchTab(id,btn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ===== ACTIVITY 1: MATCH ===== */
+let draggedTerm=null;
+
+document.querySelectorAll('.term-item').forEach(el=>{
+  el.addEventListener('dragstart',()=>{
+    draggedTerm=el;
+    setTimeout(()=>el.classList.add('dragging'),0);
+  });
+  el.addEventListener('dragend',()=>{
+    el.classList.remove('dragging');
+    draggedTerm=null;
+  });
+});
+
+document.querySelectorAll('.def-drop').forEach(drop=>{
+  drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('over');});
+  drop.addEventListener('dragleave',()=>drop.classList.remove('over'));
+  drop.addEventListener('drop',e=>{
+    e.preventDefault();
+    drop.classList.remove('over');
+    if(!draggedTerm)return;
+    if(drop.querySelector('.placed-term'))return;
+    const span=document.createElement('span');
+    span.className='placed-term';
+    span.textContent=draggedTerm.dataset.term;
+    span.dataset.term=draggedTerm.dataset.term;
+    drop.insertBefore(span,drop.firstChild);
+    draggedTerm.style.visibility='hidden';
+    draggedTerm.draggable=false;
+  });
+});
+
+function checkMatch(){
+  let correct=0,total=0;
+  document.querySelectorAll('.def-drop').forEach(drop=>{
+    const placed=drop.querySelector('.placed-term');
+    if(!placed)return;
+    total++;
+    if(placed.dataset.term===drop.dataset.answer){
+      correct++;
+      drop.classList.add('correct');drop.classList.remove('wrong');
+      placed.style.background='rgba(34,197,94,.3)';placed.style.borderColor='#22c55e';
+    }else{
+      drop.classList.add('wrong');drop.classList.remove('correct');
+      placed.style.background='rgba(239,68,68,.25)';placed.style.borderColor='#ef4444';
+    }
+  });
+  const fb=document.getElementById('match-feedback');
+  if(total===0){fb.textContent='💡 Drag some words first!';fb.style.color='#ffb800';return;}
+  const msgs=['Keep trying! 💪','Getting there! 🔄','Nice effort! ⭐','Almost perfect! 🌟','PERFECT! You\'re a star! 🎉'];
+  const idx=Math.min(4,Math.floor((correct/5)*5));
+  fb.textContent=`${correct}/5 correct — ${msgs[idx]}`;
+  fb.style.color=correct===5?'#22c55e':correct>=3?'#ffb800':'#ff7043';
+  document.getElementById('sc-match').textContent=`${correct}/5`;
+  document.getElementById('sc-match').parentElement.classList.add('pop-anim');
+  setTimeout(()=>document.getElementById('sc-match').parentElement.classList.remove('pop-anim'),400);
+}
+
+/* ===== ACTIVITY 2: PRICE TIMELINE QUESTION ===== */
+let priceAnswered=false;
+function answerTQ(btn,isCorrect){
+  if(priceAnswered)return;
+  priceAnswered=true;
+  const fb=document.getElementById('timeline-feedback');
+  const allBtns=btn.parentElement.querySelectorAll('.tq-opt');
+  allBtns.forEach(b=>b.style.pointerEvents='none');
+  if(isCorrect){
+    btn.classList.add('tq-correct');
+    fb.textContent='🎉 Exactly right! Inflation means ₹100 buys less today than it did before!';
+    fb.style.color='#22c55e';
+    document.getElementById('sc-prices').textContent='1/1';
+  }else{
+    btn.classList.add('tq-wrong');
+    fb.textContent='Not quite — prices have risen a LOT, so ₹100 buys less now!';
+    fb.style.color='#ff7043';
+    // highlight correct
+    allBtns.forEach(b=>{if(b.textContent.includes('prices rose'))b.classList.add('tq-correct');});
+    document.getElementById('sc-prices').textContent='0/1';
+  }
+}
+
+/* ===== ACTIVITY 3: SORT ===== */
+let draggedChip=null;
+
+function setupSortDrag(){
+  document.querySelectorAll('.scenario-chip').forEach(chip=>{
+    chip.addEventListener('dragstart',()=>{
+      draggedChip=chip;
+      setTimeout(()=>chip.classList.add('dragging'),0);
+    });
+    chip.addEventListener('dragend',()=>{
+      chip.classList.remove('dragging');
+      draggedChip=null;
+      checkSort();
+    });
+  });
+  const zones=[document.getElementById('sort-bank'),...document.querySelectorAll('.sort-zone')];
+  zones.forEach(zone=>{
+    zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('over');});
+    zone.addEventListener('dragleave',()=>zone.classList.remove('over'));
+    zone.addEventListener('drop',e=>{
+      e.preventDefault();
+      zone.classList.remove('over');
+      if(!draggedChip)return;
+      zone.appendChild(draggedChip);
+    });
+  });
+}
+setupSortDrag();
+
+function checkSort(){
+  let correct=0,placed=0;
+  document.querySelectorAll('.sort-zone').forEach(zone=>{
+    const type=zone.dataset.type;
+    zone.querySelectorAll('.scenario-chip').forEach(chip=>{
+      placed++;
+      if(chip.dataset.type===type)correct++;
+    });
+  });
+  if(placed===0){document.getElementById('sort-feedback').textContent='';return;}
+  const total=document.querySelectorAll('.scenario-chip').length;
+  const allPlaced=placed===total;
+  const fb=document.getElementById('sort-feedback');
+  if(allPlaced){
+    fb.textContent=correct===total?`🎉 Perfect! All ${total} sorted correctly!`:`${correct}/${total} correct — try again!`;
+    fb.style.color=correct===total?'#22c55e':'#ffb800';
+    document.getElementById('sc-sort').textContent=`${correct}/${total}`;
+  }
+}
+
+/* ===== ACTIVITY 4: QUIZ ===== */
+const questions=[
+  {
+    q:'What does inflation mean?',
+    opts:['Prices go down over time','Prices stay the same forever','Prices rise over time','People stop buying things'],
+    ans:2
+  },
+  {
+    q:'If a toy costs ₹50 today but will cost ₹55 next year, what is happening?',
+    opts:['Deflation — prices fell','Inflation — prices went up','Nothing changed','The toy got smaller'],
+    ans:1
+  },
+  {
+    q:'What does CPI stand for?',
+    opts:['Central Price Index','Consumer Price Index','Currency Power Index','Cost Per Item'],
+    ans:1
+  },
+  {
+    q:'Riya has ₹100 saved. Prices doubled this year. How much can she buy now?',
+    opts:['Twice as much','The same amount','Half as much','Nothing at all'],
+    ans:2
+  },
+  {
+    q:'Which action by a bank usually helps slow inflation?',
+    opts:['Printing more money','Lowering interest rates','Raising interest rates','Giving free loans'],
+    ans:2
+  }
+];
+
+let quizAnswers=[],quizScore=0;
+
+function buildQuiz(){
+  const c=document.getElementById('quiz-container');
+  c.innerHTML='';
+  quizAnswers=[];quizScore=0;
+  document.getElementById('quiz-score').textContent='';
+  document.getElementById('quiz-reset-btn').style.display='none';
+  questions.forEach((q,qi)=>{
+    const div=document.createElement('div');
+    div.className='quiz-q';
+    div.style.animationDelay=`${qi*.1}s`;
+    div.innerHTML=`<h4>Q${qi+1}: ${q.q}</h4><div class="quiz-opts">${q.opts.map((o,oi)=>`<button class="quiz-opt" onclick="selectOpt(${qi},${oi},this)">${o}</button>`).join('')}</div>`;
+    c.appendChild(div);
+  });
+}
+
+function selectOpt(qi,oi,btn){
+  if(quizAnswers[qi]!==undefined)return;
+  quizAnswers[qi]=oi;
+  const correct=questions[qi].ans;
+  const opts=btn.parentElement.querySelectorAll('.quiz-opt');
+  opts.forEach(o=>o.classList.add('locked'));
+  if(oi===correct){btn.classList.add('correct-ans');quizScore++;}
+  else{btn.classList.add('wrong-ans');opts[correct].classList.add('correct-ans');}
+  if(quizAnswers.filter(a=>a!==undefined).length===questions.length)setTimeout(showQuizResult,400);
+}
+
+function showQuizResult(){
+  const emojis=['😅','🙂','😊','⭐','🌟','🎉'];
+  const idx=Math.min(5,Math.floor(quizScore/questions.length*5));
+  document.getElementById('quiz-score').textContent=`${emojis[idx]} You scored ${quizScore}/${questions.length}!`;
+  document.getElementById('quiz-reset-btn').style.display='block';
+  document.getElementById('sc-quiz').textContent=`${quizScore}/${questions.length}`;
+  document.getElementById('sc-quiz').parentElement.classList.add('pop-anim');
+  setTimeout(()=>document.getElementById('sc-quiz').parentElement.classList.remove('pop-anim'),400);
+}
+
+function resetQuiz(){buildQuiz();}
+buildQuiz();
+</script>
+</body>
+</html>

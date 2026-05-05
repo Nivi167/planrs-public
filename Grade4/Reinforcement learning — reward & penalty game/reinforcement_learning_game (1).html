@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reinforcement Learning — Reward & Penalty Game</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gold:#f5c842;--deep:#080618;--mid:#130a30;--purple:#5a2d9e;
+    --magenta:#c0329b;--cyan:#38d9f5;--green:#39e97b;--red:#ff4f6e;
+    --white:#f0e8ff;--orange:#ff9a3c;--indigo:#4158d0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Nunito',sans-serif;background:var(--deep);color:var(--white);min-height:100vh;overflow-x:hidden;}
+
+  /* ══ BACKGROUND ══ */
+  .bg{position:fixed;inset:0;z-index:0;overflow:hidden;
+    background:radial-gradient(ellipse at 15% 20%,#200855 0%,#080618 50%),
+               radial-gradient(ellipse at 85% 80%,#12003a 0%,transparent 60%);}
+  .bg::before{content:'';position:absolute;inset:0;
+    background-image:
+      radial-gradient(1.5px 1.5px at 7%  10%,#fff 0%,transparent 100%),
+      radial-gradient(1px   1px   at 25% 35%,#fff 0%,transparent 100%),
+      radial-gradient(2px   2px   at 48% 15%,#ffe566 0%,transparent 100%),
+      radial-gradient(1px   1px   at 65% 58%,#fff 0%,transparent 100%),
+      radial-gradient(2px   2px   at 90% 6% ,#ffe566 0%,transparent 100%),
+      radial-gradient(1px   1px   at 38% 85%,#fff 0%,transparent 100%),
+      radial-gradient(1.5px 1.5px at 12% 94%,#fff 0%,transparent 100%),
+      radial-gradient(2px   2px   at 55% 45%,#ffe566 0%,transparent 100%),
+      radial-gradient(1px   1px   at 97% 30%,#fff 0%,transparent 100%),
+      radial-gradient(1px   1px   at 2%  60%,#fff 0%,transparent 100%),
+      radial-gradient(1px   1px   at 78% 78%,#fff 0%,transparent 100%);
+    animation:twinkle 3.5s ease-in-out infinite alternate;}
+  @keyframes twinkle{from{opacity:.4}to{opacity:1}}
+  .orb{position:fixed;border-radius:50%;filter:blur(75px);z-index:0;pointer-events:none;
+    animation:orbD ease-in-out infinite alternate;}
+  @keyframes orbD{from{transform:translate(0,0)}to{transform:translate(38px,26px)}}
+  .floater{position:fixed;z-index:1;pointer-events:none;user-select:none;
+    animation:fUp linear infinite;}
+  @keyframes fUp{
+    0%  {transform:translateY(108vh) rotate(0deg);opacity:0}
+    8%  {opacity:.5}
+    92% {opacity:.5}
+    100%{transform:translateY(-8vh) rotate(340deg);opacity:0}}
+
+  /* ══ LAYOUT ══ */
+  .wrap{position:relative;z-index:2;max-width:980px;margin:0 auto;padding:0 16px 80px;}
+
+  /* ══ HEADER ══ */
+  header{text-align:center;padding:40px 0 8px;}
+  h1{font-family:'Cinzel',serif;font-size:clamp(1.5rem,5vw,2.85rem);font-weight:900;
+    background:linear-gradient(90deg,var(--gold),#ff9fef,var(--cyan));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.2;margin-bottom:6px;}
+  .divider{margin:18px auto;width:240px;height:3px;border-radius:4px;
+    background:linear-gradient(90deg,transparent,var(--gold),var(--magenta),transparent);}
+  .scroll-hint{text-align:center;opacity:.28;font-size:.77rem;margin-bottom:28px;}
+
+  /* ══ CARDS ══ */
+  .card{background:linear-gradient(135deg,rgba(38,16,80,.93),rgba(8,6,24,.97));
+    border:1.5px solid rgba(245,200,66,.2);border-radius:24px;
+    padding:28px 26px 34px;margin-bottom:32px;
+    box-shadow:0 10px 46px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.03) inset;
+    position:relative;overflow:hidden;}
+  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:24px 24px 0 0;}
+  .c1::before{background:linear-gradient(90deg,var(--gold),var(--magenta));}
+  .c2::before{background:linear-gradient(90deg,var(--cyan),var(--green));}
+  .c3::before{background:linear-gradient(90deg,var(--orange),var(--magenta));}
+
+  .act-label{display:inline-flex;align-items:center;gap:7px;
+    font-family:'Cinzel',serif;font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+    background:rgba(255,255,255,.07);border-radius:50px;padding:4px 14px;margin-bottom:13px;
+    border:1px solid rgba(255,255,255,.11);}
+  .act-title{font-family:'Cinzel',serif;font-size:clamp(1rem,3vw,1.42rem);font-weight:700;
+    color:var(--gold);text-shadow:0 0 22px rgba(245,200,66,.38);margin-bottom:8px;}
+  .act-desc{font-size:.9rem;opacity:.76;margin-bottom:20px;line-height:1.68;}
+
+  /* ══ BUTTONS ══ */
+  .btn{padding:9px 22px;border:none;border-radius:50px;cursor:pointer;
+    font-family:'Nunito',sans-serif;font-weight:800;font-size:.87rem;
+    transition:transform .15s,box-shadow .15s;}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.45);}
+  .btn:active{transform:translateY(0);}
+  .btn:disabled{opacity:.4;pointer-events:none;}
+  .btn-gold   {background:linear-gradient(135deg,var(--gold),#c88a08);color:#1a0a2e;}
+  .btn-cyan   {background:linear-gradient(135deg,var(--cyan),#1ab4d8);color:#040218;}
+  .btn-magenta{background:linear-gradient(135deg,var(--magenta),#8f1870);color:#fff;}
+  .btn-green  {background:linear-gradient(135deg,var(--green),#16a04e);color:#030d10;}
+  .btn-orange {background:linear-gradient(135deg,var(--orange),#d06010);color:#fff;}
+  .btn-red    {background:linear-gradient(135deg,var(--red),#aa1030);color:#fff;}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+
+  /* ══ CONFETTI ══ */
+  .conf{position:fixed;inset:0;pointer-events:none;z-index:999;}
+  .cp{position:absolute;width:9px;height:9px;border-radius:2px;
+    animation:cfF 1.5s ease-in forwards;}
+  @keyframes cfF{0%{opacity:1;transform:translateY(-10px) rotate(0)}100%{opacity:0;transform:translateY(110vh) rotate(720deg)}}
+
+  /* ══ SCORE BADGE ══ */
+  .score-badge{
+    display:inline-flex;align-items:center;gap:8px;
+    background:rgba(0,0,0,.4);border:1.5px solid rgba(245,200,66,.3);
+    border-radius:50px;padding:5px 18px;font-weight:800;font-size:.95rem;
+    color:var(--gold);margin-bottom:14px;}
+  .score-num{font-size:1.2rem;color:var(--cyan);}
+
+  /* ════════════════════════════════════════
+     ACTIVITY 1 – TRAIN THE ROBOT
+     Grid world: drag reward/penalty tiles
+     onto cells, then watch robot navigate
+  ════════════════════════════════════════ */
+  .robot-layout{display:flex;flex-wrap:wrap;gap:22px;align-items:flex-start;}
+  .tile-palette{flex:0 0 auto;display:flex;flex-direction:column;gap:10px;}
+  .tile-palette-title{font-size:.78rem;opacity:.65;font-weight:700;margin-bottom:4px;}
+  .pal-tile{
+    width:62px;height:62px;border-radius:12px;cursor:grab;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-size:1.5rem;font-weight:800;user-select:none;
+    border:2px solid rgba(255,255,255,.2);
+    box-shadow:0 4px 14px rgba(0,0,0,.45);
+    transition:transform .15s;}
+  .pal-tile:active{cursor:grabbing;transform:scale(1.12) rotate(-4deg);}
+  .pal-reward {background:linear-gradient(135deg,#1a5e2a,#27a84e);}
+  .pal-penalty{background:linear-gradient(135deg,#6e1220,#c02038);}
+  .pal-wall   {background:linear-gradient(135deg,#2a2240,#4a3870);}
+  .pal-label  {font-size:.55rem;opacity:.8;margin-top:2px;}
+
+  .grid-wrap{flex:1 1 300px;}
+  .robot-grid{
+    display:grid;grid-template-columns:repeat(5,1fr);
+    gap:5px;margin-bottom:12px;max-width:320px;}
+  .r-cell{
+    aspect-ratio:1;border-radius:10px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.3rem;font-weight:900;
+    background:rgba(255,255,255,.06);
+    border:2px solid rgba(255,255,255,.09);
+    transition:background .2s,border-color .2s,transform .15s;
+    position:relative;user-select:none;overflow:hidden;}
+  .r-cell:hover:not(.robot-here){border-color:rgba(245,200,66,.5);transform:scale(1.04);}
+  .r-cell.drop-over{background:rgba(56,217,245,.2);border-color:var(--cyan);}
+  .r-cell.reward {background:linear-gradient(135deg,#1a5e2a88,#27a84e66);border-color:#27a84e;}
+  .r-cell.penalty{background:linear-gradient(135deg,#6e122088,#c0203866);border-color:#c02038;}
+  .r-cell.wall   {background:linear-gradient(135deg,#2a2240cc,#4a3870cc);border-color:#4a3870;}
+  .r-cell.goal   {background:linear-gradient(135deg,#b8860b88,#f5c84266);border-color:var(--gold);}
+  .r-cell.robot-here::after{
+    content:'🤖';font-size:1.4rem;
+    position:absolute;animation:botPop .3s ease-out;}
+  @keyframes botPop{0%{transform:scale(0)}100%{transform:scale(1)}}
+  .r-cell.trail{background:rgba(56,217,245,.12)!important;}
+
+  .robot-controls{display:flex;flex-direction:column;gap:8px;}
+  .robot-log{
+    background:rgba(0,0,0,.35);border-radius:12px;padding:10px 14px;
+    font-size:.8rem;line-height:1.7;max-height:130px;overflow-y:auto;
+    border:1px solid rgba(255,255,255,.07);}
+  .log-entry{display:flex;align-items:flex-start;gap:6px;}
+  .log-reward{color:var(--green);}
+  .log-penalty{color:var(--red);}
+  .log-normal{color:var(--cyan);}
+  .robot-score-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;}
+  .r-stat{background:rgba(0,0,0,.3);border-radius:10px;padding:6px 14px;text-align:center;}
+  .r-stat-val{font-size:1.3rem;font-weight:800;}
+  .r-stat-lbl{font-size:.65rem;opacity:.6;}
+
+  /* ════════════════════════════════════════
+     ACTIVITY 2 – POLICY BUILDER
+     Drag action cards onto state cards
+     then simulate agent running the policy
+  ════════════════════════════════════════ */
+  .policy-layout{display:flex;flex-wrap:wrap;gap:20px;}
+  .action-shelf{flex:0 0 auto;}
+  .action-shelf-title{font-size:.78rem;opacity:.65;font-weight:700;margin-bottom:8px;}
+  .action-pool{display:flex;flex-direction:column;gap:9px;}
+  .act-card{
+    width:110px;padding:10px 8px;border-radius:12px;cursor:grab;
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    background:linear-gradient(135deg,#2d1458,#5a2d9e);
+    border:2px solid rgba(245,200,66,.35);
+    font-size:1.3rem;font-weight:800;user-select:none;
+    box-shadow:0 4px 14px rgba(0,0,0,.4);transition:transform .15s;}
+  .act-card:active{cursor:grabbing;transform:scale(1.08) rotate(-3deg);}
+  .act-card span{font-size:.65rem;opacity:.75;text-align:center;font-weight:700;}
+
+  .state-grid{flex:1 1 300px;display:flex;flex-direction:column;gap:10px;}
+  .state-row{
+    display:flex;align-items:center;gap:10px;
+    background:rgba(0,0,0,.3);border-radius:14px;padding:10px 14px;
+    border:1.5px solid rgba(255,255,255,.08);}
+  .state-icon{font-size:1.6rem;min-width:36px;text-align:center;}
+  .state-name{font-size:.88rem;font-weight:700;flex:1;}
+  .state-drop{
+    width:90px;height:54px;border-radius:10px;
+    border:2.5px dashed rgba(56,217,245,.45);
+    display:flex;align-items:center;justify-content:center;
+    font-size:.7rem;opacity:.65;background:rgba(56,217,245,.04);
+    transition:background .2s,border-color .2s;cursor:default;text-align:center;padding:4px;}
+  .state-drop.over{background:rgba(56,217,245,.18);border-color:var(--cyan);opacity:1;}
+  .state-drop.filled{border-style:solid;border-color:var(--green);opacity:1;background:rgba(57,233,123,.08);}
+  .state-drop .d-icon{font-size:1.3rem;}
+  .state-drop .d-lbl{font-size:.6rem;font-weight:700;}
+  .state-outcome{font-size:.78rem;min-width:80px;font-weight:700;text-align:right;}
+
+  .sim-panel{margin-top:16px;background:rgba(0,0,0,.3);border-radius:14px;padding:14px;}
+  .sim-title{font-size:.85rem;font-weight:800;color:var(--gold);margin-bottom:8px;}
+  .sim-steps{display:flex;flex-wrap:wrap;gap:6px;}
+  .sim-step{
+    padding:5px 12px;border-radius:50px;font-size:.78rem;font-weight:700;
+    border:1.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);}
+  .sim-step.reward{border-color:var(--green);color:var(--green);}
+  .sim-step.penalty{border-color:var(--red);color:var(--red);}
+  .sim-total{margin-top:10px;font-size:.92rem;font-weight:800;}
+
+  /* ════════════════════════════════════════
+     ACTIVITY 3 – Q-VALUE EXPERIMENT
+     Students set Q-values by dragging
+     reward sliders, agent picks best action
+  ════════════════════════════════════════ */
+  .qval-layout{display:flex;flex-wrap:wrap;gap:22px;align-items:flex-start;}
+  .qval-left{flex:1 1 260px;}
+  .qval-right{flex:0 0 260px;}
+
+  .scenario-box{
+    background:rgba(0,0,0,.35);border-radius:14px;padding:14px 16px;
+    border:1.5px solid rgba(245,200,66,.18);margin-bottom:14px;}
+  .scen-title{font-size:.82rem;font-weight:800;color:var(--gold);margin-bottom:10px;}
+  .scen-desc{font-size:.85rem;line-height:1.6;opacity:.8;}
+
+  .q-action-list{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+  .q-action-row{
+    background:rgba(255,255,255,.05);border-radius:12px;
+    padding:10px 14px;border:1.5px solid rgba(255,255,255,.09);}
+  .q-action-top{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+  .q-action-icon{font-size:1.3rem;}
+  .q-action-name{font-size:.88rem;font-weight:700;flex:1;}
+  .q-action-val{font-size:1rem;font-weight:800;color:var(--cyan);min-width:36px;text-align:right;}
+  .q-slider{
+    width:100%;-webkit-appearance:none;height:6px;border-radius:3px;
+    background:linear-gradient(90deg,var(--red),#888,var(--green));outline:none;cursor:pointer;}
+  .q-slider::-webkit-slider-thumb{
+    -webkit-appearance:none;width:20px;height:20px;border-radius:50%;
+    background:var(--white);border:3px solid var(--purple);cursor:pointer;
+    box-shadow:0 2px 8px rgba(0,0,0,.5);}
+
+  .agent-decision{
+    background:rgba(0,0,0,.4);border-radius:14px;padding:16px;
+    border:1.5px solid rgba(56,217,245,.25);}
+  .agent-title{font-size:.82rem;font-weight:800;color:var(--cyan);margin-bottom:10px;}
+  .agent-think{font-size:.82rem;line-height:1.75;opacity:.8;margin-bottom:10px;}
+  .agent-pick{
+    text-align:center;font-size:1.1rem;font-weight:800;
+    background:rgba(57,233,123,.1);border:1.5px solid var(--green);
+    border-radius:10px;padding:10px;color:var(--green);}
+  .q-bar-wrap{display:flex;flex-direction:column;gap:6px;margin-top:12px;}
+  .q-bar-row{display:flex;align-items:center;gap:8px;}
+  .q-bar-label{font-size:.72rem;width:80px;opacity:.7;font-weight:700;}
+  .q-bar-track{flex:1;height:10px;background:rgba(255,255,255,.08);border-radius:5px;overflow:hidden;}
+  .q-bar-fill{height:100%;border-radius:5px;transition:width .4s;}
+  .q-bar-num{font-size:.72rem;width:30px;text-align:right;font-weight:700;}
+
+  .episode-log{
+    background:rgba(0,0,0,.3);border-radius:12px;padding:10px 14px;
+    font-size:.78rem;line-height:1.8;max-height:120px;overflow-y:auto;
+    border:1px solid rgba(255,255,255,.07);margin-top:12px;}
+
+  /* shared */
+  .feedback-box{
+    font-weight:800;font-size:.92rem;min-height:28px;margin-top:10px;
+    background:rgba(0,0,0,.3);border-radius:10px;padding:8px 12px;}
+  @media(max-width:540px){
+    .robot-layout,.policy-layout,.qval-layout{flex-direction:column;align-items:stretch;}
+    .tile-palette{flex-direction:row;flex-wrap:wrap;justify-content:center;}
+    .action-pool{flex-direction:row;flex-wrap:wrap;}
+    .act-card{width:80px;}
+    .qval-right{flex:1 1 auto;}
+  }
+</style>
+</head>
+<body>
+
+<div class="bg">
+  <div class="orb" style="width:320px;height:320px;background:rgba(80,30,160,.25);top:5%;left:3%;animation-duration:8s;"></div>
+  <div class="orb" style="width:200px;height:200px;background:rgba(192,50,155,.18);top:62%;left:74%;animation-duration:11s;"></div>
+  <div class="orb" style="width:160px;height:160px;background:rgba(56,217,245,.12);top:38%;left:50%;animation-duration:13s;"></div>
+  <div class="orb" style="width:120px;height:120px;background:rgba(255,154,60,.1);top:80%;left:20%;animation-duration:9s;"></div>
+</div>
+<div id="floaters"></div>
+<div class="conf" id="confWrap"></div>
+
+<div class="wrap">
+
+  <header>
+    <h1>Reinforcement Learning<br>Reward &amp; Penalty Game</h1>
+    <div class="divider"></div>
+    <p class="scroll-hint">↓ Three AI experiments below — explore &amp; train your agent! ↓</p>
+  </header>
+
+  <!-- ══════════════════════════════════════
+       ACTIVITY 1 – TRAIN THE ROBOT
+  ══════════════════════════════════════ -->
+  <section class="card c1">
+    <div class="act-label">🤖 Activity 1</div>
+    <h2 class="act-title">🗺️ Train the Robot — Design the World!</h2>
+    <p class="act-desc">
+      Drag <strong>Reward 🌟</strong>, <strong>Penalty ☠️</strong>, or <strong>Wall 🧱</strong> tiles onto the grid to build your world.
+      The robot starts at the top-left and tries to reach the <strong>Goal 🏆</strong> (bottom-right).
+      Watch it navigate — rewards add points, penalties subtract, walls block the path!
+    </p>
+
+    <div class="robot-layout">
+      <div class="tile-palette">
+        <div class="tile-palette-title">Drag tiles →</div>
+        <div class="pal-tile pal-reward" draggable="true" id="palReward"
+             ondragstart="palDragStart(event,'reward')">🌟<div class="pal-label">Reward +10</div></div>
+        <div class="pal-tile pal-penalty" draggable="true" id="palPenalty"
+             ondragstart="palDragStart(event,'penalty')">☠️<div class="pal-label">Penalty −10</div></div>
+        <div class="pal-tile pal-wall" draggable="true" id="palWall"
+             ondragstart="palDragStart(event,'wall')">🧱<div class="pal-label">Wall</div></div>
+        <div class="pal-tile" draggable="false" onclick="eraseDrag=true"
+             style="background:linear-gradient(135deg,#333,#555);cursor:pointer;"
+             title="Click then click a cell to erase">🗑️<div class="pal-label">Erase</div></div>
+      </div>
+
+      <div class="grid-wrap">
+        <div class="robot-grid" id="robotGrid"></div>
+        <div class="robot-score-row">
+          <div class="r-stat"><div class="r-stat-val" id="rScore">0</div><div class="r-stat-lbl">Score</div></div>
+          <div class="r-stat"><div class="r-stat-val" id="rSteps">0</div><div class="r-stat-lbl">Steps</div></div>
+          <div class="r-stat"><div class="r-stat-val" id="rRuns">0</div><div class="r-stat-lbl">Runs</div></div>
+          <div class="r-stat"><div class="r-stat-val" id="rBest">—</div><div class="r-stat-lbl">Best</div></div>
+        </div>
+        <div class="robot-log" id="robotLog"><div class="log-entry log-normal">Design the grid then run the robot!</div></div>
+        <div class="btn-row" style="margin-top:10px;">
+          <button class="btn btn-gold" id="runBtn" onclick="runRobot()">🤖 Run Robot!</button>
+          <button class="btn btn-cyan" onclick="runFast()">⚡ Run ×5</button>
+          <button class="btn btn-orange" onclick="resetRobot()">🔄 Reset Run</button>
+          <button class="btn btn-red" onclick="clearGrid()">🗑️ Clear Grid</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════
+       ACTIVITY 2 – POLICY BUILDER
+  ══════════════════════════════════════ -->
+  <section class="card c2">
+    <div class="act-label">🧠 Activity 2</div>
+    <h2 class="act-title">📋 Policy Builder — Teach the Agent!</h2>
+    <p class="act-desc">
+      A <strong>policy</strong> tells the AI what action to take in each state.
+      Drag the best action card onto each state, then simulate the agent following your policy.
+      Does your policy earn more rewards than penalties? Experiment to find the best strategy!
+    </p>
+
+    <div class="policy-layout">
+      <div class="action-shelf">
+        <div class="action-shelf-title">Action cards — drag to a state:</div>
+        <div class="action-pool" id="actionPool"></div>
+      </div>
+      <div style="flex:1 1 300px;">
+        <div class="state-grid" id="stateGrid"></div>
+        <div class="sim-panel">
+          <div class="sim-title">🎬 Policy Simulation</div>
+          <div class="sim-steps" id="simSteps"><span style="opacity:.45;font-size:.8rem;">Build your policy above, then simulate!</span></div>
+          <div class="sim-total" id="simTotal"></div>
+        </div>
+        <div class="btn-row" style="margin-top:12px;">
+          <button class="btn btn-green" onclick="simulatePolicy()">▶️ Simulate Policy</button>
+          <button class="btn btn-magenta" onclick="autoPolicy()">🤖 Auto Best Policy</button>
+          <button class="btn btn-orange" onclick="resetPolicy()">🔄 Reset</button>
+        </div>
+        <div class="feedback-box" id="policyFeedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════
+       ACTIVITY 3 – Q-VALUE EXPERIMENT
+  ══════════════════════════════════════ -->
+  <section class="card c3">
+    <div class="act-label">📊 Activity 3</div>
+    <h2 class="act-title">🔬 Q-Value Lab — What Will the Agent Choose?</h2>
+    <p class="act-desc">
+      In reinforcement learning, <strong>Q-values</strong> estimate how good each action is.
+      Use the sliders to set Q-values for each action, then see which action the AI agent picks
+      and <em>why</em>. Change the values and predict the agent's behaviour before running!
+    </p>
+
+    <div class="qval-layout">
+      <div class="qval-left">
+        <div class="scenario-box" id="scenarioBox">
+          <div class="scen-title" id="scenTitle">Loading scenario…</div>
+          <div class="scen-desc" id="scenDesc"></div>
+        </div>
+        <div class="q-action-list" id="qActionList"></div>
+        <div class="btn-row">
+          <button class="btn btn-gold" onclick="runQDecision()">🧠 Let Agent Decide!</button>
+          <button class="btn btn-cyan" onclick="nextScenario()">➡️ New Scenario</button>
+          <button class="btn btn-orange" onclick="resetQValues()">🔄 Reset Values</button>
+        </div>
+        <div class="episode-log" id="episodeLog"><span style="opacity:.4;">Run the agent to see its reasoning…</span></div>
+      </div>
+
+      <div class="qval-right">
+        <div class="agent-decision" id="agentDecision">
+          <div class="agent-title">🤖 Agent's Brain</div>
+          <div class="agent-think" id="agentThink">Set Q-values with the sliders, then click "Let Agent Decide!"</div>
+          <div class="q-bar-wrap" id="qBarWrap"></div>
+          <div class="agent-pick" id="agentPick" style="display:none;"></div>
+        </div>
+        <div class="scenario-box" style="margin-top:14px;">
+          <div class="scen-title">🏆 Score Tracker</div>
+          <div class="robot-score-row" style="justify-content:flex-start;margin-top:6px;">
+            <div class="r-stat"><div class="r-stat-val" id="qRuns">0</div><div class="r-stat-lbl">Decisions</div></div>
+            <div class="r-stat"><div class="r-stat-val" id="qRewards">0</div><div class="r-stat-lbl" style="color:var(--green)">Rewards</div></div>
+            <div class="r-stat"><div class="r-stat-val" id="qPenalties">0</div><div class="r-stat-lbl" style="color:var(--red)">Penalties</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ─── FLOATERS ─── */
+const fE=['📚','🪄','🧪','🦉','⭐','✨','🌟','💫','🔮','🌙','🤖','🧠','💡'];
+const fC=document.getElementById('floaters');
+for(let i=0;i<26;i++){
+  const el=document.createElement('div');el.className='floater';
+  el.textContent=fE[Math.floor(Math.random()*fE.length)];
+  el.style.left=Math.random()*100+'vw';
+  el.style.fontSize=(1+Math.random()*1.5)+'rem';
+  el.style.animationDuration=(13+Math.random()*18)+'s';
+  el.style.animationDelay='-'+(Math.random()*24)+'s';
+  el.style.opacity=(.18+Math.random()*.3).toString();
+  fC.appendChild(el);
+}
+
+/* ─── CONFETTI ─── */
+function burst(cx){
+  const cols=['#f5c842','#c0329b','#38d9f5','#39e97b','#ff4f6e','#fff','#ff9a3c'];
+  const c=document.getElementById('confWrap');
+  for(let i=0;i<50;i++){
+    const p=document.createElement('div');p.className='cp';
+    p.style.left=(cx??50)+'%';p.style.top='60px';
+    p.style.background=cols[i%cols.length];
+    p.style.transform=`translateX(${(Math.random()-.5)*260}px) rotate(${Math.random()*360}deg)`;
+    p.style.animationDelay=(Math.random()*.4)+'s';
+    p.style.animationDuration=(1.1+Math.random()*.6)+'s';
+    c.appendChild(p);setTimeout(()=>p.remove(),2500);
+  }
+}
+
+/* ════════════════════════════════════════
+   ACTIVITY 1 – TRAIN THE ROBOT
+════════════════════════════════════════ */
+const ROWS=5,COLS=5;
+let gridData=Array.from({length:ROWS},()=>new Array(COLS).fill('empty'));
+let robotPos={r:0,c:0};
+let palDragType=null;
+let eraseDrag=false;
+let robotRunning=false;
+let rScore=0,rSteps=0,rRuns=0,rBest=null;
+
+// set start & goal
+gridData[0][0]='start';
+gridData[ROWS-1][COLS-1]='goal';
+
+function palDragStart(e,type){palDragType=type;eraseDrag=false;e.dataTransfer.effectAllowed='move';}
+
+function buildGrid(){
+  const g=document.getElementById('robotGrid');g.innerHTML='';
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+    const cell=document.createElement('div');cell.className='r-cell';
+    cell.dataset.r=r;cell.dataset.c=c;
+    const t=gridData[r][c];
+    const emoji={start:'🚀',goal:'🏆',reward:'🌟',penalty:'☠️',wall:'🧱',empty:''}[t]||'';
+    cell.textContent=emoji;
+    if(t!=='empty')cell.classList.add(t==='start'?'robot-here':t==='goal'?'goal':t);
+    cell.addEventListener('dragover',e=>{e.preventDefault();cell.classList.add('drop-over');});
+    cell.addEventListener('dragleave',()=>cell.classList.remove('drop-over'));
+    cell.addEventListener('drop',e=>{
+      e.preventDefault();cell.classList.remove('drop-over');
+      const ri=+cell.dataset.r,ci=+cell.dataset.c;
+      if(ri===0&&ci===0||ri===ROWS-1&&ci===COLS-1)return;
+      if(palDragType)gridData[ri][ci]=palDragType;
+      buildGrid();
+    });
+    cell.addEventListener('click',()=>{
+      const ri=+cell.dataset.r,ci=+cell.dataset.c;
+      if(ri===0&&ci===0||ri===ROWS-1&&ci===COLS-1)return;
+      if(eraseDrag){gridData[ri][ci]='empty';buildGrid();eraseDrag=false;}
+    });
+    g.appendChild(cell);
+  }
+  highlightRobot();
+}
+
+function highlightRobot(){
+  document.querySelectorAll('.r-cell').forEach(c=>c.classList.remove('robot-here'));
+  const idx=robotPos.r*COLS+robotPos.c;
+  const cells=document.querySelectorAll('.r-cell');
+  if(cells[idx])cells[idx].classList.add('robot-here');
+}
+
+function logMsg(msg,type='normal'){
+  const log=document.getElementById('robotLog');
+  const d=document.createElement('div');
+  d.className=`log-entry log-${type}`;d.textContent=msg;
+  log.appendChild(d);log.scrollTop=log.scrollHeight;
+}
+
+function updateRobotStats(){
+  document.getElementById('rScore').textContent=rScore;
+  document.getElementById('rScore').style.color=rScore>=0?'var(--green)':'var(--red)';
+  document.getElementById('rSteps').textContent=rSteps;
+  document.getElementById('rRuns').textContent=rRuns;
+  document.getElementById('rBest').textContent=rBest!==null?rBest:'—';
+}
+
+async function runRobot(){
+  if(robotRunning)return;
+  robotRunning=true;rScore=0;rSteps=0;
+  document.getElementById('runBtn').disabled=true;
+  robotPos={r:0,c:0};
+  document.querySelectorAll('.r-cell').forEach(c=>c.classList.remove('trail'));
+  document.getElementById('robotLog').innerHTML='';
+  logMsg('🚀 Robot starts at (0,0)!','normal');
+
+  const visited=new Set();
+  let steps=0;const MAX=30;
+
+  while(!(robotPos.r===ROWS-1&&robotPos.c===COLS-1)&&steps<MAX){
+    visited.add(`${robotPos.r},${robotPos.c}`);
+    // choose direction: prefer goal direction with some randomness
+    const moves=[];
+    const dirs=[
+      {dr:1,dc:0,name:'↓'},{dr:0,dc:1,name:'→'},
+      {dr:-1,dc:0,name:'↑'},{dr:0,dc:-1,name:'←'}];
+    dirs.forEach(d=>{
+      const nr=robotPos.r+d.dr,nc=robotPos.c+d.dc;
+      if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&gridData[nr][nc]!=='wall'&&!visited.has(`${nr},${nc}`)){
+        const dist=Math.abs(nr-(ROWS-1))+Math.abs(nc-(COLS-1));
+        moves.push({dr:d.dr,dc:d.dc,dist,name:d.name});
+      }
+    });
+    if(moves.length===0){logMsg('🚫 Robot is stuck!','penalty');break;}
+    // weighted random toward goal
+    moves.sort((a,b)=>a.dist-b.dist);
+    const w=moves.map((_,i)=>Math.max(1,moves.length-i));
+    const total=w.reduce((a,b)=>a+b,0);
+    let rand=Math.random()*total,pick=moves[0];
+    for(let i=0;i<moves.length;i++){rand-=w[i];if(rand<=0){pick=moves[i];break;}}
+
+    robotPos.r+=pick.dr;robotPos.c+=pick.dc;steps++;rSteps++;
+
+    const t=gridData[robotPos.r][robotPos.c];
+    let pts=t==='reward'?10:t==='penalty'?-10:0;
+    rScore+=pts;
+
+    highlightRobot();
+    const msg=`Step ${steps} ${pick.name}: (${robotPos.r},${robotPos.c}) ${t==='reward'?'🌟+10':t==='penalty'?'☠️−10':''}`;
+    logMsg(msg, t==='reward'?'reward':t==='penalty'?'penalty':'normal');
+    updateRobotStats();
+    await sleep(260);
+
+    if(robotPos.r===ROWS-1&&robotPos.c===COLS-1){
+      rScore+=20;logMsg('🏆 Goal reached! +20 bonus!','reward');
+      updateRobotStats();burst(50);break;
+    }
+  }
+  if(!(robotPos.r===ROWS-1&&robotPos.c===COLS-1))logMsg('⏰ Max steps reached.','penalty');
+  rRuns++;
+  if(rBest===null||rScore>rBest)rBest=rScore;
+  updateRobotStats();
+  robotRunning=false;
+  document.getElementById('runBtn').disabled=false;
+}
+
+async function runFast(){for(let i=0;i<5;i++){await runRobot();await sleep(200);}}
+
+function resetRobot(){
+  robotPos={r:0,c:0};rScore=0;rSteps=0;
+  document.querySelectorAll('.r-cell').forEach(c=>c.classList.remove('trail'));
+  highlightRobot();
+  document.getElementById('robotLog').innerHTML='';
+  logMsg('🔄 Reset! Design the grid and run again.','normal');
+  updateRobotStats();
+}
+
+function clearGrid(){
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)gridData[r][c]='empty';
+  gridData[0][0]='start';gridData[ROWS-1][COLS-1]='goal';
+  resetRobot();buildGrid();
+}
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+buildGrid();updateRobotStats();
+
+/* ════════════════════════════════════════
+   ACTIVITY 2 – POLICY BUILDER
+════════════════════════════════════════ */
+const STATES=[
+  {icon:'🌧️',name:'Rainy Day',outcomes:{go_outside:-15,stay_inside:+5,read_book:+10,play_game:+8}},
+  {icon:'☀️',name:'Sunny Day',outcomes:{go_outside:+15,stay_inside:-5,read_book:+5,play_game:+6}},
+  {icon:'🌙',name:'Night Time',outcomes:{go_outside:-20,stay_inside:+8,read_book:+12,play_game:+10}},
+  {icon:'🏫',name:'School Day',outcomes:{go_outside:-10,stay_inside:-5,read_book:+18,play_game:-8}},
+  {icon:'🎉',name:'Party Day', outcomes:{go_outside:+20,stay_inside:-10,read_book:0,play_game:+15}},
+];
+const ACTIONS=[
+  {id:'go_outside',  icon:'🏃',name:'Go Outside'},
+  {id:'stay_inside', icon:'🏠',name:'Stay Inside'},
+  {id:'read_book',   icon:'📚',name:'Read Book'},
+  {id:'play_game',   icon:'🎮',name:'Play Game'},
+];
+let statePolicy=new Array(STATES.length).fill(null);
+let polDragAction=null;
+
+function buildPolicyUI(){
+  // action shelf
+  const pool=document.getElementById('actionPool');pool.innerHTML='';
+  ACTIONS.forEach(a=>{
+    const el=document.createElement('div');el.className='act-card';
+    el.innerHTML=`${a.icon}<span>${a.name}</span>`;
+    el.draggable=true;
+    el.addEventListener('dragstart',e=>{
+      polDragAction=a.id;e.dataTransfer.effectAllowed='move';});
+    el.addEventListener('touchstart',()=>polDragAction=a.id,{passive:true});
+    pool.appendChild(el);
+  });
+  // state rows
+  const sg=document.getElementById('stateGrid');sg.innerHTML='';
+  STATES.forEach((s,i)=>{
+    const row=document.createElement('div');row.className='state-row';
+    const drop=document.createElement('div');drop.className='state-drop';
+    drop.textContent='Drop action here';
+    drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('over');});
+    drop.addEventListener('dragleave',()=>drop.classList.remove('over'));
+    drop.addEventListener('drop',e=>{
+      e.preventDefault();drop.classList.remove('over');
+      if(!polDragAction)return;
+      statePolicy[i]=polDragAction;
+      renderStateDrop(drop,i);
+    });
+    // touch
+    drop.addEventListener('touchend',e=>{
+      if(!polDragAction)return;
+      const t=e.changedTouches[0];
+      const el=document.elementFromPoint(t.clientX,t.clientY);
+      if(el&&el.closest('.state-drop')){statePolicy[i]=polDragAction;renderStateDrop(drop,i);}
+      polDragAction=null;
+    },{passive:true});
+
+    const outcome=document.createElement('div');outcome.className='state-outcome';outcome.id=`outcome-${i}`;
+    row.innerHTML=`<div class="state-icon">${s.icon}</div><div class="state-name">${s.name}</div>`;
+    row.appendChild(drop);row.appendChild(outcome);
+    sg.appendChild(row);
+  });
+}
+
+function renderStateDrop(drop,i){
+  const a=ACTIONS.find(x=>x.id===statePolicy[i]);
+  if(!a)return;
+  drop.classList.add('filled');
+  drop.innerHTML=`<div class="d-icon">${a.icon}</div><div class="d-lbl">${a.name}</div>`;
+}
+
+function simulatePolicy(){
+  const steps=document.getElementById('simSteps');steps.innerHTML='';
+  let total=0;
+  STATES.forEach((s,i)=>{
+    const aId=statePolicy[i];
+    const sp=document.createElement('div');
+    if(!aId){
+      sp.className='sim-step';sp.textContent=`${s.icon} No action`;
+    } else {
+      const pts=s.outcomes[aId];total+=pts;
+      const a=ACTIONS.find(x=>x.id===aId);
+      sp.className='sim-step '+(pts>0?'reward':'penalty');
+      sp.textContent=`${s.icon}→${a.icon} ${pts>0?'+':''}${pts}`;
+      document.getElementById(`outcome-${i}`).innerHTML=
+        `<span style="color:${pts>=0?'var(--green)':'var(--red)'};font-size:.85rem;">${pts>=0?'+':''}${pts}</span>`;
+    }
+    steps.appendChild(sp);
+  });
+  const fb=document.getElementById('policyFeedback');
+  document.getElementById('simTotal').innerHTML=
+    `Total reward: <span style="color:${total>=0?'var(--green)':'var(--red)'};">${total>=0?'+':''}${total}</span>`;
+  if(total>=50){fb.innerHTML='<span style="color:var(--green)">🏆 Amazing policy! The agent is thriving!</span>';burst(50);}
+  else if(total>0){fb.innerHTML='<span style="color:var(--cyan)">👍 Decent policy — can you do better?</span>';}
+  else{fb.innerHTML='<span style="color:var(--red)">🔴 The agent is suffering! Try different actions.</span>';}
+}
+
+function autoPolicy(){
+  STATES.forEach((s,i)=>{
+    let best=null,bestPts=-Infinity;
+    ACTIONS.forEach(a=>{if(s.outcomes[a.id]>bestPts){bestPts=s.outcomes[a.id];best=a.id;}});
+    statePolicy[i]=best;
+  });
+  buildPolicyUI();
+  // re-attach and fill
+  STATES.forEach((_,i)=>{
+    const drops=document.querySelectorAll('.state-drop');
+    renderStateDrop(drops[i],i);
+  });
+  simulatePolicy();
+  document.getElementById('policyFeedback').innerHTML=
+    '<span style="color:var(--gold)">🤖 Auto-policy applied! See how an optimal agent thinks!</span>';
+}
+
+function resetPolicy(){
+  statePolicy=new Array(STATES.length).fill(null);
+  buildPolicyUI();
+  document.getElementById('simSteps').innerHTML='<span style="opacity:.45;font-size:.8rem;">Build your policy above, then simulate!</span>';
+  document.getElementById('simTotal').textContent='';
+  document.getElementById('policyFeedback').textContent='';
+  STATES.forEach((_,i)=>{const o=document.getElementById(`outcome-${i}`);if(o)o.textContent='';});
+}
+
+buildPolicyUI();
+
+/* ════════════════════════════════════════
+   ACTIVITY 3 – Q-VALUE EXPERIMENT
+════════════════════════════════════════ */
+const SCENARIOS=[
+  {
+    title:'🍎 The Hungry Robot',
+    desc:'The robot is hungry. It can see three options in front of it. Set the Q-values to reflect how good each choice is, then see which action it picks!',
+    actions:[
+      {icon:'🍕',name:'Eat Pizza',  reward:+15,penalty:0},
+      {icon:'🥦',name:'Eat Broccoli',reward:+10,penalty:0},
+      {icon:'🍬',name:'Eat Candy',  reward:+5, penalty:-5},
+    ]
+  },
+  {
+    title:'🚗 The Navigation Robot',
+    desc:'The robot must move through a city. Each route has different traffic, obstacles, and shortcuts. Which path has the best Q-value?',
+    actions:[
+      {icon:'🛣️',name:'Highway',  reward:+20,penalty:-5},
+      {icon:'🏘️',name:'Back Street',reward:+8,penalty:0},
+      {icon:'🌲',name:'Forest Path',reward:+5,penalty:-10},
+    ]
+  },
+  {
+    title:'📚 The Study Robot',
+    desc:'It is exam time! The robot must choose how to spend the afternoon. Assign Q-values based on what you think is most valuable!',
+    actions:[
+      {icon:'📖',name:'Study Hard',  reward:+25,penalty:-5},
+      {icon:'🎮',name:'Play Games',  reward:-10,penalty:-15},
+      {icon:'😴',name:'Take a Nap',  reward:+5, penalty:0},
+    ]
+  },
+  {
+    title:'🌊 The Explorer Robot',
+    desc:'The robot explores an unknown island. Some areas are safe, some are dangerous, some have treasure!',
+    actions:[
+      {icon:'🏔️',name:'Climb Mountain',reward:+18,penalty:-8},
+      {icon:'🏖️',name:'Explore Beach',  reward:+12,penalty:0},
+      {icon:'🌋',name:'Enter Volcano',  reward:+30,penalty:-25},
+    ]
+  },
+];
+
+let currentScenIdx=0;
+let qValues=[];
+let qRuns=0,qRewards=0,qPenalties=0;
+
+function loadScenario(idx){
+  const s=SCENARIOS[idx];
+  document.getElementById('scenTitle').textContent=s.title;
+  document.getElementById('scenDesc').textContent=s.desc;
+  qValues=s.actions.map(()=>0);
+  renderQSliders(s);
+  renderQBars();
+  document.getElementById('agentPick').style.display='none';
+  document.getElementById('agentThink').textContent='Set Q-values with the sliders, then click "Let Agent Decide!"';
+}
+
+function renderQSliders(s){
+  const list=document.getElementById('qActionList');list.innerHTML='';
+  s.actions.forEach((a,i)=>{
+    const row=document.createElement('div');row.className='q-action-row';
+    row.innerHTML=`
+      <div class="q-action-top">
+        <span class="q-action-icon">${a.icon}</span>
+        <span class="q-action-name">${a.name}</span>
+        <span class="q-action-val" id="qv-${i}">0</span>
+      </div>
+      <input type="range" class="q-slider" min="-30" max="30" value="0" id="qs-${i}">`;
+    const slider=row.querySelector(`#qs-${i}`);
+    const valEl=row.querySelector(`#qv-${i}`);
+    slider.addEventListener('input',()=>{
+      qValues[i]=+slider.value;
+      valEl.textContent=(qValues[i]>=0?'+':'')+qValues[i];
+      valEl.style.color=qValues[i]>0?'var(--green)':qValues[i]<0?'var(--red)':'var(--cyan)';
+      renderQBars();
+    });
+    list.appendChild(row);
+  });
+}
+
+function renderQBars(){
+  const wrap=document.getElementById('qBarWrap');wrap.innerHTML='';
+  const s=SCENARIOS[currentScenIdx];
+  const max=Math.max(...qValues.map(Math.abs),1);
+  s.actions.forEach((a,i)=>{
+    const row=document.createElement('div');row.className='q-bar-row';
+    const pct=((qValues[i]+30)/60)*100;
+    const col=qValues[i]>0?'var(--green)':qValues[i]<0?'var(--red)':'var(--cyan)';
+    row.innerHTML=`
+      <div class="q-bar-label">${a.icon} ${a.name}</div>
+      <div class="q-bar-track"><div class="q-bar-fill" style="width:${pct}%;background:${col};"></div></div>
+      <div class="q-bar-num" style="color:${col};">${qValues[i]>=0?'+':''}${qValues[i]}</div>`;
+    wrap.appendChild(row);
+  });
+}
+
+function runQDecision(){
+  const s=SCENARIOS[currentScenIdx];
+  const maxQ=Math.max(...qValues);
+  const bestIdx=qValues.indexOf(maxQ);
+  const best=s.actions[bestIdx];
+
+  // actual reward
+  const actual=best.reward+best.penalty;
+  qRuns++;
+  if(actual>0)qRewards++;else if(actual<0)qPenalties++;
+  document.getElementById('qRuns').textContent=qRuns;
+  document.getElementById('qRewards').textContent=qRewards;
+  document.getElementById('qPenalties').textContent=qPenalties;
+
+  // show thinking
+  let think=`Scanning all options:\n`;
+  s.actions.forEach((a,i)=>think+=`  ${a.icon} ${a.name}: Q = ${qValues[i]>=0?'+':''}${qValues[i]}\n`);
+  think+=`\nHighest Q-value → ${best.icon} "${best.name}" (Q=${maxQ>=0?'+':''}${maxQ})`;
+  document.getElementById('agentThink').style.whiteSpace='pre-wrap';
+  document.getElementById('agentThink').textContent=think;
+
+  const pick=document.getElementById('agentPick');
+  pick.style.display='block';
+  pick.innerHTML=`🤖 Agent picks: ${best.icon} <strong>${best.name}</strong> (actual outcome: ${actual>=0?'+':''}${actual})`;
+  pick.style.borderColor=actual>=0?'var(--green)':'var(--red)';
+  pick.style.color=actual>=0?'var(--green)':'var(--red)';
+  pick.style.background=actual>=0?'rgba(57,233,123,.1)':'rgba(255,79,110,.1)';
+
+  // log
+  const log=document.getElementById('episodeLog');
+  const e=document.createElement('div');
+  e.style.color=actual>=0?'var(--green)':'var(--red)';
+  e.textContent=`[Decision ${qRuns}] Picked ${best.icon} ${best.name} → ${actual>=0?'+':''}${actual} pts`;
+  log.appendChild(e);log.scrollTop=log.scrollHeight;
+
+  if(actual>0)burst(60);
+}
+
+function nextScenario(){
+  currentScenIdx=(currentScenIdx+1)%SCENARIOS.length;
+  loadScenario(currentScenIdx);
+}
+
+function resetQValues(){
+  qValues=qValues.map(()=>0);
+  const s=SCENARIOS[currentScenIdx];
+  s.actions.forEach((_,i)=>{
+    const sl=document.getElementById(`qs-${i}`);
+    const vl=document.getElementById(`qv-${i}`);
+    if(sl){sl.value=0;vl.textContent='0';vl.style.color='var(--cyan)';}
+  });
+  renderQBars();
+  document.getElementById('agentPick').style.display='none';
+  document.getElementById('agentThink').textContent='Set Q-values with the sliders, then click "Let Agent Decide!"';
+}
+
+loadScenario(0);
+</script>
+</body>
+</html>

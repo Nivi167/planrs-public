@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wizard's Money Roadmap: Square Roots & Savings</title>
+    <style>
+        :root {
+            --gold: #ffd700;
+            --magic-purple: #2e004e;
+            --star-glow: 0 0 20px #ffd700;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #1a0033 0%, #000000 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- Magical Animated Background --- */
+        .magic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .floating-item {
+            position: absolute;
+            font-size: 30px;
+            animation: floatAround 10s infinite ease-in-out;
+            opacity: 0.6;
+        }
+
+        @keyframes floatAround {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -50px) rotate(10deg); }
+            66% { transform: translate(-20px, -20px) rotate(-10deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+
+        /* --- Layout --- */
+        .game-container {
+            max-width: 800px;
+            width: 90%;
+            margin-top: 50px;
+            text-align: center;
+            background: rgba(46, 0, 78, 0.7);
+            border: 4px solid var(--gold);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.2);
+            backdrop-filter: blur(8px);
+        }
+
+        h1 {
+            color: var(--gold);
+            text-shadow: var(--star-glow);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .instruction-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        /* --- Drag and Drop Elements --- */
+        .workspace {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .drop-zone {
+            width: 150px;
+            height: 150px;
+            border: 4px dashed var(--gold);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.5);
+            transition: all 0.3s;
+        }
+
+        .drop-zone.hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: scale(1.05);
+        }
+
+        .ingredient-tray {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .ingredient {
+            width: 70px;
+            height: 70px;
+            background: radial-gradient(circle, #ffd700, #b8860b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black;
+            font-weight: bold;
+            font-size: 1.5rem;
+            cursor: grab;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            transition: transform 0.2s;
+        }
+
+        .ingredient:active { transform: scale(0.9); }
+
+        /* --- Animations & Effects --- */
+        .success-msg {
+            color: #00ffcc;
+            font-weight: bold;
+            font-size: 1.3rem;
+            height: 30px;
+            margin-top: 20px;
+            text-shadow: 0 0 10px #00ffcc;
+        }
+
+        .hidden { display: none; }
+
+        .big-icon {
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 10px;
+            transition: 0.5s;
+        }
+
+        button {
+            background: var(--gold);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 5px 0 #b8860b;
+        }
+
+        button:hover { background: #fff1a8; }
+        button:active { transform: translateY(4px); box-shadow: 0 1px 0 #b8860b; }
+    </style>
+</head>
+<body>
+
+    <div class="magic-bg" id="magic-bg"></div>
+
+    <div class="game-container">
+        <h1>Wizard's Money Roadmap</h1>
+        
+        <div id="activity1">
+            <div class="instruction-box">
+                <h3>🧪 Experiment 1: The Root of the Vault</h3>
+                <p>Every "Perfect Square" fortune has a secret <strong>ROOT</strong>! <br> To open this <strong>$36 Emergency Fund</strong>, drag the correct root number into the potion bottle.</p>
+            </div>
+            
+            <div class="workspace">
+                <div>
+                    <span class="big-icon" id="potion1">🧪</span>
+                    <p>Vault Value: <strong>$36</strong></p>
+                </div>
+                <div class="drop-zone" id="drop1" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <span>Drop Root</span>
+                </div>
+            </div>
+
+            <div class="ingredient-tray">
+                <div class="ingredient" draggable="true" id="drag6" ondragstart="drag(event)">6</div>
+                <div class="ingredient" draggable="true" id="drag4" ondragstart="drag(event)">4</div>
+                <div class="ingredient" draggable="true" id="drag9" ondragstart="drag(event)">9</div>
+            </div>
+            <div class="success-msg" id="msg1"></div>
+        </div>
+
+        <div id="activity2" class="hidden">
+            <div class="instruction-box">
+                <h3>📏 Experiment 2: The Budget Builder</h3>
+                <p>If your monthly expenses are a square totaling <strong>$64</strong>, how wide is your Roadmap? Drag the width to build the square!</p>
+            </div>
+            
+            <div class="workspace">
+                <div id="budget-square" style="width: 20px; height: 20px; background: var(--gold); border: 2px solid white; transition: 1s; opacity: 0.5;"></div>
+                <div class="drop-zone" id="drop2" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <span>Drop Width</span>
+                </div>
+            </div>
+
+            <div class="ingredient-tray">
+                <div class="ingredient" draggable="true" id="drag7" ondragstart="drag(event)">7</div>
+                <div class="ingredient" draggable="true" id="drag8" ondragstart="drag(event)">8</div>
+                <div class="ingredient" draggable="true" id="drag12" ondragstart="drag(event)">12</div>
+            </div>
+            <div class="success-msg" id="msg2"></div>
+        </div>
+
+        <div id="activity3" class="hidden">
+            <div class="instruction-box">
+                <h3>🌳 Experiment 3: The Investment Tree</h3>
+                <p>You planted a seed with a root of <strong>10</strong>. When it grows into a <strong>Perfect Square</strong>, how much money will you have? Drag the result to the tree!</p>
+            </div>
+            
+            <div class="workspace">
+                <div>
+                    <span class="big-icon" id="tree-icon">🌱</span>
+                    <p>Seed Root: <strong>10</strong></p>
+                </div>
+                <div class="drop-zone" id="drop3" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <span>Drop Total</span>
+                </div>
+            </div>
+
+            <div class="ingredient-tray">
+                <div class="ingredient" draggable="true" id="drag20" ondragstart="drag(event)">20</div>
+                <div class="ingredient" draggable="true" id="drag100" ondragstart="drag(event)">100</div>
+                <div class="ingredient" draggable="true" id="drag110" ondragstart="drag(event)">110</div>
+            </div>
+            <div class="success-msg" id="msg3"></div>
+            <button onclick="location.reload()" class="hidden" id="reset-btn">Play Again ✨</button>
+        </div>
+
+    </div>
+
+    <script>
+        // Create Floating Background Objects
+        const bg = document.getElementById('magic-bg');
+        const emojis = ['📖', '🪄', '🧪', '🦉', '⭐', '💰', '✨'];
+        
+        for (let i = 0; i < 15; i++) {
+            let el = document.createElement('div');
+            el.className = 'floating-item';
+            el.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.top = Math.random() * 100 + 'vh';
+            el.style.animationDuration = (5 + Math.random() * 10) + 's';
+            el.style.animationDelay = Math.random() * 5 + 's';
+            bg.appendChild(el);
+        }
+
+        // Drag and Drop Logic
+        function allowDrop(ev) {
+            ev.preventDefault();
+            ev.target.classList.add('hover');
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.innerText);
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            ev.target.classList.remove('hover');
+            let data = ev.dataTransfer.getData("text");
+            checkAnswer(ev.target.id, data);
+        }
+
+        function checkAnswer(zoneId, val) {
+            // Activity 1: SQRT(36) = 6
+            if (zoneId === 'drop1') {
+                if (val === '6') {
+                    document.getElementById('msg1').innerText = "✨ Correct! $6 \times 6 = 36$. Vault Unlocked!";
+                    document.getElementById('potion1').style.transform = "scale(1.5) rotate(20deg)";
+                    document.getElementById('potion1').innerText = "💰";
+                    nextStep('activity1', 'activity2');
+                } else {
+                    document.getElementById('msg1').innerText = "❌ Not quite! That root doesn't fit.";
+                }
+            }
+
+            // Activity 2: SQRT(64) = 8
+            if (zoneId === 'drop2') {
+                if (val === '8') {
+                    document.getElementById('budget-square').style.width = "150px";
+                    document.getElementById('budget-square').style.height = "150px";
+                    document.getElementById('budget-square').style.opacity = "1";
+                    document.getElementById('msg2').innerText = "✨ Magic! Your $8 wide budget is a perfect square!";
+                    nextStep('activity2', 'activity3');
+                } else {
+                    document.getElementById('msg2').innerText = "❌ Too wide or too narrow! Try again.";
+                }
+            }
+
+            // Activity 3: 10^2 = 100
+            if (zoneId === 'drop3') {
+                if (val === '100') {
+                    document.getElementById('tree-icon').innerText = "🌳";
+                    document.getElementById('tree-icon').style.transform = "scale(1.8)";
+                    document.getElementById('msg3').innerText = "✨ Amazing! Your $10 root grew into a $100 fortune!";
+                    document.getElementById('reset-btn').classList.remove('hidden');
+                } else {
+                    document.getElementById('msg3').innerText = "❌ That's not the square of 10!";
+                }
+            }
+        }
+
+        function nextStep(current, next) {
+            setTimeout(() => {
+                document.getElementById(current).style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById(current).classList.add('hidden');
+                    document.getElementById(next).classList.remove('hidden');
+                }, 500);
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

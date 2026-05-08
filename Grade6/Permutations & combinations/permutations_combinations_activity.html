@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Permutations & Combinations</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #f5c842;
+    --deep-purple: #1a0a3c;
+    --mid-purple: #2d1b69;
+    --light-purple: #4a2d9c;
+    --teal: #00d4b8;
+    --pink: #ff6b9d;
+    --orange: #ff8c42;
+    --star: #ffe066;
+    --glass: rgba(255,255,255,0.07);
+    --glass-border: rgba(255,255,255,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--deep-purple);
+    color: #fff;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ===== ANIMATED BACKGROUND ===== */
+  .bg-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .bg-gradient {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 20% 20%, #2d0e6e 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, #0e2d6e 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, #1a0a3c 0%, #0a0618 100%);
+  }
+
+  .float-obj {
+    position: absolute;
+    font-size: 2rem;
+    opacity: 0.18;
+    animation: floatAround linear infinite;
+    will-change: transform;
+    user-select: none;
+  }
+
+  @keyframes floatAround {
+    0%   { transform: translateY(0px) rotate(0deg); }
+    25%  { transform: translateY(-20px) rotate(5deg); }
+    50%  { transform: translateY(-5px) rotate(-3deg); }
+    75%  { transform: translateY(-15px) rotate(4deg); }
+    100% { transform: translateY(0px) rotate(0deg); }
+  }
+
+  @keyframes drift {
+    0%   { transform: translateX(0) translateY(0) rotate(0deg); opacity: 0.15; }
+    33%  { transform: translateX(12px) translateY(-18px) rotate(8deg); opacity: 0.22; }
+    66%  { transform: translateX(-8px) translateY(-10px) rotate(-5deg); opacity: 0.18; }
+    100% { transform: translateX(0) translateY(0) rotate(0deg); opacity: 0.15; }
+  }
+
+  .star-particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: var(--star);
+    border-radius: 50%;
+    animation: twinkle ease-in-out infinite;
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.1; transform: scale(1); }
+    50% { opacity: 0.9; transform: scale(1.8); }
+  }
+
+  .glow-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    animation: orbPulse ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes orbPulse {
+    0%, 100% { transform: scale(1); opacity: 0.12; }
+    50% { transform: scale(1.2); opacity: 0.2; }
+  }
+
+  /* ===== MAIN LAYOUT ===== */
+  .page-wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+  }
+
+  /* ===== HEADER ===== */
+  .main-header {
+    text-align: center;
+    padding: 40px 20px 20px;
+  }
+
+  .main-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.4rem, 4vw, 2.4rem);
+    background: linear-gradient(135deg, #f5c842, #ff8c42, #ff6b9d);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    letter-spacing: 2px;
+    animation: titleGlow 3s ease-in-out infinite;
+    line-height: 1.3;
+  }
+
+  @keyframes titleGlow {
+    0%, 100% { filter: drop-shadow(0 0 8px rgba(245,200,66,0.4)); }
+    50% { filter: drop-shadow(0 0 20px rgba(245,200,66,0.8)); }
+  }
+
+  .subtitle-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 1px;
+  }
+
+  .subtitle-bar span { color: var(--gold); font-size: 1.1rem; }
+
+  /* ===== TAB NAV ===== */
+  .tab-nav {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin: 24px 0 0;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    color: rgba(255,255,255,0.7);
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tab-btn.active, .tab-btn:hover {
+    background: linear-gradient(135deg, var(--light-purple), #6b3fa0);
+    border-color: var(--gold);
+    color: #fff;
+    box-shadow: 0 0 20px rgba(245,200,66,0.3);
+    transform: translateY(-2px);
+  }
+
+  .tab-btn .tab-icon { font-size: 1.1rem; }
+
+  /* ===== ACTIVITY PANELS ===== */
+  .activity-panel {
+    display: none;
+    animation: panelFadeIn 0.5s ease;
+  }
+
+  .activity-panel.active { display: block; }
+
+  @keyframes panelFadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .panel-card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 28px;
+    margin-top: 24px;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .panel-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), var(--teal), transparent);
+  }
+
+  .section-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-desc {
+    font-size: 0.88rem;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  /* ===== ACTIVITY 1: nPr vs nCr ===== */
+  .concept-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 600px) { .concept-grid { grid-template-columns: 1fr; } }
+
+  .formula-box {
+    background: rgba(0,0,0,0.3);
+    border-radius: 14px;
+    padding: 18px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s;
+  }
+
+  .formula-box:hover { border-color: var(--gold); transform: translateY(-3px); }
+
+  .formula-box.perm { border-top: 3px solid var(--teal); }
+  .formula-box.comb { border-top: 3px solid var(--pink); }
+
+  .formula-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    font-weight: 800;
+  }
+
+  .formula-box.perm .formula-label { color: var(--teal); }
+  .formula-box.comb .formula-label { color: var(--pink); }
+
+  .formula-math {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 6px;
+    font-family: 'Courier New', monospace;
+  }
+
+  .formula-note {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.4;
+  }
+
+  .controls-row {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+
+  .ctrl-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 120px;
+  }
+
+  .ctrl-group label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.5px;
+  }
+
+  .styled-input {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    color: #fff;
+    padding: 8px 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    width: 90px;
+    transition: border-color 0.2s;
+  }
+
+  .styled-input:focus { outline: none; border-color: var(--gold); }
+
+  .result-display {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .result-pill {
+    background: rgba(0,0,0,0.3);
+    border-radius: 14px;
+    padding: 14px 22px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.1);
+    flex: 1;
+    min-width: 130px;
+  }
+
+  .result-pill .rp-label { font-size: 0.72rem; color: rgba(255,255,255,0.5); margin-bottom: 4px; }
+  .result-pill .rp-val { font-size: 1.8rem; font-weight: 800; }
+  .result-pill.perm .rp-val { color: var(--teal); }
+  .result-pill.comb .rp-val { color: var(--pink); }
+
+  .scenario-box {
+    background: rgba(245,200,66,0.07);
+    border: 1px dashed rgba(245,200,66,0.3);
+    border-radius: 14px;
+    padding: 16px;
+    margin-top: 16px;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.8);
+  }
+
+  .scenario-box strong { color: var(--gold); }
+
+  /* drag zone */
+  .scenario-drag-area {
+    margin-top: 18px;
+  }
+
+  .drag-title {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: var(--teal);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 12px;
+  }
+
+  .drag-items-pool {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 14px;
+    background: rgba(0,0,0,0.25);
+    border-radius: 12px;
+    min-height: 60px;
+    margin-bottom: 12px;
+    border: 1px dashed rgba(255,255,255,0.1);
+  }
+
+  .drag-item {
+    background: linear-gradient(135deg, #2d1b69, #4a2d9c);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 7px 16px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: grab;
+    user-select: none;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .drag-item:hover { transform: scale(1.05); border-color: var(--gold); }
+  .drag-item.dragging { opacity: 0.4; cursor: grabbing; }
+
+  .drop-zones {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  @media (max-width: 500px) { .drop-zones { grid-template-columns: 1fr; } }
+
+  .drop-zone {
+    border-radius: 14px;
+    padding: 14px;
+    min-height: 100px;
+    border: 2px dashed;
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  .drop-zone.perm-zone { border-color: rgba(0,212,184,0.4); background: rgba(0,212,184,0.05); }
+  .drop-zone.comb-zone { border-color: rgba(255,107,157,0.4); background: rgba(255,107,157,0.05); }
+
+  .drop-zone.drag-over { transform: scale(1.02); }
+  .drop-zone.perm-zone.drag-over { background: rgba(0,212,184,0.15); border-color: var(--teal); }
+  .drop-zone.comb-zone.drag-over { background: rgba(255,107,157,0.15); border-color: var(--pink); }
+
+  .drop-zone-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .perm-zone .drop-zone-label { color: var(--teal); }
+  .comb-zone .drop-zone-label { color: var(--pink); }
+
+  .drop-zone-hint {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.3);
+    font-style: italic;
+    margin-bottom: 8px;
+  }
+
+  .dropped-items {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    min-height: 30px;
+  }
+
+  .dropped-chip {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .perm-zone .dropped-chip { background: rgba(0,212,184,0.2); color: var(--teal); border: 1px solid rgba(0,212,184,0.4); }
+  .comb-zone .dropped-chip { background: rgba(255,107,157,0.2); color: var(--pink); border: 1px solid rgba(255,107,157,0.4); }
+
+  .dropped-chip:hover { opacity: 0.6; }
+
+  .check-btn {
+    margin-top: 14px;
+    background: linear-gradient(135deg, #f5c842, #ff8c42);
+    color: #1a0a3c;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 28px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 800;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .check-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(245,200,66,0.4); }
+
+  .feedback-msg {
+    margin-top: 12px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: none;
+  }
+
+  .feedback-msg.correct { background: rgba(0,212,184,0.15); color: var(--teal); border: 1px solid rgba(0,212,184,0.3); }
+  .feedback-msg.wrong { background: rgba(255,107,157,0.15); color: var(--pink); border: 1px solid rgba(255,107,157,0.3); }
+  .feedback-msg.show { display: block; }
+
+  /* ===== ACTIVITY 2: PASSWORD STRENGTH ===== */
+  .pw-builder {
+    background: rgba(0,0,0,0.3);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .pw-display {
+    font-family: 'Courier New', monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gold);
+    background: rgba(0,0,0,0.4);
+    padding: 14px 20px;
+    border-radius: 12px;
+    letter-spacing: 6px;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    word-break: break-all;
+    border: 1px solid rgba(245,200,66,0.3);
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .pw-char {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 1.2rem;
+  }
+
+  .pw-char.lowercase { background: rgba(0,212,184,0.2); color: var(--teal); }
+  .pw-char.uppercase { background: rgba(255,107,157,0.2); color: var(--pink); }
+  .pw-char.digit { background: rgba(245,200,66,0.2); color: var(--gold); }
+  .pw-char.special { background: rgba(255,140,66,0.2); color: var(--orange); }
+
+  .pw-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .pw-opt-toggle {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 10px 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .pw-opt-toggle.on { border-color: var(--gold); }
+  .pw-opt-toggle.on.lc { background: rgba(0,212,184,0.1); color: var(--teal); border-color: var(--teal); }
+  .pw-opt-toggle.on.uc { background: rgba(255,107,157,0.1); color: var(--pink); border-color: var(--pink); }
+  .pw-opt-toggle.on.dg { background: rgba(245,200,66,0.1); color: var(--gold); border-color: var(--gold); }
+  .pw-opt-toggle.on.sp { background: rgba(255,140,66,0.1); color: var(--orange); border-color: var(--orange); }
+
+  .pw-opt-toggle .opt-check { font-size: 1.1rem; width: 20px; }
+
+  .pw-len-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .pw-len-row label { font-size: 0.82rem; color: var(--gold); font-weight: 700; min-width: 90px; }
+
+  .styled-range {
+    -webkit-appearance: none;
+    appearance: none;
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 3px;
+    outline: none;
+  }
+
+  .styled-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--gold);
+    cursor: pointer;
+    border: 2px solid #1a0a3c;
+    box-shadow: 0 0 8px rgba(245,200,66,0.5);
+  }
+
+  .pw-len-val {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--gold);
+    min-width: 28px;
+    text-align: center;
+  }
+
+  .strength-display {
+    background: rgba(0,0,0,0.3);
+    border-radius: 14px;
+    padding: 18px;
+    margin-top: 14px;
+  }
+
+  .strength-bar-wrap {
+    height: 12px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 10px 0;
+  }
+
+  .strength-bar {
+    height: 100%;
+    border-radius: 6px;
+    transition: all 0.6s cubic-bezier(.4,0,.2,1);
+    background: linear-gradient(90deg, #ff4444, #ff8c42, #f5c842, #00d4b8);
+    background-size: 400% 100%;
+  }
+
+  .strength-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .stat-card {
+    background: rgba(0,0,0,0.3);
+    border-radius: 12px;
+    padding: 12px 16px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .stat-card .sc-label { font-size: 0.7rem; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+  .stat-card .sc-val { font-size: 1.2rem; font-weight: 800; color: #fff; }
+  .stat-card .sc-sub { font-size: 0.68rem; color: rgba(255,255,255,0.4); margin-top: 2px; }
+
+  .combo-steps {
+    margin-top: 16px;
+    background: rgba(245,200,66,0.06);
+    border: 1px dashed rgba(245,200,66,0.25);
+    border-radius: 14px;
+    padding: 16px;
+    font-size: 0.82rem;
+    line-height: 1.8;
+    color: rgba(255,255,255,0.7);
+  }
+
+  .combo-steps strong { color: var(--gold); }
+
+  /* ===== ACTIVITY 3: LOTTERY ===== */
+  .lottery-field {
+    background: rgba(0,0,0,0.3);
+    border-radius: 16px;
+    padding: 20px;
+  }
+
+  .balls-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+    min-height: 60px;
+    padding: 10px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .lottery-ball {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+    position: relative;
+    background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.3), transparent 60%),
+                linear-gradient(135deg, #3a2080, #1a0a3c);
+    border: 2px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.7);
+  }
+
+  .lottery-ball:hover { transform: scale(1.1); border-color: rgba(255,255,255,0.4); }
+
+  .lottery-ball.selected {
+    background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.4), transparent 60%),
+                linear-gradient(135deg, #f5c842, #ff8c42);
+    border-color: var(--gold);
+    color: #1a0a3c;
+    transform: scale(1.08);
+    box-shadow: 0 0 16px rgba(245,200,66,0.5);
+  }
+
+  .lottery-config {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  @media (max-width: 500px) { .lottery-config { grid-template-columns: 1fr; } }
+
+  .lottery-config .ctrl-group { min-width: unset; }
+  .lottery-config .styled-input { width: 100%; }
+
+  .prob-result {
+    background: rgba(0,0,0,0.35);
+    border-radius: 14px;
+    padding: 18px;
+    margin-top: 16px;
+  }
+
+  .prob-fraction {
+    text-align: center;
+    margin-bottom: 14px;
+  }
+
+  .prob-numerator, .prob-denominator {
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #fff;
+    padding: 2px 0;
+  }
+
+  .prob-line {
+    width: 80%;
+    max-width: 300px;
+    height: 2px;
+    background: rgba(255,255,255,0.4);
+    margin: 4px auto;
+    border-radius: 1px;
+  }
+
+  .prob-label {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.45);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 4px;
+  }
+
+  .prob-decimal {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--gold);
+    margin: 6px 0;
+    font-family: 'Courier New', monospace;
+  }
+
+  .prob-odds {
+    text-align: center;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 14px;
+  }
+
+  .breakdown-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+  }
+
+  @media (max-width: 500px) { .breakdown-grid { grid-template-columns: 1fr; } }
+
+  .breakdown-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .breakdown-card .bc-label { font-size: 0.68rem; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .breakdown-card .bc-formula { font-family: 'Courier New', monospace; font-size: 0.85rem; color: var(--teal); margin-bottom: 4px; }
+  .breakdown-card .bc-val { font-size: 1rem; font-weight: 800; color: #fff; }
+
+  .selected-display {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+
+  .selected-ball-mini {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f5c842, #ff8c42);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #1a0a3c;
+    box-shadow: 0 0 10px rgba(245,200,66,0.4);
+  }
+
+  .selected-label {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.5);
+    font-weight: 700;
+    margin-right: 4px;
+  }
+
+  .action-bar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 16px;
+  }
+
+  .ghost-btn {
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    color: rgba(255,255,255,0.6);
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .ghost-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* QUIZ SECTION */
+  .quiz-section {
+    margin-top: 22px;
+    background: rgba(0,0,0,0.25);
+    border-radius: 14px;
+    padding: 18px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .quiz-q {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+
+  .quiz-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  @media (max-width: 500px) { .quiz-options { grid-template-columns: 1fr; } }
+
+  .quiz-opt {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: rgba(255,255,255,0.7);
+    text-align: left;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  .quiz-opt:hover { background: rgba(255,255,255,0.08); border-color: var(--gold); }
+  .quiz-opt.correct { background: rgba(0,212,184,0.15); border-color: var(--teal); color: var(--teal); }
+  .quiz-opt.wrong { background: rgba(255,107,157,0.15); border-color: var(--pink); color: var(--pink); }
+  .quiz-opt:disabled { cursor: default; }
+
+  .score-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.5);
+    margin-top: 8px;
+  }
+
+  .score-stars { color: var(--gold); letter-spacing: 2px; }
+
+  /* CONFETTI */
+  .confetti-piece {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 9999;
+    animation: confettiFall linear forwards;
+  }
+
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .panel-card { padding: 18px 14px; }
+    .controls-row { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ANIMATED BACKGROUND -->
+<div class="bg-canvas">
+  <div class="bg-gradient"></div>
+  <div class="glow-orb" style="width:400px;height:400px;background:#3a0d8c;top:-100px;left:-100px;animation-duration:8s;"></div>
+  <div class="glow-orb" style="width:300px;height:300px;background:#0d3a8c;bottom:-80px;right:-80px;animation-duration:11s;animation-delay:2s;"></div>
+  <div class="glow-orb" style="width:200px;height:200px;background:#8c0d5a;top:40%;left:50%;animation-duration:9s;animation-delay:4s;"></div>
+  <!-- floating emojis -->
+  <div class="float-obj" style="top:5%;left:3%;animation-duration:6s;font-size:2.2rem;">📚</div>
+  <div class="float-obj" style="top:15%;right:5%;animation-duration:7.5s;animation-delay:1s;font-size:2rem;">🦉</div>
+  <div class="float-obj" style="top:30%;left:8%;animation-duration:8s;animation-delay:2s;font-size:1.8rem;">🔮</div>
+  <div class="float-obj" style="top:50%;right:3%;animation-duration:6.5s;animation-delay:0.5s;font-size:1.9rem;">⭐</div>
+  <div class="float-obj" style="top:65%;left:5%;animation-duration:9s;animation-delay:3s;font-size:2rem;">🪄</div>
+  <div class="float-obj" style="top:80%;right:7%;animation-duration:7s;animation-delay:1.5s;font-size:1.8rem;">🧪</div>
+  <div class="float-obj" style="top:90%;left:20%;animation-duration:8.5s;animation-delay:0.8s;font-size:1.6rem;">✨</div>
+  <div class="float-obj" style="top:10%;left:45%;animation-duration:10s;animation-delay:4s;font-size:1.7rem;">🌟</div>
+  <div class="float-obj" style="top:45%;left:90%;animation-duration:7.2s;animation-delay:2.5s;font-size:1.6rem;">📖</div>
+  <div class="float-obj" style="top:70%;left:50%;animation-duration:6.8s;animation-delay:1.2s;font-size:1.5rem;">🦉</div>
+  <div class="float-obj" style="top:25%;left:75%;animation-duration:9.5s;animation-delay:3.5s;font-size:1.9rem;">⚗️</div>
+  <!-- stars -->
+</div>
+
+<div class="page-wrap">
+  <!-- HEADER -->
+  <header class="main-header">
+    <h1 class="main-title">Permutations &amp; Combinations</h1>
+    <div class="subtitle-bar">
+      <span>✨</span> Maths Adventure &nbsp;•&nbsp; Experiment &amp; Discover <span>✨</span>
+    </div>
+
+    <!-- TAB NAV -->
+    <nav class="tab-nav" role="tablist">
+      <button class="tab-btn active" onclick="switchTab(0)" role="tab">
+        <span class="tab-icon">🔀</span> Order Matters?
+      </button>
+      <button class="tab-btn" onclick="switchTab(1)" role="tab">
+        <span class="tab-icon">🔐</span> Password Strength
+      </button>
+      <button class="tab-btn" onclick="switchTab(2)" role="tab">
+        <span class="tab-icon">🎱</span> Lottery Odds
+      </button>
+    </nav>
+  </header>
+
+  <!-- ===== ACTIVITY 1: nPr vs nCr ===== -->
+  <section class="activity-panel active" id="panel-0">
+    <div class="panel-card">
+      <h2 class="section-title">🔀 nPr vs nCr — Does Order Matter?</h2>
+      <p class="section-desc">Experiment with the values of n and r below. Watch how the numbers change — and discover WHY permutations are always ≥ combinations!</p>
+
+      <div class="concept-grid">
+        <div class="formula-box perm">
+          <div class="formula-label">📐 Permutation (Order matters)</div>
+          <div class="formula-math">ⁿPᵣ = n! / (n−r)!</div>
+          <div class="formula-note">Arrange r items from n<br>Different orders = different results</div>
+        </div>
+        <div class="formula-box comb">
+          <div class="formula-label">🎲 Combination (Order doesn't matter)</div>
+          <div class="formula-math">ⁿCᵣ = n! / r!(n−r)!</div>
+          <div class="formula-note">Choose r items from n<br>Same group, any order = same result</div>
+        </div>
+      </div>
+
+      <div class="controls-row">
+        <div class="ctrl-group">
+          <label>n (Total items)</label>
+          <input class="styled-input" type="number" id="npr-n" value="5" min="1" max="20" oninput="updateNPR()">
+        </div>
+        <div class="ctrl-group">
+          <label>r (Choose / Arrange)</label>
+          <input class="styled-input" type="number" id="npr-r" value="3" min="0" max="20" oninput="updateNPR()">
+        </div>
+      </div>
+
+      <div class="result-display">
+        <div class="result-pill perm">
+          <div class="rp-label">ⁿPᵣ (Permutations)</div>
+          <div class="rp-val" id="perm-result">60</div>
+        </div>
+        <div class="result-pill comb">
+          <div class="rp-label">ⁿCᵣ (Combinations)</div>
+          <div class="rp-val" id="comb-result">10</div>
+        </div>
+      </div>
+
+      <div class="scenario-box" id="scenario-box">
+        <strong>🧙 Example:</strong> Choosing 3 students from 5 for a race:<br>
+        <span id="scenario-text">There are <strong>60 ways</strong> to assign 1st, 2nd, 3rd place (order matters — Permutation!)<br>
+        But only <strong>10 ways</strong> to pick a team of 3 (order doesn't matter — Combination!)</span>
+      </div>
+    </div>
+
+    <!-- DRAG & DROP -->
+    <div class="panel-card">
+      <h2 class="section-title">🧩 Sort These Scenarios</h2>
+      <p class="section-desc">Drag each scenario into the correct box — does ORDER matter (Permutation) or NOT (Combination)?</p>
+
+      <div class="drag-items-pool" id="drag-pool">
+        <div class="drag-item" draggable="true" data-correct="perm" id="ditem-0">🏆 1st, 2nd, 3rd in a race</div>
+        <div class="drag-item" draggable="true" data-correct="comb" id="ditem-1">🍕 3 toppings from 8</div>
+        <div class="drag-item" draggable="true" data-correct="perm" id="ditem-2">🔢 4-digit PIN code</div>
+        <div class="drag-item" draggable="true" data-correct="comb" id="ditem-3">👥 Team of 5 from 12</div>
+        <div class="drag-item" draggable="true" data-correct="perm" id="ditem-4">📚 Arrange 4 books on shelf</div>
+        <div class="drag-item" draggable="true" data-correct="comb" id="ditem-5">🃏 Hand of 5 cards from deck</div>
+      </div>
+
+      <div class="drop-zones">
+        <div class="drop-zone perm-zone" id="drop-perm" 
+             ondragover="dragOverHandler(event)" ondragleave="dragLeaveHandler(event)" ondrop="dropHandler(event,'perm')">
+          <div class="drop-zone-label">⚡ PERMUTATION<br><small style="font-size:0.65rem;opacity:0.6">Order matters</small></div>
+          <div class="drop-zone-hint">Drop scenarios here where order changes the outcome</div>
+          <div class="dropped-items" id="perm-dropped"></div>
+        </div>
+        <div class="drop-zone comb-zone" id="drop-comb"
+             ondragover="dragOverHandler(event)" ondragleave="dragLeaveHandler(event)" ondrop="dropHandler(event,'comb')">
+          <div class="drop-zone-label">💎 COMBINATION<br><small style="font-size:0.65rem;opacity:0.6">Order doesn't matter</small></div>
+          <div class="drop-zone-hint">Drop scenarios here where order makes no difference</div>
+          <div class="dropped-items" id="comb-dropped"></div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px;">
+        <button class="check-btn" onclick="checkDrag()">✨ Check My Answers</button>
+        <button class="ghost-btn" onclick="resetDrag()">↺ Reset</button>
+      </div>
+
+      <div class="feedback-msg" id="drag-feedback"></div>
+
+      <div class="score-display">
+        <span>Score:</span>
+        <span class="score-stars" id="drag-stars">☆ ☆ ☆</span>
+        <span id="drag-score-text"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ACTIVITY 2: PASSWORD ===== -->
+  <section class="activity-panel" id="panel-1">
+    <div class="panel-card">
+      <h2 class="section-title">🔐 Password Strength Calculator</h2>
+      <p class="section-desc">Choose your password options and length. See how many possible passwords exist — this IS a Permutation problem (order matters in passwords!).</p>
+
+      <div class="pw-builder">
+        <div class="pw-options">
+          <div class="pw-opt-toggle lc on" id="toggle-lc" onclick="toggleOpt('lc')">
+            <span class="opt-check">✅</span> Lowercase (a–z) <span style="color:var(--teal);font-size:0.75rem;margin-left:auto">26 chars</span>
+          </div>
+          <div class="pw-opt-toggle uc" id="toggle-uc" onclick="toggleOpt('uc')">
+            <span class="opt-check">⬜</span> Uppercase (A–Z) <span style="color:var(--pink);font-size:0.75rem;margin-left:auto">26 chars</span>
+          </div>
+          <div class="pw-opt-toggle dg" id="toggle-dg" onclick="toggleOpt('dg')">
+            <span class="opt-check">⬜</span> Digits (0–9) <span style="color:var(--gold);font-size:0.75rem;margin-left:auto">10 chars</span>
+          </div>
+          <div class="pw-opt-toggle sp" id="toggle-sp" onclick="toggleOpt('sp')">
+            <span class="opt-check">⬜</span> Symbols (!@#...) <span style="color:var(--orange);font-size:0.75rem;margin-left:auto">32 chars</span>
+          </div>
+        </div>
+
+        <div class="pw-len-row">
+          <label>Password Length:</label>
+          <input type="range" class="styled-range" id="pw-len" min="4" max="20" value="8" oninput="updatePassword()">
+          <span class="pw-len-val" id="pw-len-val">8</span>
+        </div>
+
+        <div class="pw-display" id="pw-display">
+          <!-- chars here -->
+        </div>
+
+        <button class="check-btn" onclick="generateSamplePw()" style="margin-top:0;">
+          🎲 Generate Sample Password
+        </button>
+      </div>
+
+      <div class="strength-display">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:0.8rem;color:rgba(255,255,255,0.5);font-weight:700;text-transform:uppercase;letter-spacing:0.8px;">Strength</span>
+          <span style="font-size:0.95rem;font-weight:800;" id="strength-label">Weak</span>
+        </div>
+        <div class="strength-bar-wrap">
+          <div class="strength-bar" id="strength-bar" style="width:15%;background-position:85% 0;"></div>
+        </div>
+
+        <div class="strength-stats">
+          <div class="stat-card">
+            <div class="sc-label">Charset Size</div>
+            <div class="sc-val" id="stat-charset">26</div>
+            <div class="sc-sub">possible characters</div>
+          </div>
+          <div class="stat-card">
+            <div class="sc-label">Total Combos</div>
+            <div class="sc-val" id="stat-total">≈ 2.1×10¹¹</div>
+            <div class="sc-sub">possible passwords</div>
+          </div>
+          <div class="stat-card">
+            <div class="sc-label">Entropy</div>
+            <div class="sc-val" id="stat-entropy">37.6 bits</div>
+            <div class="sc-sub">information measure</div>
+          </div>
+          <div class="stat-card">
+            <div class="sc-label">Crack Time</div>
+            <div class="sc-val" id="stat-crack">Minutes</div>
+            <div class="sc-sub">at 10 billion/sec</div>
+          </div>
+        </div>
+
+        <div class="combo-steps" id="combo-steps">
+          <strong>🧮 How we calculate this:</strong><br>
+          Charset = 26 (lowercase only) &nbsp;|&nbsp; Length = 8<br>
+          Total = 26<sup>8</sup> = 26 × 26 × 26 × 26 × 26 × 26 × 26 × 26<br>
+          = <strong>208,827,064,576</strong> possible passwords<br>
+          This is a <strong>Permutation with repetition</strong> — each position can be any of the 26 characters!
+        </div>
+      </div>
+
+      <!-- QUIZ -->
+      <div class="quiz-section">
+        <div class="quiz-q" id="pw-quiz-q">🤔 If you add uppercase letters to a 6-character lowercase password, by how much does the number of possibilities increase?</div>
+        <div class="quiz-options" id="pw-quiz-opts">
+          <button class="quiz-opt" onclick="checkPwQuiz(0)" data-correct="false">About 2×</button>
+          <button class="quiz-opt" onclick="checkPwQuiz(1)" data-correct="true">About 26× more</button>
+          <button class="quiz-opt" onclick="checkPwQuiz(2)" data-correct="false">Exactly 26 more</button>
+          <button class="quiz-opt" onclick="checkPwQuiz(3)" data-correct="false">About 100×</button>
+        </div>
+        <div class="feedback-msg" id="pw-quiz-fb"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ACTIVITY 3: LOTTERY ===== -->
+  <section class="activity-panel" id="panel-2">
+    <div class="panel-card">
+      <h2 class="section-title">🎱 Lottery Probability Lab</h2>
+      <p class="section-desc">Set the lottery rules, then pick your numbers by clicking the balls. Discover how the nCr formula gives you the exact odds of winning!</p>
+
+      <div class="lottery-config">
+        <div class="ctrl-group">
+          <label>Total Balls (n)</label>
+          <input class="styled-input" type="number" id="lot-n" value="49" min="10" max="90" oninput="buildBalls()" style="width:100%">
+        </div>
+        <div class="ctrl-group">
+          <label>Numbers to Pick (r)</label>
+          <input class="styled-input" type="number" id="lot-r" value="6" min="1" max="15" oninput="buildBalls()" style="width:100%">
+        </div>
+      </div>
+
+      <p style="font-size:0.78rem;color:rgba(255,255,255,0.45);margin-bottom:10px;">Click balls to select your <span id="lot-r-label" style="color:var(--gold);font-weight:800;">6</span> numbers:</p>
+
+      <div class="balls-container" id="balls-container"></div>
+
+      <div class="selected-display" id="selected-display">
+        <span class="selected-label">Selected:</span>
+        <span style="font-size:0.78rem;color:rgba(255,255,255,0.35);font-style:italic;">Click balls above to select</span>
+      </div>
+
+      <div class="action-bar">
+        <button class="check-btn" onclick="calcLottery()">🔮 Calculate My Odds</button>
+        <button class="ghost-btn" onclick="quickPick()">⚡ Quick Pick</button>
+        <button class="ghost-btn" onclick="clearBalls()">↺ Clear</button>
+      </div>
+
+      <div class="prob-result" id="prob-result" style="display:none;">
+        <p class="prob-label" style="text-align:center;margin-bottom:10px;">YOUR PROBABILITY OF WINNING</p>
+
+        <div class="prob-fraction">
+          <div class="prob-numerator" id="prob-num">1</div>
+          <div class="prob-line"></div>
+          <div class="prob-denominator" id="prob-den">13,983,816</div>
+        </div>
+
+        <div class="prob-decimal" id="prob-decimal">0.0000000715</div>
+        <div class="prob-odds" id="prob-odds">That's a 1 in 13,983,816 chance!</div>
+
+        <div class="breakdown-grid">
+          <div class="breakdown-card">
+            <div class="bc-label">Total Outcomes</div>
+            <div class="bc-formula">C(n,r)</div>
+            <div class="bc-val" id="bc-total">13,983,816</div>
+          </div>
+          <div class="breakdown-card">
+            <div class="bc-label">Winning Outcomes</div>
+            <div class="bc-formula">Just 1</div>
+            <div class="bc-val">1</div>
+          </div>
+          <div class="breakdown-card">
+            <div class="bc-label">Why Combination?</div>
+            <div class="bc-formula">Order ≠ different win</div>
+            <div class="bc-val" id="bc-why" style="font-size:0.7rem;color:rgba(255,255,255,0.55);">1,2,3,4,5,6 = 6,5,4,3,2,1</div>
+          </div>
+        </div>
+
+        <div class="combo-steps" style="margin-top:14px;" id="lot-steps"></div>
+      </div>
+
+      <!-- COMPARISON QUIZ -->
+      <div class="quiz-section" style="margin-top:16px;">
+        <div class="quiz-q">🤔 A national lottery picks 6 balls from 59. You buy 10 tickets. What are your odds of winning the jackpot?</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="checkLotQuiz(0)" data-correct="false">10 times better than 1/C(59,6)</button>
+          <button class="quiz-opt" onclick="checkLotQuiz(1)" data-correct="true">10 / C(59,6)</button>
+          <button class="quiz-opt" onclick="checkLotQuiz(2)" data-correct="false">C(59,6) / 10</button>
+          <button class="quiz-opt" onclick="checkLotQuiz(3)" data-correct="false">Same as 1 ticket</button>
+        </div>
+        <div class="feedback-msg" id="lot-quiz-fb"></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+// ==================== STAR PARTICLES ====================
+(function spawnStars(){
+  const bg = document.querySelector('.bg-canvas');
+  for(let i=0;i<80;i++){
+    const s = document.createElement('div');
+    s.className = 'star-particle';
+    s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${1.5+Math.random()*3}s;animation-delay:${Math.random()*3}s;`;
+    if(Math.random()>0.7){s.style.width='4px';s.style.height='4px';}
+    if(Math.random()>0.9){s.style.width='5px';s.style.height='5px';s.style.background='#ff6b9d';}
+    bg.appendChild(s);
+  }
+})();
+
+// ==================== TABS ====================
+function switchTab(idx){
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));
+  document.querySelectorAll('.activity-panel').forEach((p,i)=>p.classList.toggle('active',i===idx));
+}
+
+// ==================== MATH HELPERS ====================
+function factorial(n){
+  if(n<=1) return 1;
+  let r=1; for(let i=2;i<=n;i++) r*=i; return r;
+}
+
+function bigFactorial(n){
+  if(n>170) return Infinity;
+  return factorial(n);
+}
+
+function nPr(n,r){
+  if(r>n||r<0) return 0;
+  return bigFactorial(n)/bigFactorial(n-r);
+}
+
+function nCr(n,r){
+  if(r>n||r<0) return 0;
+  return bigFactorial(n)/(bigFactorial(r)*bigFactorial(n-r));
+}
+
+function formatBig(x){
+  if(!isFinite(x)||isNaN(x)) return '∞';
+  if(x>=1e15) return x.toExponential(2);
+  if(x>=1e9) return (x/1e9).toFixed(2)+'B';
+  if(x>=1e6) return (x/1e6).toFixed(2)+'M';
+  return Math.round(x).toLocaleString();
+}
+
+// ==================== ACTIVITY 1 ====================
+function updateNPR(){
+  const n=parseInt(document.getElementById('npr-n').value)||0;
+  const r=parseInt(document.getElementById('npr-r').value)||0;
+  const p=nPr(n,r), c=nCr(n,r);
+  document.getElementById('perm-result').textContent=formatBig(p);
+  document.getElementById('comb-result').textContent=formatBig(c);
+  document.getElementById('scenario-text').innerHTML=
+    `There are <strong>${formatBig(p)} ways</strong> to arrange ${r} items from ${n} (order matters — Permutation!)<br>
+     But only <strong>${formatBig(c)} ways</strong> to choose ${r} items from ${n} (order doesn't matter — Combination!)<br>
+     <em style="font-size:0.78rem;color:rgba(255,255,255,0.45)">Notice: ⁿPᵣ = ⁿCᵣ × r! — Permutations = Combinations × all arrangements of chosen items (${r}! = ${formatBig(factorial(r))})</em>`;
+}
+updateNPR();
+
+// ==================== DRAG & DROP ====================
+let draggingId=null;
+const correctAnswers={
+  'ditem-0':'perm','ditem-1':'comb','ditem-2':'perm',
+  'ditem-3':'comb','ditem-4':'perm','ditem-5':'comb'
+};
+const droppedItems={perm:[],comb:[]};
+
+document.querySelectorAll('.drag-item').forEach(item=>{
+  item.addEventListener('dragstart',e=>{
+    draggingId=item.id;
+    item.classList.add('dragging');
+  });
+  item.addEventListener('dragend',e=>{
+    item.classList.remove('dragging');
+  });
+});
+
+function dragOverHandler(e){
+  e.preventDefault();
+  e.currentTarget.classList.add('drag-over');
+}
+
+function dragLeaveHandler(e){
+  e.currentTarget.classList.remove('drag-over');
+}
+
+function dropHandler(e,zone){
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if(!draggingId) return;
+  // Remove from other zone & pool
+  droppedItems.perm=droppedItems.perm.filter(x=>x!==draggingId);
+  droppedItems.comb=droppedItems.comb.filter(x=>x!==draggingId);
+  // Hide from pool
+  const poolItem=document.getElementById(draggingId);
+  if(poolItem) poolItem.style.display='none';
+  // Add to zone
+  droppedItems[zone].push(draggingId);
+  renderDropped();
+  draggingId=null;
+}
+
+function renderDropped(){
+  ['perm','comb'].forEach(zone=>{
+    const container=document.getElementById(zone+'-dropped');
+    container.innerHTML='';
+    droppedItems[zone].forEach(id=>{
+      const orig=document.getElementById(id);
+      const chip=document.createElement('div');
+      chip.className='dropped-chip';
+      chip.textContent=orig?orig.textContent:'?';
+      chip.title='Click to return to pool';
+      chip.onclick=()=>returnToPool(id,zone);
+      container.appendChild(chip);
+    });
+  });
+}
+
+function returnToPool(id,zone){
+  droppedItems[zone]=droppedItems[zone].filter(x=>x!==id);
+  const el=document.getElementById(id);
+  if(el) el.style.display='';
+  renderDropped();
+}
+
+function checkDrag(){
+  let correct=0, total=0;
+  const allDropped=[...droppedItems.perm,...droppedItems.comb];
+  if(allDropped.length===0){
+    showFeedback('drag-feedback','wrong','⚠️ Drop at least one scenario to check your answers!');
+    return;
+  }
+  droppedItems.perm.forEach(id=>{
+    total++;
+    if(correctAnswers[id]==='perm') correct++;
+  });
+  droppedItems.comb.forEach(id=>{
+    total++;
+    if(correctAnswers[id]==='comb') correct++;
+  });
+  const score=Math.round((correct/total)*100);
+  if(score===100){
+    showFeedback('drag-feedback','correct','🎉 Perfect! All '+total+' scenarios sorted correctly! You\'ve mastered when order matters!');
+    setStars('drag-stars','drag-score-text',3);
+    spawnConfetti();
+  } else if(score>=50){
+    showFeedback('drag-feedback','wrong','🌟 '+correct+'/'+total+' correct! Hint: Does changing the order give a DIFFERENT result? If yes → Permutation!');
+    setStars('drag-stars','drag-score-text',1);
+  } else {
+    showFeedback('drag-feedback','wrong','💡 Keep trying! '+correct+'/'+total+' correct. Remember: race positions & PIN codes = order matters (Permutation)!');
+    setStars('drag-stars','drag-score-text',0);
+  }
+}
+
+function resetDrag(){
+  droppedItems.perm=[]; droppedItems.comb=[];
+  document.querySelectorAll('.drag-item').forEach(el=>el.style.display='');
+  renderDropped();
+  hideFeedback('drag-feedback');
+  setStars('drag-stars','drag-score-text',0);
+}
+
+function setStars(starsId,textId,count){
+  const stars='★'.repeat(count)+'☆'.repeat(3-count);
+  document.getElementById(starsId).textContent=stars;
+  document.getElementById(textId).textContent=count>0?count+'/3':'';
+}
+
+// ==================== ACTIVITY 2: PASSWORD ====================
+const pwOpts={lc:true,uc:false,dg:false,sp:false};
+const charsets={lc:'abcdefghijklmnopqrstuvwxyz',uc:'ABCDEFGHIJKLMNOPQRSTUVWXYZ',dg:'0123456789',sp:'!@#$%^&*()-_=+[]{}|;:,.<>?'};
+
+function toggleOpt(key){
+  pwOpts[key]=!pwOpts[key];
+  const el=document.getElementById('toggle-'+key);
+  el.classList.toggle('on',pwOpts[key]);
+  el.querySelector('.opt-check').textContent=pwOpts[key]?'✅':'⬜';
+  updatePassword();
+}
+
+function getCharset(){
+  let cs='';
+  if(pwOpts.lc) cs+=charsets.lc;
+  if(pwOpts.uc) cs+=charsets.uc;
+  if(pwOpts.dg) cs+=charsets.dg;
+  if(pwOpts.sp) cs+=charsets.sp;
+  return cs||charsets.lc;
+}
+
+function updatePassword(){
+  const len=parseInt(document.getElementById('pw-len').value);
+  document.getElementById('pw-len-val').textContent=len;
+  const cs=getCharset();
+  const total=Math.pow(cs.length,len);
+  const entropy=Math.log2(total);
+  const crackSec=total/(10e9);
+  document.getElementById('stat-charset').textContent=cs.length;
+  document.getElementById('stat-total').textContent=formatSci(total);
+  document.getElementById('stat-entropy').textContent=entropy.toFixed(1)+' bits';
+  document.getElementById('stat-crack').textContent=crackTime(crackSec);
+
+  const pct=Math.min(100,Math.max(0,(entropy/128)*100));
+  const bar=document.getElementById('strength-bar');
+  bar.style.width=pct+'%';
+  bar.style.backgroundPosition=((100-pct))+'% 0';
+
+  const lbl=document.getElementById('strength-label');
+  if(entropy<28){lbl.textContent='Very Weak 😰';lbl.style.color='#ff4444';}
+  else if(entropy<36){lbl.textContent='Weak 😟';lbl.style.color='#ff8c42';}
+  else if(entropy<60){lbl.textContent='Fair 😐';lbl.style.color='#f5c842';}
+  else if(entropy<80){lbl.textContent='Strong 💪';lbl.style.color='#00d4b8';}
+  else{lbl.textContent='Very Strong 🛡️';lbl.style.color='#a78bfa';}
+
+  // parts of charset
+  const parts=[];
+  if(pwOpts.lc) parts.push('26 lowercase');
+  if(pwOpts.uc) parts.push('26 uppercase');
+  if(pwOpts.dg) parts.push('10 digits');
+  if(pwOpts.sp) parts.push('32 symbols');
+
+  document.getElementById('combo-steps').innerHTML=
+    `<strong>🧮 How we calculate this:</strong><br>
+     Charset = ${parts.join(' + ')} = <strong>${cs.length}</strong> possible characters<br>
+     Length = <strong>${len}</strong> characters<br>
+     Total = ${cs.length}<sup>${len}</sup> = <strong>${formatSci(total)}</strong> possible passwords<br>
+     This is <strong>Permutation with repetition</strong> — each position independently picks from ${cs.length} chars.<br>
+     <em style="font-size:0.75rem;opacity:0.6">Formula: charset_size<sup>length</sup> (repetition allowed, order matters!)</em>`;
+
+  generateSamplePw();
+}
+
+function formatSci(x){
+  if(!isFinite(x)) return '∞';
+  if(x>=1e15) return x.toExponential(3);
+  return Math.round(x).toLocaleString();
+}
+
+function crackTime(sec){
+  if(sec<60) return '< 1 min';
+  if(sec<3600) return Math.round(sec/60)+' mins';
+  if(sec<86400) return Math.round(sec/3600)+' hrs';
+  if(sec<2592000) return Math.round(sec/86400)+' days';
+  if(sec<31536000) return Math.round(sec/2592000)+' months';
+  if(sec<1e10) return Math.round(sec/31536000).toLocaleString()+' yrs';
+  return 'Billions of years 🔒';
+}
+
+function generateSamplePw(){
+  const len=parseInt(document.getElementById('pw-len').value);
+  const cs=getCharset();
+  const pw=Array.from({length:len},()=>cs[Math.floor(Math.random()*cs.length)]);
+  const display=document.getElementById('pw-display');
+  display.innerHTML=pw.map(ch=>{
+    let cls='pw-char';
+    if(charsets.lc.includes(ch)) cls+=' lowercase';
+    else if(charsets.uc.includes(ch)) cls+=' uppercase';
+    else if(charsets.dg.includes(ch)) cls+=' digit';
+    else cls+=' special';
+    return `<span class="${cls}">${ch}</span>`;
+  }).join('');
+  updatePassword();
+}
+
+function checkPwQuiz(idx){
+  const btns=document.querySelectorAll('#pw-quiz-opts .quiz-opt');
+  btns.forEach(b=>b.disabled=true);
+  const correct=idx===1;
+  btns[idx].classList.add(correct?'correct':'wrong');
+  if(!correct) btns[1].classList.add('correct');
+  const fb=document.getElementById('pw-quiz-fb');
+  fb.className='feedback-msg show '+(correct?'correct':'wrong');
+  fb.textContent=correct
+    ?'🎉 Correct! Adding 26 uppercase chars changes charset from 26 to 52, so combos go from 26⁶ to 52⁶ — that\'s 2⁶ = 64× more, not exactly 26×. Try experimenting above to see the exact factor!'
+    :'💡 Think about it: we change the charset from 26 to 52 (doubled), so each position has 2× choices. For 6 positions: 52⁶ / 26⁶ = 2⁶ = 64× more! The answer closest to that is "about 26× more" in our options, but the real maths is even bigger!';
+  if(correct) spawnConfetti();
+}
+
+updatePassword();
+
+// ==================== ACTIVITY 3: LOTTERY ====================
+let selectedBalls=new Set();
+
+function buildBalls(){
+  const n=parseInt(document.getElementById('lot-n').value)||49;
+  const r=parseInt(document.getElementById('lot-r').value)||6;
+  document.getElementById('lot-r-label').textContent=r;
+  selectedBalls.clear();
+  document.getElementById('prob-result').style.display='none';
+  const container=document.getElementById('balls-container');
+  container.innerHTML='';
+  for(let i=1;i<=n;i++){
+    const ball=document.createElement('div');
+    ball.className='lottery-ball';
+    ball.textContent=i;
+    ball.dataset.num=i;
+    ball.onclick=()=>toggleBall(ball,r);
+    container.appendChild(ball);
+  }
+  updateSelectedDisplay(r);
+}
+
+function toggleBall(ball,r){
+  const num=parseInt(ball.dataset.num);
+  if(selectedBalls.has(num)){
+    selectedBalls.delete(num);
+    ball.classList.remove('selected');
+  } else {
+    if(selectedBalls.size>=r){
+      ball.style.animation='shake 0.3s ease';
+      setTimeout(()=>ball.style.animation='',400);
+      return;
+    }
+    selectedBalls.add(num);
+    ball.classList.add('selected');
+  }
+  updateSelectedDisplay(r);
+}
+
+function updateSelectedDisplay(r){
+  const display=document.getElementById('selected-display');
+  if(selectedBalls.size===0){
+    display.innerHTML='<span class="selected-label">Selected:</span><span style="font-size:0.78rem;color:rgba(255,255,255,0.35);font-style:italic;">Click balls above to select</span>';
+    return;
+  }
+  const sorted=[...selectedBalls].sort((a,b)=>a-b);
+  display.innerHTML='<span class="selected-label">Selected:</span>'+
+    sorted.map(n=>`<div class="selected-ball-mini">${n}</div>`).join('');
+}
+
+function quickPick(){
+  const n=parseInt(document.getElementById('lot-n').value)||49;
+  const r=parseInt(document.getElementById('lot-r').value)||6;
+  clearBalls();
+  const pool=Array.from({length:n},(_,i)=>i+1);
+  const picks=[];
+  while(picks.length<r){
+    const idx=Math.floor(Math.random()*pool.length);
+    picks.push(pool.splice(idx,1)[0]);
+  }
+  picks.forEach(num=>{
+    selectedBalls.add(num);
+    const ball=document.querySelector(`.lottery-ball[data-num="${num}"]`);
+    if(ball) ball.classList.add('selected');
+  });
+  updateSelectedDisplay(r);
+}
+
+function clearBalls(){
+  selectedBalls.clear();
+  document.querySelectorAll('.lottery-ball').forEach(b=>b.classList.remove('selected'));
+  const r=parseInt(document.getElementById('lot-r').value)||6;
+  updateSelectedDisplay(r);
+  document.getElementById('prob-result').style.display='none';
+}
+
+function calcLottery(){
+  const n=parseInt(document.getElementById('lot-n').value)||49;
+  const r=parseInt(document.getElementById('lot-r').value)||6;
+  if(selectedBalls.size<r){
+    const msg=`⚠️ Please select ${r} numbers first! You've chosen ${selectedBalls.size}.`;
+    showFeedback('lot-quiz-fb','wrong',msg);
+    return;
+  }
+  const total=nCr(n,r);
+  const prob=1/total;
+  document.getElementById('prob-result').style.display='block';
+  document.getElementById('prob-num').textContent='1';
+  document.getElementById('prob-den').textContent=formatBig(total);
+  document.getElementById('prob-decimal').textContent=prob.toExponential(4);
+  document.getElementById('prob-odds').textContent=`That's a 1 in ${formatBig(total)} chance!`;
+  document.getElementById('bc-total').textContent=formatBig(total);
+
+  document.getElementById('lot-steps').innerHTML=
+    `<strong>🧮 Calculation using nCr:</strong><br>
+     n = ${n} (total balls), r = ${r} (balls drawn)<br>
+     C(${n},${r}) = ${n}! / (${r}! × ${n-r}!) = <strong>${formatBig(total)}</strong><br>
+     Your ticket matches exactly 1 of these outcomes.<br>
+     Probability = 1 / ${formatBig(total)} ≈ <strong>${prob.toExponential(3)}</strong><br>
+     <em style="font-size:0.75rem;opacity:0.6">We use COMBINATION (not Permutation) because the order you pick {1,2,3} is the same win as {3,2,1}!</em>`;
+
+  document.getElementById('prob-result').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function checkLotQuiz(idx){
+  const btns=document.querySelectorAll('#panel-2 .quiz-opt');
+  btns.forEach(b=>b.disabled=true);
+  const correct=idx===1;
+  btns[idx].classList.add(correct?'correct':'wrong');
+  if(!correct) btns[1].classList.add('correct');
+  const fb=document.getElementById('lot-quiz-fb');
+  fb.className='feedback-msg show '+(correct?'correct':'wrong');
+  fb.textContent=correct
+    ?'🎉 Correct! With 10 tickets, you have 10 favourable outcomes out of C(59,6) total — so probability = 10/C(59,6). Each ticket is independent!'
+    :'💡 Think: each ticket is one unique combination. 10 tickets = 10 favourable outcomes out of C(59,6) total possible combinations. So P = 10/C(59,6)!';
+  if(correct) spawnConfetti();
+}
+
+buildBalls();
+
+// ==================== HELPERS ====================
+function showFeedback(id,type,msg){
+  const el=document.getElementById(id);
+  el.className='feedback-msg show '+type;
+  el.textContent=msg;
+}
+
+function hideFeedback(id){
+  const el=document.getElementById(id);
+  el.className='feedback-msg';
+}
+
+function spawnConfetti(){
+  const colors=['#f5c842','#ff6b9d','#00d4b8','#ff8c42','#a78bfa','#fff'];
+  for(let i=0;i<50;i++){
+    const c=document.createElement('div');
+    c.className='confetti-piece';
+    c.style.cssText=`
+      left:${Math.random()*100}vw;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      animation-duration:${1.5+Math.random()*2}s;
+      animation-delay:${Math.random()*0.5}s;
+      width:${6+Math.random()*8}px;
+      height:${6+Math.random()*8}px;
+      border-radius:${Math.random()>0.5?'50%':'2px'};
+    `;
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),3500);
+  }
+}
+
+// Ball shake keyframe
+const shakeStyle=document.createElement('style');
+shakeStyle.textContent='@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-4px)}40%,80%{transform:translateX(4px)}}';
+document.head.appendChild(shakeStyle);
+</script>
+</body>
+</html>

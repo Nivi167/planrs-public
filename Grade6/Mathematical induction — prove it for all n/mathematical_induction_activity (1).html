@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mathematical Induction — Prove It For All n</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --deep-navy: #0a0a1a;
+    --midnight: #0d0d2b;
+    --indigo: #1a1a4e;
+    --violet: #2d1b69;
+    --purple: #6b21a8;
+    --magenta: #c026d3;
+    --gold: #f59e0b;
+    --amber: #fbbf24;
+    --cream: #fef9e7;
+    --silver: #e2e8f0;
+    --glow-purple: rgba(107,33,168,0.6);
+    --glow-gold: rgba(245,158,11,0.7);
+    --text-light: #e9d5ff;
+    --text-bright: #fef9c3;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Crimson Pro', serif;
+    background: var(--deep-navy);
+    color: var(--text-light);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ===== ANIMATED BACKGROUND ===== */
+  .bg-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .stars-layer {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(107,33,168,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(192,38,211,0.1) 0%, transparent 40%),
+      radial-gradient(ellipse at 50% 80%, rgba(245,158,11,0.08) 0%, transparent 40%),
+      linear-gradient(180deg, #0a0a1a 0%, #0d0d2b 40%, #1a0533 100%);
+  }
+
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: white;
+    animation: twinkle var(--dur, 3s) ease-in-out infinite alternate;
+    animation-delay: var(--delay, 0s);
+  }
+  @keyframes twinkle {
+    0% { opacity: 0.1; transform: scale(1); }
+    100% { opacity: 1; filter: drop-shadow(0 0 4px #fbbf24); transform: scale(1.3); }
+  }
+
+  .floating-obj {
+    position: absolute;
+    font-size: var(--sz, 2rem);
+    animation: floatObj var(--spd, 8s) ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+    opacity: 0.75;
+    filter: drop-shadow(0 0 8px var(--glow, rgba(107,33,168,0.8)));
+    user-select: none;
+  }
+  @keyframes floatObj {
+    0%,100% { transform: translateY(0) rotate(var(--rot0, 0deg)); }
+    33% { transform: translateY(-20px) rotate(var(--rot1, 5deg)); }
+    66% { transform: translateY(10px) rotate(var(--rot2, -5deg)); }
+  }
+
+  /* ===== LAYOUT ===== */
+  .page-wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+  }
+
+  /* ===== HEADER ===== */
+  .main-header {
+    text-align: center;
+    padding: 40px 20px 30px;
+    position: relative;
+  }
+  .main-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(107,33,168,0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: headerGlow 4s ease-in-out infinite alternate;
+  }
+  @keyframes headerGlow {
+    from { opacity: 0.5; transform: scale(1); }
+    to { opacity: 1; transform: scale(1.05); }
+  }
+  /* badge style removed */
+  h1.main-title {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: clamp(1.4rem, 4vw, 2.6rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, #fbbf24, #c026d3, #818cf8, #fbbf24);
+    background-size: 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmerTitle 5s linear infinite;
+    line-height: 1.25;
+    position: relative;
+    z-index: 1;
+  }
+  @keyframes shimmerTitle {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 300% 50%; }
+  }
+  .subtitle {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.15rem;
+    font-style: italic;
+    color: #c4b5fd;
+    margin-top: 10px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ===== ACTIVITY TABS ===== */
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 24px 0 28px;
+  }
+  .tab-btn {
+    font-family: 'Special Elite', cursive;
+    font-size: 0.9rem;
+    padding: 10px 22px;
+    border-radius: 30px;
+    border: 2px solid rgba(167,139,250,0.4);
+    background: rgba(30,10,60,0.7);
+    color: #c4b5fd;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .tab-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(107,33,168,0.4), rgba(192,38,211,0.3));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .tab-btn:hover::before, .tab-btn.active::before { opacity: 1; }
+  .tab-btn.active {
+    border-color: var(--gold);
+    color: var(--gold);
+    box-shadow: 0 0 16px rgba(245,158,11,0.5), inset 0 0 20px rgba(107,33,168,0.3);
+  }
+
+  /* ===== ACTIVITY PANELS ===== */
+  .activity-panel {
+    display: none;
+    animation: fadeSlide 0.5s ease forwards;
+  }
+  .activity-panel.active { display: block; }
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card {
+    background: linear-gradient(135deg, rgba(26,10,64,0.9), rgba(15,5,40,0.95));
+    border: 1px solid rgba(167,139,250,0.25);
+    border-radius: 20px;
+    padding: 28px 28px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 40px rgba(107,33,168,0.2);
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), var(--magenta), transparent);
+  }
+
+  .card-title {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: 1.05rem;
+    color: var(--gold);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card-desc {
+    font-size: 1.05rem;
+    color: #d8b4fe;
+    line-height: 1.65;
+    margin-bottom: 18px;
+  }
+
+  /* ===== FORMULA BOX ===== */
+  .formula-box {
+    background: rgba(107,33,168,0.2);
+    border: 1px solid rgba(167,139,250,0.4);
+    border-radius: 12px;
+    padding: 14px 20px;
+    font-size: 1.2rem;
+    text-align: center;
+    color: var(--text-bright);
+    margin: 14px 0;
+    font-family: 'Crimson Pro', serif;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .formula-box span { color: var(--gold); }
+
+  /* ===== STEP DISPLAY ===== */
+  .steps-list { list-style: none; counter-reset: step; }
+  .steps-list li {
+    counter-increment: step;
+    padding: 12px 16px 12px 52px;
+    position: relative;
+    margin-bottom: 10px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 10px;
+    border-left: 3px solid transparent;
+    transition: all 0.3s;
+    font-size: 1rem;
+    color: #e9d5ff;
+    line-height: 1.6;
+  }
+  .steps-list li::before {
+    content: counter(step);
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    background: var(--violet);
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: 0.75rem;
+    color: var(--gold);
+    font-weight: 700;
+    line-height: 28px;
+    text-align: center;
+  }
+  .steps-list li.done { border-left-color: #22c55e; background: rgba(34,197,94,0.08); }
+
+  /* ===== BUTTONS ===== */
+  .magic-btn {
+    font-family: 'Special Elite', cursive;
+    font-size: 0.95rem;
+    padding: 12px 28px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .magic-btn-primary {
+    background: linear-gradient(135deg, #7c3aed, #c026d3);
+    color: white;
+    box-shadow: 0 0 16px rgba(192,38,211,0.5);
+  }
+  .magic-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 24px rgba(192,38,211,0.8);
+  }
+  .magic-btn-gold {
+    background: linear-gradient(135deg, #d97706, #f59e0b);
+    color: #1a0533;
+    box-shadow: 0 0 16px rgba(245,158,11,0.4);
+  }
+  .magic-btn-gold:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 24px rgba(245,158,11,0.7);
+  }
+  .magic-btn:active { transform: scale(0.97); }
+
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 16px;
+  }
+
+  /* ===== FEEDBACK ===== */
+  .feedback {
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: 1rem;
+    margin-top: 14px;
+    display: none;
+    font-weight: 600;
+    animation: popIn 0.3s ease;
+  }
+  .feedback.show { display: block; }
+  .feedback.correct { background: rgba(34,197,94,0.2); border: 1px solid #22c55e; color: #86efac; }
+  .feedback.wrong { background: rgba(239,68,68,0.15); border: 1px solid #ef4444; color: #fca5a5; }
+  .feedback.info { background: rgba(99,102,241,0.2); border: 1px solid #818cf8; color: #c7d2fe; }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  /* ===== INPUT ===== */
+  .magic-input {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(167,139,250,0.5);
+    border-radius: 10px;
+    padding: 10px 16px;
+    color: var(--cream);
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.1rem;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .magic-input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 12px rgba(245,158,11,0.3);
+  }
+
+  select.magic-input { cursor: pointer; }
+
+  /* ===== ACTIVITY 1: DOMINO CHAIN ===== */
+  .domino-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 16px 0;
+    align-items: flex-end;
+  }
+  .domino {
+    width: 52px;
+    height: 80px;
+    border-radius: 8px;
+    border: 2px solid rgba(167,139,250,0.6);
+    background: rgba(45,27,105,0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: 0.7rem;
+    color: #e9d5ff;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    transform-origin: bottom center;
+    user-select: none;
+  }
+  .domino.fallen {
+    transform: rotate(90deg) translateX(25px);
+    background: rgba(107,33,168,0.8);
+    border-color: var(--gold);
+    box-shadow: 0 0 12px rgba(245,158,11,0.6);
+  }
+  .domino .domino-n {
+    font-size: 1rem;
+    color: var(--gold);
+    font-weight: 700;
+  }
+  .domino .domino-label {
+    font-size: 0.6rem;
+    color: #c4b5fd;
+    margin-top: 4px;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .chain-message {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.1rem;
+    color: #d8b4fe;
+    min-height: 28px;
+    margin-top: 8px;
+    transition: all 0.3s;
+  }
+
+  .progress-bar-wrap {
+    height: 10px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 12px 0;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #7c3aed, #f59e0b);
+    border-radius: 6px;
+    transition: width 0.5s ease;
+  }
+
+  /* ===== ACTIVITY 2: BUILD THE PROOF ===== */
+  .proof-area {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  @media(max-width:640px) { .proof-area { grid-template-columns: 1fr; } }
+
+  .pieces-pool {
+    background: rgba(255,255,255,0.04);
+    border: 2px dashed rgba(167,139,250,0.35);
+    border-radius: 14px;
+    padding: 16px;
+    min-height: 220px;
+  }
+  .pieces-pool h3 {
+    font-family: 'Special Elite', cursive;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .proof-drop-zone {
+    background: rgba(107,33,168,0.1);
+    border: 2px dashed rgba(245,158,11,0.35);
+    border-radius: 14px;
+    padding: 16px;
+    min-height: 220px;
+    transition: all 0.3s;
+  }
+  .proof-drop-zone.drag-over {
+    background: rgba(107,33,168,0.25);
+    border-color: var(--gold);
+    box-shadow: 0 0 20px rgba(245,158,11,0.3);
+  }
+  .proof-drop-zone h3 {
+    font-family: 'Special Elite', cursive;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    color: var(--magenta);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .proof-piece {
+    background: linear-gradient(135deg, rgba(60,20,120,0.9), rgba(40,10,80,0.9));
+    border: 1px solid rgba(167,139,250,0.5);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    cursor: grab;
+    font-size: 0.95rem;
+    color: #e9d5ff;
+    transition: all 0.2s;
+    user-select: none;
+    position: relative;
+  }
+  .proof-piece:hover {
+    border-color: var(--gold);
+    box-shadow: 0 0 10px rgba(245,158,11,0.3);
+    transform: translateX(3px);
+  }
+  .proof-piece:active { cursor: grabbing; opacity: 0.7; }
+  .proof-piece .piece-step {
+    font-family: 'Special Elite', cursive;
+    font-size: 0.7rem;
+    color: var(--gold);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .proof-piece[draggable="true"] { touch-action: none; }
+
+  .placed-piece {
+    background: rgba(34,197,94,0.12);
+    border-color: rgba(34,197,94,0.5);
+    cursor: default;
+  }
+  .placed-piece:hover { transform: none; }
+
+  /* ===== ACTIVITY 3: FORMULA FORGE ===== */
+  .forge-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .forge-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(167,139,250,0.3);
+    border-radius: 14px;
+    padding: 16px;
+    text-align: center;
+    transition: all 0.3s;
+  }
+  .forge-card.verified {
+    border-color: #22c55e;
+    background: rgba(34,197,94,0.08);
+    box-shadow: 0 0 16px rgba(34,197,94,0.2);
+  }
+  .forge-card h4 {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: 0.75rem;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .n-display {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: 2rem;
+    color: var(--magenta);
+    text-shadow: 0 0 10px rgba(192,38,211,0.7);
+    margin: 8px 0;
+  }
+  .sum-display {
+    font-size: 1.1rem;
+    color: #c4b5fd;
+    margin: 4px 0;
+  }
+  .formula-result {
+    font-size: 1.1rem;
+    color: var(--gold);
+    font-weight: 600;
+    margin: 4px 0;
+  }
+  .match-indicator {
+    font-size: 1.4rem;
+    margin-top: 8px;
+    min-height: 1.6rem;
+  }
+
+  .n-slider {
+    width: 100%;
+    accent-color: var(--magenta);
+    cursor: pointer;
+    margin: 10px 0;
+  }
+
+  .induction-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    margin-top: 12px;
+  }
+  .induction-table th {
+    font-family: 'Special Elite', cursive;
+    font-size: 0.8rem;
+    letter-spacing: 1.5px;
+    color: var(--gold);
+    text-transform: uppercase;
+    padding: 10px 12px;
+    background: rgba(107,33,168,0.3);
+    text-align: left;
+    border-bottom: 1px solid rgba(167,139,250,0.3);
+  }
+  .induction-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    color: #e9d5ff;
+  }
+  .induction-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+  .induction-table .check { color: #22c55e; font-size: 1.1rem; }
+  .induction-table tr.highlighted td {
+    background: rgba(245,158,11,0.1);
+    color: var(--text-bright);
+  }
+
+  /* ===== MEDALS / SCORE ===== */
+  .score-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+  .score-gem {
+    background: rgba(26,10,64,0.9);
+    border: 1px solid rgba(167,139,250,0.4);
+    border-radius: 14px;
+    padding: 10px 20px;
+    text-align: center;
+    min-width: 100px;
+  }
+  .score-gem .gem-label {
+    font-family: 'Special Elite', cursive;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .score-gem .gem-value {
+    font-family: 'Cinzel Decorative', cursive;
+    font-size: 1.6rem;
+    color: #c4b5fd;
+  }
+
+  /* ===== CELEBRATE ANIMATION ===== */
+  @keyframes burst {
+    0% { transform: scale(0) rotate(0deg); opacity: 1; }
+    100% { transform: scale(3) rotate(360deg); opacity: 0; }
+  }
+  .celebrate-star {
+    position: fixed;
+    font-size: 2rem;
+    animation: burst 1.2s ease-out forwards;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--midnight); }
+  ::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 4px; }
+
+  /* ===== RESPONSIVE ===== */
+  @media(max-width:480px) {
+    .card { padding: 18px 14px; }
+    h1.main-title { font-size: 1.3rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== ANIMATED BACKGROUND ===== -->
+<div class="bg-canvas">
+  <div class="stars-layer"></div>
+  <div id="starsContainer"></div>
+  <div id="floatingObjs"></div>
+</div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="page-wrapper">
+
+  <header class="main-header">
+    <h1 class="main-title">Mathematical Induction<br>— Prove It For All n —</h1>
+    <p class="subtitle">"Like toppling infinite dominoes — one push, endless truth."</p>
+  </header>
+
+  <!-- Score Bar -->
+  <div class="score-bar">
+    <div class="score-gem">
+      <div class="gem-label">⭐ Stars</div>
+      <div class="gem-value" id="totalStars">0</div>
+    </div>
+    <div class="score-gem">
+      <div class="gem-label">🏆 Spells Cast</div>
+      <div class="gem-value" id="spellsCast">0</div>
+    </div>
+    <div class="score-gem">
+      <div class="gem-label">🔮 Accuracy</div>
+      <div class="gem-value" id="accuracy">—</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('a1',this)">🁢 Activity 1<br><small>Domino Chain</small></button>
+    <button class="tab-btn" onclick="switchTab('a2',this)">📜 Activity 2<br><small>Build the Proof</small></button>
+    <button class="tab-btn" onclick="switchTab('a3',this)">🔭 Activity 3<br><small>Formula Forge</small></button>
+  </div>
+
+  <!-- ===================== ACTIVITY 1: DOMINO CHAIN ===================== -->
+  <div class="activity-panel active" id="a1">
+    <div class="card">
+      <div class="card-title">🁢 The Domino Chain — Understanding Induction</div>
+      <p class="card-desc">
+        Mathematical induction is like toppling dominoes! If the <strong style="color:var(--gold)">1st domino falls</strong> (Base Case),
+        and <em>whenever domino k falls, domino k+1 also falls</em> (Inductive Step) — then <strong style="color:var(--magenta)">ALL dominoes fall forever</strong>!
+        Click the first domino to start the chain!
+      </p>
+
+      <div class="formula-box">
+        <span>Claim:</span> 1 + 2 + 3 + … + n = <span>n(n+1)/2</span> for all n ≥ 1
+      </div>
+
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="dominoProgress" style="width:0%"></div>
+      </div>
+
+      <div class="domino-row" id="dominoRow"></div>
+
+      <div class="chain-message" id="chainMessage">👆 Click domino n=1 to begin the Base Case!</div>
+
+      <div class="btn-row">
+        <button class="magic-btn magic-btn-primary" onclick="resetDominoes()">🔄 Reset Chain</button>
+        <button class="magic-btn magic-btn-gold" onclick="autoFallAll()">⚡ Auto-Fall All!</button>
+      </div>
+
+      <div class="feedback" id="a1feedback"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📖 The Two Magical Steps</div>
+      <ul class="steps-list" id="stepsList">
+        <li id="step1"><strong>Base Case (n=1):</strong> Verify the formula works for n=1. We check: 1 = 1(1+1)/2 = 1 ✓</li>
+        <li id="step2"><strong>Inductive Hypothesis:</strong> Assume it's true for some k ≥ 1. So assume: 1+2+…+k = k(k+1)/2</li>
+        <li id="step3"><strong>Inductive Step:</strong> Prove it for k+1. Add (k+1) to both sides: 1+2+…+k+(k+1) = k(k+1)/2 + (k+1)</li>
+        <li id="step4"><strong>Simplify:</strong> = (k+1)[k/2 + 1] = (k+1)(k+2)/2 = (k+1)((k+1)+1)/2 ✓</li>
+        <li id="step5"><strong>Conclusion:</strong> By induction, 1+2+…+n = n(n+1)/2 for ALL n ≥ 1! 🎉</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ===================== ACTIVITY 2: BUILD THE PROOF ===================== -->
+  <div class="activity-panel" id="a2">
+    <div class="card">
+      <div class="card-title">📜 Build the Induction Proof</div>
+      <p class="card-desc">
+        A proof has parts — drag the correct proof pieces into the <strong style="color:var(--gold)">Spell Scroll</strong> in the right order.
+        Prove that the <strong style="color:var(--magenta)">sum of the first n odd numbers = n²</strong>!
+      </p>
+      <div class="formula-box">
+        <span>Prove:</span> 1 + 3 + 5 + … + (2n−1) = <span>n²</span>  for all n ≥ 1
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="proof-area">
+        <div class="pieces-pool">
+          <h3>🧩 Proof Pieces — Drag These</h3>
+          <div id="piecesPool"></div>
+        </div>
+        <div class="proof-drop-zone" id="dropZone"
+          ondragover="handleDragOver(event)"
+          ondrop="handleDrop(event)"
+          ondragleave="handleDragLeave(event)">
+          <h3>📜 Your Spell Scroll</h3>
+          <div id="proofScroll">
+            <p style="color:rgba(167,139,250,0.4);font-style:italic;font-size:0.9rem;">Drag proof steps here in order…</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="magic-btn magic-btn-primary" onclick="checkProof()">🔮 Check Spell!</button>
+        <button class="magic-btn magic-btn-gold" onclick="resetProof()">🔄 Reset Scroll</button>
+        <button class="magic-btn" style="background:rgba(99,102,241,0.4);color:#c7d2fe;border:1px solid #818cf8;" onclick="showProofHint()">💡 Hint</button>
+      </div>
+      <div class="feedback" id="a2feedback"></div>
+    </div>
+  </div>
+
+  <!-- ===================== ACTIVITY 3: FORMULA FORGE ===================== -->
+  <div class="activity-panel" id="a3">
+    <div class="card">
+      <div class="card-title">🔭 Formula Forge — Experiment with n</div>
+      <p class="card-desc">
+        Move the slider to choose <strong style="color:var(--gold)">n</strong>, then watch the formula magically match the actual sum!
+        This is how we <em>discover</em> what to prove — then induction does the heavy lifting!
+      </p>
+      <div class="formula-box">
+        <span>Sum:</span> 1² + 2² + 3² + … + n² = <span>n(n+1)(2n+1) / 6</span>
+      </div>
+
+      <label style="font-family:'Special Elite',cursive;font-size:0.85rem;letter-spacing:2px;color:var(--gold);text-transform:uppercase;">
+        Choose n: <span id="nVal" style="color:var(--magenta);font-size:1.2rem;">1</span>
+      </label>
+      <input type="range" class="n-slider" id="nSlider" min="1" max="12" value="1" oninput="updateForge()">
+
+      <div class="forge-grid" id="forgeGrid"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📊 The Magic Table — All Values At Once</div>
+      <p class="card-desc">Choose how many rows to reveal and watch the pattern appear!</p>
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <select class="magic-input" style="width:auto;" id="tableRows" onchange="buildTable()">
+          <option value="5">Show 5 rows</option>
+          <option value="8" selected>Show 8 rows</option>
+          <option value="12">Show 12 rows</option>
+        </select>
+        <button class="magic-btn magic-btn-primary" onclick="buildTable()">🪄 Conjure Table</button>
+      </div>
+      <div id="tableContainer" style="overflow-x:auto;margin-top:16px;"></div>
+
+      <div class="btn-row" style="margin-top:16px;">
+        <button class="magic-btn magic-btn-gold" onclick="inductionQuiz()">🎓 Quick Quiz!</button>
+      </div>
+      <div class="feedback" id="a3feedback"></div>
+    </div>
+  </div>
+
+</div><!-- end page-wrapper -->
+
+<script>
+/* ===================================================
+   GLOBALS & SCORE
+=================================================== */
+let totalStars = 0;
+let spellsCast = 0;
+let correctAnswers = 0;
+
+function addStars(n) {
+  totalStars += n;
+  spellsCast++;
+  correctAnswers += (n > 0 ? 1 : 0);
+  document.getElementById('totalStars').textContent = totalStars;
+  document.getElementById('spellsCast').textContent = spellsCast;
+  const acc = spellsCast > 0 ? Math.round((correctAnswers/spellsCast)*100)+'%' : '—';
+  document.getElementById('accuracy').textContent = acc;
+  if(n > 0) celebrate();
+}
+
+function celebrate() {
+  const emojis = ['⭐','✨','🌟','💫','🎉','🪄','🔮'];
+  for(let i=0;i<8;i++) {
+    setTimeout(()=>{
+      const el = document.createElement('div');
+      el.className = 'celebrate-star';
+      el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      el.style.left = (10+Math.random()*80)+'vw';
+      el.style.top = (10+Math.random()*70)+'vh';
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(), 1300);
+    }, i*80);
+  }
+}
+
+function showFeedback(id, msg, type) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'feedback show ' + type;
+  setTimeout(()=>{ el.style.opacity='1'; },10);
+}
+
+/* ===================================================
+   TAB SWITCHING
+=================================================== */
+function switchTab(id, btn) {
+  document.querySelectorAll('.activity-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ===================================================
+   BACKGROUND: STARS + FLOATING OBJECTS
+=================================================== */
+(function buildBg() {
+  const sc = document.getElementById('starsContainer');
+  for(let i=0;i<90;i++) {
+    const s = document.createElement('div');
+    s.className='star';
+    const sz = 1+Math.random()*3;
+    s.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--dur:${2+Math.random()*4}s;--delay:${Math.random()*4}s;`;
+    sc.appendChild(s);
+  }
+  const objs = [
+    {e:'📚',x:5,y:15},{e:'🧙',x:88,y:20},{e:'🦉',x:12,y:70},
+    {e:'⚗️',x:90,y:65},{e:'🌟',x:50,y:8},{e:'🪄',x:75,y:85},
+    {e:'📖',x:25,y:85},{e:'🔮',x:60,y:75},{e:'✨',x:40,y:20},
+    {e:'🧪',x:3,y:45},{e:'🌙',x:95,y:40},{e:'⭐',x:55,y:55},
+    {e:'🦅',x:30,y:40},{e:'🕯️',x:80,y:50},{e:'📜',x:70,y:12}
+  ];
+  const oc = document.getElementById('floatingObjs');
+  objs.forEach((o,i)=>{
+    const d = document.createElement('div');
+    d.className = 'floating-obj';
+    const sz = 1.2+Math.random()*1.4;
+    const spd = 6+Math.random()*8;
+    const glows = ['rgba(107,33,168,0.9)','rgba(245,158,11,0.8)','rgba(192,38,211,0.8)','rgba(255,255,255,0.5)'];
+    const glow = glows[i%glows.length];
+    d.style.cssText=`left:${o.x}%;top:${o.y}%;--sz:${sz}rem;--spd:${spd}s;--delay:${i*0.7}s;--glow:${glow};--rot0:0deg;--rot1:${-5+Math.random()*10}deg;--rot2:${-8+Math.random()*16}deg;`;
+    d.textContent = o.e;
+    oc.appendChild(d);
+  });
+})();
+
+/* ===================================================
+   ACTIVITY 1: DOMINO CHAIN
+=================================================== */
+const DOMINO_COUNT = 8;
+let dominosFallen = 0;
+let dominoTimers = [];
+
+function buildDominoes() {
+  const row = document.getElementById('dominoRow');
+  row.innerHTML='';
+  dominosFallen=0;
+  document.getElementById('dominoProgress').style.width='0%';
+  document.getElementById('chainMessage').textContent='👆 Click domino n=1 to begin the Base Case!';
+  document.getElementById('a1feedback').className='feedback';
+  resetSteps();
+  for(let i=1;i<=DOMINO_COUNT;i++) {
+    const d = document.createElement('div');
+    d.className='domino';
+    d.id='dom'+i;
+    d.innerHTML=`<div class="domino-n">n=${i}</div><div class="domino-label">Sum=${i*(i+1)/2}</div>`;
+    d.onclick = ()=>toppleDomino(i);
+    row.appendChild(d);
+  }
+}
+
+function toppleDomino(n) {
+  if(n!==1 && dominosFallen<n-1) {
+    showFeedback('a1feedback','⚠️ You must topple from n=1 first — the chain must be unbroken!','wrong');
+    return;
+  }
+  if(document.getElementById('dom'+n).classList.contains('fallen')) return;
+  dominoTimers.forEach(t=>clearTimeout(t));
+  dominoTimers=[];
+  for(let i=n;i<=DOMINO_COUNT;i++) {
+    const t=setTimeout(()=>fallOne(i), (i-n)*400);
+    dominoTimers.push(t);
+  }
+}
+
+function fallOne(i) {
+  const d=document.getElementById('dom'+i);
+  if(!d||d.classList.contains('fallen')) return;
+  d.classList.add('fallen');
+  dominosFallen=Math.max(dominosFallen,i);
+  document.getElementById('dominoProgress').style.width=(dominosFallen/DOMINO_COUNT*100)+'%';
+  markStep(i);
+  const msgs=[
+    '\uD83C\uDF1F Base Case proven! n=1: Sum=1=1(2)/2 \u2713',
+    '\uD83C\uDFAF Inductive Step: n=1\u21922. Sum=3=2(3)/2 \u2713',
+    '\u2728 Chain continues! n=3: Sum=6=3(4)/2 \u2713',
+    '\uD83D\uDD2E Dominos keep falling! n=4: Sum=10=4(5)/2 \u2713',
+    '\uD83D\uDCAB Halfway there! n=5: Sum=15=5(6)/2 \u2713',
+    '\uD83E\uDEE7 Magic of induction! n=6: Sum=21=6(7)/2 \u2713',
+    '\u2B50 Almost done! n=7: Sum=28=7(8)/2 \u2713',
+    '\uD83C\uDF89 ALL DOMINOES FALLEN! Proven for ALL n \u2265 1! \uD83C\uDFC6',
+  ];
+  document.getElementById('chainMessage').textContent = msgs[i-1]||'';
+  if(i===DOMINO_COUNT) {
+    showFeedback('a1feedback','🏆 Brilliant! You have seen Mathematical Induction in action! The chain proves it holds for EVERY n!','correct');
+    addStars(3);
+  }
+}
+
+function markStep(i) {
+  const map={1:'step1',2:'step2',3:'step3',4:'step4',5:'step5'};
+  if(map[i]) document.getElementById(map[i])?.classList.add('done');
+}
+
+function resetSteps() {
+  for(let i=1;i<=5;i++) document.getElementById('step'+i)?.classList.remove('done');
+}
+
+function resetDominoes() { dominoTimers.forEach(t=>clearTimeout(t)); buildDominoes(); }
+function autoFallAll() { toppleDomino(1); }
+
+buildDominoes();
+
+/* ===================================================
+   ACTIVITY 2: BUILD THE PROOF (Drag & Drop)
+=================================================== */
+const PROOF_PIECES = [
+  {id:'p1', step:'Step 1: Base Case', text:'For n=1: LHS = 1, RHS = 1\u00B2 = 1. So 1=1 \u2713. Base case holds.'},
+  {id:'p2', step:'Step 2: Inductive Hypothesis', text:'Assume for some k\u22651: 1+3+5+\u2026+(2k\u22121) = k\u00B2'},
+  {id:'p3', step:'Step 3: Inductive Step Goal', text:'We want to prove it holds for n=k+1, i.e., that 1+3+\u2026+(2k\u22121)+(2k+1) = (k+1)\u00B2'},
+  {id:'p4', step:'Step 4: Algebra', text:'LHS = k\u00B2 + (2k+1) [using the inductive hypothesis]'},
+  {id:'p5', step:'Step 5: Simplify', text:'k\u00B2 + 2k + 1 = (k+1)\u00B2 \u2713 \u2014 exactly what we needed!'},
+  {id:'p6', step:'Step 6: Conclusion', text:'By the principle of mathematical induction, 1+3+\u2026+(2n\u22121)=n\u00B2 for all n\u22651. \u220E'},
+];
+
+const DISTRACTORS = [
+  {id:'d1', step:'\u274C Wrong Step', text:'Assume it holds for ALL k simultaneously, then conclude.'},
+  {id:'d2', step:'\u274C Wrong Step', text:'LHS = k\u00B2 \u2212 (2k+1) [subtracting the next odd number]'},
+];
+
+let draggedId = null;
+let placedIds = [];
+
+function buildProof() {
+  const pool = document.getElementById('piecesPool');
+  const scroll = document.getElementById('proofScroll');
+  pool.innerHTML='';
+  scroll.innerHTML='<p style="color:rgba(167,139,250,0.4);font-style:italic;font-size:0.9rem;">Drag proof steps here in order…</p>';
+  placedIds=[];
+
+  const allPieces = [...PROOF_PIECES, ...DISTRACTORS].sort(()=>Math.random()-0.5);
+  allPieces.forEach(p=>{
+    const el = createPieceEl(p);
+    pool.appendChild(el);
+  });
+  document.getElementById('a2feedback').className='feedback';
+}
+
+function createPieceEl(p) {
+  const el = document.createElement('div');
+  el.className='proof-piece';
+  el.draggable=true;
+  el.dataset.id=p.id;
+  el.innerHTML=`<div class="piece-step">${p.step}</div><div>${p.text}</div>`;
+  el.addEventListener('dragstart', e=>{ draggedId=p.id; e.dataTransfer.effectAllowed='move'; });
+  // Touch support
+  el.addEventListener('touchstart', touchStart, {passive:true});
+  el.addEventListener('touchmove', touchMove, {passive:false});
+  el.addEventListener('touchend', touchEnd);
+  return el;
+}
+
+let touchDragEl=null, touchClone=null;
+function touchStart(e){
+  touchDragEl=e.currentTarget;
+  draggedId=touchDragEl.dataset.id;
+  touchClone=touchDragEl.cloneNode(true);
+  touchClone.style.cssText='position:fixed;opacity:0.7;pointer-events:none;z-index:9999;width:'+touchDragEl.offsetWidth+'px;';
+  document.body.appendChild(touchClone);
+}
+function touchMove(e){
+  if(!touchClone)return;
+  e.preventDefault();
+  const t=e.touches[0];
+  touchClone.style.left=(t.clientX-touchDragEl.offsetWidth/2)+'px';
+  touchClone.style.top=(t.clientY-40)+'px';
+  const dz=document.getElementById('dropZone');
+  const r=dz.getBoundingClientRect();
+  if(t.clientX>r.left&&t.clientX<r.right&&t.clientY>r.top&&t.clientY<r.bottom){
+    dz.classList.add('drag-over');
+  } else { dz.classList.remove('drag-over'); }
+}
+function touchEnd(e){
+  if(!touchClone)return;
+  const t=e.changedTouches[0];
+  const dz=document.getElementById('dropZone');
+  const r=dz.getBoundingClientRect();
+  if(t.clientX>r.left&&t.clientX<r.right&&t.clientY>r.top&&t.clientY<r.bottom){
+    dropPiece(draggedId);
+  }
+  touchClone.remove(); touchClone=null; touchDragEl=null;
+  dz.classList.remove('drag-over');
+}
+
+function handleDragOver(e){ e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function handleDragLeave(e){ e.currentTarget.classList.remove('drag-over'); }
+function handleDrop(e){
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if(draggedId) dropPiece(draggedId);
+}
+
+function dropPiece(id) {
+  if(placedIds.includes(id)) return;
+  placedIds.push(id);
+  const p = [...PROOF_PIECES,...DISTRACTORS].find(x=>x.id===id);
+  if(!p) return;
+
+  const scroll = document.getElementById('proofScroll');
+  const placeholder = scroll.querySelector('p');
+  if(placeholder) placeholder.remove();
+
+  const el = document.createElement('div');
+  el.className='proof-piece placed-piece';
+  el.dataset.id=id;
+  el.innerHTML=`<div class="piece-step">${p.step}</div><div>${p.text}</div>`;
+  scroll.appendChild(el);
+
+  // Remove from pool
+  const poolEl = document.querySelector(`#piecesPool [data-id="${id}"]`);
+  if(poolEl) poolEl.remove();
+}
+
+function checkProof() {
+  spellsCast++;
+  const correctOrder = ['p1','p2','p3','p4','p5','p6'];
+  const hasDistractors = placedIds.some(id=>id.startsWith('d'));
+  const isCorrectOrder = JSON.stringify(placedIds.filter(id=>!id.startsWith('d'))) === JSON.stringify(correctOrder);
+
+  if(hasDistractors){
+    showFeedback('a2feedback','⚠️ You have included a wrong step! Remove the ❌ distractor steps and try again.','wrong');
+    document.getElementById('accuracy').textContent = Math.round((correctAnswers/spellsCast)*100)+'%';
+    return;
+  }
+  if(placedIds.length < correctOrder.length){
+    showFeedback('a2feedback','📜 Your scroll is incomplete! Drag all 6 correct proof steps over.','info');
+    document.getElementById('accuracy').textContent = Math.round((correctAnswers/spellsCast)*100)+'%';
+    return;
+  }
+  if(isCorrectOrder){
+    correctAnswers++;
+    totalStars+=4;
+    document.getElementById('totalStars').textContent=totalStars;
+    document.getElementById('spellsCast').textContent=spellsCast;
+    document.getElementById('accuracy').textContent=Math.round((correctAnswers/spellsCast)*100)+'%';
+    showFeedback('a2feedback','🏆 PERFECT! You assembled the complete induction proof in the correct order! 4 stars earned! 🌟🌟🌟🌟','correct');
+    celebrate();
+  } else {
+    showFeedback('a2feedback','⚡ The steps are right but the ORDER is wrong! Induction must go: Base Case → Hypothesis → Step → Algebra → Simplify → Conclusion.','wrong');
+    document.getElementById('accuracy').textContent = Math.round((correctAnswers/spellsCast)*100)+'%';
+  }
+}
+
+function resetProof(){ buildProof(); }
+
+function showProofHint(){
+  showFeedback('a2feedback','💡 Hint: Start with Base Case (n=1), then state the Inductive Hypothesis, then show what you want to prove for k+1, then do the algebra using the hypothesis, simplify, and conclude!','info');
+}
+
+buildProof();
+
+/* ===================================================
+   ACTIVITY 3: FORMULA FORGE
+=================================================== */
+function updateForge(){
+  const n = parseInt(document.getElementById('nSlider').value);
+  document.getElementById('nVal').textContent=n;
+  buildForgeGrid(n);
+}
+
+function sumOfSquares(n){ return n*(n+1)*(2*n+1)/6; }
+function actualSum(n){ let s=0; for(let i=1;i<=n;i++) s+=i*i; return s; }
+
+function buildForgeGrid(n){
+  const grid = document.getElementById('forgeGrid');
+  grid.innerHTML='';
+
+  // Card 1: actual sum
+  const c1=document.createElement('div');
+  c1.className='forge-card';
+  let terms='';
+  for(let i=1;i<=Math.min(n,5);i++) terms+=(i>1?' + ':'')+`${i}\u00B2`;
+  if(n>5) terms+=' + \u2026';
+  const actual=actualSum(n);
+  c1.innerHTML=`<h4>Actual Sum</h4>
+    <div class="n-display">n=${n}</div>
+    <div class="sum-display">${terms}</div>
+    <div class="sum-display">= <strong style="color:var(--magenta)">${actual}</strong></div>`;
+  grid.appendChild(c1);
+
+  // Card 2: formula result
+  const formula=sumOfSquares(n);
+  const match=actual===formula;
+  const c2=document.createElement('div');
+  c2.className='forge-card'+(match?' verified':'');
+  c2.innerHTML=`<h4>Formula n(n+1)(2n+1)/6</h4>
+    <div class="n-display">n=${n}</div>
+    <div class="formula-result">${n}×${n+1}×${2*n+1} ÷ 6</div>
+    <div class="formula-result">= <strong>${formula}</strong></div>
+    <div class="match-indicator">${match?'✅ Match!':'❌'}</div>`;
+  grid.appendChild(c2);
+
+  // Card 3: proof status
+  const c3=document.createElement('div');
+  c3.className='forge-card';
+  c3.innerHTML=`<h4>Induction Status</h4>
+    <div style="font-size:2.5rem;margin:8px 0">${match?'🔮':'⚗️'}</div>
+    <div style="font-size:0.9rem;color:#c4b5fd;line-height:1.6">
+      ${match ? '<strong style="color:#22c55e">Verified \u2713</strong><br>Formula matches for n='+n+'!<br>Induction covers ALL n \u2265 1' : 'Mismatch \u2014 check your calculation!'}
+    </div>`;
+  grid.appendChild(c3);
+}
+
+function buildTable(){
+  const rows=parseInt(document.getElementById('tableRows').value);
+  const sliderEl=document.getElementById('nSlider');
+  const n=sliderEl ? parseInt(sliderEl.value) : 1;
+  let html='<table class="induction-table"><thead><tr><th>n</th><th>Sum (1\u00B2+\u2026+n\u00B2)</th><th>Formula n(n+1)(2n+1)/6</th><th>Match</th></tr></thead><tbody>';
+  for(let i=1;i<=rows;i++){
+    const a=actualSum(i),f=sumOfSquares(i);
+    const hi=i===n?'highlighted':'';
+    html+=`<tr class="${hi}"><td>${i}</td><td>${a}</td><td>${f}</td><td class="check">${a===f?'✅':'❌'}</td></tr>`;
+  }
+  html+='</tbody></table>';
+  document.getElementById('tableContainer').innerHTML=html;
+}
+
+let quizActive=false;
+const quizQuestions=[
+  {q:'What is the sum 1\u00B2+2\u00B2+3\u00B2+4\u00B2?', ans:'30'},
+  {q:'Using the formula n(n+1)(2n+1)/6 with n=5, what do you get?', ans:'55'},
+  {q:'What is the sum 1\u00B2+2\u00B2+3\u00B2 using the formula?', ans:'14'},
+];
+function inductionQuiz(){
+  if(quizActive) return;
+  quizActive=true;
+  const qIdx=Math.floor(Math.random()*quizQuestions.length);
+  const q=quizQuestions[qIdx];
+  showFeedback('a3feedback','🎓 '+q.q+' (Type your answer and press check!)', 'info');
+  const fb=document.getElementById('a3feedback');
+  const inp=document.createElement('div');
+  inp.style.marginTop='10px';
+  inp.innerHTML=`<input class="magic-input" id="quizAns" placeholder="Your answer…" style="width:150px;display:inline-block;margin-right:10px">
+    <button class="magic-btn magic-btn-gold" onclick="checkQuiz('${q.ans}')">✅ Check</button>`;
+  fb.appendChild(inp);
+}
+
+function checkQuiz(correct){
+  const ans=document.getElementById('quizAns')?.value?.trim();
+  quizActive=false;
+  if(ans===correct){
+    showFeedback('a3feedback','🌟 Correct! '+correct+' is right! +2 stars!','correct');
+    addStars(2);
+  } else {
+    showFeedback('a3feedback',`❌ Not quite! The answer is ${correct}. Keep practising!`,'wrong');
+    spellsCast++;
+    document.getElementById('spellsCast').textContent=spellsCast;
+    document.getElementById('accuracy').textContent=Math.round((correctAnswers/spellsCast)*100)+'%';
+  }
+}
+
+// Init
+updateForge();
+buildTable();
+</script>
+</body>
+</html>

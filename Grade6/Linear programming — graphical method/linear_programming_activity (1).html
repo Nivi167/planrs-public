@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linear Programming — Graphical Method</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap');
+
+  :root {
+    --bg-deep: #0d0b2e;
+    --bg-mid: #1a1550;
+    --gold: #f5c842;
+    --purple: #9b59e6;
+    --teal: #2ee8c8;
+    --rose: #ff6b9d;
+    --green: #4ade80;
+    --blue: #60a5fa;
+    --orange: #fb923c;
+    --white: #f0edff;
+    --card-bg: rgba(26,21,80,0.82);
+    --border-glow: rgba(155,89,230,0.5);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg-deep);
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ── STARFIELD ── */
+  .starfield {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(155,89,230,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 80%, rgba(46,232,200,0.1) 0%, transparent 60%),
+      linear-gradient(135deg, #0d0b2e 0%, #1a1550 50%, #0f0d30 100%);
+  }
+
+  /* ── FLOATING OBJECTS ── */
+  .floater {
+    position: fixed; pointer-events: none; z-index: 1;
+    animation: floatUp linear infinite;
+    opacity: 0.7;
+    font-size: 28px;
+    filter: drop-shadow(0 0 8px rgba(245,200,66,0.7));
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(110vh) rotate(0deg); opacity:0; }
+    10%  { opacity: 0.8; }
+    90%  { opacity: 0.8; }
+    100% { transform: translateY(-10vh) rotate(360deg); opacity:0; }
+  }
+  @keyframes floatSway {
+    0%,100% { transform: translateY(0) rotate(-5deg); }
+    50%     { transform: translateY(-18px) rotate(5deg); }
+  }
+  @keyframes glowPulse {
+    0%,100% { filter: drop-shadow(0 0 8px var(--gold)); }
+    50%     { filter: drop-shadow(0 0 22px var(--gold)) drop-shadow(0 0 40px var(--purple)); }
+  }
+  @keyframes starTwinkle {
+    0%,100% { opacity:0.3; transform:scale(1); }
+    50%     { opacity:1; transform:scale(1.4); }
+  }
+  @keyframes orbFloat {
+    0%,100% { transform: translate(0,0) scale(1); }
+    33%     { transform: translate(20px,-15px) scale(1.05); }
+    66%     { transform: translate(-10px,10px) scale(0.97); }
+  }
+
+  /* ── LAYOUT ── */
+  .page-wrap {
+    position: relative; z-index: 10;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+  }
+
+  /* ── TITLE ── */
+  .main-title {
+    text-align: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(24px, 5vw, 44px);
+    background: linear-gradient(135deg, var(--gold), var(--teal), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+    filter: drop-shadow(0 0 20px rgba(245,200,66,0.4));
+    line-height: 1.2;
+  }
+  .sub-title {
+    text-align: center;
+    font-size: 14px;
+    color: rgba(240,237,255,0.6);
+    margin-bottom: 28px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* ── ACTIVITY TABS ── */
+  .tabs {
+    display: flex; gap: 8px; margin-bottom: 24px;
+    justify-content: center; flex-wrap: wrap;
+  }
+  .tab-btn {
+    font-family: 'Fredoka One', cursive;
+    font-size: 15px;
+    padding: 10px 22px;
+    border-radius: 50px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: rgba(255,255,255,0.06);
+    color: rgba(240,237,255,0.7);
+    letter-spacing: 0.5px;
+  }
+  .tab-btn:hover { background: rgba(155,89,230,0.25); color: var(--white); transform: translateY(-2px); }
+  .tab-btn.active {
+    background: linear-gradient(135deg, var(--purple), #6a2fa0);
+    color: var(--white);
+    border-color: var(--gold);
+    box-shadow: 0 0 20px rgba(155,89,230,0.6);
+  }
+
+  /* ── CARDS ── */
+  .activity-panel { display: none; }
+  .activity-panel.visible { display: block; }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-glow);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+  }
+  .card-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 20px;
+    color: var(--gold);
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .card-title .icon { font-size: 26px; animation: glowPulse 2.5s ease-in-out infinite; }
+
+  /* ── PROBLEM BOX ── */
+  .problem-box {
+    background: rgba(155,89,230,0.15);
+    border: 1px solid rgba(155,89,230,0.4);
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 18px;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .problem-box strong { color: var(--gold); }
+  .constraint-list { list-style: none; padding: 0; margin: 10px 0; }
+  .constraint-list li {
+    background: rgba(46,232,200,0.1);
+    border-left: 3px solid var(--teal);
+    padding: 6px 12px;
+    margin-bottom: 6px;
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--teal);
+  }
+
+  /* ── GRAPH CANVAS ── */
+  .graph-wrap {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    max-width: 500px;
+  }
+  canvas.graph-canvas {
+    border-radius: 14px;
+    border: 2px solid rgba(155,89,230,0.5);
+    background: #0a0820;
+    cursor: crosshair;
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* ── ACTIVITY 1 CONTROLS ── */
+  .controls-row {
+    display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; align-items: center;
+  }
+  .pill-btn {
+    font-family: 'Fredoka One', cursive;
+    font-size: 14px;
+    padding: 9px 20px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s;
+    letter-spacing: 0.5px;
+  }
+  .pill-btn.purple { background: linear-gradient(135deg, #9b59e6, #6a2fa0); color: white; }
+  .pill-btn.teal   { background: linear-gradient(135deg, #2ee8c8, #0fa891); color: #0d0b2e; }
+  .pill-btn.gold   { background: linear-gradient(135deg, #f5c842, #d4a017); color: #0d0b2e; }
+  .pill-btn.rose   { background: linear-gradient(135deg, #ff6b9d, #c0365e); color: white; }
+  .pill-btn:hover  { transform: translateY(-2px) scale(1.04); box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
+  .pill-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .step-label {
+    font-size: 13px;
+    color: rgba(240,237,255,0.6);
+    margin-top: 10px;
+    padding: 8px 14px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    min-height: 34px;
+  }
+  .step-label span { color: var(--gold); font-weight: 800; }
+
+  /* ── ACTIVITY 2 — DRAG DROP FEASIBILITY ── */
+  .drag-arena {
+    display: flex; gap: 20px; flex-wrap: wrap; margin-top: 10px;
+  }
+  .drag-source {
+    flex: 1; min-width: 180px;
+  }
+  .drag-source-title {
+    font-size: 13px; font-weight: 800; color: var(--purple);
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;
+  }
+  .point-token {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 80px; height: 40px;
+    border-radius: 10px;
+    font-weight: 800; font-size: 14px;
+    cursor: grab; margin: 4px;
+    border: 2px solid transparent;
+    transition: transform 0.2s, box-shadow 0.2s;
+    user-select: none;
+  }
+  .point-token:hover { transform: scale(1.08); box-shadow: 0 0 14px rgba(155,89,230,0.7); }
+  .point-token:active { cursor: grabbing; transform: scale(0.95); }
+  .point-token.feasible-color  { background: rgba(74,222,128,0.2); border-color: var(--green); color: var(--green); }
+  .point-token.infeasible-color{ background: rgba(255,107,157,0.2); border-color: var(--rose); color: var(--rose); }
+  .point-token.neutral          { background: rgba(155,89,230,0.2); border-color: var(--purple); color: var(--white); }
+
+  .drop-zones { flex: 1; min-width: 200px; }
+  .drop-zone {
+    min-height: 80px;
+    border-radius: 14px;
+    border: 2px dashed rgba(255,255,255,0.25);
+    padding: 10px;
+    margin-bottom: 12px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .drop-zone.drag-over { border-color: var(--gold); background: rgba(245,200,66,0.08); }
+  .drop-zone-label {
+    font-size: 12px; font-weight: 800; letter-spacing: 1px;
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  .zone-feasible .drop-zone-label { color: var(--green); }
+  .zone-infeasible .drop-zone-label { color: var(--rose); }
+
+  /* ── ACTIVITY 3 — CORNER POINT OPTIMIZER ── */
+  .vertex-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 14px;
+    margin-top: 12px;
+  }
+  .vertex-card {
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(155,89,230,0.3);
+    border-radius: 14px;
+    padding: 14px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+  .vertex-card:hover { border-color: var(--gold); background: rgba(245,200,66,0.08); transform: translateY(-3px); }
+  .vertex-card.selected { border-color: var(--teal); background: rgba(46,232,200,0.12); }
+  .vertex-card.winner { border-color: var(--gold); background: rgba(245,200,66,0.2); box-shadow: 0 0 20px rgba(245,200,66,0.4); }
+  .vertex-coord { font-family: 'Fredoka One', cursive; font-size: 22px; color: var(--gold); }
+  .vertex-calc { font-size: 13px; color: rgba(240,237,255,0.6); margin-top: 4px; }
+  .vertex-value { font-size: 18px; font-weight: 800; color: var(--teal); margin-top: 4px; }
+  .vertex-badge { display: none; }
+  .vertex-card.winner .vertex-badge { display: block; font-size: 22px; }
+
+  /* ── FEEDBACK ── */
+  .feedback-box {
+    margin-top: 14px;
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+  .feedback-box.success { background: rgba(74,222,128,0.15); border: 1px solid var(--green); color: var(--green); display: block; }
+  .feedback-box.error   { background: rgba(255,107,157,0.15); border: 1px solid var(--rose); color: var(--rose); display: block; }
+  .feedback-box.info    { background: rgba(96,165,250,0.15); border: 1px solid var(--blue); color: var(--blue); display: block; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap { margin-bottom: 20px; }
+  .progress-track {
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 6px;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--purple), var(--teal));
+    transition: width 0.5s ease;
+    box-shadow: 0 0 10px rgba(46,232,200,0.5);
+  }
+  .progress-text {
+    font-size: 12px;
+    color: rgba(240,237,255,0.5);
+    text-align: right;
+    margin-top: 4px;
+  }
+
+  /* ── OBJECTIVE DISPLAY ── */
+  .objective-display {
+    text-align: center;
+    padding: 14px;
+    background: rgba(245,200,66,0.1);
+    border: 1px solid rgba(245,200,66,0.3);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    font-size: 15px;
+  }
+  .obj-big {
+    font-family: 'Fredoka One', cursive;
+    font-size: 24px;
+    color: var(--gold);
+  }
+
+  /* ── DECORATIVE ORBS ── */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none;
+    z-index: 0;
+    animation: orbFloat 8s ease-in-out infinite;
+  }
+
+  /* ── ACTIVITY BADGE ── */
+  .act-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(155,89,230,0.2);
+    border: 1px solid rgba(155,89,230,0.4);
+    border-radius: 50px;
+    padding: 4px 14px 4px 8px;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--purple);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  /* ── LEGEND ── */
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
+
+  /* ── GRID CENTER ── */
+  .center { display:flex; justify-content:center; }
+
+  /* ── SCORE PILL ── */
+  .score-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(245,200,66,0.15);
+    border: 1px solid rgba(245,200,66,0.4);
+    border-radius: 50px;
+    padding: 5px 14px;
+    font-size: 13px; font-weight: 800;
+    color: var(--gold);
+    float: right;
+  }
+
+  /* stars */
+  .star-static {
+    position: fixed; pointer-events: none; z-index: 0;
+    border-radius: 50%; background: white;
+    animation: starTwinkle ease-in-out infinite;
+  }
+
+  @media (max-width:600px) {
+    .drag-arena { flex-direction: column; }
+    .vertex-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- BACKGROUND ELEMENTS -->
+<div class="starfield"></div>
+
+<!-- Decorative orbs -->
+<div class="orb" style="width:300px;height:300px;background:rgba(155,89,230,0.18);top:-60px;left:-80px;animation-delay:0s;"></div>
+<div class="orb" style="width:250px;height:250px;background:rgba(46,232,200,0.12);bottom:50px;right:-60px;animation-delay:3s;"></div>
+<div class="orb" style="width:180px;height:180px;background:rgba(245,200,66,0.1);top:50%;left:50%;animation-delay:5s;"></div>
+
+<!-- Floating emoji objects -->
+<div id="floaters-container"></div>
+
+<!-- MAIN CONTENT -->
+<div class="page-wrap">
+
+  <!-- TITLE -->
+  <h1 class="main-title">✨ Linear Programming<br>Graphical Method ✨</h1>
+
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:12px;color:rgba(240,237,255,0.5);font-weight:700;text-transform:uppercase;letter-spacing:1px;">Quest Progress</span>
+      <span id="score-global" class="score-pill">⭐ 0 / 30 pts</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="global-progress" style="width:0%"></div>
+    </div>
+    <div class="progress-text" id="global-progress-text">Complete activities to earn stars!</div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab(1)">🎯 Activity 1<br><small>Plot Constraints</small></button>
+    <button class="tab-btn" onclick="switchTab(2)">🧪 Activity 2<br><small>Feasible Region</small></button>
+    <button class="tab-btn" onclick="switchTab(3)">🏆 Activity 3<br><small>Find Optimal</small></button>
+  </div>
+
+  <!-- ════════════════════════════════════
+       ACTIVITY 1 — PLOT CONSTRAINTS
+  ════════════════════════════════════ -->
+  <div id="panel-1" class="activity-panel visible">
+    <div class="act-badge">🎯 Activity 1 of 3</div>
+    <div class="card">
+      <div class="card-title"><span class="icon">📚</span> The Canteen Problem — Plot the Constraints</div>
+
+      <div class="problem-box">
+        <strong>🏫 Scenario:</strong> Your school canteen makes <strong>Idlis (x)</strong> and <strong>Samosas (y)</strong> every morning.<br>
+        There are two magical constraints:<br>
+        <ul class="constraint-list">
+          <li>Constraint 1 (Blue Wand 🔵): x + y ≤ 10 &nbsp;&nbsp; <em>Total items ≤ 10</em></li>
+          <li>Constraint 2 (Purple Wand 🟣): 2x + y ≤ 14 &nbsp;&nbsp; <em>Oven time limit</em></li>
+          <li>Non-negativity (Gold ✨): x ≥ 0 and y ≥ 0</li>
+        </ul>
+        <strong>🎯 Your mission:</strong> Click the buttons step-by-step to plot each constraint line on the graph!
+      </div>
+
+      <div class="center">
+        <div class="graph-wrap">
+          <canvas id="canvas1" width="460" height="400" class="graph-canvas"></canvas>
+        </div>
+      </div>
+
+      <div class="legend" style="margin-top:14px;">
+        <div class="legend-item"><div class="legend-dot" style="background:#60a5fa;"></div> x + y = 10</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#c084fc;"></div> 2x + y = 14</div>
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(46,232,200,0.4);"></div> Feasible Region</div>
+      </div>
+
+      <div class="controls-row" style="margin-top:16px;">
+        <button class="pill-btn purple" id="btn-c1" onclick="plotStep(1)">🔵 Draw Constraint 1</button>
+        <button class="pill-btn purple" id="btn-c2" onclick="plotStep(2)" disabled>🟣 Draw Constraint 2</button>
+        <button class="pill-btn teal"   id="btn-shade" onclick="plotStep(3)" disabled>✨ Shade Feasible Region</button>
+        <button class="pill-btn gold"   id="btn-corners" onclick="plotStep(4)" disabled>⭐ Mark Corner Points</button>
+        <button class="pill-btn rose"   onclick="resetAct1()">🔄 Reset</button>
+      </div>
+      <div class="step-label" id="step-label-1">👆 Click <span>"Draw Constraint 1"</span> to start plotting!</div>
+      <div class="feedback-box" id="fb1"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════
+       ACTIVITY 2 — DRAG FEASIBILITY
+  ════════════════════════════════════ -->
+  <div id="panel-2" class="activity-panel">
+    <div class="act-badge">🧪 Activity 2 of 3</div>
+    <div class="card">
+      <div class="card-title"><span class="icon">🧪</span> Potion Sorting — Is this Point Feasible?</div>
+
+      <div class="problem-box">
+        <strong>🔮 The Wizard's Challenge:</strong> The magic constraints are:<br>
+        <ul class="constraint-list">
+          <li>x + y ≤ 10 &nbsp;&nbsp; and &nbsp;&nbsp; 2x + y ≤ 14</li>
+          <li>x ≥ 0 &nbsp;&nbsp; and &nbsp;&nbsp; y ≥ 0</li>
+        </ul>
+        <strong>🧲 Drag each potion bottle (point) into the correct cauldron!</strong><br>
+        <span style="color:var(--green);">Green Cauldron</span> = Feasible (satisfies ALL constraints)<br>
+        <span style="color:var(--rose);">Red Cauldron</span> = Infeasible (breaks at least one constraint)
+      </div>
+
+      <div class="drag-arena">
+        <!-- TOKENS -->
+        <div class="drag-source">
+          <div class="drag-source-title">🧴 Potion Bottles (Points)</div>
+          <div id="tokens-pool"></div>
+          <div style="margin-top:14px;font-size:12px;color:rgba(240,237,255,0.5);">
+            Drag each bottle to the correct cauldron →
+          </div>
+        </div>
+
+        <!-- DROP ZONES -->
+        <div class="drop-zones">
+          <div class="drop-zone zone-feasible" id="zone-feasible"
+               ondragover="ev.preventDefault();this.classList.add('drag-over')"
+               ondragleave="this.classList.remove('drag-over')"
+               ondrop="handleDrop(event,'feasible')">
+            <div class="drop-zone-label">✅ Green Cauldron — FEASIBLE</div>
+            <div id="zone-feasible-content" style="display:flex;flex-wrap:wrap;gap:6px;min-height:40px;"></div>
+          </div>
+
+          <div class="drop-zone zone-infeasible" id="zone-infeasible"
+               ondragover="ev.preventDefault();this.classList.add('drag-over')"
+               ondragleave="this.classList.remove('drag-over')"
+               ondrop="handleDrop(event,'infeasible')">
+            <div class="drop-zone-label">❌ Red Cauldron — INFEASIBLE</div>
+            <div id="zone-infeasible-content" style="display:flex;flex-wrap:wrap;gap:6px;min-height:40px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls-row" style="margin-top:16px;">
+        <button class="pill-btn gold" onclick="checkAct2()">⚗️ Check My Potions!</button>
+        <button class="pill-btn rose" onclick="resetAct2()">🔄 Reset</button>
+      </div>
+      <div class="feedback-box" id="fb2"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════
+       ACTIVITY 3 — CORNER POINT OPTIMIZER
+  ════════════════════════════════════ -->
+  <div id="panel-3" class="activity-panel">
+    <div class="act-badge">🏆 Activity 3 of 3</div>
+    <div class="card">
+      <div class="card-title"><span class="icon">🌟</span> School Timetable Quest — Find the Optimal!</div>
+
+      <div class="problem-box">
+        <strong>🏫 The Big Problem:</strong> Your school has <strong>x = Maths periods</strong> and <strong>y = Science periods</strong> per week.<br>
+        <ul class="constraint-list">
+          <li>x + y ≤ 10 &nbsp;&nbsp; (max 10 periods total)</li>
+          <li>x ≥ 3 &nbsp;&nbsp; (at least 3 Maths periods)</li>
+          <li>y ≥ 2 &nbsp;&nbsp; (at least 2 Science periods)</li>
+          <li>x ≥ 0, y ≥ 0</li>
+        </ul>
+        <strong>🎯 Objective:</strong> <span style="color:var(--gold);">Maximise Z = x + 2y</span><br>
+        <em style="font-size:12px;color:rgba(240,237,255,0.5);">(Science periods count double for exam prep!)</em>
+      </div>
+
+      <div class="objective-display">
+        <div style="font-size:13px;color:rgba(240,237,255,0.6);margin-bottom:4px;">Objective Function</div>
+        <div class="obj-big">Z = x + 2y</div>
+        <div style="font-size:12px;color:rgba(240,237,255,0.5);margin-top:4px;">Click each corner point to calculate Z</div>
+      </div>
+
+      <div style="font-family:'Fredoka One',cursive;font-size:16px;color:var(--purple);margin-bottom:10px;">
+        🔮 Corner Points of the Feasible Region:
+      </div>
+
+      <div class="vertex-grid" id="vertex-grid"></div>
+
+      <div class="controls-row" style="margin-top:18px;">
+        <button class="pill-btn gold" onclick="findOptimal()">🌟 Reveal Optimal Answer!</button>
+        <button class="pill-btn rose" onclick="resetAct3()">🔄 Reset</button>
+      </div>
+      <div class="feedback-box" id="fb3"></div>
+    </div>
+  </div>
+
+</div><!-- /page-wrap -->
+
+<script>
+// ════════════════════════════════
+// FLOATING ANIMATIONS
+// ════════════════════════════════
+const floatEmojis = ['📚','🦉','⭐','🌟','💫','✨','🔮','🪄','⚗️','🧪','📖','🌙','🔯','💜','🎯'];
+const container = document.getElementById('floaters-container');
+
+function spawnFloater() {
+  const el = document.createElement('div');
+  el.className = 'floater';
+  el.textContent = floatEmojis[Math.floor(Math.random()*floatEmojis.length)];
+  el.style.left = Math.random()*100 + 'vw';
+  el.style.fontSize = (18 + Math.random()*20) + 'px';
+  const dur = 8 + Math.random()*10;
+  el.style.animation = `floatUp ${dur}s linear`;
+  el.style.animationDelay = '0s';
+  container.appendChild(el);
+  setTimeout(() => el.remove(), dur*1000);
+}
+setInterval(spawnFloater, 1200);
+spawnFloater(); spawnFloater();
+
+// tiny static stars
+for(let i=0;i<60;i++){
+  const s = document.createElement('div');
+  s.className = 'star-static';
+  const sz = Math.random()*2.5+0.5;
+  s.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}vh;left:${Math.random()*100}vw;animation-duration:${2+Math.random()*3}s;animation-delay:${Math.random()*3}s;opacity:${0.2+Math.random()*0.6}`;
+  document.body.appendChild(s);
+}
+
+// ════════════════════════════════
+// GLOBAL STATE
+// ════════════════════════════════
+let scores = {act1:0, act2:0, act3:0};
+const MAX_SCORES = {act1:10, act2:10, act3:10};
+
+function updateGlobalScore() {
+  const total = scores.act1 + scores.act2 + scores.act3;
+  const max = MAX_SCORES.act1 + MAX_SCORES.act2 + MAX_SCORES.act3;
+  document.getElementById('score-global').textContent = '⭐ ' + total + ' / ' + max + ' pts';
+  document.getElementById('global-progress').style.width = (total/max*100) + '%';
+  document.getElementById('global-progress-text').textContent =
+    total===max ? '🎉 Perfect Score! You are a Maths Wizard!' :
+    total>=20   ? '🌟 Almost there! Keep going!' :
+    total>=10   ? '🔮 Great progress! Keep solving!' : 'Complete activities to earn stars!';
+}
+
+// ════════════════════════════════
+// TAB SWITCHING
+// ════════════════════════════════
+function switchTab(n) {
+  document.querySelectorAll('.activity-panel').forEach(p=>p.classList.remove('visible'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+n).classList.add('visible');
+  document.querySelectorAll('.tab-btn')[n-1].classList.add('active');
+}
+
+// ════════════════════════════════
+// ACTIVITY 1 — GRAPH PLOTTING
+// ════════════════════════════════
+const SCALE = 38;
+const ORIG = {x:50, y:360};
+let plotState = 0;
+
+function getCanvas1() { return document.getElementById('canvas1'); }
+function getCtx1()    { return getCanvas1().getContext('2d'); }
+
+function drawGrid(ctx, w, h) {
+  // background
+  ctx.fillStyle = '#0a0820';
+  ctx.fillRect(0,0,w,h);
+
+  // grid lines
+  ctx.strokeStyle = 'rgba(155,89,230,0.15)';
+  ctx.lineWidth = 1;
+  for(let i=0;i<=10;i++){
+    const gx = ORIG.x + i*SCALE;
+    const gy = ORIG.y - i*SCALE;
+    ctx.beginPath(); ctx.moveTo(gx,10); ctx.lineTo(gx,ORIG.y+10); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ORIG.x-10,gy); ctx.lineTo(w-10,gy); ctx.stroke();
+  }
+
+  // axes
+  ctx.strokeStyle = 'rgba(240,237,255,0.8)';
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(ORIG.x,10); ctx.lineTo(ORIG.x,ORIG.y+10); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(ORIG.x-10,ORIG.y); ctx.lineTo(w-10,ORIG.y); ctx.stroke();
+
+  // arrows
+  ctx.fillStyle = 'rgba(240,237,255,0.8)';
+  ctx.beginPath(); ctx.moveTo(ORIG.x,8); ctx.lineTo(ORIG.x-5,20); ctx.lineTo(ORIG.x+5,20); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(w-8,ORIG.y); ctx.lineTo(w-20,ORIG.y-5); ctx.lineTo(w-20,ORIG.y+5); ctx.fill();
+
+  // labels
+  ctx.fillStyle = 'rgba(240,237,255,0.7)';
+  ctx.font = '600 11px Nunito';
+  for(let i=1;i<=10;i++){
+    ctx.fillText(i, ORIG.x+i*SCALE-4, ORIG.y+16);
+    ctx.fillText(i, ORIG.x-22, ORIG.y-i*SCALE+4);
+  }
+  ctx.fillText('0', ORIG.x-16, ORIG.y+16);
+  ctx.font = 'bold 13px Nunito';
+  ctx.fillStyle = '#60a5fa';
+  ctx.fillText('x (Idlis)', w-70, ORIG.y+30);
+  ctx.fillStyle = '#c084fc';
+  ctx.fillText('y (Samosas)', ORIG.x+6, 24);
+}
+
+function toCanvas(x,y){ return {cx: ORIG.x+x*SCALE, cy: ORIG.y-y*SCALE}; }
+
+function drawLine(ctx, x1,y1,x2,y2, color, label) {
+  const p1 = toCanvas(x1,y1), p2 = toCanvas(x2,y2);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2.5;
+  ctx.shadowBlur = 10; ctx.shadowColor = color;
+  ctx.beginPath(); ctx.moveTo(p1.cx,p1.cy); ctx.lineTo(p2.cx,p2.cy); ctx.stroke();
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = color;
+  ctx.font = 'bold 12px Nunito';
+  const mx = (p1.cx+p2.cx)/2, my = (p1.cy+p2.cy)/2;
+  ctx.fillText(label, mx+6, my-6);
+}
+
+function shadeRegion(ctx) {
+  ctx.save();
+  // feasible region: x+y<=10, 2x+y<=14, x>=0, y>=0
+  // corners: (0,0),(10,0),(4,6),(0,10) but really:
+  // intersection of x+y=10 and 2x+y=14 => x=4,y=6
+  // corners: (0,0),(7,0),(4,6),(0,10)
+  const pts = [{x:0,y:0},{x:7,y:0},{x:4,y:6},{x:0,y:10}];
+  ctx.beginPath();
+  pts.forEach((p,i)=>{
+    const c=toCanvas(p.x,p.y);
+    if(i===0) ctx.moveTo(c.cx,c.cy); else ctx.lineTo(c.cx,c.cy);
+  });
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(46,232,200,0.18)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(46,232,200,0.4)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  ctx.restore();
+}
+
+function markCorners(ctx) {
+  const corners = [{x:0,y:0},{x:7,y:0},{x:4,y:6},{x:0,y:10}];
+  const labels  = ['(0,0)','(7,0)','(4,6)','(0,10)'];
+  corners.forEach((p,i)=>{
+    const c = toCanvas(p.x,p.y);
+    ctx.beginPath();
+    ctx.arc(c.cx,c.cy,7,0,Math.PI*2);
+    ctx.fillStyle = '#f5c842';
+    ctx.fill();
+    ctx.strokeStyle = '#0a0820';
+    ctx.lineWidth = 2; ctx.stroke();
+    ctx.shadowBlur=14; ctx.shadowColor='#f5c842';
+    ctx.beginPath(); ctx.arc(c.cx,c.cy,7,0,Math.PI*2);
+    ctx.strokeStyle='#f5c842'; ctx.lineWidth=1; ctx.stroke();
+    ctx.shadowBlur=0;
+    ctx.fillStyle='#f5c842';
+    ctx.font='bold 11px Nunito';
+    const offX = p.x===0 ? -42 : 8;
+    const offY = p.y===0 ? 18 : -10;
+    ctx.fillText(labels[i], c.cx+offX, c.cy+offY);
+  });
+}
+
+function plotStep(step) {
+  const ctx = getCtx1();
+  const cv = getCanvas1();
+  const msgs = [
+    '',
+    '🔵 Constraint 1 plotted! <span>x + y = 10</span> — Points: (0,10) and (10,0). The feasible side is BELOW this line.',
+    '🟣 Constraint 2 plotted! <span>2x + y = 14</span> — Points: (0,14) and (7,0). The feasible side is BELOW this line.',
+    '✨ Feasible region shaded! This green area satisfies BOTH constraints and x≥0, y≥0.',
+    '⭐ Corner points marked! These are <span>(0,0), (7,0), (4,6), (0,10)</span>. The optimal solution is at one of these! +10 points!'
+  ];
+
+  if(step===1){
+    drawGrid(ctx,cv.width,cv.height);
+    drawLine(ctx,0,10,10,0,'#60a5fa','x+y=10');
+    document.getElementById('btn-c1').disabled=true;
+    document.getElementById('btn-c2').disabled=false;
+  } else if(step===2){
+    drawLine(ctx,0,14,7,0,'#c084fc','2x+y=14');
+    document.getElementById('btn-c2').disabled=true;
+    document.getElementById('btn-shade').disabled=false;
+  } else if(step===3){
+    shadeRegion(ctx);
+    document.getElementById('btn-shade').disabled=true;
+    document.getElementById('btn-corners').disabled=false;
+  } else if(step===4){
+    markCorners(ctx);
+    document.getElementById('btn-corners').disabled=true;
+    if(!scores.act1){scores.act1=10;updateGlobalScore();}
+  }
+
+  plotState=step;
+  document.getElementById('step-label-1').innerHTML = msgs[step];
+  const fb=document.getElementById('fb1');
+  if(step===4){
+    fb.className='feedback-box success';
+    fb.innerHTML='🎉 Brilliant! You plotted both constraint lines, shaded the feasible region, and found all corner points! Activity 1 Complete — <strong>+10 stars!</strong>';
+  } else {
+    fb.className=''; fb.style.display='none';
+  }
+}
+
+function resetAct1() {
+  const ctx=getCtx1(), cv=getCanvas1();
+  drawGrid(ctx,cv.width,cv.height);
+  document.getElementById('btn-c1').disabled=false;
+  document.getElementById('btn-c2').disabled=true;
+  document.getElementById('btn-shade').disabled=true;
+  document.getElementById('btn-corners').disabled=true;
+  document.getElementById('step-label-1').innerHTML='👆 Click <span>"Draw Constraint 1"</span> to start plotting!';
+  const fb=document.getElementById('fb1'); fb.className=''; fb.style.display='none';
+  plotState=0;
+  scores.act1=0; updateGlobalScore();
+}
+
+// Init canvas 1
+(function(){
+  const ctx=getCtx1(),cv=getCanvas1();
+  drawGrid(ctx,cv.width,cv.height);
+})();
+
+// ════════════════════════════════
+// ACTIVITY 2 — DRAG & DROP
+// ════════════════════════════════
+const POINTS = [
+  {label:'(3,4)', x:3, y:4},
+  {label:'(0,0)', x:0, y:0},
+  {label:'(5,6)', x:5, y:6},
+  {label:'(2,8)', x:2, y:8},
+  {label:'(6,2)', x:6, y:2},
+  {label:'(8,1)', x:8, y:1},
+  {label:'(1,9)', x:1, y:9},
+  {label:'(4,6)', x:4, y:6},
+];
+
+function isFeasible(pt) {
+  return pt.x+pt.y<=10 && 2*pt.x+pt.y<=14 && pt.x>=0 && pt.y>=0;
+}
+
+let dragId = null;
+let act2State = {}; // token id -> zone
+
+function buildTokens() {
+  const pool = document.getElementById('tokens-pool');
+  pool.innerHTML='';
+  act2State={};
+  POINTS.forEach((p,i)=>{
+    const el=document.createElement('div');
+    el.className='point-token neutral';
+    el.id='token-'+i;
+    el.setAttribute('draggable','true');
+    el.textContent = p.label;
+    el.addEventListener('dragstart', e=>{ dragId=i; e.dataTransfer.effectAllowed='move'; });
+    // touch support
+    el.addEventListener('touchstart', e=>{
+      dragId=i;
+      el.style.opacity='0.6';
+    }, {passive:true});
+    el.addEventListener('touchend', e=>{
+      el.style.opacity='';
+      const touch = e.changedTouches[0];
+      const target = document.elementFromPoint(touch.clientX, touch.clientY);
+      const zone = target ? target.closest('.drop-zone') : null;
+      if(zone) {
+        const zid = zone.id==='zone-feasible'?'feasible':'infeasible';
+        dropToken(i, zid);
+      }
+    });
+    pool.appendChild(el);
+  });
+}
+
+function handleDrop(ev, zone) {
+  ev.preventDefault();
+  ev.currentTarget.classList.remove('drag-over');
+  if(dragId===null) return;
+  dropToken(dragId, zone);
+  dragId=null;
+}
+
+function dropToken(id, zone) {
+  const el = document.getElementById('token-'+id);
+  if(!el) return;
+
+  // Remove from old zone if was placed
+  if(act2State[id]){
+    const oldContent = document.getElementById('zone-'+act2State[id]+'-content');
+    const oldEl = oldContent.querySelector('#token-'+id);
+    if(oldEl) oldEl.remove();
+    // reclone to pool? No — just move
+  } else {
+    // remove from pool
+    el.remove();
+  }
+
+  act2State[id]=zone;
+  const content = document.getElementById('zone-'+zone+'-content');
+  const clone = el.cloneNode(true);
+  clone.id='token-'+id;
+  clone.setAttribute('draggable','true');
+  clone.addEventListener('dragstart', e=>{ dragId=id; e.dataTransfer.effectAllowed='move'; });
+  clone.addEventListener('touchstart', e=>{ dragId=id; clone.style.opacity='0.6'; },{passive:true});
+  clone.addEventListener('touchend', e=>{
+    clone.style.opacity='';
+    const touch=e.changedTouches[0];
+    const target=document.elementFromPoint(touch.clientX,touch.clientY);
+    const dz=target?target.closest('.drop-zone'):null;
+    if(dz){ const zid=dz.id==='zone-feasible'?'feasible':'infeasible'; dropToken(id,zid); }
+  });
+  content.appendChild(clone);
+}
+
+function checkAct2() {
+  const fb=document.getElementById('fb2');
+  let correct=0, total=POINTS.length;
+  POINTS.forEach((p,i)=>{
+    const expected = isFeasible(p)?'feasible':'infeasible';
+    const placed = act2State[i];
+    const el = document.getElementById('token-'+i);
+    if(el){
+      if(placed===expected){ el.style.borderColor='var(--green)'; correct++; }
+      else if(placed){ el.style.borderColor='var(--rose)'; }
+    }
+  });
+  const pct=Math.round(correct/total*100);
+  const pts=Math.round(correct/total*10);
+  scores.act2=pts; updateGlobalScore();
+  if(correct===total){
+    fb.className='feedback-box success';
+    fb.innerHTML='🎉 PERFECT! All '+total+' potions sorted correctly! You know the feasible region! <strong>+10 stars!</strong>';
+  } else {
+    fb.className='feedback-box '+(pct>=50?'info':'error');
+    fb.innerHTML='You got '+correct+'/'+total+' correct ('+pct+'%). '+
+      (pct>=50?'Good effort! Check the highlighted ones. Tip: substitute x and y into BOTH constraints!':
+      'Try again! For each point, check: does x+y ≤ 10? AND does 2x+y ≤ 14? AND are x,y ≥ 0?')+
+      ' <strong>+'+pts+' stars.</strong>';
+  }
+}
+
+function resetAct2() {
+  buildTokens();
+  document.getElementById('zone-feasible-content').innerHTML='';
+  document.getElementById('zone-infeasible-content').innerHTML='';
+  const fb=document.getElementById('fb2'); fb.className=''; fb.style.display='none';
+  scores.act2=0; updateGlobalScore();
+}
+
+buildTokens();
+
+// ════════════════════════════════
+// ACTIVITY 3 — CORNER POINTS
+// ════════════════════════════════
+// Problem: x+y<=10, x>=3, y>=2
+// Corners: (3,2), (8,2), (3,7)
+const VERTICES = [
+  {x:3, y:2, label:'(3, 2)'},
+  {x:8, y:2, label:'(8, 2)'},
+  {x:3, y:7, label:'(3, 7)'},
+];
+const OBJ = (x,y) => x + 2*y;
+const OBJ_LABEL = 'x + 2y';
+
+let act3Selected = new Set();
+
+function buildVertexGrid() {
+  const grid=document.getElementById('vertex-grid');
+  grid.innerHTML='';
+  VERTICES.forEach((v,i)=>{
+    const card=document.createElement('div');
+    card.className='vertex-card';
+    card.id='vc-'+i;
+    card.innerHTML=`
+      <div class="vertex-coord">${v.label}</div>
+      <div class="vertex-calc" id="vcalc-${i}">${OBJ_LABEL} = ?</div>
+      <div class="vertex-value" id="vval-${i}" style="display:none"></div>
+      <div class="vertex-badge" id="vbadge-${i}">🏆</div>
+    `;
+    card.onclick=()=>calcVertex(i);
+    grid.appendChild(card);
+  });
+}
+
+function calcVertex(i) {
+  const v=VERTICES[i];
+  const z=OBJ(v.x,v.y);
+  const card=document.getElementById('vc-'+i);
+  card.classList.add('selected');
+  act3Selected.add(i);
+  document.getElementById('vcalc-'+i).textContent=`${v.x} + 2×${v.y} =`;
+  const vval=document.getElementById('vval-'+i);
+  vval.textContent='Z = '+z;
+  vval.style.display='block';
+
+  // animate number appearance
+  vval.style.transform='scale(0)'; vval.style.transition='transform 0.4s cubic-bezier(0.34,1.56,0.64,1)';
+  setTimeout(()=>vval.style.transform='scale(1)',20);
+}
+
+function findOptimal() {
+  if(act3Selected.size===0){
+    const fb=document.getElementById('fb3');
+    fb.className='feedback-box info';
+    fb.innerHTML='👆 First click on each corner point to calculate Z at that point!';
+    return;
+  }
+  // calc all
+  VERTICES.forEach((_,i)=>{ if(!act3Selected.has(i)) calcVertex(i); });
+
+  const zvals=VERTICES.map((v,i)=>({i,z:OBJ(v.x,v.y)}));
+  const maxZ=Math.max(...zvals.map(z=>z.z));
+  const winner=zvals.find(z=>z.z===maxZ);
+
+  VERTICES.forEach((_,i)=>{
+    if(i===winner.i) document.getElementById('vc-'+i).classList.add('winner');
+  });
+
+  document.getElementById('vbadge-'+winner.i).style.display='block';
+
+  scores.act3=10; updateGlobalScore();
+  const fb=document.getElementById('fb3');
+  fb.className='feedback-box success';
+  fb.innerHTML=`🏆 <strong>OPTIMAL SOLUTION FOUND!</strong><br>
+    The maximum value of Z = x + 2y is <strong>${maxZ}</strong>, achieved at the corner point <strong>${VERTICES[winner.i].label}</strong>.<br>
+    This means: <strong>${VERTICES[winner.i].x} Maths periods</strong> and <strong>${VERTICES[winner.i].y} Science periods</strong> gives the best timetable! 🎓 <strong>+10 stars!</strong>`;
+}
+
+function resetAct3() {
+  act3Selected=new Set();
+  buildVertexGrid();
+  const fb=document.getElementById('fb3'); fb.className=''; fb.style.display='none';
+  scores.act3=0; updateGlobalScore();
+}
+
+buildVertexGrid();
+
+// Fix drop zone event listener (needs ev not event as param)
+document.querySelectorAll('.drop-zone').forEach(z=>{
+  z.addEventListener('dragover', e=>{ e.preventDefault(); z.classList.add('drag-over'); });
+  z.addEventListener('dragleave', ()=>z.classList.remove('drag-over'));
+  z.addEventListener('drop', e=>{
+    e.preventDefault();
+    z.classList.remove('drag-over');
+    const zid = z.id==='zone-feasible'?'feasible':'infeasible';
+    if(dragId!==null) { dropToken(dragId,zid); dragId=null; }
+  });
+});
+
+</script>
+</body>
+</html>

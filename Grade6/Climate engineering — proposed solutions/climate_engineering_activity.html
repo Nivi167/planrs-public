@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Climate Engineering — Proposed Solutions</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #0a0a2e;
+    color: #fff;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* ---- ANIMATED BACKGROUND ---- */
+  .bg-canvas {
+    position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+  }
+
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: white;
+    animation: twinkle var(--dur, 3s) ease-in-out infinite;
+    opacity: 0;
+  }
+  @keyframes twinkle {
+    0%,100%{opacity:0;transform:scale(0.8);}
+    50%{opacity:var(--op,0.8);transform:scale(1.2);}
+  }
+
+  .float-obj {
+    position: absolute;
+    font-size: var(--sz, 28px);
+    animation: floatUp var(--dur2, 12s) linear infinite;
+    opacity: 0.7;
+    filter: drop-shadow(0 0 6px rgba(255,200,100,0.5));
+  }
+  @keyframes floatUp {
+    0%{transform:translateY(110vh) rotate(0deg); opacity:0;}
+    10%{opacity:0.7;}
+    90%{opacity:0.7;}
+    100%{transform:translateY(-15vh) rotate(360deg); opacity:0;}
+  }
+
+  .nebula {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.15;
+    animation: pulse var(--pd, 8s) ease-in-out infinite alternate;
+  }
+  @keyframes pulse { from{transform:scale(1);opacity:0.12;} to{transform:scale(1.3);opacity:0.22;} }
+
+  /* ---- LAYOUT ---- */
+  .wrapper { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 20px 16px 60px; }
+
+  /* ---- HEADING ---- */
+  .main-title {
+    text-align: center;
+    margin-bottom: 8px;
+    padding: 28px 20px 20px;
+  }
+  .main-title h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    background: linear-gradient(135deg, #7fffd4, #00bfff, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+    filter: drop-shadow(0 0 20px rgba(127,255,212,0.4));
+  }
+  .main-title .subtitle {
+    font-size: 1rem;
+    color: #a0c4ff;
+    margin-top: 6px;
+    letter-spacing: 0.04em;
+  }
+
+  /* ---- ACTIVITY TABS ---- */
+  .tabs {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px;
+  }
+  .tab-btn {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 0.9rem;
+    padding: 10px 20px;
+    border-radius: 50px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .tab-btn::before {
+    content:''; position:absolute; inset:0; opacity:0; transition:0.3s;
+    background: rgba(255,255,255,0.12);
+  }
+  .tab-btn:hover::before { opacity:1; }
+  .tab-btn.t1 { background:#1e3a5f; border-color:#00bfff; color:#7ddfff; }
+  .tab-btn.t2 { background:#2d1e5f; border-color:#a78bfa; color:#d4baff; }
+  .tab-btn.t3 { background:#1e5f3a; border-color:#39d98a; color:#7fffd4; }
+  .tab-btn.active { transform:scale(1.05); }
+  .tab-btn.t1.active { background:#00bfff22; box-shadow:0 0 20px #00bfff66; }
+  .tab-btn.t2.active { background:#a78bfa22; box-shadow:0 0 20px #a78bfa66; }
+  .tab-btn.t3.active { background:#39d98a22; box-shadow:0 0 20px #39d98a66; }
+
+  /* ---- ACTIVITY PANELS ---- */
+  .activity { display:none; }
+  .activity.active { display:block; animation:fadeIn 0.4s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
+
+  /* ---- PANEL BASE ---- */
+  .panel {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 18px;
+    backdrop-filter: blur(6px);
+  }
+  .panel-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.4rem;
+    margin-bottom: 8px;
+  }
+  .panel-desc { font-size: 0.92rem; color: #b0c8e8; line-height: 1.6; margin-bottom: 16px; }
+
+  /* ===== ACTIVITY 1: SOLAR RADIATION EXPERIMENT ===== */
+  .sim-container {
+    display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start;
+  }
+  .sim-earth-wrap {
+    flex: 0 0 auto;
+    width: 200px;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+  }
+  .earth-scene {
+    position:relative; width:180px; height:180px;
+  }
+  .sun-rays {
+    position:absolute; top:-30px; left:50%; transform:translateX(-50%);
+    display:flex; gap:4px;
+  }
+  .ray {
+    width:4px; height:var(--rh,40px);
+    background:linear-gradient(to bottom,#ffd700,transparent);
+    border-radius:2px;
+    animation:rayPulse 1.5s ease-in-out infinite;
+    animation-delay:var(--rd,0s);
+    transition:height 0.6s ease;
+  }
+  @keyframes rayPulse{0%,100%{opacity:0.6;}50%{opacity:1;}}
+  .earth-ball {
+    position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+    width:110px; height:110px; border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #4fc3f7, #1565c0 50%, #0d47a1);
+    box-shadow:0 0 30px rgba(79,195,247,0.4);
+    overflow:hidden;
+  }
+  .earth-land { position:absolute; top:20%; left:15%; width:40%; height:35%; background:#388e3c; border-radius:40% 60% 50% 50%; opacity:0.9; }
+  .earth-cloud {
+    position:absolute; height:14px; background:rgba(255,255,255,0.7); border-radius:20px;
+    animation:cloudMove 6s linear infinite;
+  }
+  @keyframes cloudMove{from{left:-30px;}to{left:120px;}}
+  .shield-layer {
+    position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+    width:110px; height:110px; border-radius:50%;
+    background:radial-gradient(circle,transparent 48%, rgba(255,255,255,var(--sa,0)) 52%, transparent 60%);
+    box-shadow:0 0 0 var(--sw,0px) rgba(200,220,255,var(--so,0));
+    transition:all 0.6s ease;
+    pointer-events:none;
+  }
+  .temp-gauge {
+    width:100%; background:rgba(0,0,0,0.3); border-radius:12px; overflow:hidden; height:22px; margin-top:6px;
+  }
+  .temp-bar {
+    height:100%; background:linear-gradient(to right,#4fc3f7,#ff9800,#f44336);
+    border-radius:12px; transition:width 0.8s ease;
+    display:flex; align-items:center; justify-content:flex-end; padding-right:8px;
+    font-size:0.8rem; font-weight:700;
+  }
+
+  .sim-controls { flex:1 1 220px; }
+  .ctrl-group { margin-bottom:14px; }
+  .ctrl-label { font-size:0.85rem; color:#a0c4ff; margin-bottom:6px; display:flex; justify-content:space-between; }
+  .ctrl-label span { color:#fff; font-weight:700; }
+  input[type=range] {
+    width:100%; -webkit-appearance:none; height:6px;
+    background:rgba(255,255,255,0.15); border-radius:3px; outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance:none; width:18px; height:18px; border-radius:50%;
+    background:#00bfff; cursor:pointer; box-shadow:0 0 8px #00bfff;
+  }
+  .method-btns { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+  .meth-btn {
+    padding:7px 14px; border-radius:30px; border:1px solid rgba(255,255,255,0.25);
+    background:rgba(255,255,255,0.06); color:#cde; font-family:'Nunito',sans-serif;
+    font-size:0.82rem; font-weight:700; cursor:pointer; transition:0.25s;
+  }
+  .meth-btn:hover,.meth-btn.active { background:rgba(0,191,255,0.25); border-color:#00bfff; color:#7ddfff; }
+
+  .result-box {
+    background:rgba(0,0,0,0.3); border-radius:12px; padding:14px; margin-top:14px;
+    font-size:0.9rem; line-height:1.7; min-height:70px;
+    border:1px solid rgba(255,255,255,0.1);
+  }
+  .result-box .verdict { font-weight:800; font-size:1.05rem; }
+  .verdict.good { color:#39d98a; }
+  .verdict.warn { color:#ffd166; }
+  .verdict.bad  { color:#ff6b6b; }
+
+  /* ===== ACTIVITY 2: DRAG-AND-DROP BUILD A CARBON CAPTURE MACHINE ===== */
+  .dnd-wrapper { display:flex; gap:20px; flex-wrap:wrap; }
+  .parts-shelf {
+    flex:0 0 auto; width:200px;
+    background:rgba(0,0,0,0.3); border-radius:16px; padding:14px;
+    border:1px dashed rgba(167,139,250,0.4);
+  }
+  .parts-shelf h3 { font-size:0.85rem; color:#c084fc; margin-bottom:10px; text-transform:uppercase; letter-spacing:0.05em; }
+  .part-item {
+    background:rgba(167,139,250,0.15); border:1px solid rgba(167,139,250,0.4);
+    border-radius:10px; padding:10px 8px; margin-bottom:8px;
+    cursor:grab; text-align:center; font-size:0.82rem; font-weight:700;
+    transition:0.2s; user-select:none;
+  }
+  .part-item:hover { background:rgba(167,139,250,0.3); transform:scale(1.03); }
+  .part-item .part-icon { font-size:1.4rem; display:block; margin-bottom:4px; }
+  .part-item.used { opacity:0.35; cursor:not-allowed; }
+
+  .machine-build {
+    flex:1 1 280px; min-height:360px;
+    background:rgba(0,0,0,0.25); border-radius:16px;
+    border:2px dashed rgba(57,217,138,0.3);
+    padding:14px; position:relative;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .machine-build.drag-over { border-color:#39d98a; background:rgba(57,217,138,0.08); }
+
+  .machine-slot {
+    background:rgba(255,255,255,0.04); border:1px dashed rgba(255,255,255,0.2);
+    border-radius:10px; min-height:52px; padding:8px;
+    display:flex; align-items:center; gap:8px;
+    font-size:0.82rem; color:#7a8fa6;
+    transition:0.2s;
+  }
+  .machine-slot.filled { border-color:rgba(57,217,138,0.5); background:rgba(57,217,138,0.08); color:#cde; }
+  .machine-slot .slot-icon { font-size:1.3rem; }
+  .slot-label { font-size:0.75rem; color:#a0c4ff; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:3px; }
+
+  .efficiency-meter {
+    background:rgba(0,0,0,0.4); border-radius:30px; height:28px;
+    overflow:hidden; margin-top:6px; position:relative;
+  }
+  .eff-fill {
+    height:100%; background:linear-gradient(to right,#c084fc,#39d98a);
+    border-radius:30px; transition:width 0.8s ease;
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.85rem; font-weight:800;
+  }
+  .co2-counter {
+    display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;
+  }
+  .co2-tag {
+    padding:4px 10px; background:rgba(255,107,107,0.2); border:1px solid rgba(255,107,107,0.4);
+    border-radius:20px; font-size:0.8rem; color:#ff9898;
+    animation:floatTag 3s ease-in-out infinite;
+  }
+  @keyframes floatTag{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+  .co2-tag.captured {
+    background:rgba(57,217,138,0.2); border-color:rgba(57,217,138,0.4); color:#7fffd4;
+    animation:none;
+  }
+
+  /* ===== ACTIVITY 3: OCEAN ALKALINITY QUIZ-LAB ===== */
+  .ocean-sim {
+    display:flex; gap:18px; flex-wrap:wrap;
+  }
+  .ocean-tank {
+    flex:0 0 auto; width:200px; height:260px;
+    background:linear-gradient(to bottom,#0a3d6b,#0d52a0,#0a2d5a);
+    border-radius:16px; border:2px solid rgba(79,195,247,0.4);
+    position:relative; overflow:hidden;
+  }
+  .wave {
+    position:absolute; bottom:var(--wb,0px); left:0; right:0; height:12px;
+    background:rgba(79,195,247,0.3);
+    animation:waveAnim 2s ease-in-out infinite;
+    animation-delay:var(--wd,0s);
+  }
+  @keyframes waveAnim{0%,100%{transform:scaleX(1);}50%{transform:scaleX(1.04);}}
+
+  .ph-meter {
+    position:absolute; top:12px; right:12px;
+    background:rgba(0,0,0,0.5); border-radius:8px; padding:6px 10px;
+    font-size:0.8rem; font-weight:800; text-align:center;
+    border:1px solid rgba(79,195,247,0.4);
+    transition:color 0.5s;
+  }
+  .ph-label { font-size:0.65rem; color:#7db8f5; }
+
+  .coral-row {
+    position:absolute; bottom:10px; left:0; right:0;
+    display:flex; justify-content:space-around; align-items:flex-end;
+    padding:0 8px;
+  }
+  .coral { font-size:1.5rem; transition:filter 0.8s, transform 0.8s; }
+  .coral.bleached { filter:grayscale(1) brightness(1.5); }
+  .coral.healthy  { filter:none; }
+  .coral.growing  { transform:scale(1.15); filter:saturate(1.5); }
+
+  .bubbles-cont { position:absolute; inset:0; pointer-events:none; }
+  .bubble {
+    position:absolute; bottom:-10px; border-radius:50%;
+    background:rgba(79,195,247,0.35); width:var(--bw,8px); height:var(--bw,8px);
+    animation:riseUp var(--bd,4s) linear infinite;
+    left:var(--bx,50%);
+    animation-delay:var(--bdelay,0s);
+  }
+  @keyframes riseUp{from{bottom:-10px;opacity:0.7;}to{bottom:105%;opacity:0;}}
+
+  .ocean-controls { flex:1 1 240px; }
+  .mineral-btns { display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }
+  .mineral-btn {
+    padding:10px 16px; border-radius:12px;
+    border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.06);
+    color:#cde; font-family:'Nunito',sans-serif; font-size:0.85rem; font-weight:700;
+    cursor:pointer; transition:0.25s; text-align:left;
+    display:flex; align-items:center; gap:10px;
+  }
+  .mineral-btn:hover { background:rgba(79,195,247,0.2); border-color:#4fc3f7; }
+  .mineral-btn .m-icon { font-size:1.3rem; }
+  .mineral-btn.selected { background:rgba(79,195,247,0.25); border-color:#4fc3f7; color:#7ddfff; }
+
+  .dose-row { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+  .dose-btns { display:flex; gap:6px; }
+  .dose-btn {
+    padding:5px 12px; border-radius:20px; font-size:0.8rem; font-weight:800;
+    border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.06);
+    color:#cde; cursor:pointer; font-family:'Nunito',sans-serif; transition:0.2s;
+  }
+  .dose-btn.active { background:rgba(79,195,247,0.3); border-color:#4fc3f7; color:#fff; }
+
+  .apply-btn {
+    width:100%; padding:11px; border-radius:12px;
+    background:linear-gradient(135deg,#0077b6,#0096c7);
+    border:none; color:#fff; font-family:'Fredoka One',cursive;
+    font-size:1.1rem; cursor:pointer; letter-spacing:0.04em;
+    transition:0.25s; box-shadow:0 4px 18px rgba(0,150,199,0.4);
+  }
+  .apply-btn:hover { transform:translateY(-2px); box-shadow:0 6px 24px rgba(0,150,199,0.6); }
+
+  .ocean-log {
+    background:rgba(0,0,0,0.3); border-radius:12px; padding:12px; margin-top:12px;
+    font-size:0.85rem; line-height:1.7; min-height:60px; max-height:160px;
+    overflow-y:auto; border:1px solid rgba(255,255,255,0.08);
+  }
+  .log-entry { margin-bottom:4px; }
+  .log-entry.good { color:#7fffd4; }
+  .log-entry.warn { color:#ffd166; }
+  .log-entry.bad  { color:#ff9898; }
+
+  /* ---- SCORE BADGE ---- */
+  .score-row { display:flex; gap:12px; flex-wrap:wrap; margin-top:16px; }
+  .badge {
+    padding:8px 16px; border-radius:20px; font-size:0.82rem; font-weight:700;
+    display:flex; align-items:center; gap:6px;
+  }
+  .badge.blue { background:rgba(0,191,255,0.15); border:1px solid rgba(0,191,255,0.4); color:#7ddfff; }
+  .badge.green { background:rgba(57,217,138,0.15); border:1px solid rgba(57,217,138,0.4); color:#7fffd4; }
+
+  /* ---- RESPONSIVE ---- */
+  @media(max-width:600px){
+    .sim-container,.dnd-wrapper,.ocean-sim{flex-direction:column;}
+    .sim-earth-wrap,.parts-shelf{width:100%;}
+    .ocean-tank{width:100%;height:200px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ANIMATED BACKGROUND -->
+<div class="bg-canvas" id="bgCanvas">
+  <div class="nebula" style="--pd:9s;width:400px;height:400px;background:#1a0050;top:10%;left:5%;"></div>
+  <div class="nebula" style="--pd:12s;width:300px;height:300px;background:#003366;top:50%;right:8%;"></div>
+  <div class="nebula" style="--pd:7s;width:500px;height:300px;background:#001a40;bottom:5%;left:30%;"></div>
+</div>
+
+<div class="wrapper">
+
+  <!-- HEADING -->
+  <div class="main-title">
+    <h1>Climate Engineering — Proposed Solutions</h1>
+    <p class="subtitle">🔬 STEM Lab • Experiment, Discover, Protect Our Planet 🌍</p>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn t1 active" onclick="showTab(1)">☀️ Activity 1: Solar Shield Lab</button>
+    <button class="tab-btn t2" onclick="showTab(2)">🏭 Activity 2: Carbon Capture Machine</button>
+    <button class="tab-btn t3" onclick="showTab(3)">🌊 Activity 3: Ocean Alkalinity</button>
+  </div>
+
+  <!-- ===================== ACTIVITY 1 ===================== -->
+  <div class="activity active" id="act1">
+    <div class="panel">
+      <div class="panel-title" style="color:#7ddfff;">☀️ Solar Radiation Management Simulator</div>
+      <div class="panel-desc">
+        Scientists propose reflecting sunlight away from Earth to cool the planet. In this experiment, you control different solar geoengineering methods and observe how they affect Earth's temperature. Adjust the intensity and choose a method to see the results!
+      </div>
+
+      <div class="sim-container">
+        <div class="sim-earth-wrap">
+          <div class="earth-scene">
+            <div class="sun-rays" id="sunRays">
+              <div class="ray" style="--rh:50px;--rd:0s;"></div>
+              <div class="ray" style="--rh:60px;--rd:0.2s;"></div>
+              <div class="ray" style="--rh:55px;--rd:0.4s;"></div>
+              <div class="ray" style="--rh:65px;--rd:0.1s;"></div>
+              <div class="ray" style="--rh:45px;--rd:0.3s;"></div>
+            </div>
+            <div class="earth-ball">
+              <div class="earth-land"></div>
+              <div class="earth-cloud" style="width:40px;top:15%;animation-duration:7s;animation-delay:0s;"></div>
+              <div class="earth-cloud" style="width:28px;top:45%;animation-duration:5s;animation-delay:-3s;"></div>
+              <div class="earth-cloud" style="width:34px;top:68%;animation-duration:9s;animation-delay:-1s;"></div>
+            </div>
+            <div class="shield-layer" id="shieldLayer"></div>
+          </div>
+          <div style="width:100%;">
+            <div style="font-size:0.78rem;color:#a0c4ff;margin-bottom:4px;">🌡️ Earth Temperature</div>
+            <div class="temp-gauge">
+              <div class="temp-bar" id="tempBar" style="width:75%;">+2.1°C</div>
+            </div>
+          </div>
+          <div id="earthEmoji" style="font-size:2.5rem;">😰</div>
+        </div>
+
+        <div class="sim-controls">
+          <div class="ctrl-group">
+            <div class="ctrl-label">☀️ Solar Intensity <span id="intensityVal">80%</span></div>
+            <input type="range" min="20" max="100" value="80" id="intensitySlider" oninput="updateSim()">
+          </div>
+          <div class="ctrl-group">
+            <div class="ctrl-label">🔬 Method Strength <span id="strengthVal">0%</span></div>
+            <input type="range" min="0" max="100" value="0" id="strengthSlider" oninput="updateSim()">
+          </div>
+
+          <div style="font-size:0.82rem;color:#a0c4ff;margin-bottom:8px;">Choose a Solar Engineering Method:</div>
+          <div class="method-btns">
+            <button class="meth-btn" id="mb0" onclick="selectMethod(0)">🚫 None</button>
+            <button class="meth-btn" id="mb1" onclick="selectMethod(1)">✈️ Aerosol Injection</button>
+            <button class="meth-btn" id="mb2" onclick="selectMethod(2)">☁️ Cloud Brightening</button>
+            <button class="meth-btn" id="mb3" onclick="selectMethod(3)">🪞 Space Mirrors</button>
+            <button class="meth-btn" id="mb4" onclick="selectMethod(4)">⬜ Rooftop Whitening</button>
+          </div>
+
+          <div class="result-box" id="simResult">
+            <span style="color:#7a8fa6;">← Adjust sliders and select a method to start the experiment!</span>
+          </div>
+          <div class="score-row">
+            <div class="badge blue">🌡️ Temp: <span id="badgeTemp">+2.1°C</span></div>
+            <div class="badge green">⚡ Cooling: <span id="badgeCool">0%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== ACTIVITY 2 ===================== -->
+  <div class="activity" id="act2">
+    <div class="panel">
+      <div class="panel-title" style="color:#d4baff;">🏭 Build a Carbon Capture Machine</div>
+      <div class="panel-desc">
+        Direct Air Capture (DAC) machines pull CO₂ directly from the atmosphere. Drag the correct components from the shelf onto the machine blueprint in the right order to build a working carbon capture device. Each part matters!
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <div class="ctrl-label" style="margin-bottom:6px;">🌫️ Atmospheric CO₂ Level</div>
+        <div class="co2-counter" id="co2Counter"></div>
+      </div>
+
+      <div class="dnd-wrapper">
+        <div class="parts-shelf">
+          <h3>⚗️ Component Shelf</h3>
+          <div class="part-item" draggable="true" id="part-fan" data-part="fan" ondragstart="dragStart(event)">
+            <span class="part-icon">🌀</span>Air Intake Fan
+          </div>
+          <div class="part-item" draggable="true" id="part-filter" data-part="filter" ondragstart="dragStart(event)">
+            <span class="part-icon">🧲</span>CO₂ Filter Sorbent
+          </div>
+          <div class="part-item" draggable="true" id="part-heater" data-part="heater" ondragstart="dragStart(event)">
+            <span class="part-icon">🔥</span>Regeneration Heater
+          </div>
+          <div class="part-item" draggable="true" id="part-separator" data-part="separator" ondragstart="dragStart(event)">
+            <span class="part-icon">⚗️</span>Gas Separator
+          </div>
+          <div class="part-item" draggable="true" id="part-compressor" data-part="compressor" ondragstart="dragStart(event)">
+            <span class="part-icon">💨</span>CO₂ Compressor
+          </div>
+          <div class="part-item" draggable="true" id="part-storage" data-part="storage" ondragstart="dragStart(event)">
+            <span class="part-icon">🪨</span>Underground Storage
+          </div>
+        </div>
+
+        <div class="machine-build" id="machineBuild"
+          ondragover="event.preventDefault();this.classList.add('drag-over')"
+          ondragleave="this.classList.remove('drag-over')"
+          ondrop="dropPart(event)">
+
+          <div style="font-size:0.78rem;color:#7a8fa6;text-align:center;">⬆ Drag parts here in the correct build order</div>
+
+          <div class="machine-slot" id="slot-0">
+            <span class="slot-icon">①</span>
+            <div><div class="slot-label">Step 1 – Air Intake</div><div>Drop: Air Intake Component</div></div>
+          </div>
+          <div class="machine-slot" id="slot-1">
+            <span class="slot-icon">②</span>
+            <div><div class="slot-label">Step 2 – Capture</div><div>Drop: CO₂ Capture Component</div></div>
+          </div>
+          <div class="machine-slot" id="slot-2">
+            <span class="slot-icon">③</span>
+            <div><div class="slot-label">Step 3 – Release CO₂</div><div>Drop: Heating Component</div></div>
+          </div>
+          <div class="machine-slot" id="slot-3">
+            <span class="slot-icon">④</span>
+            <div><div class="slot-label">Step 4 – Separate Gas</div><div>Drop: Separation Component</div></div>
+          </div>
+          <div class="machine-slot" id="slot-4">
+            <span class="slot-icon">⑤</span>
+            <div><div class="slot-label">Step 5 – Compress</div><div>Drop: Compression Component</div></div>
+          </div>
+          <div class="machine-slot" id="slot-5">
+            <span class="slot-icon">⑥</span>
+            <div><div class="slot-label">Step 6 – Store</div><div>Drop: Storage Component</div></div>
+          </div>
+
+          <div>
+            <div style="font-size:0.78rem;color:#a0c4ff;margin-bottom:4px;">Machine Efficiency</div>
+            <div class="efficiency-meter">
+              <div class="eff-fill" id="effFill" style="width:0%;">0%</div>
+            </div>
+          </div>
+          <div id="buildFeedback" style="font-size:0.85rem;color:#7a8fa6;text-align:center;padding:4px;">Build your machine step by step!</div>
+          <button onclick="resetMachine()" style="margin-top:4px;padding:7px 16px;border-radius:20px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#cde;font-family:'Nunito',sans-serif;font-size:0.82rem;cursor:pointer;">🔄 Reset Machine</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== ACTIVITY 3 ===================== -->
+  <div class="activity" id="act3">
+    <div class="panel">
+      <div class="panel-title" style="color:#7fffd4;">🌊 Ocean Alkalinity Enhancement Lab</div>
+      <div class="panel-desc">
+        Adding minerals to the ocean can raise its pH (make it less acidic), helping it absorb more CO₂ and saving coral reefs. Experiment with different minerals and doses to find the right balance — too little won't help, too much harms marine life!
+      </div>
+
+      <div class="ocean-sim">
+        <div style="display:flex;flex-direction:column;gap:12px;align-items:center;">
+          <div class="ocean-tank" id="oceanTank">
+            <div class="wave" style="--wb:0px;--wd:0s;"></div>
+            <div class="wave" style="--wb:6px;--wd:0.8s;opacity:0.5;"></div>
+            <div class="ph-meter" id="phMeter">
+              <div class="ph-label">pH</div>
+              <div id="phValue" style="font-size:1.1rem;">7.9</div>
+            </div>
+            <div class="bubbles-cont" id="bubblesArea"></div>
+            <div class="coral-row" id="coralRow">
+              <div class="coral bleached" title="Brain coral">🪸</div>
+              <div class="coral bleached" title="Sea anemone">🌺</div>
+              <div class="coral bleached" title="Staghorn coral">🪸</div>
+              <div class="coral bleached" title="Sea fan">🌿</div>
+            </div>
+          </div>
+          <div style="font-size:0.8rem;color:#7db8f5;text-align:center;">Ocean pH Scale</div>
+          <div style="width:180px;height:14px;border-radius:7px;background:linear-gradient(to right,#ff5722,#ff9800,#ffd166,#7fffd4,#4fc3f7,#1565c0);position:relative;">
+            <div id="phIndicator" style="position:absolute;top:-3px;width:8px;height:20px;background:white;border-radius:4px;transition:left 0.6s;left:40%;transform:translateX(-50%);box-shadow:0 0 6px rgba(255,255,255,0.8);"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;width:180px;font-size:0.7rem;color:#7a8fa6;">
+            <span>6.5 Acid</span><span>8.2 Alkaline</span>
+          </div>
+        </div>
+
+        <div class="ocean-controls">
+          <div style="font-size:0.82rem;color:#4fc3f7;margin-bottom:8px;font-weight:700;">🧪 Choose a Mineral:</div>
+          <div class="mineral-btns">
+            <button class="mineral-btn selected" id="min0" onclick="selectMineral(0)">
+              <span class="m-icon">🪨</span>
+              <div><div style="font-weight:800;">Olivine</div><div style="font-size:0.75rem;color:#7a8fa6;">Natural silicate mineral</div></div>
+            </button>
+            <button class="mineral-btn" id="min1" onclick="selectMineral(1)">
+              <span class="m-icon">🦴</span>
+              <div><div style="font-weight:800;">Limestone (CaCO₃)</div><div style="font-size:0.75rem;color:#7a8fa6;">Ground calcium carbonate</div></div>
+            </button>
+            <button class="mineral-btn" id="min2" onclick="selectMineral(2)">
+              <span class="m-icon">⚗️</span>
+              <div><div style="font-weight:800;">Quicklime (CaO)</div><div style="font-size:0.75rem;color:#7a8fa6;">Highly reactive alkaline</div></div>
+            </button>
+          </div>
+
+          <div style="font-size:0.82rem;color:#4fc3f7;margin-bottom:8px;font-weight:700;">💊 Dose Amount:</div>
+          <div class="dose-row">
+            <div class="dose-btns">
+              <button class="dose-btn active" id="dose0" onclick="selectDose(0)">Low</button>
+              <button class="dose-btn" id="dose1" onclick="selectDose(1)">Medium</button>
+              <button class="dose-btn" id="dose2" onclick="selectDose(2)">High</button>
+            </div>
+          </div>
+
+          <button class="apply-btn" onclick="applyMineral()">🧪 Add Mineral to Ocean!</button>
+
+          <div class="ocean-log" id="oceanLog">
+            <div style="color:#7a8fa6;">Experiment log will appear here...</div>
+          </div>
+          <button onclick="resetOcean()" style="margin-top:8px;padding:7px 16px;border-radius:20px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:#cde;font-family:'Nunito',sans-serif;font-size:0.82rem;cursor:pointer;width:100%;">🔄 Reset Ocean</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end wrapper -->
+
+<script>
+// ---- BACKGROUND GENERATION ----
+(function(){
+  const bg = document.getElementById('bgCanvas');
+  // Stars
+  for(let i=0;i<120;i++){
+    const s = document.createElement('div');
+    s.className='star';
+    const sz = Math.random()*3+1;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--dur:${2+Math.random()*5}s;--op:${0.4+Math.random()*0.6};animation-delay:${Math.random()*5}s;`;
+    bg.appendChild(s);
+  }
+  // Floating objects
+  const objs = ['📚','🦉','🪄','🧪','⭐','✨','🌟','💫','🔭','🌿','❄️','💧'];
+  for(let i=0;i<18;i++){
+    const o = document.createElement('div');
+    o.className='float-obj';
+    o.textContent = objs[Math.floor(Math.random()*objs.length)];
+    o.style.cssText=`--sz:${18+Math.random()*22}px;left:${Math.random()*95}%;--dur2:${10+Math.random()*20}s;animation-delay:${Math.random()*20}s;`;
+    bg.appendChild(o);
+  }
+})();
+
+// ---- TAB SWITCHING ----
+function showTab(n){
+  document.querySelectorAll('.activity').forEach(a=>a.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('act'+n).classList.add('active');
+  document.querySelectorAll('.tab-btn')[n-1].classList.add('active');
+}
+
+// =================== ACTIVITY 1 ===================
+let selectedMethod = 0;
+const methodData = [
+  { name:'No method', shieldAlpha:0, shieldWidth:0, effect:0, desc:'No intervention. Earth absorbs maximum solar radiation.', risk:0 },
+  { name:'Aerosol Injection', shieldAlpha:0.35, shieldWidth:5, effect:0.7, desc:'Sulfate aerosols in the stratosphere scatter sunlight — mimicking volcanic cooling. Fast-acting but must be maintained continuously.', risk:0.4 },
+  { name:'Cloud Brightening', shieldAlpha:0.25, shieldWidth:3, effect:0.4, desc:'Sea salt sprayed into low clouds increases their reflectivity (albedo). Localized and reversible, but affects rainfall patterns.', risk:0.2 },
+  { name:'Space Mirrors', shieldAlpha:0.5, shieldWidth:8, effect:0.9, desc:'Giant reflective films placed at Lagrange Point 1. Extremely effective but extraordinarily expensive and irreversible.', risk:0.6 },
+  { name:'Rooftop Whitening', shieldAlpha:0.15, shieldWidth:2, effect:0.2, desc:'Painting roofs and roads white reflects urban heat. Low-risk, co-benefits, but global impact is small.', risk:0.1 },
+];
+
+function selectMethod(i){
+  selectedMethod = i;
+  document.querySelectorAll('.meth-btn').forEach((b,j)=>b.classList.toggle('active',j===i));
+  updateSim();
+}
+
+function updateSim(){
+  const intensity = parseInt(document.getElementById('intensitySlider').value);
+  const strength  = parseInt(document.getElementById('strengthSlider').value);
+  document.getElementById('intensityVal').textContent = intensity+'%';
+  document.getElementById('strengthVal').textContent  = strength+'%';
+
+  const m = methodData[selectedMethod];
+  const baseTemp = (intensity/100)*3.5;
+  const cooling  = m.effect * (strength/100);
+  const finalTemp = Math.max(-0.5, baseTemp - cooling * 2.8);
+
+  // Rays
+  document.querySelectorAll('.ray').forEach(r=>{
+    const h = Math.round((intensity/100)*65);
+    r.style.setProperty('--rh', h+'px');
+  });
+
+  // Shield
+  const sl = document.getElementById('shieldLayer');
+  const sa = m.shieldAlpha * (strength/100);
+  const sw = m.shieldWidth * (strength/100);
+  sl.style.setProperty('--sa', sa.toFixed(2));
+  sl.style.setProperty('--sw', Math.round(sw)+'px');
+  sl.style.setProperty('--so', (sa*0.7).toFixed(2));
+
+  // Temp bar
+  const pct = Math.min(100, Math.max(5, ((finalTemp+0.5)/4)*100));
+  const bar = document.getElementById('tempBar');
+  bar.style.width = pct+'%';
+  const sign = finalTemp>=0?'+':'';
+  bar.textContent = sign+finalTemp.toFixed(1)+'°C';
+
+  // Emoji
+  const emoji = finalTemp > 2.5 ? '🥵' : finalTemp > 1.5 ? '😰' : finalTemp > 0.5 ? '😊' : '😄';
+  document.getElementById('earthEmoji').textContent = emoji;
+
+  document.getElementById('badgeTemp').textContent = sign+finalTemp.toFixed(1)+'°C';
+  document.getElementById('badgeCool').textContent = Math.round(cooling*100)+'%';
+
+  // Result text
+  const risk = m.risk * (strength/100);
+  let vc='', vt='';
+  if(selectedMethod===0){vc='warn';vt='⚠️ No intervention active.';}
+  else if(finalTemp<0.8){vc='good';vt='✅ Excellent cooling achieved!';}
+  else if(finalTemp<1.8){vc='warn';vt='⚠️ Moderate cooling — could be improved.';}
+  else{vc='bad';vt='🔴 Insufficient cooling.';}
+
+  document.getElementById('simResult').innerHTML = `
+    <div class="verdict ${vc}">${vt}</div>
+    <div style="margin-top:6px;font-size:0.85rem;">${m.desc}</div>
+    ${selectedMethod>0?`<div style="margin-top:5px;font-size:0.82rem;color:#ffd166;">⚠️ Side-effect risk: ${Math.round(risk*100)}%</div>`:''}
+  `;
+}
+selectMethod(0);
+
+// =================== ACTIVITY 2 ===================
+const correctOrder = ['fan','filter','heater','separator','compressor','storage'];
+const slotFilled = [false,false,false,false,false,false];
+const slotContent = [null,null,null,null,null,null];
+const partInfo = {
+  fan:        {icon:'🌀',name:'Air Intake Fan',      desc:'Draws ambient air containing ~420ppm CO₂ into the system'},
+  filter:     {icon:'🧲',name:'CO₂ Filter Sorbent',  desc:'Liquid or solid sorbents bind CO₂ molecules from airflow'},
+  heater:     {icon:'🔥',name:'Regeneration Heater', desc:'Heat releases captured CO₂ from the sorbent (90-120°C)'},
+  separator:  {icon:'⚗️',name:'Gas Separator',       desc:'Concentrates pure CO₂ stream from residual air and water'},
+  compressor: {icon:'💨',name:'CO₂ Compressor',      desc:'Pressurizes CO₂ to ~150 bar for pipeline transport'},
+  storage:    {icon:'🪨',name:'Underground Storage',  desc:'Injected into geological formations 1–3 km deep'},
+};
+
+// Build CO2 bubbles
+(function(){
+  const c = document.getElementById('co2Counter');
+  for(let i=0;i<20;i++){
+    const t = document.createElement('div');
+    t.className='co2-tag'; t.textContent='CO₂'; t.id='co2tag'+i;
+    t.style.animationDelay=(i*0.15)+'s';
+    c.appendChild(t);
+  }
+})();
+
+let draggedPart = null;
+function dragStart(e){
+  draggedPart = e.target.dataset.part || e.currentTarget.dataset.part;
+  e.dataTransfer.effectAllowed='move';
+}
+
+function dropPart(e){
+  e.preventDefault();
+  document.getElementById('machineBuild').classList.remove('drag-over');
+  if(!draggedPart) return;
+  const partEl = document.getElementById('part-'+draggedPart);
+  if(partEl.classList.contains('used')){
+    showBuildFeedback('❌ This part is already used!','#ff9898'); return;
+  }
+  // Find next empty slot
+  const nextSlot = slotFilled.findIndex(v=>!v);
+  if(nextSlot===-1){showBuildFeedback('✅ Machine is fully built!','#7fffd4');return;}
+
+  const correct = correctOrder[nextSlot];
+  const info = partInfo[draggedPart];
+  const slotEl = document.getElementById('slot-'+nextSlot);
+
+  if(draggedPart===correct){
+    slotFilled[nextSlot]=true; slotContent[nextSlot]=draggedPart;
+    partEl.classList.add('used');
+    slotEl.classList.add('filled');
+    slotEl.innerHTML=`<span class="slot-icon">${info.icon}</span><div><div class="slot-label" style="color:#39d98a;">✅ Step ${nextSlot+1} — ${info.name}</div><div style="font-size:0.78rem;color:#b0c8e8;">${info.desc}</div></div>`;
+    updateMachineEff();
+    showBuildFeedback(`✅ Correct! ${info.name} placed successfully.`,'#7fffd4');
+  } else {
+    showBuildFeedback(`❌ Wrong part here! Step ${nextSlot+1} needs: ${partInfo[correct].name}`,'#ff9898');
+  }
+  draggedPart=null;
+}
+
+function showBuildFeedback(msg,color){
+  const f=document.getElementById('buildFeedback');
+  f.textContent=msg; f.style.color=color;
+}
+
+function updateMachineEff(){
+  const count = slotFilled.filter(Boolean).length;
+  const pct = Math.round((count/6)*100);
+  const eff = document.getElementById('effFill');
+  eff.style.width=pct+'%'; eff.textContent=pct+'%';
+  // Update CO2 tags
+  const captured = count*3;
+  for(let i=0;i<20;i++){
+    document.getElementById('co2tag'+i).className = i<captured ? 'co2-tag captured' : 'co2-tag';
+    document.getElementById('co2tag'+i).textContent = i<captured ? '✅ Stored' : 'CO₂';
+  }
+  if(count===6){
+    showBuildFeedback('🎉 Perfect! Your carbon capture machine is fully operational!','#7fffd4');
+  }
+}
+
+function resetMachine(){
+  for(let i=0;i<6;i++){
+    slotFilled[i]=false; slotContent[i]=null;
+    const slotEl=document.getElementById('slot-'+i);
+    slotEl.classList.remove('filled');
+    const labels=['Air Intake Component','CO₂ Capture Component','Heating Component','Separation Component','Compression Component','Storage Component'];
+    const stepLabels=['Step 1 – Air Intake','Step 2 – Capture','Step 3 – Release CO₂','Step 4 – Separate Gas','Step 5 – Compress','Step 6 – Store'];
+    slotEl.innerHTML=`<span class="slot-icon">${['①','②','③','④','⑤','⑥'][i]}</span><div><div class="slot-label">${stepLabels[i]}</div><div>Drop: ${labels[i]}</div></div>`;
+  }
+  document.querySelectorAll('.part-item').forEach(p=>p.classList.remove('used'));
+  document.getElementById('effFill').style.width='0%';
+  document.getElementById('effFill').textContent='0%';
+  for(let i=0;i<20;i++){
+    document.getElementById('co2tag'+i).className='co2-tag';
+    document.getElementById('co2tag'+i).textContent='CO₂';
+  }
+  showBuildFeedback('Build your machine step by step!','#7a8fa6');
+}
+
+// =================== ACTIVITY 3 ===================
+let currentPH = 7.9;
+let selectedMineral = 0;
+let selectedDose = 0;
+let experimentCount = 0;
+
+const minerals = [
+  { name:'Olivine',   phChange:[0.05,0.12,0.22], riskLevel:[0,0,1], safe:[1,1,0] },
+  { name:'Limestone', phChange:[0.04,0.09,0.18], riskLevel:[0,0,0], safe:[1,1,1] },
+  { name:'Quicklime', phChange:[0.08,0.20,0.45], riskLevel:[0,1,2], safe:[1,0,0] },
+];
+const doses=['Low','Medium','High'];
+const riskDesc=['✅ Safe for marine life','⚠️ Moderate stress possible','🔴 Toxic — coral die-off!'];
+const riskColor=['#7fffd4','#ffd166','#ff9898'];
+
+function selectMineral(i){
+  selectedMineral=i;
+  document.querySelectorAll('.mineral-btn').forEach((b,j)=>b.classList.toggle('selected',j===i));
+}
+function selectDose(i){
+  selectedDose=i;
+  document.querySelectorAll('.dose-btn').forEach((b,j)=>b.classList.toggle('active',j===i));
+}
+
+function applyMineral(){
+  const m=minerals[selectedMineral];
+  const delta=m.phChange[selectedDose];
+  const risk=m.riskLevel[selectedDose];
+  const safe=m.safe[selectedDose];
+  currentPH=Math.min(8.5, currentPH+delta);
+  experimentCount++;
+
+  // Update pH display
+  const phEl=document.getElementById('phValue');
+  phEl.textContent=currentPH.toFixed(2);
+  const phColor = currentPH<7.8?'#ff9898':currentPH<8.1?'#ffd166':currentPH<8.3?'#7fffd4':'#4fc3f7';
+  phEl.style.color=phColor;
+
+  // pH indicator position on scale (6.5–8.5 range = 0–100%)
+  const pct=((currentPH-6.5)/2.0)*100;
+  document.getElementById('phIndicator').style.left=Math.min(95,Math.max(5,pct))+'%';
+
+  // Corals
+  const corals=document.querySelectorAll('.coral');
+  corals.forEach(c=>{
+    c.className='coral';
+    if(risk===2){c.classList.add('bleached');}
+    else if(currentPH>=8.0&&currentPH<=8.3){c.classList.add('growing');}
+    else if(currentPH>=7.9){c.classList.add('healthy');}
+    else{c.classList.add('bleached');}
+  });
+
+  // Add bubbles
+  addBubbles(risk===2?'red':safe?'blue':'yellow');
+
+  // Log
+  const logClass = risk===2?'bad':risk===1?'warn':'good';
+  const entry=document.createElement('div');
+  entry.className='log-entry '+logClass;
+  const phSign=delta>=0?'+':'-';
+  entry.textContent=`[Exp ${experimentCount}] ${m.name} (${doses[selectedDose]}) → pH ${phSign}${delta.toFixed(2)} = ${currentPH.toFixed(2)} | ${riskDesc[risk]}`;
+  const log=document.getElementById('oceanLog');
+  if(log.children.length===1&&log.children[0].style.color){log.innerHTML='';}
+  log.prepend(entry);
+
+  // Insight tip
+  const tipEl=document.createElement('div');
+  tipEl.style.cssText='font-size:0.78rem;color:#7a8fa6;margin-bottom:6px;';
+  if(currentPH>8.3){tipEl.textContent='💡 Too alkaline! pH above 8.3 can harm fish gills.';}
+  else if(currentPH<7.8){tipEl.textContent='💡 Still too acidic — coral skeletons dissolve below pH 7.8.';}
+  else{tipEl.textContent='💡 Great range! pH 7.9–8.3 supports healthy coral growth.';}
+  log.prepend(tipEl);
+}
+
+function addBubbles(type){
+  const area=document.getElementById('bubblesArea');
+  const colors={'blue':'rgba(79,195,247,0.5)','red':'rgba(255,107,107,0.5)','yellow':'rgba(255,209,102,0.5)'};
+  for(let i=0;i<8;i++){
+    const b=document.createElement('div');
+    b.className='bubble';
+    const sz=6+Math.random()*10;
+    b.style.cssText=`--bw:${sz}px;--bx:${10+Math.random()*80}%;--bd:${2+Math.random()*3}s;--bdelay:${Math.random()*2}s;background:${colors[type]};`;
+    area.appendChild(b);
+    setTimeout(()=>b.remove(),6000);
+  }
+}
+
+function resetOcean(){
+  currentPH=7.9; experimentCount=0;
+  document.getElementById('phValue').textContent='7.9';
+  document.getElementById('phValue').style.color='';
+  document.getElementById('phIndicator').style.left='70%';
+  document.querySelectorAll('.coral').forEach(c=>{c.className='coral bleached';});
+  document.getElementById('oceanLog').innerHTML='<div style="color:#7a8fa6;">Experiment log will appear here...</div>';
+  document.getElementById('bubblesArea').innerHTML='';
+}
+
+// Init
+updateSim();
+</script>
+</body>
+</html>

@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taxation — Income Tax &amp; How It Funds India</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#0d0805;
+  --stone-dark:#1a1208;
+  --stone-mid:#2c1f0a;
+  --amber:#c8820a;
+  --amber-glow:#f5a623;
+  --gold:#e8c84a;
+  --saffron:#e8621a;
+  --parchment:#f2e0b0;
+  --parch-dark:#c9b47a;
+  --green-india:#138808;
+  --green-glow:#1db30d;
+  --white-india:#f5f5f5;
+  --text-main:#f2e0b0;
+  --text-dim:#9e8255;
+  --slab0:#2d6a4f; --slab0g:rgba(45,106,79,0.15);
+  --slab1:#b5830a; --slab1g:rgba(181,131,10,0.15);
+  --slab2:#c05c1a; --slab2g:rgba(192,92,26,0.15);
+  --slab3:#8b1a1a; --slab3g:rgba(139,26,26,0.15);
+  --shadow-amber:0 0 30px rgba(200,130,10,0.35);
+  --radius:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Crimson Pro',serif;}
+
+/* ===== SCENE ===== */
+#scene{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 30%, #2c1708 0%, #150e04 55%, #0d0805 100%);overflow:hidden;}
+
+/* Stone floor texture */
+.stone-floor{position:absolute;bottom:0;left:0;right:0;height:30%;
+  background:linear-gradient(180deg,#1a1005 0%,#120c03 100%);
+  border-top:2px solid rgba(200,130,10,0.2);}
+.floor-tile{position:absolute;border:1px solid rgba(200,130,10,0.08);background:rgba(0,0,0,0.2);}
+
+/* Portal orb */
+.portal-wrap{position:absolute;top:4%;left:50%;transform:translateX(-50%);}
+.portal{width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle,rgba(232,100,26,0.08) 0%,rgba(200,130,10,0.04) 60%,transparent 100%);
+  border:2px solid rgba(200,130,10,0.25);
+  box-shadow:0 0 60px 20px rgba(200,130,10,0.12),inset 0 0 40px rgba(232,100,26,0.08);
+  animation:portalPulse 4s ease-in-out infinite;position:relative;overflow:hidden;}
+.portal-ring{position:absolute;inset:-8px;border-radius:50%;border:1.5px solid rgba(232,200,74,0.2);animation:portalSpin 8s linear infinite;}
+.portal-ring2{position:absolute;inset:-16px;border-radius:50%;border:1px solid rgba(200,130,10,0.15);animation:portalSpin 14s linear infinite reverse;}
+.portal-ring3{position:absolute;inset:-24px;border-radius:50%;border:1px dashed rgba(200,130,10,0.10);animation:portalSpin 20s linear infinite;}
+@keyframes portalPulse{0%,100%{box-shadow:0 0 60px 20px rgba(200,130,10,0.12),inset 0 0 40px rgba(232,100,26,0.08)}50%{box-shadow:0 0 90px 35px rgba(200,130,10,0.2),inset 0 0 60px rgba(232,100,26,0.15)}}
+@keyframes portalSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* Rune pillars */
+.pillar{position:absolute;bottom:28%;width:28px;border-radius:3px 3px 0 0;}
+.pillar-l{left:3%;height:180px;background:linear-gradient(180deg,#3a2a10,#1f1608);
+  box-shadow:inset -2px 0 8px rgba(0,0,0,0.5),2px 0 0 rgba(200,130,10,0.12);}
+.pillar-l2{left:7%;height:130px;background:linear-gradient(180deg,#2e2009,#1a1206);}
+.pillar-r{right:3%;height:160px;background:linear-gradient(180deg,#3a2a10,#1f1608);
+  box-shadow:inset 2px 0 8px rgba(0,0,0,0.5),-2px 0 0 rgba(200,130,10,0.12);}
+.pillar-r2{right:7%;height:110px;background:linear-gradient(180deg,#2e2009,#1a1206);}
+.pillar-cap{position:absolute;top:0;left:-4px;right:-4px;height:12px;background:linear-gradient(90deg,#4a3214,#6b4920,#4a3214);border-radius:2px;}
+.rune{position:absolute;color:rgba(200,130,10,0.25);font-size:0.55rem;writing-mode:vertical-rl;top:18px;left:50%;transform:translateX(-50%);letter-spacing:4px;animation:runeGlow 3s ease-in-out infinite;}
+@keyframes runeGlow{0%,100%{color:rgba(200,130,10,0.2)}50%{color:rgba(232,200,74,0.5)}}
+
+/* Hourglass */
+.hg-wrap{position:absolute;animation:hgFloat ease-in-out infinite;}
+.hg-wrap.hg1{bottom:30%;left:13%;animation-duration:5s;}
+.hg-wrap.hg2{bottom:30%;right:13%;animation-duration:6.5s;animation-delay:2s;transform:scale(0.8);}
+@keyframes hgFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.hg-wrap.hg2{bottom:30%;right:13%;}
+.hg{font-size:2rem;animation:hgSpin 8s ease-in-out infinite;display:inline-block;filter:drop-shadow(0 0 8px rgba(200,130,10,0.5));}
+@keyframes hgSpin{0%,45%{transform:rotate(0deg)}50%,95%{transform:rotate(180deg)}100%{transform:rotate(180deg)}}
+
+/* Scroll decorations */
+.scroll-deco{position:absolute;font-size:1.6rem;opacity:0.35;animation:scrollDrift ease-in-out infinite;filter:drop-shadow(0 0 6px rgba(200,130,10,0.4));}
+.sd1{top:28%;left:5%;animation-duration:7s;animation-delay:1s;}
+.sd2{top:22%;right:6%;animation-duration:9s;animation-delay:3s;}
+@keyframes scrollDrift{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-12px) rotate(5deg)}}
+
+/* Torch flames */
+.torch{position:absolute;bottom:55%;}
+.torch-l{left:16%;}
+.torch-r{right:16%;}
+.torch-body{width:10px;height:28px;background:linear-gradient(180deg,#6b4920,#3a2a10);border-radius:2px;margin:0 auto;}
+.flame{font-size:1.4rem;text-align:center;margin-bottom:-4px;animation:flicker 0.4s ease-in-out infinite alternate;filter:drop-shadow(0 0 10px rgba(255,120,0,0.8));}
+@keyframes flicker{0%{transform:scale(1) translateY(0);opacity:1}100%{transform:scale(1.15) translateY(-2px);opacity:0.85}}
+
+/* Sand particles */
+#sandCanvas{position:absolute;inset:0;pointer-events:none;opacity:0.6;}
+
+/* Map texture overlay */
+.map-overlay{position:absolute;inset:0;background:
+  repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(200,130,10,0.015) 40px,rgba(200,130,10,0.015) 41px),
+  repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(200,130,10,0.015) 40px,rgba(200,130,10,0.015) 41px);
+  pointer-events:none;}
+
+/* Tricolor accent line */
+.tricolor{position:absolute;top:0;left:0;right:0;height:4px;display:flex;}
+.tc1{flex:1;background:#FF9933;}
+.tc2{flex:1;background:#FFFFFF;}
+.tc3{flex:1;background:#138808;}
+
+/* ===== UI ===== */
+#ui{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;z-index:10;pointer-events:none;}
+
+#header{
+  pointer-events:all;width:100%;
+  padding:10px 20px 7px;
+  background:rgba(10,7,2,0.88);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(200,130,10,0.25);
+  text-align:center;
+  position:relative;
+}
+.tricolor-top{position:absolute;top:0;left:0;right:0;height:3px;display:flex;}
+.tricolor-top div:nth-child(1){flex:1;background:#FF9933;}
+.tricolor-top div:nth-child(2){flex:1;background:#f5f5f5;}
+.tricolor-top div:nth-child(3){flex:1;background:#138808;}
+#header h1{
+  font-family:'Cinzel',serif;font-size:1.35rem;
+  background:linear-gradient(135deg,#e8c84a,#f5a623,#e8621a);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  letter-spacing:1.5px;line-height:1.1;text-shadow:none;
+}
+#header p{font-size:0.72rem;color:var(--text-dim);font-family:'Crimson Pro',serif;font-style:italic;}
+.prog-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:5px;}
+.prog-seg{height:4px;width:70px;border-radius:2px;background:rgba(200,130,10,0.15);transition:all 0.5s;}
+.prog-seg.active{background:var(--amber-glow);box-shadow:0 0 8px rgba(245,166,35,0.6);}
+.prog-seg.done{background:var(--gold);box-shadow:0 0 8px rgba(232,200,74,0.4);}
+.prog-lbl{font-size:0.62rem;color:var(--text-dim);font-family:'Cinzel',serif;letter-spacing:0.5px;}
+
+/* Activity card */
+#activity-card{
+  pointer-events:all;
+  margin-top:7px;
+  width:97%;max-width:990px;
+  background:linear-gradient(145deg,rgba(20,13,4,0.93),rgba(14,9,2,0.95));
+  border:1.5px solid rgba(200,130,10,0.3);
+  border-radius:16px;
+  box-shadow:var(--shadow-amber),inset 0 0 60px rgba(200,130,10,0.03);
+  padding:11px 15px 8px;
+  backdrop-filter:blur(16px);
+  flex:1;display:flex;flex-direction:column;min-height:0;
+  position:relative;overflow:hidden;
+}
+#activity-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(232,200,74,0.4),transparent);
+}
+
+.act-hdr{margin-bottom:4px;}
+.act-title{font-family:'Cinzel',serif;font-size:0.98rem;color:var(--gold);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.score-rune{background:rgba(200,130,10,0.12);border:1px solid rgba(200,130,10,0.35);color:var(--amber-glow);
+  font-size:0.68rem;padding:2px 10px;border-radius:20px;font-family:'Crimson Pro',serif;font-weight:600;}
+.act-desc{font-size:0.75rem;color:var(--text-dim);line-height:1.45;margin-top:2px;font-style:italic;}
+
+/* Source bank */
+.source-bank{
+  display:flex;flex-wrap:wrap;gap:6px;padding:7px 10px;
+  background:rgba(0,0,0,0.3);border:1px solid rgba(200,130,10,0.12);
+  border-radius:10px;margin-bottom:7px;min-height:46px;
+}
+
+/* Drag chips */
+.drag-chip{
+  padding:5px 12px;border-radius:6px;font-size:0.73rem;font-weight:600;
+  cursor:grab;user-select:none;
+  background:linear-gradient(135deg,rgba(40,26,8,0.95),rgba(28,18,5,0.95));
+  border:1px solid rgba(200,130,10,0.3);
+  color:var(--parchment);
+  font-family:'Crimson Pro',serif;
+  transition:transform 0.15s,box-shadow 0.15s;
+  box-shadow:0 2px 8px rgba(0,0,0,0.4);
+  display:flex;align-items:center;gap:5px;white-space:nowrap;
+}
+.drag-chip:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(200,130,10,0.25);}
+.drag-chip:active{cursor:grabbing;}
+.drag-chip.correct{background:linear-gradient(135deg,rgba(19,56,19,0.9),rgba(10,35,10,0.9));border-color:var(--green-glow);color:#a8e6a0;}
+.drag-chip.wrong{border-color:#c0392b;color:#f1948a;animation:shake 0.45s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.chip-icon{font-size:0.9rem;}
+
+/* Drop zones */
+.zone-grid{display:grid;gap:8px;flex:1;min-height:0;}
+.drop-zone{
+  border-radius:10px;border:1.5px dashed rgba(200,130,10,0.2);
+  padding:7px;display:flex;flex-direction:column;min-height:0;
+  transition:all 0.25s;position:relative;
+}
+.drop-zone.dragover{border-style:solid;transform:scale(1.015);}
+.zone-hdr{font-family:'Cinzel',serif;font-size:0.78rem;padding:4px 12px;border-radius:6px;margin-bottom:5px;text-align:center;letter-spacing:0.5px;}
+.zone-body{flex:1;display:flex;flex-direction:column;gap:4px;overflow-y:auto;min-height:28px;}
+.zone-hint{font-size:0.62rem;color:var(--text-dim);text-align:center;margin-top:3px;font-style:italic;}
+
+/* Slab zone colors */
+.slab0-z{border-color:rgba(45,106,79,0.35);background:rgba(45,106,79,0.07);}
+.slab0-z.dragover{border-color:var(--slab0);background:rgba(45,106,79,0.14);}
+.slab0-z .zone-hdr{background:var(--slab0);color:#e8f5e9;}
+.slab1-z{border-color:rgba(181,131,10,0.35);background:rgba(181,131,10,0.07);}
+.slab1-z.dragover{border-color:var(--slab1);background:rgba(181,131,10,0.14);}
+.slab1-z .zone-hdr{background:var(--slab1);color:#fff8e1;}
+.slab2-z{border-color:rgba(192,92,26,0.35);background:rgba(192,92,26,0.07);}
+.slab2-z.dragover{border-color:var(--slab2);background:rgba(192,92,26,0.14);}
+.slab2-z .zone-hdr{background:var(--slab2);color:#fbe9e7;}
+.slab3-z{border-color:rgba(139,26,26,0.35);background:rgba(139,26,26,0.07);}
+.slab3-z.dragover{border-color:var(--slab3);background:rgba(139,26,26,0.14);}
+.slab3-z .zone-hdr{background:var(--slab3);color:#ffcdd2;}
+
+/* Tax match zones */
+.road-z{border-color:rgba(100,80,30,0.4);background:rgba(100,80,30,0.07);}
+.road-z.dragover{border-color:#8b6914;background:rgba(139,105,20,0.14);}
+.road-z .zone-hdr{background:#6b5010;color:#ffe082;}
+.school-z{border-color:rgba(45,106,79,0.4);background:rgba(45,106,79,0.07);}
+.school-z.dragover{border-color:var(--slab0);}
+.school-z .zone-hdr{background:#1b5e3b;color:#c8e6c9;}
+.hosp-z{border-color:rgba(139,26,26,0.4);background:rgba(139,26,26,0.07);}
+.hosp-z.dragover{border-color:var(--slab3);}
+.hosp-z .zone-hdr{background:#6d1212;color:#ffcdd2;}
+.space-z{border-color:rgba(30,50,100,0.5);background:rgba(30,50,100,0.07);}
+.space-z.dragover{border-color:#3456c8;background:rgba(52,86,200,0.14);}
+.space-z .zone-hdr{background:#1a2a6b;color:#bbdefb;}
+
+/* Formula slots (act3) */
+.formula-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;flex:1;min-height:0;}
+.f-slot{
+  border-radius:10px;border:1.5px dashed rgba(200,130,10,0.2);
+  background:rgba(0,0,0,0.2);
+  padding:6px;display:flex;flex-direction:column;align-items:center;
+  transition:all 0.25s;
+}
+.f-slot.dragover{border-color:var(--amber-glow);background:rgba(200,130,10,0.08);border-style:solid;}
+.slot-num{font-family:'Cinzel',serif;font-size:0.95rem;color:rgba(200,130,10,0.3);margin-bottom:4px;}
+.slot-body{flex:1;width:100%;display:flex;align-items:center;justify-content:center;}
+.f-slot .drag-chip{white-space:normal;text-align:center;cursor:default;font-size:0.7rem;}
+.formula-eq{font-family:'Cinzel',serif;font-size:0.65rem;color:rgba(200,130,10,0.5);
+  text-align:center;margin-top:4px;letter-spacing:0.5px;}
+.step-arrow{display:flex;align-items:center;justify-content:center;color:rgba(200,130,10,0.3);font-size:0.8rem;margin-top:4px;gap:6px;}
+
+/* Buttons */
+.btn{padding:7px 22px;border-radius:6px;border:1px solid rgba(200,130,10,0.4);cursor:pointer;
+  font-family:'Cinzel',serif;font-size:0.85rem;letter-spacing:0.5px;
+  transition:transform 0.15s,box-shadow 0.2s;}
+.btn:hover{transform:translateY(-2px);}
+.btn-gold{background:linear-gradient(135deg,#8b6010,#c8820a,#8b6010);color:#fff8e1;
+  box-shadow:0 3px 14px rgba(200,130,10,0.3);}
+.btn-gold:hover{box-shadow:0 5px 22px rgba(200,130,10,0.5);}
+.btn-row{display:flex;justify-content:flex-end;gap:10px;margin-top:6px;}
+
+/* POPUP */
+.popup-overlay{
+  position:fixed;inset:0;background:rgba(5,3,1,0.78);z-index:100;
+  display:flex;align-items:center;justify-content:center;
+  animation:fogIn 0.35s ease;
+}
+@keyframes fogIn{from{opacity:0}to{opacity:1}}
+.popup-box{
+  background:linear-gradient(145deg,#1a1005,#100b02);
+  border:1.5px solid rgba(200,130,10,0.45);
+  border-radius:18px;padding:24px 30px;text-align:center;
+  box-shadow:0 0 80px rgba(200,130,10,0.2),0 8px 50px rgba(0,0,0,0.7);
+  max-width:440px;width:90%;
+  animation:scrollUnfurl 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  position:relative;overflow:hidden;
+}
+.popup-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(232,200,74,0.5),transparent);}
+@keyframes scrollUnfurl{from{transform:scale(0.65) rotate(-3deg);opacity:0}to{transform:scale(1) rotate(0deg);opacity:1}}
+.popup-icon{font-size:3rem;margin-bottom:5px;}
+.popup-title{font-family:'Cinzel',serif;font-size:1.35rem;
+  background:linear-gradient(135deg,#e8c84a,#f5a623);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:6px;}
+.popup-fact{background:rgba(200,130,10,0.1);border:1px solid rgba(200,130,10,0.25);
+  border-radius:8px;padding:8px 12px;font-size:0.78rem;color:var(--amber-glow);
+  font-weight:600;line-height:1.5;margin-bottom:9px;font-family:'Crimson Pro',serif;}
+.popup-msg{font-size:0.82rem;color:var(--text-dim);font-family:'Crimson Pro',serif;
+  line-height:1.55;margin-bottom:14px;font-style:italic;}
+.popup-stars{font-size:1.5rem;margin-bottom:4px;}
+.hidden{display:none!important;}
+
+/* Particle */
+@keyframes particleFly{0%{transform:translate(0,0) scale(0);opacity:1}100%{transform:translate(var(--tx),var(--ty)) scale(1.3);opacity:0}}
+</style>
+</head>
+<body>
+
+<!-- ===== SCENE ===== -->
+<div id="scene">
+  <div class="tricolor-top"><div></div><div></div><div></div></div>
+  <div class="map-overlay"></div>
+
+  <canvas id="sandCanvas"></canvas>
+
+  <!-- Portal -->
+  <div class="portal-wrap">
+    <div class="portal">
+      <div class="portal-ring"></div>
+      <div class="portal-ring2"></div>
+      <div class="portal-ring3"></div>
+    </div>
+  </div>
+
+  <!-- Pillars -->
+  <div class="pillar pillar-l"><div class="pillar-cap"></div><div class="rune">ॐ ★ ✦ ◈</div></div>
+  <div class="pillar pillar-l2"><div class="pillar-cap"></div></div>
+  <div class="pillar pillar-r"><div class="pillar-cap"></div><div class="rune">◈ ✦ ★ ॐ</div></div>
+  <div class="pillar pillar-r2"><div class="pillar-cap"></div></div>
+
+  <!-- Torches -->
+  <div class="torch torch-l"><div class="flame">🔥</div><div class="torch-body"></div></div>
+  <div class="torch torch-r"><div class="flame">🔥</div><div class="torch-body"></div></div>
+
+  <!-- Hourglasses -->
+  <div class="hg-wrap hg1"><div class="hg">⏳</div></div>
+  <div class="hg-wrap hg2"><div class="hg">⏳</div></div>
+
+  <!-- Scroll decorations -->
+  <div class="scroll-deco sd1">📜</div>
+  <div class="scroll-deco sd2">📜</div>
+
+  <!-- Stone floor -->
+  <div class="stone-floor"></div>
+</div>
+
+<!-- ===== UI ===== -->
+<div id="ui">
+  <div id="header">
+    <div class="tricolor-top"><div></div><div></div><div></div></div>
+    <h1>⚖️ TAXATION — INCOME TAX &amp; HOW IT FUNDS INDIA ⚖️</h1>
+    <p>Journey through the ancient scrolls of civic duty and national prosperity</p>
+    <div class="prog-row">
+      <span class="prog-lbl">Tax Slabs</span>
+      <div class="prog-seg active" id="ps1"></div>
+      <div class="prog-seg" id="ps2"></div>
+      <span class="prog-lbl">Tax Usage</span>
+      <div class="prog-seg" id="ps3"></div>
+      <span class="prog-lbl">Formula</span>
+    </div>
+  </div>
+
+  <div id="activity-card">
+
+    <!-- ===== ACT 1: Tax Slab Classification ===== -->
+    <div id="act1" style="display:flex;flex-direction:column;flex:1;min-height:0;">
+      <div class="act-hdr">
+        <div class="act-title">📜 Activity 1 — Sort Salaries into Tax Slabs
+          <span class="score-rune" id="sc1">0 / 6</span>
+        </div>
+        <div class="act-desc">Drag each annual income into the correct slab. Think of it as a "pay-as-you-earn" system — those who earn more contribute a higher portion to the nation's fund.</div>
+      </div>
+
+      <div class="source-bank" id="bank1">
+        <div class="drag-chip" draggable="true" data-id="s1" data-answer="slab0"><span class="chip-icon">💰</span>₹2,50,000/yr</div>
+        <div class="drag-chip" draggable="true" data-id="s2" data-answer="slab1"><span class="chip-icon">💰</span>₹4,00,000/yr</div>
+        <div class="drag-chip" draggable="true" data-id="s3" data-answer="slab2"><span class="chip-icon">💰</span>₹9,00,000/yr</div>
+        <div class="drag-chip" draggable="true" data-id="s4" data-answer="slab3"><span class="chip-icon">💰</span>₹18,00,000/yr</div>
+        <div class="drag-chip" draggable="true" data-id="s5" data-answer="slab0"><span class="chip-icon">💰</span>₹1,80,000/yr</div>
+        <div class="drag-chip" draggable="true" data-id="s6" data-answer="slab2"><span class="chip-icon">💰</span>₹7,50,000/yr</div>
+      </div>
+
+      <div class="zone-grid" style="grid-template-columns:repeat(4,1fr);">
+        <div class="drop-zone slab0-z" data-zone="slab0" id="z1-s0">
+          <div class="zone-hdr">🟢 No Tax<br><small style="font-size:0.65rem;font-family:'Crimson Pro'">Up to ₹3,00,000</small></div>
+          <div class="zone-body" id="b1-s0"></div>
+          <div class="zone-hint">Earns the least, contributes the least</div>
+        </div>
+        <div class="drop-zone slab1-z" data-zone="slab1" id="z1-s1">
+          <div class="zone-hdr">🟡 5% Slab<br><small style="font-size:0.65rem;font-family:'Crimson Pro'">₹3L – ₹6L</small></div>
+          <div class="zone-body" id="b1-s1"></div>
+          <div class="zone-hint">Small contribution, big civic duty</div>
+        </div>
+        <div class="drop-zone slab2-z" data-zone="slab2" id="z1-s2">
+          <div class="zone-hdr">🟠 10–20% Slab<br><small style="font-size:0.65rem;font-family:'Crimson Pro'">₹6L – ₹12L</small></div>
+          <div class="zone-body" id="b1-s2"></div>
+          <div class="zone-hint">Mid-range earners share more</div>
+        </div>
+        <div class="drop-zone slab3-z" data-zone="slab3" id="z1-s3">
+          <div class="zone-hdr">🔴 30% Slab<br><small style="font-size:0.65rem;font-family:'Crimson Pro'">Above ₹15L</small></div>
+          <div class="zone-body" id="b1-s3"></div>
+          <div class="zone-hint">High earners, highest contribution</div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-gold" onclick="checkAct(1)">Consult the Scroll ✓</button>
+      </div>
+    </div>
+
+    <!-- ===== ACT 2: Tax Usage Matching ===== -->
+    <div id="act2" class="hidden" style="display:none;flex-direction:column;flex:1;min-height:0;">
+      <div class="act-hdr">
+        <div class="act-title">🗺️ Activity 2 — Where Does Tax Money Go?
+          <span class="score-rune" id="sc2">0 / 8</span>
+        </div>
+        <div class="act-desc">Every rupee contributed goes back to the people as public services. Drag each label to the public service it funds — connect the contribution to the benefit!</div>
+      </div>
+
+      <div class="source-bank" id="bank2">
+        <div class="drag-chip" draggable="true" data-id="t1" data-answer="road"><span class="chip-icon">🛣️</span>Highway Construction</div>
+        <div class="drag-chip" draggable="true" data-id="t2" data-answer="school"><span class="chip-icon">📚</span>Mid-Day Meal Scheme</div>
+        <div class="drag-chip" draggable="true" data-id="t3" data-answer="hosp"><span class="chip-icon">🏥</span>AIIMS Free Treatment</div>
+        <div class="drag-chip" draggable="true" data-id="t4" data-answer="space"><span class="chip-icon">🚀</span>Chandrayaan Mission</div>
+        <div class="drag-chip" draggable="true" data-id="t5" data-answer="road"><span class="chip-icon">🌉</span>Bridge &amp; Metro Rail</div>
+        <div class="drag-chip" draggable="true" data-id="t6" data-answer="school"><span class="chip-icon">🏫</span>Government School Buildings</div>
+        <div class="drag-chip" draggable="true" data-id="t7" data-answer="hosp"><span class="chip-icon">💊</span>Jan Aushadhi Medicine</div>
+        <div class="drag-chip" draggable="true" data-id="t8" data-answer="space"><span class="chip-icon">🛰️</span>ISRO Satellite Program</div>
+      </div>
+
+      <div class="zone-grid" style="grid-template-columns:repeat(4,1fr);">
+        <div class="drop-zone road-z" data-zone="road" id="z2-road">
+          <div class="zone-hdr">🛣️ Infrastructure &amp; Roads</div>
+          <div class="zone-body" id="b2-road"></div>
+          <div class="zone-hint">Vande Bharat, highways, bridges</div>
+        </div>
+        <div class="drop-zone school-z" data-zone="school" id="z2-school">
+          <div class="zone-hdr">🎓 Education</div>
+          <div class="zone-body" id="b2-school"></div>
+          <div class="zone-hint">Schools, scholarships, meals</div>
+        </div>
+        <div class="drop-zone hosp-z" data-zone="hosp" id="z2-hosp">
+          <div class="zone-hdr">🏥 Healthcare</div>
+          <div class="zone-body" id="b2-hosp"></div>
+          <div class="zone-hint">Hospitals, free medicines</div>
+        </div>
+        <div class="drop-zone space-z" data-zone="space" id="z2-space">
+          <div class="zone-hdr">🚀 Innovation &amp; Space</div>
+          <div class="zone-body" id="b2-space"></div>
+          <div class="zone-hint">ISRO, Digital India</div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-gold" onclick="checkAct(2)">Reveal the Ledger ✓</button>
+      </div>
+    </div>
+
+    <!-- ===== ACT 3: Formula ordering ===== -->
+    <div id="act3" class="hidden" style="display:none;flex-direction:column;flex:1;min-height:0;">
+      <div class="act-hdr">
+        <div class="act-title">⚗️ Activity 3 — Decode the Tax Formula!
+          <span class="score-rune" id="sc3">0 / 4</span>
+        </div>
+        <div class="act-desc">A citizen earns ₹8,00,000 per year. Arrange the 4 steps in the correct order to calculate how much tax they contribute. Drag into slots 1 → 4!</div>
+      </div>
+
+      <div class="source-bank" id="bank3">
+        <div class="drag-chip" draggable="true" data-id="f1" data-order="2"><span class="chip-icon">🔍</span>Find the correct tax slab for ₹8L income</div>
+        <div class="drag-chip" draggable="true" data-id="f2" data-order="4"><span class="chip-icon">🏛️</span>Tax amount is contributed to the Nation's Fund</div>
+        <div class="drag-chip" draggable="true" data-id="f3" data-order="1"><span class="chip-icon">📊</span>Know the total annual income: ₹8,00,000</div>
+        <div class="drag-chip" draggable="true" data-id="f4" data-order="3"><span class="chip-icon">🧮</span>Apply 20% rate — ₹8L falls in the 20% slab</div>
+      </div>
+
+      <div class="formula-grid">
+        <div class="f-slot" data-slot="1" id="fs1"><div class="slot-num">① Know</div><div class="slot-body" id="fb1"></div></div>
+        <div class="f-slot" data-slot="2" id="fs2"><div class="slot-num">② Find</div><div class="slot-body" id="fb2"></div></div>
+        <div class="f-slot" data-slot="3" id="fs3"><div class="slot-num">③ Calculate</div><div class="slot-body" id="fb3"></div></div>
+        <div class="f-slot" data-slot="4" id="fs4"><div class="slot-num">④ Contribute</div><div class="slot-body" id="fb4"></div></div>
+      </div>
+      <div class="step-arrow">Income → ➤ Slab → ➤ Rate → ➤ Contribution → ➤ Nation Grows!</div>
+      <div class="formula-eq">💡 ₹8,00,000 × 20% = ₹1,60,000 contributed to public services each year</div>
+
+      <div class="btn-row">
+        <button class="btn btn-gold" onclick="checkAct(3)">Seal the Scroll ✓</button>
+      </div>
+    </div>
+
+  </div><!-- /activity-card -->
+</div>
+
+<!-- POPUP -->
+<div id="popup" class="popup-overlay hidden">
+  <div class="popup-box">
+    <div class="popup-icon" id="pi">📜</div>
+    <div class="popup-stars" id="pst">⭐⭐⭐</div>
+    <div class="popup-title" id="pt">Well Done!</div>
+    <div class="popup-fact" id="pf"></div>
+    <div class="popup-msg" id="pm"></div>
+    <button class="btn btn-gold" id="pb" onclick="nextAct()">Proceed →</button>
+  </div>
+</div>
+
+<script>
+// ===== SAND PARTICLE CANVAS =====
+(function sandAnim(){
+  const c=document.getElementById('sandCanvas');
+  const ctx=c.getContext('2d');
+  let pts=[];
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight;}
+  resize();window.addEventListener('resize',resize);
+  function make(){
+    pts=[];
+    for(let i=0;i<120;i++){
+      pts.push({x:Math.random()*c.width,y:Math.random()*c.height,
+        vx:(Math.random()-0.5)*0.4,vy:-0.2-Math.random()*0.4,
+        size:0.8+Math.random()*2,
+        alpha:0.1+Math.random()*0.35,
+        col:Math.random()<0.5?`rgba(200,130,10,`:`rgba(232,200,74,`
+      });
+    }
+  }
+  make();window.addEventListener('resize',make);
+  function draw(){
+    ctx.clearRect(0,0,c.width,c.height);
+    pts.forEach(p=>{
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+      ctx.fillStyle=p.col+p.alpha+')';
+      ctx.fill();
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.y<-5){p.y=c.height+5;p.x=Math.random()*c.width;}
+      if(p.x<0) p.x=c.width;if(p.x>c.width) p.x=0;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// Build floor tiles
+(function buildFloor(){
+  const f=document.querySelector('.stone-floor');
+  const w=window.innerWidth,cols=Math.ceil(w/80),rows=3;
+  for(let r=0;r<rows;r++) for(let c2=0;c2<cols;c2++){
+    const t=document.createElement('div');
+    t.className='floor-tile';
+    t.style.cssText=`left:${c2*80}px;bottom:${r*32}px;width:78px;height:30px;`;
+    f.appendChild(t);
+  }
+})();
+
+// ===== DRAG & DROP =====
+let dragging=null;
+function attachDrag(chip){
+  chip.addEventListener('dragstart',e=>{dragging=chip;e.dataTransfer.effectAllowed='move';});
+  chip.addEventListener('dragend',()=>dragging=null);
+}
+function attachZone(zone){
+  zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('dragover');});
+  zone.addEventListener('dragleave',()=>zone.classList.remove('dragover'));
+  zone.addEventListener('drop',e=>{
+    e.preventDefault();zone.classList.remove('dragover');
+    if(dragging) handleDrop(dragging,zone);
+  });
+}
+function handleDrop(chip,zone){
+  const body=zone.querySelector('.zone-body,.slot-body');
+  if(!body) return;
+  body.appendChild(chip);
+  chip.classList.remove('correct','wrong');
+  const ztype=zone.dataset.zone||zone.dataset.slot;
+  const ans=chip.dataset.answer||chip.dataset.order;
+  if(ans===ztype){chip.classList.add('correct');burst(chip);}
+  else{chip.classList.add('wrong');setTimeout(()=>chip.classList.remove('wrong'),600);}
+}
+function burst(chip){
+  const r=chip.getBoundingClientRect();
+  const cx=r.left+r.width/2,cy=r.top+r.height/2;
+  ['📜','⭐','✨','🪙'].forEach(s=>{
+    const el=document.createElement('div');
+    el.textContent=s;
+    el.style.cssText=`position:fixed;left:${cx}px;top:${cy}px;font-size:1rem;pointer-events:none;z-index:300;
+      animation:particleFly 0.9s ease-out forwards;
+      --tx:${(Math.random()-0.5)*90}px;--ty:${-50-Math.random()*50}px;`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),1000);
+  });
+}
+function initDrag(bankId){
+  document.getElementById(bankId)?.querySelectorAll('.drag-chip').forEach(attachDrag);
+}
+function initZones(ids){ids.forEach(id=>{const z=document.getElementById(id);if(z) attachZone(z);});}
+
+// Init act1
+initDrag('bank1');
+initZones(['z1-s0','z1-s1','z1-s2','z1-s3']);
+
+// ===== CHECK LOGIC =====
+const popData={
+  1:{icon:'⚖️',title:'Tax Slab Master!',
+    fact:'🏛️ India Insight: India uses a "Progressive Tax" system — the more you earn, the more you contribute. This ensures that public roads, schools, and hospitals are available to all citizens, equally.',
+    msg:'You\'ve correctly sorted every income into its tax slab! Understanding this is the first step to being a responsible, informed citizen.',btn:'Next: Where Does Tax Go? →'},
+  2:{icon:'🗺️',title:'Civic Champion!',
+    fact:'🚀 Pride Point: The ₹700-crore Chandrayaan-3 mission — which made India the 4th nation to land on the Moon — was entirely funded by citizen tax contributions. Every taxpayer is a space explorer!',
+    msg:'Every rupee finds its purpose — roads connect us, schools empower us, hospitals heal us, and rockets inspire us. Tax is not a burden — it is a superpower.',btn:'Next: Decode the Formula →'},
+  3:{icon:'🧮',title:'Formula Sage!',
+    fact:'💡 Did You Know? India has over 8 crore registered taxpayers. Together, they fund the railways, defence, AIIMS hospitals, and digital infrastructure that serves over 140 crore people!',
+    msg:'You\'ve mastered the 4-step journey of tax — from income to slab to calculation to contribution. You now think like an economist!',btn:'See Final Honour →'},
+};
+
+let currAct=1;
+
+function checkAct(n){
+  if(n===1) checkZones(n,['z1-s0','z1-s1','z1-s2','z1-s3'],6,'sc1');
+  else if(n===2) checkZones(n,['z2-road','z2-school','z2-hosp','z2-space'],8,'sc2');
+  else checkSlots(n,['fs1','fs2','fs3','fs4'],4,'sc3');
+}
+
+function checkZones(n,zids,total,scId){
+  let correct=0;
+  document.querySelectorAll(`#act${n} .drag-chip`).forEach(chip=>{
+    const parent=chip.closest('.drop-zone');
+    if(parent){
+      const ok=chip.dataset.answer===parent.dataset.zone;
+      chip.classList.toggle('correct',ok);chip.classList.toggle('wrong',!ok);
+      if(ok) correct++;
+      if(!ok) setTimeout(()=>chip.classList.remove('wrong'),700);
+    }
+  });
+  document.getElementById(scId).textContent=correct+' / '+total;
+  if(correct===total) showPopup(n);
+}
+
+function checkSlots(n,sids,total,scId){
+  let correct=0;
+  sids.forEach(sid=>{
+    const slot=document.getElementById(sid);
+    const chip=slot?.querySelector('.drag-chip');
+    if(chip){
+      const ok=chip.dataset.order===slot.dataset.slot;
+      chip.classList.toggle('correct',ok);chip.classList.toggle('wrong',!ok);
+      if(ok) correct++;
+      if(!ok) setTimeout(()=>chip.classList.remove('wrong'),700);
+    }
+  });
+  document.getElementById(scId).textContent=correct+' / '+total;
+  if(correct===total) showPopup(n);
+}
+
+function showPopup(n){
+  currAct=n;
+  const d=popData[n];
+  document.getElementById('pi').textContent=d.icon;
+  document.getElementById('pt').textContent=d.title;
+  document.getElementById('pf').textContent=d.fact;
+  document.getElementById('pm').textContent=d.msg;
+  document.getElementById('pb').textContent=d.btn;
+  document.getElementById('pst').textContent='⭐⭐⭐';
+  document.getElementById('popup').classList.remove('hidden');
+  const segs=['ps1','ps2','ps3'];
+  document.getElementById(segs[n-1]).classList.remove('active');
+  document.getElementById(segs[n-1]).classList.add('done');
+  if(n<3) document.getElementById(segs[n]).classList.add('active');
+  celebrate();
+}
+
+function celebrate(){
+  const things=['📜','⭐','🪙','🏛️','✨','⚖️','🔥'];
+  for(let i=0;i<14;i++){
+    setTimeout(()=>{
+      const el=document.createElement('div');
+      el.textContent=things[Math.floor(Math.random()*things.length)];
+      el.style.cssText=`position:fixed;left:${10+Math.random()*80}%;top:55%;font-size:1.4rem;
+        pointer-events:none;z-index:400;
+        animation:particleFly 1.3s ease-out forwards;
+        --tx:${(Math.random()-0.5)*140}px;--ty:${-90-Math.random()*100}px;`;
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(),1400);
+    },i*70);
+  }
+}
+
+function nextAct(){
+  document.getElementById('popup').classList.add('hidden');
+  if(currAct===1){
+    document.getElementById('act1').style.display='none';
+    const a=document.getElementById('act2');a.classList.remove('hidden');a.style.display='flex';
+    initDrag('bank2');initZones(['z2-road','z2-school','z2-hosp','z2-space']);
+  } else if(currAct===2){
+    document.getElementById('act2').style.display='none';
+    const a=document.getElementById('act3');a.classList.remove('hidden');a.style.display='flex';
+    initDrag('bank3');initZones(['fs1','fs2','fs3','fs4']);
+  } else {
+    showFinal();
+  }
+}
+
+function showFinal(){
+  document.getElementById('pi').textContent='🏛️';
+  document.getElementById('pt').textContent='Nation Builder!';
+  document.getElementById('pst').textContent='⭐⭐⭐⭐⭐';
+  document.getElementById('pf').textContent='🇮🇳 You understand tax the way the architects of modern India did — as a sacred contribution that transforms a collection of individuals into a thriving nation. Chandrayaan, AIIMS, Vande Bharat — all built by citizens like you!';
+  document.getElementById('pm').textContent='You\'ve mastered tax slabs, traced public spending, and decoded the tax formula. Being a taxpayer isn\'t a burden — it is the most powerful act of nation-building.';
+  const btn=document.getElementById('pb');
+  btn.textContent='Study Again 🔄';btn.onclick=()=>location.reload();
+  document.getElementById('popup').classList.remove('hidden');
+  celebrate();setTimeout(celebrate,700);setTimeout(celebrate,1400);
+}
+</script>
+</body>
+</html>

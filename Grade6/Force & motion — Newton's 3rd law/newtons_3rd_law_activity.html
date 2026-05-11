@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Force & Motion — Newton's 3rd Law</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --v1:#0d0220;--v2:#1a0540;--v3:#2e0e7a;--v4:#4c1d95;
+  --v5:#6d28d9;--v6:#8b5cf6;--v7:#a78bfa;--v8:#ddd6fe;
+  --fire:#f97316;--rocket:#ef4444;--teal:#06b6d4;
+  --mint:#10b981;--gold:#f59e0b;--pink:#ec4899;--sky:#38bdf8;
+  --white:#fff;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif;background:var(--v1);color:var(--white);}
+
+/* ── CHAIN BARS ── */
+.chain-top{position:fixed;top:0;left:0;right:0;height:5px;z-index:300;
+  background:linear-gradient(90deg,var(--v5),var(--rocket),var(--gold),var(--teal),var(--pink),var(--mint),var(--v6),var(--v5));
+  background-size:400% 100%;animation:chainFlow 2s linear infinite;
+  box-shadow:0 0 18px 4px rgba(109,40,217,.85);}
+.chain-bottom{position:fixed;bottom:0;left:0;right:0;height:3px;z-index:300;
+  background:linear-gradient(90deg,var(--teal),var(--mint),var(--gold),var(--rocket),var(--v6));
+  background-size:300% 100%;animation:chainFlow 2.5s linear infinite reverse;
+  box-shadow:0 0 12px rgba(6,182,212,.65);}
+@keyframes chainFlow{to{background-position:-400% 0}}
+
+/* ── CANVAS ── */
+#cosmos{position:fixed;inset:0;pointer-events:none;z-index:0}
+
+/* ── SHELL ── */
+.shell{position:relative;z-index:10;display:flex;flex-direction:column;height:100vh;padding:8px 14px 6px;gap:5px;}
+
+/* ── HEADING ── */
+.heading{text-align:center;flex-shrink:0;animation:hDrop .7s cubic-bezier(.34,1.56,.64,1) both}
+.heading h1{font-family:'Fredoka One',cursive;font-size:clamp(.9rem,2.2vw,1.55rem);line-height:1.15;
+  background:linear-gradient(135deg,#ddd6fe 0%,#fff 28%,#f97316 50%,#f59e0b 70%,#06b6d4 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 16px rgba(109,40,217,.55));}
+.hline{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:3px;}
+.hline hr{flex:1;max-width:70px;border:none;height:2px;background:linear-gradient(90deg,transparent,var(--v6));border-radius:2px}
+.hline hr:last-child{background:linear-gradient(90deg,var(--v6),transparent)}
+.hdot{width:9px;height:9px;border-radius:50%;display:inline-block;margin:0 2px;animation:hPulse 1.8s ease-in-out infinite}
+.hdot.r{background:var(--rocket);box-shadow:0 0 7px var(--rocket)}
+.hdot.f{background:var(--fire);box-shadow:0 0 7px var(--fire);animation-delay:.4s}
+.hdot.t{background:var(--teal);box-shadow:0 0 7px var(--teal);animation-delay:.8s}
+.hdot.m{background:var(--mint);box-shadow:0 0 7px var(--mint);animation-delay:1.2s}
+@keyframes hPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.4)}}
+@keyframes hDrop{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:none}}
+
+/* ── TABS ── */
+.tabs{display:flex;justify-content:center;gap:7px;flex-shrink:0;}
+.tab{font-family:'Fredoka One',cursive;font-size:.78rem;padding:6px 16px;border-radius:50px;cursor:pointer;
+  border:2px solid var(--v6);background:rgba(76,29,149,.18);color:var(--v7);
+  transition:all .25s cubic-bezier(.34,1.56,.64,1);position:relative;overflow:hidden;}
+.tab::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--v5),var(--v3));
+  transform:translateY(102%);transition:transform .25s ease;border-radius:50px;z-index:-1;}
+.tab:hover,.tab.on{color:#fff;transform:translateY(-2px);}
+.tab:hover::after,.tab.on::after{transform:translateY(0)}
+.tab.on{box-shadow:0 4px 18px rgba(109,40,217,.6)}
+
+/* ── PANELS ── */
+.panel{display:none;flex:1;min-height:0;animation:panelIn .4s cubic-bezier(.34,1.56,.64,1) both}
+.panel.on{display:flex;flex-direction:column;}
+@keyframes panelIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* ── CARD ── */
+.card{background:rgba(26,5,64,.55);border:1.5px solid rgba(139,92,246,.2);border-radius:16px;
+  padding:9px 13px;backdrop-filter:blur(14px);
+  box-shadow:0 6px 28px rgba(0,0,0,.45),inset 0 1px 0 rgba(167,139,250,.1);
+  position:relative;overflow:hidden;display:flex;flex-direction:column;flex:1;min-height:0;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--rocket),var(--gold),var(--teal),var(--v6));border-radius:16px 16px 0 0;}
+.ct{font-family:'Fredoka One',cursive;font-size:.98rem;color:var(--v7);margin-bottom:3px;display:flex;align-items:center;gap:7px;flex-shrink:0;}
+.cd{font-size:.74rem;color:var(--v8);font-weight:600;margin-bottom:7px;line-height:1.35;flex-shrink:0;}
+
+/* ── BUTTONS ── */
+.btn{font-family:'Fredoka One',cursive;font-size:.76rem;padding:6px 14px;border:none;border-radius:50px;cursor:pointer;
+  transition:all .22s;box-shadow:0 2px 8px rgba(0,0,0,.22);}
+.bv{background:linear-gradient(135deg,var(--v5),var(--v3));color:#fff}
+.bv:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(76,29,149,.45)}
+.bg{background:linear-gradient(135deg,var(--gold),var(--fire));color:#1a0540}
+.bg:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(249,115,22,.35)}
+.bt{background:linear-gradient(135deg,var(--teal),var(--mint));color:#fff}
+.bt:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(6,182,212,.35)}
+
+/* ── RESULT BOX ── */
+.res{padding:6px 10px;border-radius:9px;font-weight:700;font-size:.77rem;
+  display:none;animation:fadeUp .3s ease;flex-shrink:0;margin-top:4px;line-height:1.4;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.res.good{background:rgba(16,185,129,.13);border:1.5px solid var(--mint);color:#6ee7b7}
+.res.med{background:rgba(245,158,11,.1);border:1.5px solid var(--gold);color:#fde68a}
+.res.bad{background:rgba(239,68,68,.1);border:1.5px solid var(--rocket);color:#fca5a5}
+
+/* ══════════ ACTIVITY 1: ACTION-REACTION MATCH (DRAG-DROP) ══════════ */
+.act1-layout{display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:1;min-height:0;overflow:hidden;}
+
+.match-col{display:flex;flex-direction:column;gap:7px;overflow-y:auto;padding-right:4px;}
+.match-col::-webkit-scrollbar{width:3px}
+.match-col::-webkit-scrollbar-thumb{background:var(--v6);border-radius:2px}
+.match-col-hdr{font-family:'Fredoka One',cursive;font-size:.8rem;text-align:center;
+  padding:5px 8px;border-radius:8px;flex-shrink:0;margin-bottom:2px;}
+.mh-action{background:rgba(239,68,68,.2);color:#fca5a5}
+.mh-react{background:rgba(6,182,212,.18);color:#a5f3fc}
+
+.action-card{padding:8px 11px;border-radius:10px;
+  background:rgba(239,68,68,.15);border:1.5px solid rgba(239,68,68,.4);
+  font-size:.76rem;font-weight:700;color:#fca5a5;line-height:1.35;flex-shrink:0;}
+
+.react-slot{min-height:52px;border:2px dashed rgba(6,182,212,.35);border-radius:10px;
+  background:rgba(6,182,212,.05);padding:6px 8px;
+  display:flex;align-items:center;justify-content:center;
+  transition:border-color .2s,background .2s;position:relative;flex-shrink:0;}
+.react-slot.hover-t{border-color:var(--gold);background:rgba(245,158,11,.1)}
+.react-slot.filled-correct{border-color:var(--mint);background:rgba(16,185,129,.12)}
+.react-slot.filled-wrong{border-color:var(--rocket);background:rgba(239,68,68,.1)}
+.slot-hint{font-size:.62rem;color:rgba(6,182,212,.45);font-weight:700}
+.slot-chip{font-size:.74rem;font-weight:700;color:#a5f3fc;line-height:1.3;text-align:center;padding:2px 4px;}
+
+.drag-bank{background:rgba(76,29,149,.18);border:1.5px solid rgba(139,92,246,.22);
+  border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:5px;overflow-y:auto;flex-shrink:0;max-height:160px;}
+.drag-bank::-webkit-scrollbar{width:3px}
+.drag-bank::-webkit-scrollbar-thumb{background:var(--v6);border-radius:2px}
+.bank-hdr{font-family:'Fredoka One',cursive;font-size:.76rem;color:var(--gold);text-align:center;margin-bottom:2px;letter-spacing:.04em;}
+.react-chip{padding:6px 10px;border-radius:8px;cursor:grab;user-select:none;
+  background:rgba(6,182,212,.18);border:1.5px solid rgba(6,182,212,.4);
+  font-size:.72rem;font-weight:700;color:#a5f3fc;
+  transition:transform .15s,opacity .15s;line-height:1.3;}
+.react-chip:hover{transform:scale(1.04)}
+.react-chip.dragging{opacity:.28;cursor:grabbing}
+.react-chip.used{opacity:.25;pointer-events:none}
+
+/* ══════════ ACTIVITY 2: SORT ══════════ */
+.act2-layout{display:flex;flex-direction:column;flex:1;min-height:0;gap:5px;}
+.sort-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;flex:1;min-height:0;}
+.sort-col-wrap{display:flex;flex-direction:column;min-height:0;}
+.sort-head{text-align:center;padding:4px 5px;border-radius:7px;font-family:'Fredoka One',cursive;font-size:.76rem;flex-shrink:0;margin-bottom:2px;}
+.sh-n{background:rgba(239,68,68,.2);color:#fca5a5}
+.sh-e{background:rgba(245,158,11,.18);color:#fde68a}
+.sh-i{background:rgba(6,182,212,.16);color:#a5f3fc}
+.sort-col{background:rgba(76,29,149,.18);border:2px dashed rgba(139,92,246,.28);border-radius:11px;
+  padding:5px 6px;display:flex;flex-direction:column;gap:4px;flex:1;min-height:0;
+  overflow-y:auto;transition:border-color .2s,background .2s;}
+.sort-col::-webkit-scrollbar{width:3px}
+.sort-col::-webkit-scrollbar-thumb{background:var(--v6);border-radius:2px}
+.sort-col.hover-over{border-color:var(--gold);background:rgba(245,158,11,.07)}
+.fc{background:rgba(26,5,64,.6);border:1.5px solid rgba(139,92,246,.22);border-radius:8px;
+  padding:5px 8px;font-size:.72rem;font-weight:700;color:var(--v8);cursor:grab;user-select:none;
+  transition:transform .15s,box-shadow .15s,opacity .15s;line-height:1.3;}
+.fc:hover{transform:scale(1.02);box-shadow:0 3px 10px rgba(109,40,217,.28)}
+.fc.dragging{opacity:.28;cursor:grabbing}
+.fc.sc{border-color:var(--mint)!important;background:rgba(16,185,129,.12)!important;color:#6ee7b7!important}
+.fc.sw{border-color:var(--rocket)!important;background:rgba(239,68,68,.1)!important;color:#fca5a5!important}
+.pool-wrap{background:rgba(76,29,149,.15);border-radius:11px;padding:6px 9px;flex-shrink:0;}
+.pool-lbl{font-family:'Fredoka One',cursive;font-size:.7rem;color:var(--gold);margin-bottom:4px;}
+#factPool{display:flex;flex-wrap:wrap;gap:5px;}
+
+/* ══════════ ACTIVITY 3: QUIZ ══════════ */
+.act3-layout{display:flex;flex-direction:column;flex:1;min-height:0;gap:5px;}
+.qprog{display:flex;align-items:center;gap:9px;padding:5px 9px;background:rgba(76,29,149,.22);border-radius:9px;flex-shrink:0;}
+.qctr{font-family:'Fredoka One',cursive;font-size:.76rem;color:var(--gold);white-space:nowrap}
+.ptk{flex:1;height:7px;background:rgba(139,92,246,.18);border-radius:4px;overflow:hidden}
+.pfil{height:100%;background:linear-gradient(90deg,var(--v5),var(--fire));border-radius:4px;transition:width .4s ease}
+.sdsp{font-family:'Fredoka One',cursive;font-size:.76rem;color:var(--v7);white-space:nowrap}
+.qbox{background:linear-gradient(135deg,rgba(76,29,149,.3),rgba(26,5,64,.48));
+  border:1.5px solid rgba(139,92,246,.24);border-radius:13px;padding:9px 12px;flex-shrink:0;}
+.qtxt{font-family:'Fredoka One',cursive;font-size:.88rem;color:var(--v8);margin-bottom:9px;line-height:1.4;}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.opt{padding:7px 10px;background:rgba(26,5,64,.58);border:1.5px solid rgba(139,92,246,.2);border-radius:9px;
+  font-family:'Nunito',sans-serif;font-size:.77rem;font-weight:700;color:#fff;cursor:pointer;text-align:left;transition:all .18s;}
+.opt:hover:not(:disabled){border-color:var(--v6);background:rgba(109,40,217,.3);transform:translateY(-1px)}
+.opt.correct{background:rgba(16,185,129,.17)!important;border-color:var(--mint)!important;color:#6ee7b7!important}
+.opt.wrong{background:rgba(239,68,68,.13)!important;border-color:var(--rocket)!important;color:#fca5a5!important}
+.qfb{padding:6px 10px;border-radius:9px;font-weight:700;font-size:.76rem;
+  display:none;animation:fadeUp .3s ease;margin-top:6px;line-height:1.35;}
+.qfb.correct{background:rgba(16,185,129,.13);border:1.5px solid var(--mint);color:#6ee7b7}
+.qfb.wrong{background:rgba(239,68,68,.1);border:1.5px solid var(--rocket);color:#fca5a5}
+.nqbtn{font-family:'Fredoka One',cursive;font-size:.76rem;padding:6px 17px;
+  background:linear-gradient(135deg,var(--teal),var(--mint));color:#fff;border:none;border-radius:50px;
+  cursor:pointer;display:none;margin-top:6px;flex-shrink:0;align-self:flex-start;
+  box-shadow:0 2px 10px rgba(6,182,212,.25);transition:all .22s;}
+.nqbtn:hover{transform:translateY(-2px)}
+.qres{text-align:center;padding:10px;display:none;flex-direction:column;align-items:center;gap:4px;}
+.rtro{font-size:2.4rem}
+.rsco{font-family:'Fredoka One',cursive;font-size:2.6rem;
+  background:linear-gradient(90deg,var(--gold),var(--fire),var(--teal));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.rmsg{font-size:.88rem;font-weight:700;color:var(--v7)}
+.rebtn{font-family:'Fredoka One',cursive;font-size:.84rem;padding:8px 22px;
+  background:linear-gradient(135deg,var(--v5),var(--v3));color:#fff;border:none;border-radius:50px;
+  cursor:pointer;box-shadow:0 3px 12px rgba(109,40,217,.38);transition:all .22s;margin-top:4px;}
+.rebtn:hover{transform:translateY(-2px)}
+
+/* ── CONFETTI ── */
+.cf{position:fixed;top:-12px;pointer-events:none;z-index:999;border-radius:3px;animation:cfFall linear forwards}
+@keyframes cfFall{to{transform:translateY(108vh) rotate(900deg);opacity:0}}
+</style>
+</head>
+<body>
+<div class="chain-top"></div>
+<div class="chain-bottom"></div>
+<canvas id="cosmos"></canvas>
+
+<div class="shell">
+
+  <!-- HEADING ONLY -->
+  <div class="heading">
+    <h1>Force &amp; Motion — Newton's 3rd Law</h1>
+    <div class="hline">
+      <hr>
+      <span class="hdot r"></span>
+      <span class="hdot f"></span>
+      <span class="hdot t"></span>
+      <span class="hdot m"></span>
+      <hr>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab on" onclick="goTab(0,this)">🚀 Action &amp; Reaction Match</button>
+    <button class="tab"    onclick="goTab(1,this)">⚡ Sort the Examples</button>
+    <button class="tab"    onclick="goTab(2,this)">🎯 Forces Quiz</button>
+  </div>
+
+  <!-- ══ PANEL 0: ACTION-REACTION DRAG-DROP MATCH ══ -->
+  <div class="panel on" id="p0">
+    <div class="card">
+      <div class="ct">🚀 Action &amp; Reaction Match</div>
+      <div class="cd">Drag the correct <b>Reaction Force</b> from the bank and drop it onto the matching Action Force! Every action has an equal &amp; opposite reaction.</div>
+
+      <div class="act1-layout">
+        <!-- LEFT: Action forces + drop slots stacked together -->
+        <div class="match-col" id="matchCol">
+          <div class="match-col-hdr mh-action">⬇️ ACTION FORCE</div>
+          <!-- pairs rendered by JS -->
+        </div>
+
+        <!-- RIGHT: bank + info -->
+        <div style="display:flex;flex-direction:column;gap:8px;min-height:0;">
+          <div class="drag-bank" id="reactBank">
+            <div class="bank-hdr">✦ Reaction Forces — Drag!</div>
+          </div>
+          <div style="background:rgba(76,29,149,.22);border-radius:12px;padding:9px 11px;flex:1;overflow-y:auto;">
+            <div style="font-family:'Fredoka One',cursive;font-size:.8rem;color:var(--gold);margin-bottom:5px;">📖 Newton's 3rd Law</div>
+            <div style="font-size:.7rem;color:var(--v8);font-weight:600;line-height:1.5;">
+              <b>"For every action force there is an equal and opposite reaction force."</b><br><br>
+              Both forces are:<br>
+              ✦ Equal in size (magnitude)<br>
+              ✦ Opposite in direction<br>
+              ✦ Acting on DIFFERENT objects<br><br>
+              💡 Click placed chips to remove them.
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0;">
+            <button class="btn bg" onclick="checkMatch()">✅ Check</button>
+            <button class="btn bv" onclick="resetMatch()">🔄 Reset</button>
+          </div>
+          <div class="res" id="matchRes"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PANEL 1: SORT EXAMPLES ══ -->
+  <div class="panel" id="p1">
+    <div class="card">
+      <div class="ct">⚡ Sort the Examples</div>
+      <div class="cd">Each card shows a real-world scenario. Drag it into the correct category — Newton's 3rd Law, Inertia, or Balanced Forces.</div>
+      <div class="act2-layout">
+        <div class="sort-cols">
+          <div class="sort-col-wrap">
+            <div class="sort-head sh-n">🚀 Newton's 3rd Law</div>
+            <div class="sort-col" id="col_n3"
+                 ondragover="event.preventDefault();this.classList.add('hover-over')"
+                 ondragleave="this.classList.remove('hover-over')"
+                 ondrop="dropFact(event,'n3');this.classList.remove('hover-over')"></div>
+          </div>
+          <div class="sort-col-wrap">
+            <div class="sort-head sh-e">🏀 Inertia</div>
+            <div class="sort-col" id="col_in"
+                 ondragover="event.preventDefault();this.classList.add('hover-over')"
+                 ondragleave="this.classList.remove('hover-over')"
+                 ondrop="dropFact(event,'in');this.classList.remove('hover-over')"></div>
+          </div>
+          <div class="sort-col-wrap">
+            <div class="sort-head sh-i">⚖️ Balanced Forces</div>
+            <div class="sort-col" id="col_bf"
+                 ondragover="event.preventDefault();this.classList.add('hover-over')"
+                 ondragleave="this.classList.remove('hover-over')"
+                 ondrop="dropFact(event,'bf');this.classList.remove('hover-over')"></div>
+          </div>
+        </div>
+        <div class="pool-wrap">
+          <div class="pool-lbl">📦 DRAG CARDS INTO COLUMNS ABOVE</div>
+          <div id="factPool"></div>
+        </div>
+        <div style="display:flex;gap:7px;flex-shrink:0">
+          <button class="btn bg" onclick="checkSort()">✅ Check</button>
+          <button class="btn bv" onclick="resetSort()">🔄 Reset</button>
+        </div>
+        <div class="res" id="sortRes"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PANEL 2: QUIZ ══ -->
+  <div class="panel" id="p2">
+    <div class="card">
+      <div class="ct">🎯 Forces Quiz</div>
+      <div class="cd">Answer all 8 questions about Newton's 3rd Law and Forces!</div>
+      <div class="act3-layout">
+        <div class="qprog">
+          <span class="qctr" id="qCtr">Q 1/8</span>
+          <div class="ptk"><div class="pfil" id="pFil" style="width:0%"></div></div>
+          <span class="sdsp" id="sDsp">Score: 0</span>
+        </div>
+        <div id="quizBody" style="display:flex;flex-direction:column;gap:5px;flex:1;min-height:0;">
+          <div class="qbox">
+            <div class="qtxt" id="qTxt"></div>
+            <div class="opts" id="qOpts"></div>
+            <div class="qfb" id="qFb"></div>
+          </div>
+          <button class="nqbtn" id="nqBtn" onclick="nextQ()">Next →</button>
+        </div>
+        <div class="qres" id="qRes">
+          <div class="rtro" id="rTro"></div>
+          <div class="rsco" id="rSco"></div>
+          <div class="rmsg" id="rMsg"></div>
+          <button class="rebtn" onclick="resetQuiz()">🔄 Play Again</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /shell -->
+
+<script>
+/* ══ COSMOS ══ */
+const cvs=document.getElementById('cosmos'),ctx=cvs.getContext('2d');
+let W,H;function resize(){W=cvs.width=innerWidth;H=cvs.height=innerHeight}
+resize();addEventListener('resize',resize);
+const STARS=Array.from({length:26},(_,i)=>({
+  x:Math.random()*2000,y:Math.random()*1000,r:3+Math.random()*10,
+  spd:.15+Math.random()*.38,rot:Math.random()*Math.PI*2,rv:(Math.random()-.5)*.022,
+  dx:Math.sin(Math.random()*6)*.18,op:.25+Math.random()*.38,
+  pulse:Math.random()*Math.PI*2,pv:.013+Math.random()*.008,
+  hue:[270,285,255,310,250,295,30,200][i%8]
+}));
+function star5(x,y,r,rot){
+  ctx.beginPath();
+  for(let i=0;i<10;i++){const a=rot+(i*Math.PI/5)-Math.PI/2,rr=i%2===0?r:r*.4;
+    i===0?ctx.moveTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr):ctx.lineTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr);}
+  ctx.closePath();
+}
+const BIRDS=Array.from({length:6},()=>({x:-110,y:35+Math.random()*330,spd:.8+Math.random()*1.2,
+  wing:Math.random()*Math.PI*2,wv:.07+Math.random()*.06,sz:7+Math.random()*8,al:.28+Math.random()*.25}));
+function drawBird(b){
+  ctx.save();ctx.globalAlpha=b.al;ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.8;
+  const w=b.sz*Math.abs(Math.sin(b.wing));
+  ctx.beginPath();ctx.moveTo(b.x-b.sz,-w*.5);ctx.quadraticCurveTo(b.x-b.sz*.3,-w,b.x,0);
+  ctx.quadraticCurveTo(b.x+b.sz*.3,-w,b.x+b.sz,-w*.5);ctx.stroke();ctx.restore();
+}
+// Rocket trail animation
+const ROCKETS=[{x:W*0.15,y:H,spd:1.2,trail:[],active:false,timer:0}];
+function spawnRocket(){
+  ROCKETS.push({x:Math.random()*W*.8+W*.1,y:H+10,spd:1.8+Math.random(),trail:[],active:true,timer:0});
+}
+const ORBS=Array.from({length:5},(_,i)=>({angle:i*(Math.PI*2/5),spd:.011-i*.0007,
+  color:['#ef4444','#f97316','#f59e0b','#6d28d9','#06b6d4'][i],r:2.4+i*.35}));
+function animCosmos(){
+  ctx.clearRect(0,0,W,H);
+  STARS.forEach(s=>{
+    s.y-=s.spd;s.x+=s.dx;s.rot+=s.rv;s.pulse+=s.pv;
+    const p=.85+.15*Math.sin(s.pulse);
+    if(s.y<-s.r*2){s.y=H+s.r;s.x=Math.random()*W}
+    if(s.x<-40)s.x=W+40;if(s.x>W+40)s.x=-40;
+    ctx.save();star5(s.x,s.y,s.r*p,s.rot);
+    ctx.fillStyle=`hsla(${s.hue},75%,72%,${s.op})`;ctx.shadowBlur=s.r*2.4;
+    ctx.shadowColor=`hsla(${s.hue},90%,70%,.65)`;ctx.fill();ctx.restore();
+  });
+  BIRDS.forEach(b=>{b.x+=b.spd;b.wing+=b.wv;if(b.x>W+120){b.x=-110;b.y=35+Math.random()*340}drawBird(b);});
+  // Mini rocket near top-left
+  const cx=60,cy=50;
+  ORBS.forEach(o=>{o.angle+=o.spd;const ox=cx+Math.cos(o.angle)*30,oy=cy+Math.sin(o.angle)*18;
+    ctx.beginPath();ctx.arc(ox,oy,o.r,0,Math.PI*2);ctx.fillStyle=o.color;
+    ctx.shadowBlur=7;ctx.shadowColor=o.color;ctx.fill();ctx.shadowBlur=0;});
+  ctx.font='18px serif';ctx.globalAlpha=.5;ctx.fillText('🚀',cx-9,cy+6);ctx.globalAlpha=1;
+  requestAnimationFrame(animCosmos);
+}
+animCosmos();
+
+function burst(n=55){
+  const cols=['#6d28d9','#f59e0b','#f97316','#ec4899','#06b6d4','#10b981','#ef4444','#ddd6fe'];
+  for(let i=0;i<n;i++){
+    const d=document.createElement('div');d.className='cf';const s=4+Math.random()*8;
+    d.style.cssText=`left:${Math.random()*100}vw;width:${s}px;height:${s}px;
+      background:${cols[~~(Math.random()*cols.length)]};
+      border-radius:${Math.random()>.5?'50%':'3px'};
+      animation-duration:${1.3+Math.random()*1.8}s;animation-delay:${Math.random()*.6}s;`;
+    document.body.appendChild(d);setTimeout(()=>d.remove(),3800);
+  }
+}
+function goTab(i,btn){
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('on',j===i));
+  document.querySelectorAll('.tab').forEach((b,j)=>b.classList.toggle('on',j===i));
+}
+
+/* ══════════════════════════════════
+   ACTIVITY 1 — ACTION-REACTION MATCH
+══════════════════════════════════ */
+const PAIRS=[
+  {id:'p1',action:'🦶 Foot pushes backward on ground',react:'Ground pushes forward on foot',label:'Walking'},
+  {id:'p2',action:'🚀 Rocket pushes gas backward',react:'Gas pushes rocket forward',label:'Rocket launch'},
+  {id:'p3',action:'🏊 Swimmer pushes water backward',react:'Water pushes swimmer forward',label:'Swimming'},
+  {id:'p4',action:'🏹 Bow pushes arrow forward',react:'Arrow pushes bow backward',label:'Archery'},
+  {id:'p5',action:'🐦 Bird wing pushes air downward',react:'Air pushes bird upward',label:'Bird flight'},
+];
+let matchDrag={val:null,chipId:null};
+const SLOT_FILLED={};
+
+function buildMatch(){
+  const col=document.getElementById('matchCol');
+  const existItems=col.querySelectorAll('.action-pair-wrap');
+  existItems.forEach(e=>e.remove());
+  PAIRS.forEach(p=>{
+    const wrap=document.createElement('div');
+    wrap.style.cssText='display:flex;flex-direction:column;gap:4px;flex-shrink:0;';
+    wrap.className='action-pair-wrap';
+    wrap.innerHTML=`
+      <div class="action-card"><b>${p.label}:</b> ${p.action}</div>
+      <div class="react-slot" id="slot_${p.id}"
+           data-accept="${p.id}"
+           ondragover="event.preventDefault();this.classList.add('hover-t')"
+           ondragleave="this.classList.remove('hover-t')"
+           ondrop="dropReaction(event,'slot_${p.id}');this.classList.remove('hover-t')">
+        <span id="slot_${p.id}_hint" class="slot-hint">↓ Drop reaction here</span>
+      </div>`;
+    col.appendChild(wrap);
+  });
+
+  // Build bank
+  const bank=document.getElementById('reactBank');
+  // remove old chips
+  bank.querySelectorAll('.react-chip').forEach(c=>c.remove());
+  const shuffled=[...PAIRS].sort(()=>Math.random()-.5);
+  shuffled.forEach(p=>{
+    const chip=document.createElement('div');
+    chip.className='react-chip';chip.id='rchip_'+p.id;
+    chip.draggable=true;chip.dataset.val=p.id;
+    chip.textContent=p.react;
+    chip.addEventListener('dragstart',e=>{matchDrag={val:p.id,chipId:chip.id};chip.classList.add('dragging');});
+    chip.addEventListener('dragend',()=>chip.classList.remove('dragging'));
+    chip.addEventListener('touchstart',()=>{matchDrag={val:p.id,chipId:chip.id};},{passive:true});
+    chip.addEventListener('touchend',e=>{
+      const el=document.elementFromPoint(e.changedTouches[0].clientX,e.changedTouches[0].clientY);
+      const slot=el?.closest('.react-slot');
+      if(slot) dropReaction(null,slot.id);
+      matchDrag={val:null,chipId:null};
+    });
+    bank.appendChild(chip);
+  });
+}
+
+function dropReaction(event,slotId){
+  if(event)event.preventDefault();
+  if(!matchDrag.val) return;
+  const slot=document.getElementById(slotId);
+  // restore previous if slot occupied
+  if(SLOT_FILLED[slotId]){
+    const oldChip=document.getElementById('rchip_'+SLOT_FILLED[slotId]);
+    if(oldChip) oldChip.classList.remove('used');
+  }
+  // mark chip used
+  const chip=document.getElementById(matchDrag.chipId);
+  if(chip) chip.classList.add('used');
+  // clear and fill slot
+  const hint=document.getElementById(slotId+'_hint');if(hint)hint.remove();
+  slot.innerHTML=`<span class="slot-chip" id="${slotId}_chip">${PAIRS.find(p=>p.id===matchDrag.val)?.react||''}</span>`;
+  // allow click-to-remove
+  slot.querySelector('.slot-chip').addEventListener('click',()=>{
+    if(SLOT_FILLED[slotId]){document.getElementById('rchip_'+SLOT_FILLED[slotId])?.classList.remove('used');}
+    slot.innerHTML=`<span id="${slotId}_hint" class="slot-hint">↓ Drop reaction here</span>`;
+    slot.classList.remove('filled-correct','filled-wrong','hover-t');
+    delete SLOT_FILLED[slotId];
+  });
+  SLOT_FILLED[slotId]=matchDrag.val;
+  slot.classList.remove('filled-correct','filled-wrong');
+  matchDrag={val:null,chipId:null};
+}
+
+function checkMatch(){
+  let correct=0,total=0;
+  document.querySelectorAll('.react-slot').forEach(slot=>{
+    const placed=SLOT_FILLED[slot.id];
+    if(!placed) return;
+    total++;
+    const ok=placed===slot.dataset.accept;
+    slot.classList.toggle('filled-correct',ok);slot.classList.toggle('filled-wrong',!ok);
+    if(ok) correct++;
+  });
+  const res=document.getElementById('matchRes');res.style.display='block';
+  if(correct===PAIRS.length){res.className='res good';res.innerHTML='🎉 Perfect! All 5 pairs matched!';burst();}
+  else if(correct>=3){res.className='res med';res.innerHTML=`⭐ ${correct}/5 — almost! Check the red slots.`;}
+  else{res.className='res bad';res.innerHTML=`📚 ${correct}/5 — try again!`;}
+}
+
+function resetMatch(){
+  Object.keys(SLOT_FILLED).forEach(k=>delete SLOT_FILLED[k]);
+  document.getElementById('matchRes').style.display='none';
+  buildMatch();
+}
+buildMatch();
+
+/* ══════════════════════════════
+   ACTIVITY 2 — SORT EXAMPLES
+══════════════════════════════ */
+const FACTS=[
+  {id:'fc1',text:'🚀 Rocket exhaust pushes backward → rocket moves forward',ans:'n3'},
+  {id:'fc2',text:'🏊 Swimmer pushes water back → moves forward',ans:'n3'},
+  {id:'fc3',text:'🦅 Bird wing pushes air down → bird goes up',ans:'n3'},
+  {id:'fc4',text:'🏹 Arrow pushes bow back when released',ans:'n3'},
+  {id:'fc5',text:'🚌 Passengers lurch forward when bus brakes suddenly',ans:'in'},
+  {id:'fc6',text:'⚽ Ball keeps rolling until friction stops it',ans:'in'},
+  {id:'fc7',text:'🛹 Skater slides on ice — hard to stop!',ans:'in'},
+  {id:'fc8',text:'📚 Book stays still on desk — no net force',ans:'bf'},
+  {id:'fc9',text:'🏗️ Bridge standing still — weight balanced by supports',ans:'bf'},
+  {id:'fc10',text:'🪁 Kite hovers at same height — forces equal',ans:'bf'},
+  {id:'fc11',text:'🐟 Fish pushes water backward to swim forward',ans:'n3'},
+  {id:'fc12',text:'🚗 Car accelerates forward from standstill — inertia resists',ans:'in'},
+];
+let factDrag=null;
+
+function buildPool(){
+  document.getElementById('factPool').innerHTML='';
+  ['n3','in','bf'].forEach(t=>{document.getElementById(`col_${t}`).innerHTML='';});
+  document.getElementById('sortRes').style.display='none';
+  [...FACTS].sort(()=>Math.random()-.5).forEach(f=>{
+    const div=document.createElement('div');div.className='fc';div.id=f.id;
+    div.draggable=true;div.dataset.ans=f.ans;div.textContent=f.text;
+    div.addEventListener('dragstart',e=>{factDrag=f.id;div.classList.add('dragging');});
+    div.addEventListener('dragend',()=>div.classList.remove('dragging'));
+    div.addEventListener('touchstart',()=>{factDrag=f.id;},{passive:true});
+    div.addEventListener('touchend',e=>{
+      const col=document.elementFromPoint(e.changedTouches[0].clientX,e.changedTouches[0].clientY)?.closest('.sort-col');
+      if(col)dropFact(null,col.id.replace('col_',''));factDrag=null;
+    });
+    document.getElementById('factPool').appendChild(div);
+  });
+}
+
+function dropFact(event,target){
+  if(event)event.preventDefault();if(!factDrag)return;
+  const card=document.getElementById(factDrag);if(!card){factDrag=null;return}
+  card.classList.remove('sc','sw','dragging');
+  document.getElementById(`col_${target}`).appendChild(card);factDrag=null;
+}
+
+function checkSort(){
+  let correct=0;
+  document.querySelectorAll('.fc').forEach(card=>{
+    const pid=card.parentElement?.id;if(!pid)return;
+    const ok=pid==='col_'+card.dataset.ans;
+    card.classList.toggle('sc',ok);card.classList.toggle('sw',!ok);if(ok)correct++;
+  });
+  const res=document.getElementById('sortRes');res.style.display='block';
+  if(correct===FACTS.length){res.className='res good';res.innerHTML=`🏆 Perfect! All ${FACTS.length}/12 correct!`;burst();}
+  else if(correct>=8){res.className='res med';res.innerHTML=`⭐ ${correct}/12 — almost!`;}
+  else{res.className='res bad';res.innerHTML=`📚 ${correct}/12 — keep going!`;}
+}
+function resetSort(){buildPool();}
+buildPool();
+
+/* ══════════════════════════
+   ACTIVITY 3 — QUIZ
+══════════════════════════ */
+const QS=[
+  {q:'What does Newton\'s 3rd Law state?',opts:['Objects at rest stay at rest','F = ma','Every action has an equal & opposite reaction','Force equals mass times velocity'],ans:2,exp:'Every action force produces an equal and opposite reaction force!'},
+  {q:'When a rocket pushes gas backward, the reaction force...',opts:['Stops the rocket','Pushes the rocket forward','Pulls the rocket down','Has no effect'],ans:1,exp:'Gas pushed back = rocket pushed forward — Newton\'s 3rd Law in action!'},
+  {q:'Action and reaction forces act on...',opts:['The same object','Different objects','Only moving objects','Only heavy objects'],ans:1,exp:'Crucial! Action-reaction pairs ALWAYS act on DIFFERENT objects.'},
+  {q:'A swimmer pushes water BACKWARD. The water pushes the swimmer...',opts:['Downward','Backward','Forward','Sideways'],ans:2,exp:'Equal and opposite — water pushes swimmer forward!'},
+  {q:'Which is a real example of Newton\'s 3rd Law?',opts:['Ball rolling to a stop','Book resting on table','Bird wing pushing air down to fly up','Car stuck in mud'],ans:2,exp:'The bird\'s wing pushes air DOWN, so air pushes bird UP — perfect 3rd law!'},
+  {q:'The action and reaction forces are always...',opts:['Equal in size, same direction','Different in size','Equal in size, opposite direction','Equal in direction only'],ans:2,exp:'Always equal in magnitude AND opposite in direction!'},
+  {q:'When you jump off a small boat, the boat moves...',opts:['In the same direction as you','In the opposite direction to you','It stays still','Upward'],ans:1,exp:'You push boat backward → boat pushes you forward. The boat reacts the other way!'},
+  {q:'Which force pair is NOT a Newton\'s 3rd Law pair?',opts:['Rocket gas & rocket','Swimmer & water','Gravity pulling book down & table pushing up','Fish & water'],ans:2,exp:'Gravity (Earth on book) and normal force (table on book) are NOT a 3rd law pair — they act on the SAME object!'],
+];
+let qIdx=0,score=0,qAns=false;
+function loadQ(){
+  if(qIdx>=QS.length){showQRes();return}
+  qAns=false;const q=QS[qIdx];
+  document.getElementById('qTxt').textContent=q.q;
+  document.getElementById('qFb').style.display='none';
+  document.getElementById('nqBtn').style.display='none';
+  document.getElementById('qCtr').textContent=`Q ${qIdx+1}/${QS.length}`;
+  document.getElementById('pFil').style.width=`${(qIdx/QS.length)*100}%`;
+  document.getElementById('sDsp').textContent=`Score: ${score}`;
+  const opts=document.getElementById('qOpts');opts.innerHTML='';
+  q.opts.forEach((o,i)=>{const btn=document.createElement('button');btn.className='opt';
+    btn.textContent=o;btn.onclick=()=>pickOpt(i,btn);opts.appendChild(btn);});
+}
+function pickOpt(chosen,btn){
+  if(qAns)return;qAns=true;const q=QS[qIdx];
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.opt')[q.ans].classList.add('correct');
+  const fb=document.getElementById('qFb');
+  if(chosen===q.ans){btn.classList.add('correct');score++;fb.className='qfb correct';fb.innerHTML=`✅ ${q.exp}`;burst(38);}
+  else{btn.classList.add('wrong');fb.className='qfb wrong';fb.innerHTML=`❌ ${q.exp}`;}
+  fb.style.display='block';document.getElementById('nqBtn').style.display='inline-block';
+}
+function nextQ(){qIdx++;loadQ();}
+function showQRes(){
+  document.getElementById('quizBody').style.display='none';
+  document.getElementById('pFil').style.width='100%';
+  document.getElementById('sDsp').textContent=`Score: ${score}`;
+  const res=document.getElementById('qRes');res.style.display='flex';
+  document.getElementById('rSco').textContent=`${score}/${QS.length}`;
+  document.getElementById('rTro').textContent=['😊','📚','⭐','🌟','🎯','🚀','🏆','🥇','🎉'][score]||'🎉';
+  document.getElementById('rMsg').textContent=['Keep studying!','Good effort!','Getting there!','Nice work!','Well done!','Great job!','Excellent!','Amazing!','Perfect!'][score]||'Brilliant!';
+  if(score>=6)burst(80);
+}
+function resetQuiz(){
+  qIdx=0;score=0;
+  document.getElementById('quizBody').style.display='flex';
+  document.getElementById('qRes').style.display='none';
+  loadQ();
+}
+loadQ();
+</script>
+</body>
+</html>

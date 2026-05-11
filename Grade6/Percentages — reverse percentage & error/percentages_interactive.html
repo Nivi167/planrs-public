@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Percentages — Reverse Percentage & Error</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════
+   ROOT & RESET
+══════════════════════════════════════ */
+:root{
+  --v1:#2d0a5e; --v2:#4a1a8a; --v3:#6d28d9;
+  --v4:#8b5cf6; --v5:#a78bfa; --v6:#c4b5fd;
+  --v7:#ede9fe; --v8:#f5f3ff;
+  --gold:#fbbf24; --coral:#f97316;
+  --teal:#06b6d4; --mint:#10b981;
+  --pink:#ec4899; --rose:#fda4af;
+  --white:#ffffff; --text:#1e1b4b;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--v1);
+  color:var(--white);
+  overflow-x:hidden;
+  min-height:100vh;
+}
+
+/* ══════════════════════════════════════
+   CANVAS LAYER
+══════════════════════════════════════ */
+#cosmos{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+
+/* ══════════════════════════════════════
+   CHAIN REACTION TOP BAR
+══════════════════════════════════════ */
+.chain-top{
+  position:fixed;top:0;left:0;right:0;height:5px;z-index:200;
+  background:linear-gradient(90deg,
+    var(--v3),var(--teal),var(--gold),var(--pink),
+    var(--v4),var(--coral),var(--mint),var(--v3));
+  background-size:400% 100%;
+  animation:chainScroll 2.4s linear infinite;
+  box-shadow:0 0 18px 4px rgba(139,92,246,.7);
+}
+@keyframes chainScroll{to{background-position:-400% 0}}
+
+/* ══════════════════════════════════════
+   PAGE WRAPPER
+══════════════════════════════════════ */
+.page{position:relative;z-index:10;max-width:960px;margin:0 auto;padding:16px 18px 80px}
+
+/* ══════════════════════════════════════
+   HEADING BLOCK
+══════════════════════════════════════ */
+.heading-block{
+  text-align:center;padding:36px 0 24px;
+  animation:dropIn .9s cubic-bezier(.34,1.56,.64,1) both;
+}
+.heading-block h1{
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(2rem,5.5vw,3.4rem);
+  line-height:1.15;
+  background:linear-gradient(135deg,var(--v5) 0%,var(--white) 40%,var(--gold) 70%,var(--v5) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 24px rgba(139,92,246,.5));
+  letter-spacing:.01em;
+}
+.heading-dec{
+  margin-top:12px;display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.heading-dec span{height:3px;flex:1;max-width:120px;border-radius:2px;
+  background:linear-gradient(90deg,transparent,var(--v4));
+}
+.heading-dec span:last-child{
+  background:linear-gradient(90deg,var(--v4),transparent);
+}
+.heading-dec em{
+  font-style:normal;font-size:.85rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--v5);font-weight:700;
+}
+@keyframes dropIn{from{opacity:0;transform:translateY(-40px) scale(.9)}to{opacity:1;transform:none}}
+
+/* ══════════════════════════════════════
+   TAB NAV
+══════════════════════════════════════ */
+.tab-row{
+  display:flex;justify-content:center;gap:10px;
+  flex-wrap:wrap;margin-bottom:28px;
+}
+.tab{
+  font-family:'Fredoka One',cursive;font-size:1rem;
+  padding:11px 24px;border-radius:50px;cursor:pointer;
+  border:2.5px solid var(--v4);
+  background:rgba(109,40,217,.18);color:var(--v5);
+  backdrop-filter:blur(8px);
+  transition:all .3s cubic-bezier(.34,1.56,.64,1);
+  position:relative;overflow:hidden;
+}
+.tab::after{
+  content:'';position:absolute;inset:0;border-radius:50px;
+  background:linear-gradient(135deg,var(--v3),var(--v2));
+  opacity:0;transition:opacity .3s;z-index:-1;
+}
+.tab:hover,.tab.on{color:var(--white);border-color:var(--v4);transform:translateY(-3px);}
+.tab:hover::after,.tab.on::after{opacity:1;}
+.tab.on{box-shadow:0 6px 24px rgba(139,92,246,.55);}
+
+/* ══════════════════════════════════════
+   PANELS
+══════════════════════════════════════ */
+.panel{display:none;animation:panelIn .5s cubic-bezier(.34,1.56,.64,1) both}
+.panel.on{display:block}
+@keyframes panelIn{from{opacity:0;transform:translateY(22px) scale(.97)}to{opacity:1;transform:none}}
+
+/* ══════════════════════════════════════
+   GLASS CARD
+══════════════════════════════════════ */
+.card{
+  background:rgba(45,10,94,.55);
+  border:1.5px solid rgba(167,139,250,.25);
+  border-radius:22px;padding:26px 28px;
+  margin-bottom:20px;
+  backdrop-filter:blur(14px);
+  box-shadow:0 8px 40px rgba(0,0,0,.35),inset 0 1px 0 rgba(196,181,253,.15);
+  position:relative;overflow:hidden;
+}
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,var(--v3),var(--teal),var(--gold));
+  border-radius:22px 22px 0 0;
+}
+.card-title{
+  font-family:'Fredoka One',cursive;font-size:1.5rem;
+  color:var(--v5);margin-bottom:12px;
+  display:flex;align-items:center;gap:10px;
+}
+.card-sub{font-size:.95rem;color:var(--v6);font-weight:600;margin-bottom:18px;line-height:1.5}
+
+/* ══════════════════════════════════════
+   ★ ACTIVITY 1 — DRAG & DROP MATCH
+══════════════════════════════════════ */
+.dnd-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:600px){.dnd-layout{grid-template-columns:1fr}}
+
+.dnd-col-title{
+  font-family:'Fredoka One',cursive;font-size:1rem;
+  color:var(--gold);margin-bottom:12px;text-align:center;
+  letter-spacing:.05em;
+}
+.drag-items,.drop-zones{display:flex;flex-direction:column;gap:10px}
+
+.drag-chip{
+  background:linear-gradient(135deg,rgba(109,40,217,.8),rgba(74,26,138,.9));
+  border:2px solid var(--v4);border-radius:14px;
+  padding:13px 16px;cursor:grab;
+  font-weight:800;font-size:.95rem;color:var(--white);
+  text-align:center;
+  transition:transform .25s,box-shadow .25s;
+  user-select:none;
+  box-shadow:0 3px 12px rgba(0,0,0,.3);
+}
+.drag-chip:hover{transform:scale(1.04) rotate(-1deg);box-shadow:0 6px 22px rgba(139,92,246,.5)}
+.drag-chip.dragging{opacity:.4;transform:scale(.95)}
+.drag-chip.placed{opacity:.35;pointer-events:none;border-style:dashed}
+
+.drop-zone{
+  background:rgba(109,40,217,.15);
+  border:2.5px dashed rgba(167,139,250,.4);
+  border-radius:14px;padding:13px 16px;
+  min-height:52px;
+  transition:all .25s;
+  display:flex;align-items:center;gap:10px;
+}
+.drop-zone .label{font-size:.85rem;color:var(--v6);font-weight:700;flex:1;line-height:1.4}
+.drop-zone.hover-over{border-color:var(--gold);background:rgba(251,191,36,.1);}
+.drop-zone.correct{border-color:var(--mint)!important;background:rgba(16,185,129,.12)!important;}
+.drop-zone.wrong{border-color:#f87171!important;background:rgba(248,113,113,.1)!important;}
+.drop-zone .chip-in{
+  background:linear-gradient(135deg,var(--v3),var(--v2));
+  border-radius:10px;padding:6px 12px;
+  font-size:.88rem;font-weight:800;color:var(--white);
+  white-space:nowrap;
+}
+.drop-zone .status-icon{font-size:1.1rem;margin-left:auto}
+
+.dnd-controls{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap}
+.btn{
+  font-family:'Fredoka One',cursive;font-size:1rem;
+  padding:12px 26px;border:none;border-radius:50px;cursor:pointer;
+  transition:all .3s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 4px 16px rgba(0,0,0,.25);
+}
+.btn-violet{background:linear-gradient(135deg,var(--v3),var(--v2));color:var(--white)}
+.btn-violet:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(109,40,217,.5)}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--coral));color:#1e1b4b}
+.btn-gold:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(251,191,36,.45)}
+.btn-teal{background:linear-gradient(135deg,var(--teal),var(--mint));color:#fff}
+.btn-teal:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(6,182,212,.45)}
+
+.dnd-score-bar{
+  margin-top:16px;background:rgba(255,255,255,.07);
+  border-radius:12px;padding:14px 18px;
+  font-weight:800;font-size:1rem;color:var(--v5);
+  text-align:center;display:none;
+}
+
+/* ══════════════════════════════════════
+   ★ ACTIVITY 2 — STEP BUILDER CALCULATOR
+══════════════════════════════════════ */
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+@media(max-width:560px){.calc-grid{grid-template-columns:1fr}}
+
+.field label{
+  display:block;font-size:.8rem;font-weight:800;
+  color:var(--v5);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;
+}
+.field input,.field select{
+  width:100%;padding:13px 15px;
+  background:rgba(74,26,138,.5);
+  border:2px solid rgba(139,92,246,.35);border-radius:13px;
+  font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;
+  color:var(--white);outline:none;
+  transition:border-color .2s,box-shadow .2s;
+  appearance:none;
+}
+.field input:focus,.field select:focus{
+  border-color:var(--v4);box-shadow:0 0 0 3px rgba(139,92,246,.22);
+}
+.field select option{background:#2d0a5e;color:#fff}
+
+.steps-out{display:none;margin-top:18px}
+.step-row{
+  display:flex;align-items:center;gap:14px;
+  padding:13px 16px;border-radius:14px;margin-bottom:10px;
+  animation:slideX .45s cubic-bezier(.34,1.56,.64,1) both;
+}
+.step-row:nth-child(1){background:rgba(109,40,217,.35);animation-delay:.08s}
+.step-row:nth-child(2){background:rgba(6,182,212,.18);animation-delay:.18s}
+.step-row:nth-child(3){background:rgba(16,185,129,.18);animation-delay:.28s}
+@keyframes slideX{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}
+
+.step-num{
+  width:34px;height:34px;border-radius:50%;
+  background:linear-gradient(135deg,var(--v3),var(--v2));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fredoka One',cursive;font-size:1rem;color:#fff;flex-shrink:0;
+}
+.step-txt{font-weight:700;font-size:.97rem;color:#e9d5ff;line-height:1.45}
+
+.answer-glow{
+  background:linear-gradient(135deg,rgba(109,40,217,.6),rgba(45,10,94,.8));
+  border:2px solid var(--v4);border-radius:18px;
+  padding:20px 24px;text-align:center;margin-top:14px;
+  animation:popIn .5s cubic-bezier(.34,1.56,.64,1) .35s both;
+  box-shadow:0 0 30px rgba(139,92,246,.4);
+}
+@keyframes popIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
+.answer-glow .a-label{font-size:.85rem;color:var(--v5);font-weight:700;margin-bottom:4px}
+.answer-glow .a-val{
+  font-family:'Fredoka One',cursive;font-size:2.4rem;
+  background:linear-gradient(90deg,var(--gold),var(--white),var(--v5));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+
+/* Reference pills */
+.ref-pills{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+.pill{
+  flex:1;min-width:220px;padding:14px 16px;border-radius:14px;
+  background:rgba(74,26,138,.4);border:1.5px solid rgba(139,92,246,.25);
+}
+.pill-head{font-family:'Fredoka One',cursive;font-size:.95rem;color:var(--gold);margin-bottom:6px}
+.pill-body{font-size:.88rem;color:var(--v6);font-weight:600;line-height:1.55}
+
+/* ══════════════════════════════════════
+   ★ ACTIVITY 3 — % ERROR CHALLENGE
+══════════════════════════════════════ */
+.formula-banner{
+  background:linear-gradient(135deg,rgba(74,26,138,.7),rgba(45,10,94,.8));
+  border:2px solid var(--v4);border-radius:18px;
+  padding:18px 22px;text-align:center;margin-bottom:20px;
+  box-shadow:0 0 24px rgba(109,40,217,.35);
+}
+.formula-banner .f-label{font-size:.85rem;color:var(--v5);font-weight:800;
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.formula-banner .f-eq{
+  font-family:'Fredoka One',cursive;font-size:1.2rem;
+  color:var(--gold);line-height:1.5;
+}
+
+.scenario{
+  background:rgba(74,26,138,.3);border:1.5px solid rgba(139,92,246,.2);
+  border-radius:18px;padding:20px 22px;margin-bottom:14px;
+  transition:border-color .3s;
+}
+.scenario:hover{border-color:rgba(139,92,246,.5)}
+.sc-title{
+  font-family:'Fredoka One',cursive;font-size:1.05rem;
+  color:var(--v5);margin-bottom:14px;
+}
+.sc-inputs{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}
+@media(max-width:500px){.sc-inputs{grid-template-columns:1fr}}
+
+.sc-inputs label{
+  font-size:.78rem;font-weight:800;color:var(--v5);
+  text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;
+}
+.sc-inputs input{
+  width:100%;padding:11px 13px;
+  background:rgba(74,26,138,.5);
+  border:2px solid rgba(139,92,246,.3);border-radius:12px;
+  font-family:'Nunito',sans-serif;font-size:.97rem;font-weight:700;
+  color:#fff;outline:none;transition:border-color .2s;
+}
+.sc-inputs input:focus{border-color:var(--v4)}
+.btn-sm{
+  font-family:'Fredoka One',cursive;font-size:.95rem;
+  padding:11px 18px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,var(--gold),var(--coral));
+  color:#1e1b4b;cursor:pointer;white-space:nowrap;
+  transition:all .3s;box-shadow:0 3px 12px rgba(251,191,36,.3);
+}
+.btn-sm:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(251,191,36,.45)}
+
+.sc-result{
+  margin-top:12px;padding:13px 16px;border-radius:13px;
+  font-weight:700;font-size:.93rem;line-height:1.55;
+  display:none;animation:fadeUp .4s ease both;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sc-result.good{background:rgba(16,185,129,.15);border:1.5px solid var(--mint);color:#6ee7b7}
+.sc-result.ok  {background:rgba(6,182,212,.12);border:1.5px solid var(--teal);color:#a5f3fc}
+.sc-result.bad {background:rgba(248,113,113,.1);border:1.5px solid #f87171;color:#fca5a5}
+
+.free-calc{background:rgba(109,40,217,.2);border-radius:18px;padding:20px 22px;margin-top:6px}
+.free-calc-title{
+  font-family:'Fredoka One',cursive;font-size:1.1rem;color:var(--v5);margin-bottom:14px
+}
+
+/* ══════════════════════════════════════
+   CONFETTI PIECES
+══════════════════════════════════════ */
+.cf{
+  position:fixed;top:-14px;pointer-events:none;z-index:999;
+  border-radius:3px;animation:fall linear forwards;
+}
+@keyframes fall{to{transform:translateY(105vh) rotate(900deg);opacity:0}}
+
+/* ══════════════════════════════════════
+   SCORE BADGE
+══════════════════════════════════════ */
+.score-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(251,191,36,.15);border:1.5px solid var(--gold);
+  border-radius:50px;padding:7px 18px;
+  font-family:'Fredoka One',cursive;font-size:1rem;color:var(--gold);
+  margin-bottom:16px;
+}
+</style>
+</head>
+<body>
+
+<!-- Chain top bar -->
+<div class="chain-top"></div>
+
+<!-- Cosmos canvas -->
+<canvas id="cosmos"></canvas>
+
+<div class="page">
+
+  <!-- HEADING -->
+  <div class="heading-block">
+    <h1>Percentages — Reverse Percentage &amp; Error</h1>
+    <div class="heading-dec">
+      <span></span><em>3 Interactive Activities</em><span></span>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tab-row">
+    <button class="tab on" onclick="switchTab(0,this)">🃏 Match the Steps</button>
+    <button class="tab"    onclick="switchTab(1,this)">🔢 Step Builder</button>
+    <button class="tab"    onclick="switchTab(2,this)">📐 Error Lab</button>
+  </div>
+
+  <!-- ═══════════ PANEL 0: DRAG & DROP MATCH ═══════════ -->
+  <div class="panel on" id="p0">
+    <div class="card">
+      <div class="card-title">🃏 Match the Steps</div>
+      <div class="card-sub">Drag each answer card and drop it onto the correct step. Match all 5 to win!</div>
+
+      <div class="dnd-layout">
+        <!-- LEFT: chips to drag -->
+        <div>
+          <div class="dnd-col-title">✦ Drag These Cards</div>
+          <div class="drag-items" id="dragItems">
+            <div class="drag-chip" draggable="true" data-val="1.2">120% = 1.2</div>
+            <div class="drag-chip" draggable="true" data-val="0.75">75% = 0.75</div>
+            <div class="drag-chip" draggable="true" data-val="divide">Final ÷ Decimal</div>
+            <div class="drag-chip" draggable="true" data-val="100minus">100% − 25% = 75%</div>
+            <div class="drag-chip" draggable="true" data-val="100plus">100% + 20% = 120%</div>
+          </div>
+        </div>
+
+        <!-- RIGHT: drop zones -->
+        <div>
+          <div class="dnd-col-title">✦ Drop on the Right Step</div>
+          <div class="drop-zones" id="dropZones">
+            <div class="drop-zone" data-accept="100plus">
+              <div class="label">Step 1 (Increase): Add 100% to the given percent</div>
+              <span class="status-icon"></span>
+            </div>
+            <div class="drop-zone" data-accept="100minus">
+              <div class="label">Step 1 (Discount): Subtract percent from 100%</div>
+              <span class="status-icon"></span>
+            </div>
+            <div class="drop-zone" data-accept="1.2">
+              <div class="label">Step 2 (Increase): Convert 120% to decimal</div>
+              <span class="status-icon"></span>
+            </div>
+            <div class="drop-zone" data-accept="0.75">
+              <div class="label">Step 2 (Discount): Convert 75% to decimal</div>
+              <span class="status-icon"></span>
+            </div>
+            <div class="drop-zone" data-accept="divide">
+              <div class="label">Step 3 (Both): Divide final price by the decimal</div>
+              <span class="status-icon"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dnd-controls">
+        <button class="btn btn-gold" onclick="checkDnD()">✅ Check Answers</button>
+        <button class="btn btn-violet" onclick="resetDnD()">🔄 Reset</button>
+      </div>
+      <div class="dnd-score-bar" id="dndScore"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ PANEL 1: STEP BUILDER ═══════════ -->
+  <div class="panel" id="p1">
+    <div class="card">
+      <div class="card-title">🔢 Reverse % Step Builder</div>
+      <div class="card-sub">Enter a final price and percentage — watch the full solution appear step by step!</div>
+
+      <div class="calc-grid">
+        <div class="field">
+          <label>Final Price (₹)</label>
+          <input type="number" id="fp" placeholder="e.g. 450" min="0" step="0.01">
+        </div>
+        <div class="field">
+          <label>Percentage (%)</label>
+          <input type="number" id="pct" placeholder="e.g. 10" min="0" max="200">
+        </div>
+        <div class="field">
+          <label>Type of Change</label>
+          <select id="chtype">
+            <option value="inc">📈 Increase</option>
+            <option value="dis">📉 Discount</option>
+          </select>
+        </div>
+        <div class="field" style="display:flex;align-items:flex-end">
+          <button class="btn btn-violet" style="width:100%" onclick="runCalc()">✨ Solve It!</button>
+        </div>
+      </div>
+
+      <div class="steps-out" id="stepsOut">
+        <div class="step-row"><div class="step-num">1</div><div class="step-txt" id="s1"></div></div>
+        <div class="step-row"><div class="step-num">2</div><div class="step-txt" id="s2"></div></div>
+        <div class="step-row"><div class="step-num">3</div><div class="step-txt" id="s3"></div></div>
+        <div class="answer-glow">
+          <div class="a-label">🎉 Original Price</div>
+          <div class="a-val" id="aVal"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">💡 Quick Reference</div>
+      <div class="ref-pills">
+        <div class="pill">
+          <div class="pill-head">📈 For an Increase</div>
+          <div class="pill-body">100% + pct% → decimal<br>Final ÷ decimal = Original</div>
+        </div>
+        <div class="pill">
+          <div class="pill-head">📉 For a Discount</div>
+          <div class="pill-body">100% − pct% → decimal<br>Final ÷ decimal = Original</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ PANEL 2: ERROR LAB ═══════════ -->
+  <div class="panel" id="p2">
+    <div class="card">
+      <div class="card-title">📐 Percentage Error Lab</div>
+      <div class="card-sub">How accurate is your estimate? Calculate the % error for each scenario!</div>
+
+      <div class="formula-banner">
+        <div class="f-label">The Formula</div>
+        <div class="f-eq">% Error = |Estimated − Actual| ÷ Actual × 100%</div>
+      </div>
+
+      <!-- Scenario 1 -->
+      <div class="scenario">
+        <div class="sc-title">🥭 Mango Crate — Estimate vs Actual Count</div>
+        <div class="sc-inputs">
+          <div><label>Estimated</label><input type="number" id="e0" value="45" step="1"></div>
+          <div><label>Actual</label><input type="number" id="a0" value="50" step="1"></div>
+          <button class="btn-sm" onclick="calcErr(0)">Check!</button>
+        </div>
+        <div class="sc-result" id="r0"></div>
+      </div>
+
+      <!-- Scenario 2 -->
+      <div class="scenario">
+        <div class="sc-title">📏 Rope Length — Estimate vs Actual (metres)</div>
+        <div class="sc-inputs">
+          <div><label>Estimated</label><input type="number" id="e1" value="8" step="0.1"></div>
+          <div><label>Actual</label><input type="number" id="a1" value="7.5" step="0.1"></div>
+          <button class="btn-sm" onclick="calcErr(1)">Check!</button>
+        </div>
+        <div class="sc-result" id="r1"></div>
+      </div>
+
+      <!-- Scenario 3 -->
+      <div class="scenario">
+        <div class="sc-title">⚖️ Weight — Estimate vs Actual (kg)</div>
+        <div class="sc-inputs">
+          <div><label>Estimated</label><input type="number" id="e2" value="52" step="0.1"></div>
+          <div><label>Actual</label><input type="number" id="a2" value="50" step="0.1"></div>
+          <button class="btn-sm" onclick="calcErr(2)">Check!</button>
+        </div>
+        <div class="sc-result" id="r2"></div>
+      </div>
+
+      <!-- Free calculator -->
+      <div class="free-calc">
+        <div class="free-calc-title">🧮 Free Calculator — Try Any Values</div>
+        <div class="sc-inputs">
+          <div><label>Your Estimate</label><input type="number" id="fe" placeholder="e.g. 80"></div>
+          <div><label>Actual Value</label><input type="number" id="fa" placeholder="e.g. 100"></div>
+          <button class="btn-sm" onclick="freeErr()">Go!</button>
+        </div>
+        <div class="sc-result" id="rf"></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<!-- ══════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════ -->
+<script>
+/* ───── COSMOS CANVAS (stars + birds) ───── */
+const cvs = document.getElementById('cosmos');
+const ctx = cvs.getContext('2d');
+let W,H;
+function resize(){W=cvs.width=innerWidth;H=cvs.height=innerHeight}
+resize(); addEventListener('resize',resize);
+
+/* Stars */
+const STARS = Array.from({length:28},(_,i)=>({
+  x:Math.random()*3000, y:Math.random()*2000,
+  r:4+Math.random()*12,
+  speed:.25+Math.random()*.5,
+  rot:Math.random()*Math.PI*2,
+  rotV:(Math.random()-.5)*.035,
+  dx:Math.sin(Math.random()*6)*.3,
+  opacity:.35+Math.random()*.55,
+  hue: [270,285,260,300,250][i%5],
+  sat: 70+Math.random()*30,
+  pulse: Math.random()*Math.PI*2,
+  pulseV:.018+Math.random()*.012
+}));
+
+function star5(cx,cy,r,rot){
+  ctx.beginPath();
+  for(let i=0;i<10;i++){
+    const a=rot+(i*Math.PI/5)-Math.PI/2;
+    const rr=i%2===0?r:r*.42;
+    i===0?ctx.moveTo(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr)
+         :ctx.lineTo(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr);
+  }
+  ctx.closePath();
+}
+
+/* Birds */
+const BIRDS = Array.from({length:6},()=>({
+  x:-120,y:60+Math.random()*300,
+  spd:1.1+Math.random()*1.6,
+  wing:Math.random()*Math.PI*2,
+  wv:.09+Math.random()*.07,
+  sz:10+Math.random()*10,
+  alpha:.4+Math.random()*.35
+}));
+
+function drawBird(b){
+  ctx.save();
+  ctx.globalAlpha=b.alpha;
+  ctx.strokeStyle='#a78bfa';
+  ctx.lineWidth=2;
+  const w=b.sz*Math.abs(Math.sin(b.wing));
+  ctx.beginPath();
+  ctx.moveTo(b.x-b.sz,-w*.6);
+  ctx.quadraticCurveTo(b.x-b.sz*.3,-w*1.1,b.x,0);
+  ctx.quadraticCurveTo(b.x+b.sz*.3,-w*1.1,b.x+b.sz,-w*.6);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function animCosmos(){
+  ctx.clearRect(0,0,W,H);
+
+  STARS.forEach(s=>{
+    s.y-=s.speed; s.x+=s.dx;
+    s.rot+=s.rotV; s.pulse+=s.pulseV;
+    const pulse=.85+.15*Math.sin(s.pulse);
+    if(s.y<-s.r*2){s.y=H+s.r;s.x=Math.random()*W}
+    if(s.x<-s.r*2)s.x=W+s.r;
+    if(s.x>W+s.r*2)s.x=-s.r;
+    ctx.save();
+    star5(s.x,s.y,s.r*pulse,s.rot);
+    ctx.fillStyle=`hsla(${s.hue},${s.sat}%,72%,${s.opacity})`;
+    ctx.shadowBlur=s.r*2.5; ctx.shadowColor=`hsla(${s.hue},90%,70%,.7)`;
+    ctx.fill();
+    ctx.restore();
+  });
+
+  BIRDS.forEach(b=>{
+    b.x+=b.spd; b.wing+=b.wv;
+    if(b.x>W+140){b.x=-120;b.y=40+Math.random()*320;}
+    drawBird(b);
+  });
+
+  requestAnimationFrame(animCosmos);
+}
+animCosmos();
+
+/* ───── CONFETTI ───── */
+function burst(){
+  const cols=['#8b5cf6','#fbbf24','#f97316','#ec4899','#06b6d4','#10b981','#c4b5fd','#fff'];
+  for(let i=0;i<70;i++){
+    const d=document.createElement('div');
+    d.className='cf';
+    const sz=5+Math.random()*9;
+    d.style.cssText=`
+      left:${Math.random()*100}vw;
+      width:${sz}px;height:${sz}px;
+      background:${cols[Math.floor(Math.random()*cols.length)]};
+      border-radius:${Math.random()>.5?'50%':'3px'};
+      animation-duration:${1.6+Math.random()*2}s;
+      animation-delay:${Math.random()*.9}s;
+    `;
+    document.body.appendChild(d);
+    setTimeout(()=>d.remove(),4000);
+  }
+}
+
+/* ───── TABS ───── */
+function switchTab(idx,btn){
+  document.querySelectorAll('.panel').forEach((p,i)=>{
+    p.classList.toggle('on',i===idx);
+  });
+  document.querySelectorAll('.tab').forEach((b,i)=>{
+    b.classList.toggle('on',i===idx);
+  });
+}
+
+/* ═══════════════════════════════════════
+   ACTIVITY 1 — DRAG & DROP
+═══════════════════════════════════════ */
+let dragVal=null;
+
+document.querySelectorAll('.drag-chip').forEach(chip=>{
+  chip.addEventListener('dragstart',e=>{
+    dragVal=chip.dataset.val;
+    chip.classList.add('dragging');
+    e.dataTransfer.effectAllowed='move';
+  });
+  chip.addEventListener('dragend',()=>chip.classList.remove('dragging'));
+});
+
+document.querySelectorAll('.drop-zone').forEach(zone=>{
+  zone.addEventListener('dragover',e=>{
+    e.preventDefault();
+    zone.classList.add('hover-over');
+  });
+  zone.addEventListener('dragleave',()=>zone.classList.remove('hover-over'));
+  zone.addEventListener('drop',e=>{
+    e.preventDefault();
+    zone.classList.remove('hover-over');
+    if(!dragVal) return;
+    // Remove previous chip in this zone
+    const prev=zone.querySelector('.chip-in');
+    if(prev){
+      // restore original chip
+      const chip=document.querySelector(`.drag-chip[data-val="${zone.dataset.currentVal}"]`);
+      if(chip) chip.classList.remove('placed');
+      prev.remove();
+    }
+    // Place new chip
+    const chip=document.querySelector(`.drag-chip[data-val="${dragVal}"]`);
+    if(chip) chip.classList.add('placed');
+    const badge=document.createElement('span');
+    badge.className='chip-in';
+    badge.textContent=chip?chip.textContent:dragVal;
+    zone.insertBefore(badge,zone.querySelector('.status-icon'));
+    zone.dataset.currentVal=dragVal;
+    // clear status
+    zone.classList.remove('correct','wrong');
+    zone.querySelector('.status-icon').textContent='';
+    dragVal=null;
+  });
+});
+
+// Touch drag support
+let touchChip=null;
+document.querySelectorAll('.drag-chip').forEach(chip=>{
+  chip.addEventListener('touchstart',e=>{
+    touchChip=chip;chip.classList.add('dragging');
+  },{passive:true});
+  chip.addEventListener('touchend',e=>{
+    chip.classList.remove('dragging');
+    if(!touchChip) return;
+    const touch=e.changedTouches[0];
+    const el=document.elementFromPoint(touch.clientX,touch.clientY);
+    const zone=el?.closest('.drop-zone');
+    if(zone){
+      const prev=zone.querySelector('.chip-in');
+      if(prev){
+        const old=document.querySelector(`.drag-chip[data-val="${zone.dataset.currentVal}"]`);
+        if(old) old.classList.remove('placed');
+        prev.remove();
+      }
+      touchChip.classList.add('placed');
+      const badge=document.createElement('span');
+      badge.className='chip-in';
+      badge.textContent=touchChip.textContent;
+      zone.insertBefore(badge,zone.querySelector('.status-icon'));
+      zone.dataset.currentVal=touchChip.dataset.val;
+      zone.classList.remove('correct','wrong');
+      zone.querySelector('.status-icon').textContent='';
+    }
+    touchChip=null;
+  });
+});
+
+function checkDnD(){
+  let correct=0,total=0;
+  document.querySelectorAll('.drop-zone').forEach(zone=>{
+    if(!zone.dataset.currentVal) return;
+    total++;
+    const icon=zone.querySelector('.status-icon');
+    if(zone.dataset.currentVal===zone.dataset.accept){
+      zone.classList.add('correct');zone.classList.remove('wrong');
+      icon.textContent='✅'; correct++;
+    } else {
+      zone.classList.add('wrong');zone.classList.remove('correct');
+      icon.textContent='❌';
+    }
+  });
+  const sb=document.getElementById('dndScore');
+  sb.style.display='block';
+  if(correct===5){
+    sb.innerHTML=`🏆 Perfect! All 5 matched correctly!`;
+    sb.style.background='rgba(16,185,129,.2)';
+    sb.style.border='1.5px solid #10b981';
+    sb.style.color='#6ee7b7';
+    burst();
+  } else {
+    sb.innerHTML=`${correct}/5 correct — keep trying!`;
+    sb.style.background='rgba(251,191,36,.1)';
+    sb.style.border='1.5px solid #fbbf24';
+    sb.style.color='#fbbf24';
+  }
+}
+
+function resetDnD(){
+  document.querySelectorAll('.drag-chip').forEach(c=>{
+    c.classList.remove('placed','dragging');
+  });
+  document.querySelectorAll('.drop-zone').forEach(z=>{
+    const badge=z.querySelector('.chip-in');
+    if(badge) badge.remove();
+    z.classList.remove('correct','wrong','hover-over');
+    z.querySelector('.status-icon').textContent='';
+    delete z.dataset.currentVal;
+  });
+  const sb=document.getElementById('dndScore');
+  sb.style.display='none';
+}
+
+/* ═══════════════════════════════════════
+   ACTIVITY 2 — STEP BUILDER
+═══════════════════════════════════════ */
+function runCalc(){
+  const fp=parseFloat(document.getElementById('fp').value);
+  const pct=parseFloat(document.getElementById('pct').value);
+  const type=document.getElementById('chtype').value;
+  if(isNaN(fp)||isNaN(pct)||fp<=0||pct<0){alert('Please enter valid positive numbers!');return;}
+
+  const totalPct=type==='inc'?100+pct:100-pct;
+  const dec=(totalPct/100);
+  const orig=(fp/dec).toFixed(2);
+
+  document.getElementById('s1').innerHTML=type==='inc'
+    ?`<b>100% + ${pct}%</b> = <b>${totalPct}%</b> &nbsp;(original + increase = final price)`
+    :`<b>100% − ${pct}%</b> = <b>${totalPct}%</b> &nbsp;(original − discount = final price)`;
+  document.getElementById('s2').innerHTML=`<b>${totalPct}%</b> as a decimal = <b>${dec.toFixed(3)}</b>`;
+  document.getElementById('s3').innerHTML=`Final price ÷ decimal: <b>₹${fp}</b> ÷ <b>${dec.toFixed(3)}</b> = <b>₹${orig}</b>`;
+  document.getElementById('aVal').textContent=`₹${orig}`;
+
+  const out=document.getElementById('stepsOut');
+  out.style.display='block';
+  out.querySelectorAll('.step-row,.answer-glow').forEach((el,i)=>{
+    el.style.animation='none';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      el.style.animation='';
+    }));
+  });
+}
+
+/* ═══════════════════════════════════════
+   ACTIVITY 3 — ERROR LAB
+═══════════════════════════════════════ */
+function calcErr(idx){
+  const est=parseFloat(document.getElementById(`e${idx}`).value);
+  const act=parseFloat(document.getElementById(`a${idx}`).value);
+  showErr(`r${idx}`,est,act);
+}
+function freeErr(){
+  const est=parseFloat(document.getElementById('fe').value);
+  const act=parseFloat(document.getElementById('fa').value);
+  showErr('rf',est,act);
+}
+function showErr(rid,est,act){
+  if(isNaN(est)||isNaN(act)||act===0){alert('Please enter valid numbers (actual cannot be 0)!');return;}
+  const err=Math.abs(est-act)/act*100;
+  const el=document.getElementById(rid);
+  el.style.display='block';
+  const diff=Math.abs(est-act).toFixed(3);
+  const base=`<b>Working:</b> |${est} − ${act}| ÷ ${act} × 100% = ${diff} ÷ ${act} × 100% = <b>${err.toFixed(2)}%</b><br>`;
+  if(err<5){
+    el.className='sc-result good';
+    el.innerHTML=base+`✅ Excellent accuracy! Only ${err.toFixed(2)}% off.`;
+    burst();
+  } else if(err<15){
+    el.className='sc-result ok';
+    el.innerHTML=base+`👍 Pretty good! ${err.toFixed(2)}% off — room to improve.`;
+  } else {
+    el.className='sc-result bad';
+    el.innerHTML=base+`📌 ${err.toFixed(2)}% off — try to estimate more carefully next time!`;
+  }
+}
+</script>
+</body>
+</html>

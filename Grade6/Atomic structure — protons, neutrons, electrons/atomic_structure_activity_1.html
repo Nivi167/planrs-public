@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atomic Structure — Protons, Neutrons & Electrons</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --v1:#1a0533;--v2:#2d0a5e;--v3:#4a1482;--v4:#6d28d9;
+  --v5:#8b5cf6;--v6:#a78bfa;--v7:#c4b5fd;
+  --proton:#f43f5e;--neutron:#f59e0b;--electron:#06b6d4;
+  --mint:#10b981;--gold:#fbbf24;--coral:#f97316;--pink:#ec4899;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif;background:var(--v1);color:#fff;}
+
+.chain-top{position:fixed;top:0;left:0;right:0;height:5px;z-index:300;
+  background:linear-gradient(90deg,var(--v4),var(--proton),var(--neutron),var(--electron),var(--pink),var(--mint),var(--v5),var(--v4));
+  background-size:400% 100%;animation:chainFlow 2s linear infinite;box-shadow:0 0 16px 3px rgba(139,92,246,.8);}
+.chain-bottom{position:fixed;bottom:0;left:0;right:0;height:3px;z-index:300;
+  background:linear-gradient(90deg,var(--electron),var(--mint),var(--neutron),var(--proton),var(--v5));
+  background-size:300% 100%;animation:chainFlow 2.5s linear infinite reverse;box-shadow:0 0 10px rgba(6,182,212,.6);}
+@keyframes chainFlow{to{background-position:-400% 0}}
+
+#cosmos{position:fixed;inset:0;pointer-events:none;z-index:0}
+
+.shell{position:relative;z-index:10;display:flex;flex-direction:column;height:100vh;padding:8px 14px 6px;gap:5px;}
+
+/* HEADING */
+.heading{text-align:center;flex-shrink:0;animation:titleBounce .7s cubic-bezier(.34,1.56,.64,1) both}
+.heading h1{font-family:'Fredoka One',cursive;font-size:clamp(.95rem,2.2vw,1.5rem);line-height:1.15;
+  background:linear-gradient(135deg,#c4b5fd 0%,#fff 35%,#f43f5e 55%,#f59e0b 75%,#06b6d4 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 14px rgba(139,92,246,.5));}
+.heading-line{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:3px;}
+.heading-line hr{flex:1;max-width:70px;border:none;height:2px;background:linear-gradient(90deg,transparent,var(--v5));border-radius:2px}
+.heading-line hr:last-child{background:linear-gradient(90deg,var(--v5),transparent)}
+.p-dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin:0 2px;animation:dotPulse 1.8s ease-in-out infinite}
+.p-dot.proton{background:var(--proton);box-shadow:0 0 6px var(--proton)}
+.p-dot.neutron{background:var(--neutron);animation-delay:.4s;box-shadow:0 0 6px var(--neutron)}
+.p-dot.electron{background:var(--electron);animation-delay:.8s;box-shadow:0 0 6px var(--electron)}
+@keyframes dotPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.35)}}
+@keyframes titleBounce{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:none}}
+
+/* TABS */
+.tabs{display:flex;justify-content:center;gap:7px;flex-shrink:0;}
+.tab{font-family:'Fredoka One',cursive;font-size:.78rem;padding:6px 16px;border-radius:50px;cursor:pointer;
+  border:2px solid var(--v5);background:rgba(74,20,130,.2);color:var(--v6);
+  transition:all .25s cubic-bezier(.34,1.56,.64,1);position:relative;overflow:hidden;}
+.tab::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--v4),var(--v3));
+  transform:translateY(102%);transition:transform .25s ease;border-radius:50px;z-index:-1;}
+.tab:hover,.tab.on{color:#fff;transform:translateY(-2px);}
+.tab:hover::after,.tab.on::after{transform:translateY(0)}
+.tab.on{box-shadow:0 4px 16px rgba(109,40,217,.55)}
+
+/* PANELS */
+.panel{display:none;flex:1;min-height:0;animation:panelIn .4s cubic-bezier(.34,1.56,.64,1) both}
+.panel.on{display:flex;flex-direction:column;}
+@keyframes panelIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* CARD */
+.card{background:rgba(45,10,94,.52);border:1.5px solid rgba(167,139,250,.2);border-radius:16px;
+  padding:9px 13px;backdrop-filter:blur(14px);
+  box-shadow:0 6px 26px rgba(0,0,0,.4),inset 0 1px 0 rgba(196,181,253,.1);
+  position:relative;overflow:hidden;display:flex;flex-direction:column;flex:1;min-height:0;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--proton),var(--neutron),var(--electron));border-radius:16px 16px 0 0;}
+.card-title{font-family:'Fredoka One',cursive;font-size:.98rem;color:var(--v6);
+  margin-bottom:3px;display:flex;align-items:center;gap:7px;flex-shrink:0;}
+.card-desc{font-size:.74rem;color:var(--v7);font-weight:600;margin-bottom:7px;line-height:1.35;flex-shrink:0;}
+
+/* ━━━━ ACTIVITY 1 ━━━━ */
+.atom-layout{display:grid;grid-template-columns:148px 1fr;gap:9px;flex:1;min-height:0;overflow:hidden;}
+
+.parts-bank{background:rgba(109,40,217,.17);border:1.5px solid rgba(139,92,246,.2);
+  border-radius:12px;padding:7px;display:flex;flex-direction:column;overflow-y:auto;}
+.parts-bank::-webkit-scrollbar{width:3px}
+.parts-bank::-webkit-scrollbar-thumb{background:var(--v5);border-radius:2px}
+.bank-title{font-family:'Fredoka One',cursive;font-size:.74rem;color:var(--gold);text-align:center;margin-bottom:5px;letter-spacing:.04em;}
+
+.bank-row{display:flex;align-items:center;gap:5px;padding:5px 7px;border-radius:9px;margin-bottom:4px;
+  cursor:grab;user-select:none;font-weight:800;font-size:.74rem;
+  transition:transform .15s,opacity .15s;border:1.5px solid transparent;}
+.bank-row:hover{transform:scale(1.04)}
+.bank-row.dragging{opacity:.3;cursor:grabbing}
+.bank-row.proton-chip{background:rgba(244,63,94,.2);border-color:rgba(244,63,94,.4);color:#fda4af}
+.bank-row.neutron-chip{background:rgba(245,158,11,.17);border-color:rgba(245,158,11,.38);color:#fde68a}
+.bank-row.electron-chip{background:rgba(6,182,212,.14);border-color:rgba(6,182,212,.32);color:#a5f3fc}
+.chip-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.chip-count{margin-left:auto;background:rgba(0,0,0,.28);border-radius:50px;padding:1px 6px;font-size:.67rem;min-width:22px;text-align:center;}
+.bank-tip{font-size:.66rem;color:var(--v7);font-weight:600;line-height:1.35;margin-top:auto;padding-top:5px;text-align:center;}
+
+.atom-diagram{display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:5px;padding:3px 0;}
+.zone-wrap{position:relative;display:flex;flex-direction:column;align-items:center;}
+.zone-lbl{font-size:.62rem;font-weight:800;color:var(--v6);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;white-space:nowrap;}
+
+.nucleus-zone{width:150px;height:150px;border-radius:50%;border:2.5px dashed rgba(167,139,250,.38);
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:3px;padding:10px;
+  transition:border-color .2s,background .2s;background:rgba(109,40,217,.09);}
+.nucleus-zone.hover-target{border-color:var(--gold);background:rgba(251,191,36,.09)}
+
+.shell-zone{width:100%;max-width:300px;height:46px;border-radius:23px;
+  border:2.5px dashed rgba(6,182,212,.32);
+  display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px;padding:5px 9px;
+  transition:border-color .2s,background .2s;background:rgba(6,182,212,.04);}
+.shell-zone.hover-target{border-color:var(--electron);background:rgba(6,182,212,.1)}
+
+.dropped-particle{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:.5rem;font-weight:900;color:#fff;
+  animation:pPop .25s cubic-bezier(.34,1.56,.64,1) both;cursor:pointer;transition:transform .13s;flex-shrink:0;}
+.dropped-particle:hover{transform:scale(1.3)}
+@keyframes pPop{from{transform:scale(0) rotate(-30deg)}to{transform:scale(1) rotate(0)}}
+.dropped-particle.proton-p{background:radial-gradient(circle at 35% 35%,#ff7090,var(--proton));box-shadow:0 0 5px var(--proton)}
+.dropped-particle.neutron-p{background:radial-gradient(circle at 35% 35%,#fde68a,var(--neutron));box-shadow:0 0 5px var(--neutron)}
+.dropped-particle.electron-p{background:radial-gradient(circle at 35% 35%,#a5f3fc,var(--electron));box-shadow:0 0 5px var(--electron)}
+.drop-hint{font-size:.66rem;opacity:.48;font-weight:700;pointer-events:none;}
+
+.stats-row{display:flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:center;flex-shrink:0;}
+.stat-pill{padding:3px 8px;border-radius:50px;font-size:.68rem;font-weight:800;display:flex;align-items:center;gap:3px;}
+.stat-pill.proton-s{background:rgba(244,63,94,.16);border:1px solid rgba(244,63,94,.4);color:#fda4af}
+.stat-pill.neutron-s{background:rgba(245,158,11,.13);border:1px solid rgba(245,158,11,.36);color:#fde68a}
+.stat-pill.electron-s{background:rgba(6,182,212,.12);border:1px solid rgba(6,182,212,.32);color:#a5f3fc}
+.stat-pill.mass-s{background:rgba(139,92,246,.16);border:1px solid rgba(139,92,246,.36);color:#c4b5fd}
+
+.preset-row{display:flex;gap:4px;flex-wrap:wrap;flex-shrink:0;margin-bottom:5px;}
+.preset-btn{font-family:'Fredoka One',cursive;font-size:.68rem;padding:3px 10px;border-radius:50px;cursor:pointer;
+  background:rgba(109,40,217,.26);border:1.5px solid var(--v5);color:var(--v6);transition:all .18s;}
+.preset-btn:hover,.preset-btn.active{background:var(--v4);color:#fff}
+
+.btn{font-family:'Fredoka One',cursive;font-size:.75rem;padding:6px 13px;border:none;border-radius:50px;cursor:pointer;
+  transition:all .22s;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+.btn-v{background:linear-gradient(135deg,var(--v4),var(--v3));color:#fff}
+.btn-v:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(109,40,217,.4)}
+.btn-g{background:linear-gradient(135deg,var(--gold),var(--coral));color:#1e1b4b}
+.btn-g:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(251,191,36,.32)}
+
+.check-result{margin-top:4px;padding:6px 10px;border-radius:9px;font-weight:700;font-size:.76rem;
+  display:none;animation:fadeUp .3s ease;flex-shrink:0;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.check-result.good{background:rgba(16,185,129,.14);border:1.5px solid var(--mint);color:#6ee7b7}
+.check-result.bad{background:rgba(244,63,94,.1);border:1.5px solid var(--proton);color:#fda4af}
+
+/* ━━━━ ACTIVITY 2 ━━━━ */
+.sort-layout{display:flex;flex-direction:column;flex:1;min-height:0;gap:5px;}
+.sort-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;flex:1;min-height:0;}
+.sort-col-wrap{display:flex;flex-direction:column;min-height:0;}
+.sort-col{background:rgba(74,20,130,.17);border:2px dashed rgba(139,92,246,.26);border-radius:12px;
+  padding:5px 7px;display:flex;flex-direction:column;gap:4px;flex:1;min-height:0;
+  overflow-y:auto;transition:border-color .2s,background .2s;}
+.sort-col::-webkit-scrollbar{width:3px}
+.sort-col::-webkit-scrollbar-thumb{background:var(--v5);border-radius:2px}
+.sort-col.hover-over{border-color:var(--gold);background:rgba(251,191,36,.06)}
+.sort-col-head{text-align:center;padding:4px 5px;border-radius:7px;font-family:'Fredoka One',cursive;font-size:.76rem;flex-shrink:0;margin-bottom:2px;}
+.sort-col-head.proton-h{background:rgba(244,63,94,.2);color:#fda4af}
+.sort-col-head.neutron-h{background:rgba(245,158,11,.17);color:#fde68a}
+.sort-col-head.electron-h{background:rgba(6,182,212,.14);color:#a5f3fc}
+.fact-card{background:rgba(45,10,94,.58);border:1.5px solid rgba(139,92,246,.2);border-radius:8px;
+  padding:5px 8px;font-size:.72rem;font-weight:700;color:var(--v7);cursor:grab;user-select:none;
+  transition:transform .15s,box-shadow .15s,opacity .15s;line-height:1.3;}
+.fact-card:hover{transform:scale(1.02);box-shadow:0 3px 10px rgba(139,92,246,.25)}
+.fact-card.dragging{opacity:.28;cursor:grabbing}
+.fact-card.sorted-correct{border-color:var(--mint)!important;background:rgba(16,185,129,.12)!important;color:#6ee7b7!important}
+.fact-card.sorted-wrong{border-color:var(--proton)!important;background:rgba(244,63,94,.09)!important;color:#fda4af!important}
+.fact-pool-wrap{background:rgba(74,20,130,.15);border-radius:11px;padding:6px 9px;flex-shrink:0;}
+.fact-pool-lbl{font-family:'Fredoka One',cursive;font-size:.7rem;color:var(--gold);margin-bottom:4px;letter-spacing:.04em;}
+#factPool{display:flex;flex-wrap:wrap;gap:5px;}
+.sort-result-bar{padding:6px 10px;border-radius:9px;font-weight:700;font-size:.78rem;
+  display:none;animation:fadeUp .3s ease;text-align:center;flex-shrink:0;}
+.sort-result-bar.good{background:rgba(16,185,129,.14);border:1.5px solid var(--mint);color:#6ee7b7}
+.sort-result-bar.med{background:rgba(251,191,36,.09);border:1.5px solid var(--gold);color:#fde68a}
+.sort-result-bar.bad{background:rgba(244,63,94,.09);border:1.5px solid var(--proton);color:#fda4af}
+
+/* ━━━━ ACTIVITY 3 ━━━━ */
+.quiz-layout{display:flex;flex-direction:column;flex:1;min-height:0;gap:5px;}
+.quiz-prog{display:flex;align-items:center;gap:9px;padding:5px 9px;background:rgba(74,20,130,.2);border-radius:9px;flex-shrink:0;}
+.q-counter{font-family:'Fredoka One',cursive;font-size:.76rem;color:var(--gold);white-space:nowrap}
+.prog-track{flex:1;height:7px;background:rgba(139,92,246,.17);border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--v4),var(--electron));border-radius:4px;transition:width .4s ease}
+.score-disp{font-family:'Fredoka One',cursive;font-size:.76rem;color:var(--v6);white-space:nowrap}
+.q-box{background:linear-gradient(135deg,rgba(74,20,130,.3),rgba(45,10,94,.46));
+  border:1.5px solid rgba(139,92,246,.24);border-radius:13px;padding:9px 12px;flex-shrink:0;}
+.q-text{font-family:'Fredoka One',cursive;font-size:.88rem;color:var(--v7);margin-bottom:9px;line-height:1.4;}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.opt{padding:7px 10px;background:rgba(45,10,94,.56);border:1.5px solid rgba(139,92,246,.2);border-radius:9px;
+  font-family:'Nunito',sans-serif;font-size:.77rem;font-weight:700;color:#fff;cursor:pointer;text-align:left;transition:all .18s;}
+.opt:hover:not(:disabled){border-color:var(--v5);background:rgba(109,40,217,.3);transform:translateY(-1px)}
+.opt.correct{background:rgba(16,185,129,.17)!important;border-color:var(--mint)!important;color:#6ee7b7!important}
+.opt.wrong{background:rgba(244,63,94,.12)!important;border-color:var(--proton)!important;color:#fda4af!important}
+.q-feedback{padding:6px 10px;border-radius:9px;font-weight:700;font-size:.76rem;
+  display:none;animation:fadeUp .3s ease;margin-top:6px;line-height:1.35;}
+.q-feedback.correct{background:rgba(16,185,129,.13);border:1.5px solid var(--mint);color:#6ee7b7}
+.q-feedback.wrong{background:rgba(244,63,94,.09);border:1.5px solid var(--proton);color:#fda4af}
+.next-q-btn{font-family:'Fredoka One',cursive;font-size:.76rem;padding:6px 17px;
+  background:linear-gradient(135deg,var(--electron),var(--mint));color:#fff;border:none;border-radius:50px;
+  cursor:pointer;display:none;margin-top:6px;flex-shrink:0;align-self:flex-start;
+  box-shadow:0 2px 10px rgba(6,182,212,.25);transition:all .22s;}
+.next-q-btn:hover{transform:translateY(-2px);box-shadow:0 5px 16px rgba(6,182,212,.35)}
+.quiz-results{text-align:center;padding:10px;display:none;flex-direction:column;align-items:center;gap:4px;}
+.result-trophy{font-size:2.4rem}
+.result-score{font-family:'Fredoka One',cursive;font-size:2.6rem;
+  background:linear-gradient(90deg,var(--gold),var(--proton),var(--electron));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.result-msg{font-size:.88rem;font-weight:700;color:var(--v6)}
+.replay-btn{font-family:'Fredoka One',cursive;font-size:.84rem;padding:8px 22px;
+  background:linear-gradient(135deg,var(--v4),var(--v3));color:#fff;border:none;border-radius:50px;
+  cursor:pointer;box-shadow:0 3px 12px rgba(109,40,217,.36);transition:all .22s;margin-top:4px;}
+.replay-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(109,40,217,.48)}
+
+.cf{position:fixed;top:-12px;pointer-events:none;z-index:999;border-radius:3px;animation:cfFall linear forwards}
+@keyframes cfFall{to{transform:translateY(108vh) rotate(900deg);opacity:0}}
+</style>
+</head>
+<body>
+<div class="chain-top"></div>
+<div class="chain-bottom"></div>
+<canvas id="cosmos"></canvas>
+
+<div class="shell">
+
+  <div class="heading">
+    <h1>Atomic Structure — Protons, Neutrons &amp; Electrons</h1>
+    <div class="heading-line">
+      <hr>
+      <span class="p-dot proton"></span>
+      <span class="p-dot neutron"></span>
+      <span class="p-dot electron"></span>
+      <hr>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" onclick="goTab(0,this)">⚛️ Build the Atom</button>
+    <button class="tab"    onclick="goTab(1,this)">🃏 Sort the Facts</button>
+    <button class="tab"    onclick="goTab(2,this)">🎯 Particle Quiz</button>
+  </div>
+
+  <!-- PANEL 0 -->
+  <div class="panel on" id="p0">
+    <div class="card">
+      <div class="card-title">⚛️ Build the Atom!</div>
+      <div class="card-desc">Drag protons &amp; neutrons → Nucleus · Drag electrons → Shell · Use presets or build custom!</div>
+      <div class="preset-row" id="presetRow">
+        <button class="preset-btn" onclick="loadPreset('H')">H (1p)</button>
+        <button class="preset-btn" onclick="loadPreset('He')">He (2p)</button>
+        <button class="preset-btn" onclick="loadPreset('Li')">Li (3p)</button>
+        <button class="preset-btn" onclick="loadPreset('C')">C (6p)</button>
+        <button class="preset-btn" onclick="loadPreset('O')">O (8p)</button>
+      </div>
+      <div class="atom-layout">
+        <div class="parts-bank">
+          <div class="bank-title">✦ Particle Bank</div>
+          <div id="bankItems"></div>
+          <div class="bank-tip">💡 Drag to zone · Click particle to remove</div>
+        </div>
+        <div class="atom-diagram">
+          <div class="stats-row">
+            <div class="stat-pill proton-s">⊕ <span id="pCount">0</span></div>
+            <div class="stat-pill neutron-s">◎ <span id="nCount">0</span></div>
+            <div class="stat-pill electron-s">⊖ <span id="eCount">0</span></div>
+            <div class="stat-pill mass-s">M=<span id="massNum">0</span></div>
+            <button class="btn btn-g" onclick="checkAtom()">✅ Check</button>
+            <button class="btn btn-v" onclick="resetAtom()">🔄</button>
+          </div>
+          <div class="zone-wrap">
+            <div class="zone-lbl">NUCLEUS — protons &amp; neutrons</div>
+            <div class="nucleus-zone" id="nucleusZone"
+                 ondragover="event.preventDefault();this.classList.add('hover-target')"
+                 ondragleave="this.classList.remove('hover-target')"
+                 ondrop="dropToZone(event,'nucleus');this.classList.remove('hover-target')">
+              <span class="drop-hint" id="nucleusHint">Drop here</span>
+            </div>
+          </div>
+          <div class="zone-wrap" style="width:100%;align-items:center">
+            <div class="zone-lbl">ELECTRON SHELL</div>
+            <div class="shell-zone" id="shellZone"
+                 ondragover="event.preventDefault();this.classList.add('hover-target')"
+                 ondragleave="this.classList.remove('hover-target')"
+                 ondrop="dropToZone(event,'shell');this.classList.remove('hover-target')">
+              <span class="drop-hint" id="shellHint" style="color:#a5f3fc">Drop electrons</span>
+            </div>
+          </div>
+          <div class="check-result" id="atomResult"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 1 -->
+  <div class="panel" id="p1">
+    <div class="card">
+      <div class="card-title">🃏 Sort the Facts!</div>
+      <div class="card-desc">Drag each fact card into the correct column.</div>
+      <div class="sort-layout">
+        <div class="sort-cols">
+          <div class="sort-col-wrap">
+            <div class="sort-col-head proton-h">⊕ Protons</div>
+            <div class="sort-col" id="col_proton"
+                 ondragover="event.preventDefault();this.classList.add('hover-over')"
+                 ondragleave="this.classList.remove('hover-over')"
+                 ondrop="dropFact(event,'proton');this.classList.remove('hover-over')"></div>
+          </div>
+          <div class="sort-col-wrap">
+            <div class="sort-col-head neutron-h">◎ Neutrons</div>
+            <div class="sort-col" id="col_neutron"
+                 ondragover="event.preventDefault();this.classList.add('hover-over')"
+                 ondragleave="this.classList.remove('hover-over')"
+                 ondrop="dropFact(event,'neutron');this.classList.remove('hover-over')"></div>
+          </div>
+          <div class="sort-col-wrap">
+            <div class="sort-col-head electron-h">⊖ Electrons</div>
+            <div class="sort-col" id="col_electron"
+                 ondragover="event.preventDefault();this.classList.add('hover-over')"
+                 ondragleave="this.classList.remove('hover-over')"
+                 ondrop="dropFact(event,'electron');this.classList.remove('hover-over')"></div>
+          </div>
+        </div>
+        <div class="fact-pool-wrap">
+          <div class="fact-pool-lbl">📦 DRAG THESE INTO THE COLUMNS ABOVE</div>
+          <div id="factPool"></div>
+        </div>
+        <div style="display:flex;gap:7px;flex-shrink:0">
+          <button class="btn btn-g" onclick="checkSort()">✅ Check</button>
+          <button class="btn btn-v" onclick="resetSort()">🔄 Reset</button>
+        </div>
+        <div class="sort-result-bar" id="sortResult"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 2 -->
+  <div class="panel" id="p2">
+    <div class="card">
+      <div class="card-title">🎯 Particle Quiz</div>
+      <div class="card-desc">Answer all 8 questions to see your score!</div>
+      <div class="quiz-layout">
+        <div class="quiz-prog">
+          <span class="q-counter" id="qCounter">Q 1/8</span>
+          <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+          <span class="score-disp" id="scoreDisp">Score: 0</span>
+        </div>
+        <div id="quizBody" style="display:flex;flex-direction:column;gap:5px;flex:1;min-height:0;">
+          <div class="q-box">
+            <div class="q-text" id="qText"></div>
+            <div class="options" id="qOptions"></div>
+            <div class="q-feedback" id="qFeedback"></div>
+          </div>
+          <button class="next-q-btn" id="nextQBtn" onclick="nextQ()">Next →</button>
+        </div>
+        <div class="quiz-results" id="quizResults">
+          <div class="result-trophy" id="resTrophy"></div>
+          <div class="result-score" id="resScore"></div>
+          <div class="result-msg"   id="resMsg"></div>
+          <button class="replay-btn" onclick="resetQuiz()">🔄 Play Again</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* COSMOS */
+const cvs=document.getElementById('cosmos'),ctx=cvs.getContext('2d');
+let W,H;
+function resize(){W=cvs.width=innerWidth;H=cvs.height=innerHeight}
+resize();addEventListener('resize',resize);
+const STARS=Array.from({length:22},(_,i)=>({
+  x:Math.random()*2000,y:Math.random()*1000,r:3+Math.random()*9,
+  spd:.15+Math.random()*.35,rot:Math.random()*Math.PI*2,rv:(Math.random()-.5)*.022,
+  dx:Math.sin(Math.random()*6)*.18,op:.25+Math.random()*.38,
+  pulse:Math.random()*Math.PI*2,pv:.013+Math.random()*.008,hue:[270,280,260,300,250,290][i%6]
+}));
+function star5(x,y,r,rot){
+  ctx.beginPath();
+  for(let i=0;i<10;i++){const a=rot+(i*Math.PI/5)-Math.PI/2,rr=i%2===0?r:r*.4;
+    i===0?ctx.moveTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr):ctx.lineTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr);}
+  ctx.closePath();
+}
+const BIRDS=Array.from({length:5},()=>({x:-110,y:35+Math.random()*320,spd:.8+Math.random()*1.1,
+  wing:Math.random()*Math.PI*2,wv:.07+Math.random()*.05,sz:7+Math.random()*7,al:.26+Math.random()*.25}));
+function drawBird(b){
+  ctx.save();ctx.globalAlpha=b.al;ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.8;
+  const w=b.sz*Math.abs(Math.sin(b.wing));
+  ctx.beginPath();ctx.moveTo(b.x-b.sz,-w*.5);ctx.quadraticCurveTo(b.x-b.sz*.3,-w,b.x,0);
+  ctx.quadraticCurveTo(b.x+b.sz*.3,-w,b.x+b.sz,-w*.5);ctx.stroke();ctx.restore();
+}
+const ORBS=Array.from({length:5},(_,i)=>({angle:i*(Math.PI*2/5),spd:.01-i*.0006,
+  color:['#f43f5e','#06b6d4','#f59e0b','#8b5cf6','#10b981'][i],r:2.2+i*.35}));
+function animCosmos(){
+  ctx.clearRect(0,0,W,H);
+  STARS.forEach(s=>{
+    s.y-=s.spd;s.x+=s.dx;s.rot+=s.rv;s.pulse+=s.pv;
+    const p=.85+.15*Math.sin(s.pulse);
+    if(s.y<-s.r*2){s.y=H+s.r;s.x=Math.random()*W}
+    if(s.x<-40)s.x=W+40;if(s.x>W+40)s.x=-40;
+    ctx.save();star5(s.x,s.y,s.r*p,s.rot);
+    ctx.fillStyle=`hsla(${s.hue},75%,72%,${s.op})`;
+    ctx.shadowBlur=s.r*2.3;ctx.shadowColor=`hsla(${s.hue},90%,70%,.6)`;
+    ctx.fill();ctx.restore();
+  });
+  BIRDS.forEach(b=>{b.x+=b.spd;b.wing+=b.wv;if(b.x>W+120){b.x=-110;b.y=35+Math.random()*340}drawBird(b);});
+  const cx=W-52,cy=46;
+  ORBS.forEach(o=>{o.angle+=o.spd;const ox=cx+Math.cos(o.angle)*32,oy=cy+Math.sin(o.angle)*18;
+    ctx.beginPath();ctx.arc(ox,oy,o.r,0,Math.PI*2);
+    ctx.fillStyle=o.color;ctx.shadowBlur=6;ctx.shadowColor=o.color;ctx.fill();ctx.shadowBlur=0;});
+  ctx.beginPath();ctx.arc(cx,cy,7,0,Math.PI*2);ctx.fillStyle='rgba(244,63,94,.5)';ctx.fill();
+  requestAnimationFrame(animCosmos);
+}
+animCosmos();
+
+function burst(n=55){
+  const cols=['#8b5cf6','#fbbf24','#f97316','#ec4899','#06b6d4','#10b981','#f43f5e','#c4b5fd'];
+  for(let i=0;i<n;i++){
+    const d=document.createElement('div');d.className='cf';const s=4+Math.random()*8;
+    d.style.cssText=`left:${Math.random()*100}vw;width:${s}px;height:${s}px;
+      background:${cols[~~(Math.random()*cols.length)]};
+      border-radius:${Math.random()>.5?'50%':'3px'};
+      animation-duration:${1.3+Math.random()*1.8}s;animation-delay:${Math.random()*.6}s;`;
+    document.body.appendChild(d);setTimeout(()=>d.remove(),3800);
+  }
+}
+
+function goTab(i,btn){
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('on',j===i));
+  document.querySelectorAll('.tab').forEach((b,j)=>b.classList.toggle('on',j===i));
+}
+
+/* ACTIVITY 1 */
+let dragType=null,dragId=null,nucleusP=[],nucleusN=[],shellE=[];
+let bankAvail={proton:12,neutron:14,electron:12};
+const PRESETS={H:{p:1,n:0,e:1,name:'Hydrogen'},He:{p:2,n:2,e:2,name:'Helium'},
+  Li:{p:3,n:4,e:3,name:'Lithium'},C:{p:6,n:6,e:6,name:'Carbon'},O:{p:8,n:8,e:8,name:'Oxygen'}};
+
+function buildBank(){
+  document.getElementById('bankItems').innerHTML='';
+  bankAvail={proton:12,neutron:14,electron:12};
+  [{type:'proton',label:'Proton (+)',cls:'proton-chip',dot:'#f43f5e'},
+   {type:'neutron',label:'Neutron (0)',cls:'neutron-chip',dot:'#f59e0b'},
+   {type:'electron',label:'Electron (−)',cls:'electron-chip',dot:'#06b6d4'}].forEach(it=>{
+    const row=document.createElement('div');
+    row.className=`bank-row ${it.cls}`;row.id=`bankrow_${it.type}`;row.draggable=true;
+    row.innerHTML=`<div class="chip-dot" style="background:${it.dot}"></div>${it.label}<span class="chip-count" id="cnt_${it.type}">${bankAvail[it.type]}</span>`;
+    row.addEventListener('dragstart',e=>{if(bankAvail[it.type]<=0){e.preventDefault();return}dragType=it.type;dragId=row.id;row.classList.add('dragging');});
+    row.addEventListener('dragend',()=>row.classList.remove('dragging'));
+    row.addEventListener('touchstart',e=>{if(bankAvail[it.type]>0){dragType=it.type;dragId=row.id;}},{passive:true});
+    row.addEventListener('touchend',e=>{
+      const el=document.elementFromPoint(e.changedTouches[0].clientX,e.changedTouches[0].clientY);
+      const zone=el?.closest('#nucleusZone,#shellZone');
+      if(zone) dropToZone(null,zone.id==='nucleusZone'?'nucleus':'shell');
+      dragType=null;dragId=null;
+    });
+    document.getElementById('bankItems').appendChild(row);
+  });
+}
+function updateBankCount(type,delta){
+  bankAvail[type]=Math.max(0,bankAvail[type]+delta);
+  const el=document.getElementById(`cnt_${type}`);if(el)el.textContent=bankAvail[type];
+  const row=document.getElementById(`bankrow_${type}`);if(row)row.style.opacity=bankAvail[type]<=0?'.3':'1';
+}
+function dropToZone(event,zone){
+  if(event)event.preventDefault();if(!dragType)return;
+  if(zone==='nucleus'&&dragType==='electron'){showToast('Electrons → shell!');dragType=null;return}
+  if(zone==='shell'&&dragType!=='electron'){showToast('Only electrons → shell!');dragType=null;return}
+  if(bankAvail[dragType]<=0){dragType=null;return}
+  updateBankCount(dragType,-1);placeParticle(zone,dragType);dragType=null;dragId=null;
+}
+function placeParticle(zone,type){
+  const zoneEl=document.getElementById(zone==='nucleus'?'nucleusZone':'shellZone');
+  ['nucleusHint','shellHint'].forEach(id=>{if(id===(zone==='nucleus'?'nucleusHint':'shellHint')){const h=document.getElementById(id);if(h)h.remove();}});
+  const dot=document.createElement('div');const uid=Date.now()+'_'+Math.random();
+  dot.className=`dropped-particle ${type}-p`;
+  dot.innerHTML=type==='proton'?'P+':type==='neutron'?'N':'e−';
+  dot.dataset.uid=uid;dot.dataset.type=type;
+  dot.addEventListener('click',()=>{
+    dot.remove();
+    if(type==='proton')nucleusP=nucleusP.filter(x=>x!==uid);
+    else if(type==='neutron')nucleusN=nucleusN.filter(x=>x!==uid);
+    else shellE=shellE.filter(x=>x!==uid);
+    updateBankCount(type,1);updateAtomStats();restoreHints();
+  });
+  zoneEl.appendChild(dot);
+  if(type==='proton')nucleusP.push(uid);else if(type==='neutron')nucleusN.push(uid);else shellE.push(uid);
+  updateAtomStats();
+}
+function restoreHints(){
+  if(nucleusP.length===0&&nucleusN.length===0){
+    const nz=document.getElementById('nucleusZone');
+    if(!nz.querySelector('#nucleusHint')){const h=document.createElement('span');h.id='nucleusHint';h.className='drop-hint';h.textContent='Drop here';nz.appendChild(h);}
+  }
+  if(shellE.length===0){
+    const sz=document.getElementById('shellZone');
+    if(!sz.querySelector('#shellHint')){const h=document.createElement('span');h.id='shellHint';h.className='drop-hint';h.style.color='#a5f3fc';h.textContent='Drop electrons';sz.appendChild(h);}
+  }
+}
+function updateAtomStats(){
+  document.getElementById('pCount').textContent=nucleusP.length;
+  document.getElementById('nCount').textContent=nucleusN.length;
+  document.getElementById('eCount').textContent=shellE.length;
+  document.getElementById('massNum').textContent=nucleusP.length+nucleusN.length;
+}
+function checkAtom(){
+  const p=nucleusP.length,n=nucleusN.length,e=shellE.length;
+  const res=document.getElementById('atomResult');
+  const match=Object.entries(PRESETS).find(([k,v])=>v.p===p&&v.n===n&&v.e===e);
+  if(match){res.className='check-result good';res.style.display='block';res.innerHTML=`🎉 <b>${match[1].name} (${match[0]})</b>! Atomic no.=${p}, Mass=${p+n}`;burst();}
+  else if(p===0&&n===0&&e===0){res.className='check-result bad';res.style.display='block';res.textContent='⚠️ Atom is empty!';}
+  else{res.className='check-result bad';res.style.display='block';res.innerHTML=`📊 ${p}p ${n}n ${e}e — does this match a real element?`;}
+}
+function resetAtom(){
+  nucleusP=[];nucleusN=[];shellE=[];
+  document.getElementById('nucleusZone').innerHTML='<span class="drop-hint" id="nucleusHint">Drop here</span>';
+  document.getElementById('shellZone').innerHTML='<span class="drop-hint" id="shellHint" style="color:#a5f3fc">Drop electrons</span>';
+  document.getElementById('atomResult').style.display='none';
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+  buildBank();updateAtomStats();
+}
+function loadPreset(key){
+  resetAtom();const pr=PRESETS[key];
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.toggle('active',b.textContent.startsWith(key)));
+  setTimeout(()=>{
+    for(let i=0;i<pr.p;i++)placeParticle('nucleus','proton');
+    for(let i=0;i<pr.n;i++)placeParticle('nucleus','neutron');
+    for(let i=0;i<pr.e;i++)placeParticle('shell','electron');
+  },70);
+}
+function showToast(msg){
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:46px;left:50%;transform:translateX(-50%);background:rgba(244,63,94,.9);color:#fff;padding:7px 16px;border-radius:50px;font-weight:800;font-size:.76rem;z-index:900;white-space:nowrap';
+  t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),1900);
+}
+buildBank();
+
+/* ACTIVITY 2 */
+const FACTS=[
+  {id:'f1',text:'Positive (+) charge',ans:'proton'},
+  {id:'f2',text:'Lives in the nucleus',ans:'proton'},
+  {id:'f3',text:'Determines the element',ans:'proton'},
+  {id:'f4',text:'No electric charge',ans:'neutron'},
+  {id:'f5',text:'Keeps nucleus stable',ans:'neutron'},
+  {id:'f6',text:'Makes isotopes possible',ans:'neutron'},
+  {id:'f7',text:'Negative (−) charge',ans:'electron'},
+  {id:'f8',text:'Orbits the nucleus',ans:'electron'},
+  {id:'f9',text:'Lives in electron shells',ans:'electron'},
+];
+let factDragId=null;
+function buildFactPool(){
+  document.getElementById('factPool').innerHTML='';
+  ['proton','neutron','electron'].forEach(t=>{document.getElementById(`col_${t}`).innerHTML='';});
+  document.getElementById('sortResult').style.display='none';
+  [...FACTS].sort(()=>Math.random()-.5).forEach(f=>{
+    const div=document.createElement('div');div.className='fact-card';div.id=f.id;
+    div.draggable=true;div.dataset.ans=f.ans;div.textContent=f.text;
+    div.addEventListener('dragstart',e=>{factDragId=f.id;div.classList.add('dragging');});
+    div.addEventListener('dragend',()=>div.classList.remove('dragging'));
+    div.addEventListener('touchstart',()=>{factDragId=f.id;},{passive:true});
+    div.addEventListener('touchend',e=>{
+      const col=document.elementFromPoint(e.changedTouches[0].clientX,e.changedTouches[0].clientY)?.closest('.sort-col');
+      if(col)dropFact(null,col.id.replace('col_',''));factDragId=null;
+    });
+    document.getElementById('factPool').appendChild(div);
+  });
+}
+function dropFact(event,target){
+  if(event)event.preventDefault();if(!factDragId)return;
+  const card=document.getElementById(factDragId);if(!card){factDragId=null;return}
+  card.classList.remove('sorted-correct','sorted-wrong','dragging');
+  document.getElementById(`col_${target}`).appendChild(card);factDragId=null;
+}
+function checkSort(){
+  let correct=0;
+  document.querySelectorAll('.fact-card').forEach(card=>{
+    const pid=card.parentElement?.id;if(!pid)return;
+    const ok=pid==='col_'+card.dataset.ans;
+    card.classList.toggle('sorted-correct',ok);card.classList.toggle('sorted-wrong',!ok);if(ok)correct++;
+  });
+  const res=document.getElementById('sortResult');res.style.display='block';
+  if(correct===FACTS.length){res.className='sort-result-bar good';res.innerHTML=`🏆 Perfect! All ${FACTS.length}/9 correct!`;burst();}
+  else if(correct>=6){res.className='sort-result-bar med';res.innerHTML=`⭐ ${correct}/9 — almost!`;}
+  else{res.className='sort-result-bar bad';res.innerHTML=`📚 ${correct}/9 — keep going!`;}
+}
+function resetSort(){buildFactPool();}
+buildFactPool();
+
+/* ACTIVITY 3 */
+const QUESTIONS=[
+  {q:'Which particle has a POSITIVE charge?',opts:['Proton','Neutron','Electron','Nucleus'],ans:0,exp:'Protons carry positive (+) charge and live in the nucleus!'},
+  {q:'Where do electrons live in an atom?',opts:['In the nucleus','In a proton','In electron shells','In neutrons'],ans:2,exp:'Electrons orbit in electron shells around the nucleus!'},
+  {q:'What charge does a neutron have?',opts:['Positive','Negative','No charge','Double positive'],ans:2,exp:'Neutrons have NO charge — hence "neutral"!'},
+  {q:'Atomic number equals the number of…',opts:['Neutrons','Electrons','Protons','Mass number'],ans:2,exp:'Atomic number = protons. This identifies the element!'},
+  {q:'Mass number = ?',opts:['Protons only','Protons + Electrons','Neutrons only','Protons + Neutrons'],ans:3,exp:'Mass = Protons + Neutrons!'},
+  {q:'Carbon has 6p and 6n. Mass number?',opts:['6','12','18','3'],ans:1,exp:'6 + 6 = 12!'},
+  {q:'What are isotopes?',opts:['Different proton counts','Same element, different neutrons','Electrons in shells','Same mass, diff elements'],ans:1,exp:'Isotopes = same element, different neutron counts!'},
+  {q:'Neutral H has 1 proton. How many electrons?',opts:['0','2','1','3'],ans:2,exp:'Neutral atom: electrons = protons. So hydrogen has 1!'},
+];
+let qIdx=0,score=0,qAnswered=false;
+function loadQ(){
+  if(qIdx>=QUESTIONS.length){showResults();return}
+  qAnswered=false;const q=QUESTIONS[qIdx];
+  document.getElementById('qText').textContent=q.q;
+  document.getElementById('qFeedback').style.display='none';
+  document.getElementById('nextQBtn').style.display='none';
+  document.getElementById('qCounter').textContent=`Q ${qIdx+1}/${QUESTIONS.length}`;
+  document.getElementById('progFill').style.width=`${(qIdx/QUESTIONS.length)*100}%`;
+  document.getElementById('scoreDisp').textContent=`Score: ${score}`;
+  const opts=document.getElementById('qOptions');opts.innerHTML='';
+  q.opts.forEach((o,i)=>{const btn=document.createElement('button');btn.className='opt';btn.textContent=o;btn.onclick=()=>pickOpt(i,btn);opts.appendChild(btn);});
+}
+function pickOpt(chosen,btn){
+  if(qAnswered)return;qAnswered=true;const q=QUESTIONS[qIdx];
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.opt')[q.ans].classList.add('correct');
+  const fb=document.getElementById('qFeedback');
+  if(chosen===q.ans){btn.classList.add('correct');score++;fb.className='q-feedback correct';fb.innerHTML=`✅ ${q.exp}`;burst(38);}
+  else{btn.classList.add('wrong');fb.className='q-feedback wrong';fb.innerHTML=`❌ ${q.exp}`;}
+  fb.style.display='block';document.getElementById('nextQBtn').style.display='inline-block';
+}
+function nextQ(){qIdx++;loadQ();}
+function showResults(){
+  document.getElementById('quizBody').style.display='none';
+  document.getElementById('progFill').style.width='100%';
+  document.getElementById('scoreDisp').textContent=`Score: ${score}`;
+  const res=document.getElementById('quizResults');res.style.display='flex';
+  document.getElementById('resScore').textContent=`${score}/${QUESTIONS.length}`;
+  document.getElementById('resTrophy').textContent=['😊','📚','⭐','🌟','🎯','🚀','🏆','🥇','🎉'][score]||'🎉';
+  document.getElementById('resMsg').textContent=['Keep studying!','Good effort!','Getting there!','Nice work!','Well done!','Great job!','Excellent!','Amazing!','Perfect!'][score]||'Brilliant!';
+  if(score>=6)burst(75);
+}
+function resetQuiz(){
+  qIdx=0;score=0;
+  document.getElementById('quizBody').style.display='flex';
+  document.getElementById('quizResults').style.display='none';
+  loadQ();
+}
+loadQ();
+</script>
+</body>
+</html>

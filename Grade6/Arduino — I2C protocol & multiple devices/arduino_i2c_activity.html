@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arduino — I2C Protocol & Multiple Devices</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;700&display=swap');
+
+  :root {
+    --v1: #1a0033;
+    --v2: #2d0057;
+    --v3: #4a0080;
+    --v4: #6a00b8;
+    --v5: #9b30ff;
+    --v6: #c77dff;
+    --v7: #e0aaff;
+    --accent: #ff6fff;
+    --gold: #ffd700;
+    --cyan: #00f5ff;
+    --green: #39ff14;
+    --white: #f8f0ff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--v1);
+    color: var(--white);
+    font-family: 'Exo 2', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== STARFIELD CANVAS ===== */
+  #starfield {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 0; pointer-events: none;
+  }
+
+  /* ===== BIRDS ===== */
+  .bird-wrap {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 1;
+  }
+  .bird {
+    position: absolute;
+    width: 32px; height: 12px;
+    opacity: 0.5;
+    animation: flyBird linear infinite;
+  }
+  .bird svg { width: 100%; height: 100%; }
+  @keyframes flyBird {
+    0%   { transform: translateX(-80px) translateY(0px); }
+    25%  { transform: translateX(25vw) translateY(-18px); }
+    50%  { transform: translateX(55vw) translateY(5px); }
+    75%  { transform: translateX(80vw) translateY(-10px); }
+    100% { transform: translateX(110vw) translateY(8px); }
+  }
+
+  /* ===== HEADING ===== */
+  .main-heading {
+    position: relative; z-index: 10;
+    text-align: center;
+    padding: 36px 20px 10px;
+  }
+  .main-heading h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(1.2rem, 3.5vw, 2.6rem);
+    font-weight: 900;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, var(--v6), var(--accent), var(--cyan), var(--v6));
+    background-size: 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmerText 4s linear infinite;
+    text-shadow: none;
+    filter: drop-shadow(0 0 18px var(--accent));
+  }
+  @keyframes shimmerText {
+    0%   { background-position: 0%; }
+    100% { background-position: 300%; }
+  }
+
+  /* ===== ACTIVITY TABS ===== */
+  .tab-bar {
+    display: flex; justify-content: center; gap: 14px;
+    padding: 18px 20px 0;
+    position: relative; z-index: 10;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 10px 22px;
+    border: 2px solid var(--v5);
+    border-radius: 40px;
+    background: rgba(74,0,128,0.35);
+    color: var(--v7);
+    cursor: pointer;
+    transition: all 0.3s;
+    backdrop-filter: blur(6px);
+    position: relative;
+    overflow: hidden;
+  }
+  .tab-btn::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 50%, var(--accent) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .tab-btn:hover::after, .tab-btn.active::after { opacity: 0.18; }
+  .tab-btn.active {
+    background: linear-gradient(135deg, var(--v4), var(--v5));
+    color: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 0 22px var(--accent), 0 0 8px var(--v5);
+  }
+
+  /* ===== ACTIVITY PANELS ===== */
+  .activity-panel {
+    display: none;
+    position: relative; z-index: 10;
+    max-width: 960px; margin: 24px auto 40px;
+    padding: 0 16px;
+    animation: fadeInPanel 0.4s ease;
+  }
+  .activity-panel.active { display: block; }
+  @keyframes fadeInPanel {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .panel-card {
+    background: linear-gradient(145deg, rgba(45,0,87,0.82), rgba(26,0,51,0.9));
+    border: 1.5px solid var(--v5);
+    border-radius: 20px;
+    padding: 28px 28px 32px;
+    box-shadow: 0 0 40px rgba(155,48,255,0.18), inset 0 0 30px rgba(74,0,128,0.2);
+    backdrop-filter: blur(10px);
+  }
+
+  .activity-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--v6);
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+  .activity-desc {
+    font-size: 0.88rem;
+    color: var(--v7);
+    margin-bottom: 22px;
+    opacity: 0.85;
+    line-height: 1.5;
+  }
+
+  /* ===========================
+     ACTIVITY 1 — DRAG PIN MATCHER
+  =========================== */
+  #act1 .match-area {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  #act1 .match-col {
+    flex: 1; min-width: 200px;
+  }
+  #act1 .match-col h4 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.75rem;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+  .drag-card {
+    background: linear-gradient(135deg, rgba(106,0,184,0.55), rgba(74,0,128,0.4));
+    border: 1.5px solid var(--v5);
+    border-radius: 12px;
+    padding: 11px 16px;
+    margin-bottom: 10px;
+    cursor: grab;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--white);
+    transition: transform 0.2s, box-shadow 0.2s;
+    user-select: none;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .drag-card:active { cursor: grabbing; }
+  .drag-card .card-icon { font-size: 1.2rem; }
+  .drag-card.dragging {
+    opacity: 0.6;
+    transform: scale(1.06) rotate(2deg);
+    box-shadow: 0 0 24px var(--accent);
+  }
+  .drop-zone {
+    background: rgba(26,0,51,0.55);
+    border: 2px dashed var(--v4);
+    border-radius: 12px;
+    padding: 11px 16px;
+    margin-bottom: 10px;
+    min-height: 46px;
+    font-size: 0.82rem;
+    color: var(--v6);
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+  }
+  .drop-zone.over {
+    border-color: var(--accent);
+    background: rgba(106,0,184,0.3);
+    box-shadow: 0 0 16px var(--accent);
+  }
+  .drop-zone.correct {
+    border-color: var(--green);
+    background: rgba(57,255,20,0.08);
+  }
+  .drop-zone.incorrect {
+    border-color: #ff4444;
+    background: rgba(255,50,50,0.08);
+  }
+  .drop-zone .zone-label {
+    font-size: 0.7rem;
+    color: var(--v6);
+    opacity: 0.65;
+    position: absolute; top: 6px; right: 10px;
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 1px;
+  }
+
+  #act1 .check-btn, #act2 .check-btn, #act3 .check-btn {
+    margin-top: 18px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 30px;
+    background: linear-gradient(135deg, var(--v4), var(--accent));
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 0 18px var(--accent);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  #act1 .check-btn:hover, #act2 .check-btn:hover, #act3 .check-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px var(--accent);
+  }
+  .feedback-msg {
+    margin-top: 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    min-height: 24px;
+    font-family: 'Orbitron', sans-serif;
+  }
+  .feedback-msg.win  { color: var(--green); text-shadow: 0 0 10px var(--green); }
+  .feedback-msg.fail { color: #ff6b6b; }
+
+  /* ===========================
+     ACTIVITY 2 — CIRCUIT BUILDER DRAG
+  =========================== */
+  #act2 .circuit-wrap {
+    display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start;
+  }
+  #act2 .parts-bank {
+    min-width: 180px;
+  }
+  #act2 .parts-bank h4 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.7rem; color: var(--accent);
+    letter-spacing: 2px; margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+  #act2 .circuit-board {
+    flex: 1; min-width: 280px;
+    background: rgba(10,0,25,0.65);
+    border: 2px solid var(--v4);
+    border-radius: 16px;
+    padding: 18px;
+    min-height: 360px;
+    position: relative;
+  }
+  #act2 .circuit-board h4 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.7rem; color: var(--cyan);
+    letter-spacing: 2px; margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+  .board-slot {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(45,0,87,0.4);
+    border: 1.5px dashed var(--v4);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    min-height: 48px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .board-slot.over {
+    border-color: var(--cyan);
+    background: rgba(0,245,255,0.07);
+    box-shadow: 0 0 12px var(--cyan);
+  }
+  .board-slot.filled {
+    border-style: solid;
+    border-color: var(--v5);
+  }
+  .board-slot.correct { border-color: var(--green); }
+  .board-slot.incorrect { border-color: #ff4444; }
+  .board-slot .slot-label {
+    font-size: 0.78rem; color: var(--v6); opacity: 0.7;
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 1px;
+  }
+  .board-slot .slot-wire {
+    width: 28px; height: 3px;
+    background: var(--v4); border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .board-slot.correct .slot-wire { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .board-slot.incorrect .slot-wire { background: #ff4444; }
+
+  .part-chip {
+    background: linear-gradient(135deg, rgba(74,0,128,0.7), rgba(45,0,87,0.6));
+    border: 1.5px solid var(--v5);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 9px;
+    cursor: grab;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--white);
+    user-select: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .part-chip:active { cursor: grabbing; }
+  .part-chip.dragging {
+    opacity: 0.5;
+    transform: scale(1.08) rotate(-2deg);
+    box-shadow: 0 0 20px var(--cyan);
+  }
+  .part-chip.used { opacity: 0.3; pointer-events: none; }
+
+  /* ===========================
+     ACTIVITY 3 — CHAIN REACTION SEQUENCER
+  =========================== */
+  #act3 .seq-wrap {
+    display: flex; gap: 24px; flex-wrap: wrap;
+  }
+  #act3 .seq-bank {
+    min-width: 200px;
+  }
+  #act3 .seq-bank h4 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.7rem; color: var(--accent);
+    letter-spacing: 2px; margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+  #act3 .seq-board {
+    flex: 1; min-width: 280px;
+  }
+  #act3 .seq-board h4 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.7rem; color: var(--gold);
+    letter-spacing: 2px; margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+  .seq-step {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(26,0,51,0.5);
+    border: 1.5px dashed var(--v4);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    min-height: 52px;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+  }
+  .seq-step.over {
+    border-color: var(--gold);
+    background: rgba(255,215,0,0.07);
+    box-shadow: 0 0 14px var(--gold);
+  }
+  .seq-step.filled { border-style: solid; border-color: var(--v5); }
+  .seq-step.correct { border-color: var(--green); background: rgba(57,255,20,0.06); }
+  .seq-step.incorrect { border-color: #ff4444; background: rgba(255,50,50,0.06); }
+  .step-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--v4), var(--v5));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.72rem; font-weight: 700;
+    color: #fff; flex-shrink: 0;
+  }
+  .seq-step.correct .step-num { background: linear-gradient(135deg, #1a6e00, var(--green)); }
+  .seq-step.incorrect .step-num { background: linear-gradient(135deg, #6e0000, #ff4444); }
+  .step-content { font-size: 0.82rem; color: var(--v7); }
+  .step-arrow {
+    text-align: center; color: var(--v5);
+    font-size: 1.1rem; margin: 2px 0 2px 14px;
+    opacity: 0.5;
+  }
+
+  .seq-card {
+    background: linear-gradient(135deg, rgba(106,0,184,0.5), rgba(74,0,128,0.4));
+    border: 1.5px solid var(--v5);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 9px;
+    cursor: grab;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--white);
+    user-select: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .seq-card:active { cursor: grabbing; }
+  .seq-card.dragging {
+    opacity: 0.5;
+    transform: rotate(-2deg) scale(1.05);
+    box-shadow: 0 0 20px var(--gold);
+  }
+  .seq-card.used { opacity: 0.25; pointer-events: none; }
+
+  /* Chain reaction animation */
+  .chain-pulse {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    animation: pulseDot 0.8s ease-in-out infinite alternate;
+  }
+  @keyframes pulseDot {
+    from { transform: translateY(-50%) scale(1); opacity: 1; }
+    to   { transform: translateY(-50%) scale(1.8); opacity: 0.4; }
+  }
+
+  /* ===== SCORE STARS ===== */
+  .score-area {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 14px;
+  }
+  .star-score {
+    font-size: 1.4rem;
+    transition: all 0.4s;
+    filter: grayscale(1) opacity(0.3);
+  }
+  .star-score.lit {
+    filter: none;
+    animation: starPop 0.5s ease;
+  }
+  @keyframes starPop {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.5) rotate(20deg); }
+    100% { transform: scale(1); }
+  }
+
+  /* ===== CONFETTI ===== */
+  .confetti-piece {
+    position: fixed;
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 9999;
+    animation: confettiFall linear forwards;
+  }
+  @keyframes confettiFall {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* ===== RESET BTN ===== */
+  .reset-btn {
+    margin-top: 10px; margin-left: 10px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 1px;
+    padding: 10px 22px;
+    border: 1.5px solid var(--v5);
+    border-radius: 30px;
+    background: rgba(45,0,87,0.4);
+    color: var(--v6);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ===== GLOW PULSE BORDER ===== */
+  @keyframes borderPulse {
+    0%, 100% { box-shadow: 0 0 30px rgba(155,48,255,0.15), inset 0 0 20px rgba(74,0,128,0.1); }
+    50%       { box-shadow: 0 0 50px rgba(199,125,255,0.28), inset 0 0 30px rgba(106,0,184,0.18); }
+  }
+  .panel-card { animation: borderPulse 4s ease-in-out infinite; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--v1); }
+  ::-webkit-scrollbar-thumb { background: var(--v4); border-radius: 3px; }
+
+  /* Info bubble */
+  .info-bubble {
+    display: inline-block;
+    background: linear-gradient(135deg, rgba(0,245,255,0.12), rgba(155,48,255,0.12));
+    border: 1px solid var(--cyan);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 0.78rem;
+    color: var(--cyan);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+  .info-bubble strong { color: #fff; }
+</style>
+</head>
+<body>
+
+<!-- STARFIELD -->
+<canvas id="starfield"></canvas>
+
+<!-- BIRDS -->
+<div class="bird-wrap" id="birdWrap"></div>
+
+<!-- HEADING -->
+<div class="main-heading">
+  <h1>Arduino — I2C Protocol &amp; Multiple Devices</h1>
+</div>
+
+<!-- TABS -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab(1)">⚡ Pin Role Matcher</button>
+  <button class="tab-btn" onclick="switchTab(2)">🔌 Circuit Builder</button>
+  <button class="tab-btn" onclick="switchTab(3)">🔗 Sequence Chain</button>
+</div>
+
+<!-- =========== ACTIVITY 1 =========== -->
+<div class="activity-panel active" id="act1">
+  <div class="panel-card">
+    <div class="activity-title">Activity 1 — I2C Pin Role Matcher</div>
+    <div class="activity-desc">Drag each I2C term from the left column and drop it onto its correct description on the right.</div>
+    <div class="info-bubble">
+      <strong>Hint:</strong> I2C uses only 2 wires — <strong>SDA</strong> (data) and <strong>SCL</strong> (clock). 
+      One Master controls, multiple Slaves respond via unique addresses.
+    </div>
+
+    <div class="match-area">
+      <div class="match-col">
+        <h4>🧩 Terms</h4>
+        <div class="drag-card" id="dc-sda" draggable="true" data-val="SDA">
+          <span class="card-icon">〰️</span> SDA
+        </div>
+        <div class="drag-card" id="dc-scl" draggable="true" data-val="SCL">
+          <span class="card-icon">🕐</span> SCL
+        </div>
+        <div class="drag-card" id="dc-master" draggable="true" data-val="MASTER">
+          <span class="card-icon">🎮</span> Master
+        </div>
+        <div class="drag-card" id="dc-slave" draggable="true" data-val="SLAVE">
+          <span class="card-icon">🤖</span> Slave
+        </div>
+        <div class="drag-card" id="dc-addr" draggable="true" data-val="ADDRESS">
+          <span class="card-icon">🏷️</span> Address
+        </div>
+        <div class="drag-card" id="dc-ack" draggable="true" data-val="ACK">
+          <span class="card-icon">✅</span> ACK
+        </div>
+      </div>
+
+      <div class="match-col">
+        <h4>📌 Descriptions</h4>
+        <div class="drop-zone" data-answer="SDA" id="dz1">
+          <span class="zone-label">DROP HERE</span>
+          Serial data line carrying bits between devices
+        </div>
+        <div class="drop-zone" data-answer="SCL" id="dz2">
+          <span class="zone-label">DROP HERE</span>
+          Serial clock line synchronising all devices
+        </div>
+        <div class="drop-zone" data-answer="MASTER" id="dz3">
+          <span class="zone-label">DROP HERE</span>
+          Initiates communication and generates the clock
+        </div>
+        <div class="drop-zone" data-answer="SLAVE" id="dz4">
+          <span class="zone-label">DROP HERE</span>
+          Listens and responds only when addressed
+        </div>
+        <div class="drop-zone" data-answer="ADDRESS" id="dz5">
+          <span class="zone-label">DROP HERE</span>
+          7-bit unique identifier for each device on the bus
+        </div>
+        <div class="drop-zone" data-answer="ACK" id="dz6">
+          <span class="zone-label">DROP HERE</span>
+          1-bit acknowledgement after each byte received
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; align-items:center; flex-wrap:wrap; gap:0;">
+      <button class="check-btn" onclick="checkAct1()">Check Answers</button>
+      <button class="reset-btn" onclick="resetAct1()">↺ Reset</button>
+    </div>
+    <div class="score-area" id="score1">
+      <span class="star-score" id="s1a">⭐</span>
+      <span class="star-score" id="s1b">⭐</span>
+      <span class="star-score" id="s1c">⭐</span>
+    </div>
+    <div class="feedback-msg" id="fb1"></div>
+  </div>
+</div>
+
+<!-- =========== ACTIVITY 2 =========== -->
+<div class="activity-panel" id="act2">
+  <div class="panel-card">
+    <div class="activity-title">Activity 2 — Build the I2C Circuit</div>
+    <div class="activity-desc">Drag the correct components into their slots on the Arduino I2C bus to complete the circuit.</div>
+    <div class="info-bubble">
+      <strong>Hint:</strong> I2C needs <strong>pull-up resistors</strong> on SDA &amp; SCL, and each peripheral gets its own <strong>7-bit address</strong>.
+      The Arduino UNO uses pins <strong>A4 (SDA)</strong> and <strong>A5 (SCL)</strong>.
+    </div>
+
+    <div class="circuit-wrap">
+      <div class="parts-bank">
+        <h4>🔧 Parts</h4>
+        <div class="part-chip" id="p-res1" draggable="true" data-val="PULLUP_SDA">
+          <span>🔩</span> 4.7kΩ Pull-up (SDA)
+        </div>
+        <div class="part-chip" id="p-res2" draggable="true" data-val="PULLUP_SCL">
+          <span>🔩</span> 4.7kΩ Pull-up (SCL)
+        </div>
+        <div class="part-chip" id="p-lcd" draggable="true" data-val="LCD_I2C">
+          <span>🖥️</span> LCD (0x27)
+        </div>
+        <div class="part-chip" id="p-sensor" draggable="true" data-val="SENSOR_I2C">
+          <span>🌡️</span> Sensor (0x48)
+        </div>
+        <div class="part-chip" id="p-gnd" draggable="true" data-val="GND_BUS">
+          <span>⏚</span> GND Bus
+        </div>
+        <div class="part-chip" id="p-vcc" draggable="true" data-val="VCC_BUS">
+          <span>⚡</span> 5V VCC Bus
+        </div>
+      </div>
+
+      <div class="circuit-board">
+        <h4>🔌 I2C Bus Layout</h4>
+        <div class="board-slot" data-answer="VCC_BUS" id="bs1">
+          <div class="slot-wire"></div>
+          <span class="slot-label">Power rail (5V) ____</span>
+        </div>
+        <div class="board-slot" data-answer="PULLUP_SDA" id="bs2">
+          <div class="slot-wire"></div>
+          <span class="slot-label">SDA pull-up to VCC ____</span>
+        </div>
+        <div class="board-slot" data-answer="PULLUP_SCL" id="bs3">
+          <div class="slot-wire"></div>
+          <span class="slot-label">SCL pull-up to VCC ____</span>
+        </div>
+        <div class="board-slot" data-answer="LCD_I2C" id="bs4">
+          <div class="slot-wire"></div>
+          <span class="slot-label">Peripheral #1 (address 0x27) ____</span>
+        </div>
+        <div class="board-slot" data-answer="SENSOR_I2C" id="bs5">
+          <div class="slot-wire"></div>
+          <span class="slot-label">Peripheral #2 (address 0x48) ____</span>
+        </div>
+        <div class="board-slot" data-answer="GND_BUS" id="bs6">
+          <div class="slot-wire"></div>
+          <span class="slot-label">Common ground rail ____</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; align-items:center; flex-wrap:wrap; gap:0;">
+      <button class="check-btn" onclick="checkAct2()">Check Circuit</button>
+      <button class="reset-btn" onclick="resetAct2()">↺ Reset</button>
+    </div>
+    <div class="score-area" id="score2">
+      <span class="star-score" id="s2a">⭐</span>
+      <span class="star-score" id="s2b">⭐</span>
+      <span class="star-score" id="s2c">⭐</span>
+    </div>
+    <div class="feedback-msg" id="fb2"></div>
+  </div>
+</div>
+
+<!-- =========== ACTIVITY 3 =========== -->
+<div class="activity-panel" id="act3">
+  <div class="panel-card">
+    <div class="activity-title">Activity 3 — I2C Communication Chain Reaction</div>
+    <div class="activity-desc">Arrange the steps of an I2C read transaction in the correct order by dragging them into the sequence slots.</div>
+    <div class="info-bubble">
+      <strong>Hint:</strong> Every I2C transaction follows: <strong>START → Address → R/W bit → ACK → Data → STOP</strong>
+    </div>
+
+    <div class="seq-wrap">
+      <div class="seq-bank">
+        <h4>📦 Steps (unordered)</h4>
+        <div class="seq-card" id="sq-stop" draggable="true" data-val="STOP">🔴 Master sends STOP condition</div>
+        <div class="seq-card" id="sq-data" draggable="true" data-val="DATA">📦 Slave transmits data bytes</div>
+        <div class="seq-card" id="sq-start" draggable="true" data-val="START">🟢 Master sends START condition</div>
+        <div class="seq-card" id="sq-ack2" draggable="true" data-val="ACK2">✅ Master sends ACK / NACK</div>
+        <div class="seq-card" id="sq-addr" draggable="true" data-val="ADDR">🏷️ Master sends 7-bit address + READ bit</div>
+        <div class="seq-card" id="sq-ack1" draggable="true" data-val="ACK1">✅ Slave sends ACK (address match)</div>
+      </div>
+
+      <div class="seq-board">
+        <h4>⚡ Correct Sequence</h4>
+        <div class="seq-step" data-answer="START" id="ss1">
+          <div class="step-num">1</div>
+          <div class="step-content">Drop step 1 here</div>
+        </div>
+        <div class="step-arrow">↓</div>
+        <div class="seq-step" data-answer="ADDR" id="ss2">
+          <div class="step-num">2</div>
+          <div class="step-content">Drop step 2 here</div>
+        </div>
+        <div class="step-arrow">↓</div>
+        <div class="seq-step" data-answer="ACK1" id="ss3">
+          <div class="step-num">3</div>
+          <div class="step-content">Drop step 3 here</div>
+        </div>
+        <div class="step-arrow">↓</div>
+        <div class="seq-step" data-answer="DATA" id="ss4">
+          <div class="step-num">4</div>
+          <div class="step-content">Drop step 4 here</div>
+        </div>
+        <div class="step-arrow">↓</div>
+        <div class="seq-step" data-answer="ACK2" id="ss5">
+          <div class="step-num">5</div>
+          <div class="step-content">Drop step 5 here</div>
+        </div>
+        <div class="step-arrow">↓</div>
+        <div class="seq-step" data-answer="STOP" id="ss6">
+          <div class="step-num">6</div>
+          <div class="step-content">Drop step 6 here</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; align-items:center; flex-wrap:wrap; gap:0;">
+      <button class="check-btn" onclick="checkAct3()">Check Sequence</button>
+      <button class="reset-btn" onclick="resetAct3()">↺ Reset</button>
+    </div>
+    <div class="score-area" id="score3">
+      <span class="star-score" id="s3a">⭐</span>
+      <span class="star-score" id="s3b">⭐</span>
+      <span class="star-score" id="s3c">⭐</span>
+    </div>
+    <div class="feedback-msg" id="fb3"></div>
+  </div>
+</div>
+
+<script>
+/* ============ STARFIELD ============ */
+(function() {
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  let stars = [], W, H;
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  function makeStars(n) {
+    stars = [];
+    for (let i = 0; i < n; i++) {
+      stars.push({
+        x: Math.random() * W, y: Math.random() * H,
+        r: Math.random() * 1.6 + 0.3,
+        speed: Math.random() * 0.35 + 0.05,
+        twinkle: Math.random() * Math.PI * 2,
+        twinkleSpeed: Math.random() * 0.04 + 0.01,
+        hue: Math.random() > 0.7 ? 280 + Math.random()*40 : 240 + Math.random()*60
+      });
+    }
+  }
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    stars.forEach(s => {
+      s.twinkle += s.twinkleSpeed;
+      const alpha = 0.4 + 0.5 * Math.abs(Math.sin(s.twinkle));
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `hsla(${s.hue},80%,80%,${alpha})`;
+      ctx.fill();
+      // small glow for brighter stars
+      if (s.r > 1.1) {
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r * 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${s.hue},80%,80%,${alpha * 0.18})`;
+        ctx.fill();
+      }
+      s.y += s.speed;
+      if (s.y > H + 4) { s.y = -4; s.x = Math.random() * W; }
+    });
+    requestAnimationFrame(draw);
+  }
+  resize();
+  makeStars(180);
+  draw();
+  window.addEventListener('resize', () => { resize(); makeStars(180); });
+})();
+
+/* ============ BIRDS ============ */
+(function() {
+  const wrap = document.getElementById('birdWrap');
+  const colors = ['#c77dff','#9b30ff','#ff6fff','#e0aaff'];
+  function makeBird() {
+    const div = document.createElement('div');
+    div.className = 'bird';
+    div.style.top = (10 + Math.random() * 60) + 'vh';
+    div.style.left = '-80px';
+    const dur = 8 + Math.random() * 10;
+    div.style.animationDuration = dur + 's';
+    div.style.animationDelay = (Math.random() * 12) + 's';
+    const col = colors[Math.floor(Math.random() * colors.length)];
+    div.innerHTML = `<svg viewBox="0 0 32 12" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2,6 Q8,1 16,6 Q24,1 30,6" stroke="${col}" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </svg>`;
+    wrap.appendChild(div);
+    setTimeout(() => div.remove(), (dur + 14) * 1000);
+  }
+  for (let i = 0; i < 6; i++) makeBird();
+  setInterval(makeBird, 2800);
+})();
+
+/* ============ TABS ============ */
+function switchTab(n) {
+  document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === n-1));
+  document.querySelectorAll('.activity-panel').forEach((p, i) => p.classList.toggle('active', i === n-1));
+}
+
+/* ============ DRAG HELPERS ============ */
+let draggedEl = null;
+function setupDragCards(selector, zoneSel) {
+  document.querySelectorAll(selector).forEach(card => {
+    card.addEventListener('dragstart', e => {
+      draggedEl = card;
+      card.classList.add('dragging');
+      e.dataTransfer.setData('text/plain', card.dataset.val);
+    });
+    card.addEventListener('dragend', () => card.classList.remove('dragging'));
+  });
+  document.querySelectorAll(zoneSel).forEach(zone => {
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('over'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('over'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      zone.classList.remove('over');
+      if (!draggedEl) return;
+      // Store dropped value
+      zone.dataset.dropped = draggedEl.dataset.val;
+      zone.dataset.droppedId = draggedEl.id;
+      // Show label in zone
+      const label = draggedEl.querySelector('.card-icon')
+        ? draggedEl.querySelector('.card-icon').textContent + ' ' + draggedEl.textContent.trim().replace(draggedEl.querySelector('.card-icon').textContent,'').trim()
+        : draggedEl.textContent.trim();
+      zone.querySelector('.zone-label') && (zone.querySelector('.zone-label').textContent = '');
+      // For board-slot / seq-step
+      const content = zone.querySelector('.step-content') || zone.querySelector('.slot-label');
+      if (content) content.textContent = draggedEl.textContent.trim();
+      else {
+        zone.innerHTML = `<span class="zone-label"></span>${label}`;
+      }
+      zone.classList.add('filled');
+      draggedEl = null;
+    });
+  });
+}
+
+/* ============ ACTIVITY 1 ============ */
+setupDragCards('.drag-card', '.drop-zone');
+
+function checkAct1() {
+  let correct = 0;
+  document.querySelectorAll('#act1 .drop-zone').forEach(z => {
+    const ans = z.dataset.answer;
+    const drop = z.dataset.dropped;
+    z.classList.remove('correct','incorrect');
+    if (drop === ans) { z.classList.add('correct'); correct++; }
+    else if (drop) z.classList.add('incorrect');
+  });
+  updateScore('score1', correct, 6);
+  const fb = document.getElementById('fb1');
+  if (correct === 6) {
+    fb.textContent = '🎉 PERFECT! All pins matched!'; fb.className = 'feedback-msg win';
+    spawnConfetti();
+  } else {
+    fb.textContent = `${correct}/6 correct — keep going!`; fb.className = 'feedback-msg fail';
+  }
+}
+function resetAct1() {
+  document.querySelectorAll('#act1 .drop-zone').forEach(z => {
+    z.dataset.dropped = ''; z.dataset.droppedId = '';
+    z.classList.remove('correct','incorrect','filled');
+    const original = {
+      dz1:'Serial data line carrying bits between devices',
+      dz2:'Serial clock line synchronising all devices',
+      dz3:'Initiates communication and generates the clock',
+      dz4:'Listens and responds only when addressed',
+      dz5:'7-bit unique identifier for each device on the bus',
+      dz6:'1-bit acknowledgement after each byte received'
+    };
+    z.innerHTML = `<span class="zone-label">DROP HERE</span>${original[z.id]}`;
+  });
+  document.getElementById('fb1').textContent = '';
+  resetStars('score1');
+}
+
+/* ============ ACTIVITY 2 ============ */
+setupDragCards('.part-chip', '.board-slot');
+
+function checkAct2() {
+  let correct = 0;
+  document.querySelectorAll('#act2 .board-slot').forEach(z => {
+    z.classList.remove('correct','incorrect');
+    if (z.dataset.dropped === z.dataset.answer) { z.classList.add('correct'); correct++; }
+    else if (z.dataset.dropped) z.classList.add('incorrect');
+  });
+  updateScore('score2', correct, 6);
+  const fb = document.getElementById('fb2');
+  if (correct === 6) {
+    fb.textContent = '⚡ Circuit complete! Excellent wiring!'; fb.className = 'feedback-msg win';
+    spawnConfetti();
+  } else {
+    fb.textContent = `${correct}/6 correct — check your connections.`; fb.className = 'feedback-msg fail';
+  }
+}
+function resetAct2() {
+  document.querySelectorAll('#act2 .board-slot').forEach(z => {
+    z.dataset.dropped = '';
+    z.classList.remove('correct','incorrect','filled');
+    const labels = {
+      bs1:'Power rail (5V) ____', bs2:'SDA pull-up to VCC ____',
+      bs3:'SCL pull-up to VCC ____', bs4:'Peripheral #1 (address 0x27) ____',
+      bs5:'Peripheral #2 (address 0x48) ____', bs6:'Common ground rail ____'
+    };
+    z.innerHTML = `<div class="slot-wire"></div><span class="slot-label">${labels[z.id]}</span>`;
+  });
+  document.querySelectorAll('.part-chip').forEach(p => p.classList.remove('used'));
+  document.getElementById('fb2').textContent = '';
+  resetStars('score2');
+}
+
+/* ============ ACTIVITY 3 ============ */
+setupDragCards('.seq-card', '.seq-step');
+
+// After drop, add chain pulse to correct slots during check
+function checkAct3() {
+  let correct = 0;
+  document.querySelectorAll('#act3 .seq-step').forEach(z => {
+    z.classList.remove('correct','incorrect');
+    z.querySelector('.chain-pulse')?.remove();
+    if (z.dataset.dropped === z.dataset.answer) {
+      z.classList.add('correct'); correct++;
+      const pulse = document.createElement('div');
+      pulse.className = 'chain-pulse';
+      z.appendChild(pulse);
+    } else if (z.dataset.dropped) z.classList.add('incorrect');
+  });
+  updateScore('score3', correct, 6);
+  const fb = document.getElementById('fb3');
+  if (correct === 6) {
+    fb.textContent = '🔗 Chain reaction complete! Perfect sequence!'; fb.className = 'feedback-msg win';
+    spawnConfetti();
+    // animate chain propagation
+    let delay = 0;
+    document.querySelectorAll('#act3 .seq-step.correct').forEach(z => {
+      setTimeout(() => {
+        z.style.transform = 'scale(1.04)';
+        setTimeout(() => z.style.transform = '', 300);
+      }, delay);
+      delay += 180;
+    });
+  } else {
+    fb.textContent = `${correct}/6 in right order — try again!`; fb.className = 'feedback-msg fail';
+  }
+}
+function resetAct3() {
+  document.querySelectorAll('#act3 .seq-step').forEach(z => {
+    z.dataset.dropped = '';
+    z.classList.remove('correct','incorrect','filled');
+    z.querySelector('.chain-pulse')?.remove();
+    const n = z.querySelector('.step-num').textContent;
+    z.querySelector('.step-content').textContent = `Drop step ${n} here`;
+    z.style.transform = '';
+  });
+  document.querySelectorAll('.seq-card').forEach(c => c.classList.remove('used'));
+  document.getElementById('fb3').textContent = '';
+  resetStars('score3');
+}
+
+/* ============ SCORE STARS ============ */
+function updateScore(areaId, correct, total) {
+  const stars = document.querySelectorAll(`#${areaId} .star-score`);
+  const ratio = correct / total;
+  stars.forEach((s, i) => {
+    s.classList.remove('lit');
+    if ((i === 0 && ratio > 0) || (i === 1 && ratio >= 0.5) || (i === 2 && ratio === 1)) {
+      setTimeout(() => s.classList.add('lit'), i * 200);
+    }
+  });
+}
+function resetStars(areaId) {
+  document.querySelectorAll(`#${areaId} .star-score`).forEach(s => s.classList.remove('lit'));
+}
+
+/* ============ CONFETTI ============ */
+function spawnConfetti() {
+  const colors = ['#c77dff','#ff6fff','#ffd700','#00f5ff','#39ff14','#9b30ff','#e0aaff'];
+  for (let i = 0; i < 60; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    c.style.left = (Math.random() * 100) + 'vw';
+    c.style.top = '-10px';
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.width = (6 + Math.random() * 10) + 'px';
+    c.style.height = (6 + Math.random() * 10) + 'px';
+    c.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+    c.style.animationDelay = (Math.random() * 0.8) + 's';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 4000);
+  }
+}
+</script>
+</body>
+</html>

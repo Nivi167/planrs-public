@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nanotechnology — Science at 1–100 nm</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap');
+
+  :root {
+    --neon-blue: #00d4ff;
+    --neon-purple: #b44fff;
+    --neon-green: #00ff99;
+    --neon-yellow: #ffe000;
+    --dark-bg: #07091a;
+    --card-bg: rgba(255,255,255,0.05);
+    --card-border: rgba(255,255,255,0.12);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--dark-bg);
+    color: #e0e8ff;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── ANIMATED BACKGROUND ── */
+  #bg-canvas {
+    position: fixed; inset:0; z-index:0; pointer-events:none;
+  }
+
+  .floating-item {
+    position: fixed;
+    pointer-events: none;
+    z-index: 1;
+    animation: floatY 8s ease-in-out infinite;
+    opacity: 0.18;
+    font-size: 2rem;
+    filter: drop-shadow(0 0 8px currentColor);
+  }
+  @keyframes floatY {
+    0%,100%{ transform: translateY(0) rotate(0deg); }
+    50%{ transform: translateY(-28px) rotate(12deg); }
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: relative; z-index: 10;
+    text-align: center;
+    padding: 2.5rem 1rem 1.5rem;
+    background: linear-gradient(180deg, rgba(7,9,26,0.9) 0%, transparent 100%);
+  }
+  header h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(1.8rem, 4vw, 3.2rem);
+    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple), var(--neon-green));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    text-shadow: none;
+    line-height: 1.2;
+    letter-spacing: 1px;
+  }
+  header p {
+    margin-top: .6rem;
+    color: rgba(200,215,255,0.7);
+    font-size: 1rem;
+  }
+
+  /* ── NAV TABS ── */
+  .tabs {
+    position: relative; z-index:10;
+    display: flex; justify-content: center; gap: 1rem;
+    padding: 1rem;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    font-family:'Fredoka One',cursive;
+    font-size: 1rem;
+    padding: .6rem 1.6rem;
+    border-radius: 50px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all .3s;
+    background: var(--card-bg);
+    color: #c0d0ff;
+    backdrop-filter: blur(8px);
+  }
+  .tab-btn:hover { transform: translateY(-3px); border-color: var(--neon-blue); color: var(--neon-blue); }
+  .tab-btn.active {
+    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+    color: #fff; border-color: transparent;
+    box-shadow: 0 0 20px rgba(0,212,255,0.4);
+  }
+
+  /* ── ACTIVITY SECTIONS ── */
+  .activity { display:none; position:relative; z-index:10; padding: 1.5rem 1rem 3rem; }
+  .activity.active { display:block; }
+
+  .activity-title {
+    font-family:'Fredoka One',cursive;
+    font-size: 1.7rem;
+    text-align:center;
+    margin-bottom: 0.3rem;
+    color: var(--neon-yellow);
+    text-shadow: 0 0 20px rgba(255,224,0,0.4);
+  }
+  .activity-subtitle {
+    text-align:center;
+    color: rgba(200,215,255,0.65);
+    font-size:.9rem;
+    margin-bottom:1.8rem;
+  }
+
+  /* CARD */
+  .glass-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    backdrop-filter: blur(12px);
+    padding: 1.5rem;
+    margin-bottom: 1.2rem;
+  }
+
+  /* ─────────────────────────────────────
+     ACTIVITY 1 — SIZE SORTER (DRAG & DROP)
+  ───────────────────────────────────── */
+  #act1 {}
+
+  .sorter-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  @media(max-width:600px){ .sorter-layout{ grid-template-columns:1fr; } }
+
+  .drag-pool {
+    display:flex; flex-wrap:wrap; gap:.8rem; padding:1rem;
+    min-height: 120px;
+    border: 2px dashed rgba(0,212,255,0.3);
+    border-radius:16px;
+    align-content: flex-start;
+  }
+  .drag-pool h3 {
+    width:100%; font-family:'Fredoka One',cursive;
+    font-size:1rem; color: var(--neon-blue); margin-bottom:.4rem;
+  }
+
+  .drag-item {
+    background: linear-gradient(135deg, rgba(0,212,255,0.2), rgba(180,79,255,0.2));
+    border: 2px solid rgba(0,212,255,0.5);
+    border-radius: 12px;
+    padding: .5rem 1rem;
+    cursor: grab;
+    font-weight:700;
+    font-size: .85rem;
+    user-select:none;
+    transition: transform .2s, box-shadow .2s;
+    position: relative;
+  }
+  .drag-item:hover { transform:scale(1.06); box-shadow: 0 0 15px rgba(0,212,255,0.4); }
+  .drag-item.dragging { opacity:.4; cursor:grabbing; }
+
+  .drop-zones {
+    display:flex; flex-direction:column; gap:1rem;
+  }
+  .drop-zone {
+    min-height: 80px;
+    border-radius:14px;
+    border: 2px dashed;
+    padding: .7rem;
+    transition: background .2s;
+  }
+  .drop-zone.nano { border-color: var(--neon-green); }
+  .drop-zone.bigger { border-color: var(--neon-purple); }
+  .drop-zone.dragover { background: rgba(255,255,255,0.08); }
+  .drop-zone h4 {
+    font-family:'Fredoka One',cursive;
+    font-size:.9rem;
+    margin-bottom:.5rem;
+  }
+  .drop-zone.nano h4 { color: var(--neon-green); }
+  .drop-zone.bigger h4 { color: var(--neon-purple); }
+  .drop-zone .items-inside { display:flex; flex-wrap:wrap; gap:.5rem; }
+
+  .check-btn {
+    display:block; margin: 1.2rem auto 0;
+    font-family:'Fredoka One',cursive;
+    font-size:1.1rem;
+    padding:.7rem 2.5rem;
+    border-radius:50px;
+    border:none;
+    cursor:pointer;
+    background: linear-gradient(135deg, var(--neon-green), #00a86b);
+    color: #07091a;
+    box-shadow: 0 0 20px rgba(0,255,153,0.3);
+    transition: transform .2s, box-shadow .2s;
+  }
+  .check-btn:hover { transform:translateY(-3px); box-shadow: 0 0 30px rgba(0,255,153,0.5); }
+
+  #act1-feedback {
+    text-align:center; margin-top:1rem;
+    font-size:1.1rem; font-weight:700; min-height:28px;
+  }
+  .feedback-correct { color: var(--neon-green); }
+  .feedback-wrong { color: #ff6b6b; }
+
+  /* ─────────────────────────────────────
+     ACTIVITY 2 — NANO MICROSCOPE LAB
+  ───────────────────────────────────── */
+  .microscope-container {
+    display:flex; gap:2rem; flex-wrap:wrap;
+    justify-content:center; align-items:flex-start;
+    max-width:820px; margin:0 auto;
+  }
+
+  .scope-panel {
+    flex:0 0 320px;
+    display:flex; flex-direction:column; align-items:center;
+  }
+  .scope-viewport {
+    width:260px; height:260px;
+    border-radius:50%;
+    border: 6px solid rgba(0,212,255,0.6);
+    box-shadow: 0 0 30px rgba(0,212,255,0.3), inset 0 0 40px rgba(0,0,0,0.6);
+    background: #03060f;
+    overflow:hidden;
+    position:relative;
+    cursor:crosshair;
+  }
+  .scope-object {
+    position:absolute;
+    top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    text-align:center;
+    transition: all .4s ease;
+    pointer-events:none;
+  }
+  .scope-object .obj-emoji { font-size:3rem; display:block; }
+  .scope-object .obj-label {
+    font-size:.7rem; color: rgba(200,255,255,0.7);
+    font-weight:700; margin-top:.3rem;
+  }
+  .scope-crosshair {
+    position:absolute; inset:0; pointer-events:none;
+    border-radius:50%;
+    background: radial-gradient(circle, transparent 40%, rgba(0,212,255,0.08) 100%);
+  }
+  .zoom-bar {
+    width:260px; margin-top:1rem;
+    display:flex; align-items:center; gap:.8rem;
+  }
+  .zoom-bar label { font-size:.8rem; color: var(--neon-blue); white-space:nowrap; }
+  .zoom-bar input[type=range] {
+    flex:1;
+    accent-color: var(--neon-blue);
+  }
+  #zoom-level { font-size:.8rem; color: var(--neon-yellow); font-weight:700; }
+
+  .objects-tray {
+    display:flex; flex-wrap:wrap; gap:.7rem; margin-top:1rem; justify-content:center;
+  }
+  .obj-chip {
+    padding:.4rem 1rem;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius:30px; cursor:pointer; font-size:.8rem;
+    transition: all .2s;
+    display:flex; align-items:center; gap:.4rem;
+  }
+  .obj-chip:hover, .obj-chip.selected {
+    background: rgba(0,212,255,0.2);
+    border-color: var(--neon-blue);
+    color: var(--neon-blue);
+    box-shadow: 0 0 10px rgba(0,212,255,0.3);
+  }
+
+  .info-panel {
+    flex:1; min-width:240px;
+  }
+  .nm-display {
+    font-family:'Fredoka One',cursive;
+    font-size:2.5rem;
+    color: var(--neon-yellow);
+    text-shadow: 0 0 20px rgba(255,224,0,0.5);
+    text-align:center; margin-bottom:.5rem;
+  }
+  .info-card {
+    background: rgba(0,212,255,0.06);
+    border-left: 4px solid var(--neon-blue);
+    border-radius:0 12px 12px 0;
+    padding:1rem;
+    margin-bottom:.8rem;
+  }
+  .info-card h4 { font-size:.85rem; color: var(--neon-blue); margin-bottom:.3rem; }
+  .info-card p { font-size:.82rem; line-height:1.5; color: rgba(200,215,255,0.85); }
+
+  .quiz-q {
+    background: rgba(180,79,255,0.1);
+    border: 1px solid rgba(180,79,255,0.3);
+    border-radius:14px; padding:1rem;
+    margin-top:.8rem;
+  }
+  .quiz-q p { font-size:.85rem; font-weight:700; margin-bottom:.6rem; color: #d0aaff; }
+  .quiz-opts { display:flex; flex-wrap:wrap; gap:.5rem; }
+  .quiz-opt {
+    padding:.35rem .9rem;
+    border-radius:30px; border:1px solid rgba(180,79,255,0.4);
+    cursor:pointer; font-size:.8rem;
+    transition:all .2s;
+    background:transparent; color: #d0aaff;
+  }
+  .quiz-opt:hover { background: rgba(180,79,255,0.2); }
+  .quiz-opt.correct { background: rgba(0,255,153,0.2); border-color: var(--neon-green); color: var(--neon-green); }
+  .quiz-opt.wrong { background: rgba(255,80,80,0.2); border-color:#ff6b6b; color:#ff6b6b; }
+
+  /* ─────────────────────────────────────
+     ACTIVITY 3 — BUILD A NANOBOT
+  ───────────────────────────────────── */
+  .builder-layout {
+    display:grid; grid-template-columns:1fr 1.4fr; gap:1.5rem;
+    max-width:840px; margin:0 auto;
+  }
+  @media(max-width:600px){ .builder-layout{grid-template-columns:1fr;} }
+
+  .parts-shelf {
+    display:flex; flex-direction:column; gap:.7rem;
+  }
+  .parts-shelf h3 {
+    font-family:'Fredoka One',cursive; font-size:1rem;
+    color: var(--neon-purple); margin-bottom:.3rem;
+  }
+  .part-item {
+    display:flex; align-items:center; gap:.8rem;
+    background: rgba(180,79,255,0.1);
+    border:1px solid rgba(180,79,255,0.25);
+    border-radius:12px; padding:.6rem 1rem;
+    cursor:grab; transition:all .2s;
+    font-size:.82rem;
+  }
+  .part-item:hover { background: rgba(180,79,255,0.2); transform:translateX(4px); }
+  .part-item.used { opacity:.35; cursor:not-allowed; }
+  .part-item .part-icon { font-size:1.4rem; }
+  .part-item .part-name { font-weight:700; color: #d0aaff; }
+  .part-item .part-desc { font-size:.72rem; color: rgba(200,215,255,0.55); }
+
+  .bot-canvas {
+    background: radial-gradient(circle at 50% 50%, rgba(0,212,255,0.05) 0%, transparent 70%);
+    border: 2px dashed rgba(0,212,255,0.25);
+    border-radius:20px; padding:1.2rem;
+    min-height:360px;
+    position:relative;
+  }
+  .bot-canvas h3 {
+    font-family:'Fredoka One',cursive; font-size:1rem;
+    color: var(--neon-blue); margin-bottom:.8rem; text-align:center;
+  }
+
+  .bot-slots {
+    display:grid; grid-template-areas:
+      ". head ."
+      "arm body arm2"
+      ". legs .";
+    grid-template-columns:1fr 2fr 1fr;
+    gap:.5rem;
+    max-width:260px; margin:0 auto;
+  }
+
+  .bot-slot {
+    border:2px dashed rgba(255,255,255,0.2);
+    border-radius:12px;
+    min-height:70px;
+    display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:.3rem;
+    transition:all .3s; font-size:.7rem;
+    color: rgba(200,215,255,0.3);
+    position:relative;
+  }
+  .bot-slot[data-zone="head"]  { grid-area:head; }
+  .bot-slot[data-zone="body"]  { grid-area:body; min-height:100px; }
+  .bot-slot[data-zone="arm"]   { grid-area:arm; }
+  .bot-slot[data-zone="arm2"]  { grid-area:arm2; }
+  .bot-slot[data-zone="legs"]  { grid-area:legs; }
+
+  .bot-slot.has-part {
+    border-color: var(--neon-green);
+    background: rgba(0,255,153,0.08);
+    color: var(--neon-green);
+  }
+  .bot-slot .placed-icon { font-size:2rem; }
+  .bot-slot .placed-name { font-size:.65rem; font-weight:700; }
+
+  .bot-slot.dragover {
+    background:rgba(0,212,255,0.12);
+    border-color: var(--neon-blue);
+    transform:scale(1.04);
+  }
+
+  .mission-panel {
+    margin-top:1rem;
+    background: rgba(255,224,0,0.07);
+    border:1px solid rgba(255,224,0,0.2);
+    border-radius:14px; padding:1rem;
+  }
+  .mission-panel h4 { font-family:'Fredoka One',cursive; color:var(--neon-yellow); margin-bottom:.4rem; }
+  .mission-panel p { font-size:.82rem; color: rgba(200,215,255,0.75); line-height:1.5; }
+
+  #mission-status {
+    margin-top:.6rem; font-weight:700; font-size:.9rem; min-height:20px;
+  }
+
+  .progress-bar-wrap {
+    height:8px; background:rgba(255,255,255,0.1); border-radius:4px;
+    margin-top:.5rem; overflow:hidden;
+  }
+  .progress-bar-fill {
+    height:100%; border-radius:4px;
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+    transition: width .5s ease;
+  }
+
+  /* SCORE & STARS */
+  .score-bar {
+    position:relative; z-index:10;
+    display:flex; justify-content:center; gap:2rem; align-items:center;
+    padding:.7rem 1rem;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size:.85rem;
+  }
+  .score-item { display:flex; align-items:center; gap:.4rem; }
+  .score-item .label { color: rgba(200,215,255,0.55); }
+  .score-item .val { font-family:'Fredoka One',cursive; color: var(--neon-yellow); font-size:1.1rem; }
+
+  /* BADGE TOAST */
+  .badge-toast {
+    position:fixed; bottom:2rem; right:2rem; z-index:999;
+    background: linear-gradient(135deg, #1a1040, #0d1f3a);
+    border:2px solid var(--neon-yellow);
+    border-radius:16px; padding:1rem 1.5rem;
+    display:flex; align-items:center; gap:.8rem;
+    box-shadow: 0 0 30px rgba(255,224,0,0.3);
+    transform:translateX(200%); transition:transform .4s ease;
+    max-width:260px;
+  }
+  .badge-toast.show { transform:translateX(0); }
+  .badge-toast .badge-icon { font-size:2rem; }
+  .badge-toast .badge-text h4 { font-family:'Fredoka One',cursive; color:var(--neon-yellow); font-size:.95rem; }
+  .badge-toast .badge-text p { font-size:.75rem; color:rgba(200,215,255,0.7); }
+
+  /* STARS */
+  .star { color: var(--neon-yellow); }
+
+  /* Glow pulses on items when correct */
+  @keyframes correctPop {
+    0%{ transform:scale(1); }
+    50%{ transform:scale(1.15); box-shadow:0 0 20px var(--neon-green); }
+    100%{ transform:scale(1); }
+  }
+  .pop { animation: correctPop .5s ease; }
+</style>
+</head>
+<body>
+
+<!-- Floating background decorations -->
+<canvas id="bg-canvas"></canvas>
+<div class="floating-item" style="top:8%;left:4%;animation-delay:0s;color:#00d4ff">🔬</div>
+<div class="floating-item" style="top:15%;right:6%;animation-delay:1s;color:#b44fff">⚗️</div>
+<div class="floating-item" style="top:40%;left:2%;animation-delay:2s;color:#ffe000">🦉</div>
+<div class="floating-item" style="top:55%;right:3%;animation-delay:.5s;color:#00ff99">🪄</div>
+<div class="floating-item" style="top:75%;left:7%;animation-delay:1.8s;color:#b44fff">📚</div>
+<div class="floating-item" style="top:70%;right:8%;animation-delay:3s;color:#00d4ff">✨</div>
+<div class="floating-item" style="top:30%;right:2%;animation-delay:2.5s;color:#ffe000">⭐</div>
+<div class="floating-item" style="top:90%;left:15%;animation-delay:1.2s;color:#00ff99">🧪</div>
+
+<!-- SCORE BAR -->
+<div class="score-bar">
+  <div class="score-item">🏆 <span class="label">Score:</span><span class="val" id="score-val">0</span></div>
+  <div class="score-item">⭐ <span class="label">Stars:</span><span class="val" id="stars-val">0</span></div>
+  <div class="score-item">🎖️ <span class="label">Badges:</span><span class="val" id="badge-val">0</span></div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <h1>⚗️ Nanotechnology — Science at 1–100 nm</h1>
+  <p>Three hands-on experiments to explore the nano world!</p>
+</header>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="showActivity(1,this)">🔭 Activity 1<br><small>Size Sorter</small></button>
+  <button class="tab-btn" onclick="showActivity(2,this)">🔬 Activity 2<br><small>Nano Lab</small></button>
+  <button class="tab-btn" onclick="showActivity(3,this)">🤖 Activity 3<br><small>Build-a-Nanobot</small></button>
+</div>
+
+<!-- ══════════════════════════════════
+     ACTIVITY 1 — SIZE SORTER
+════════════════════════════════════ -->
+<div class="activity active" id="act1">
+  <div class="activity-title">🔭 Experiment 1: Nano Size Sorter</div>
+  <div class="activity-subtitle">Drag each object into the correct zone — Is it nanoscale (1–100 nm) or bigger?</div>
+
+  <div class="sorter-layout">
+    <div class="glass-card">
+      <div class="drag-pool" id="pool">
+        <h3>🧩 Objects to Sort</h3>
+      </div>
+      <button class="check-btn" onclick="checkSort()">✅ Check My Answers</button>
+      <div id="act1-feedback"></div>
+    </div>
+    <div class="drop-zones glass-card">
+      <div class="drop-zone nano" id="zone-nano" ondragover="onDragOver(event)" ondrop="onDrop(event,'nano')" ondragleave="onDragLeave(event)">
+        <h4>🟢 Nanoscale (1–100 nm)</h4>
+        <div class="items-inside" id="nano-items"></div>
+      </div>
+      <div class="drop-zone bigger" id="zone-bigger" ondragover="onDragOver(event)" ondrop="onDrop(event,'bigger')" ondragleave="onDragLeave(event)">
+        <h4>🟣 Bigger than Nano</h4>
+        <div class="items-inside" id="bigger-items"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     ACTIVITY 2 — NANO MICROSCOPE LAB
+════════════════════════════════════ -->
+<div class="activity" id="act2">
+  <div class="activity-title">🔬 Experiment 2: Nano Microscope Lab</div>
+  <div class="activity-subtitle">Select an object, zoom in, and answer the science question!</div>
+
+  <div class="microscope-container glass-card">
+    <div class="scope-panel">
+      <div class="scope-viewport" id="scope-viewport">
+        <div class="scope-object" id="scope-object">
+          <span class="obj-emoji">🧬</span>
+          <span class="obj-label">Select an object →</span>
+        </div>
+        <div class="scope-crosshair"></div>
+      </div>
+      <div class="zoom-bar">
+        <label>🔍 Zoom</label>
+        <input type="range" id="zoom-slider" min="1" max="5" value="1" step="0.1" oninput="updateZoom(this.value)">
+        <span id="zoom-level">1x</span>
+      </div>
+      <div class="objects-tray" id="objects-tray"></div>
+    </div>
+
+    <div class="info-panel">
+      <div class="nm-display" id="nm-display">— nm</div>
+      <div class="info-card" id="info-card">
+        <h4>📡 Object Info</h4>
+        <p id="info-text">Select an object from the tray to begin your experiment!</p>
+      </div>
+      <div class="info-card" id="property-card" style="border-color:var(--neon-purple)">
+        <h4 style="color:var(--neon-purple)">✨ Special Nano Property</h4>
+        <p id="property-text">At the nanoscale, materials behave very differently from their larger versions!</p>
+      </div>
+      <div class="quiz-q" id="quiz-area">
+        <p id="quiz-question">Select an object to unlock a science challenge!</p>
+        <div class="quiz-opts" id="quiz-opts"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     ACTIVITY 3 — BUILD A NANOBOT
+════════════════════════════════════ -->
+<div class="activity" id="act3">
+  <div class="activity-title">🤖 Experiment 3: Build Your Nanobot!</div>
+  <div class="activity-subtitle">Drag the right nano-parts onto your bot to complete the medical mission!</div>
+
+  <div class="glass-card" style="max-width:840px;margin:0 auto">
+    <div class="mission-panel">
+      <h4>🎯 Mission Brief</h4>
+      <p id="current-mission">Loading mission...</p>
+      <div id="mission-status"></div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div class="builder-layout" style="max-width:840px;margin:1rem auto 0">
+    <div class="glass-card parts-shelf">
+      <h3>🧰 Nano Parts Inventory</h3>
+      <div id="parts-list"></div>
+    </div>
+    <div class="bot-canvas glass-card">
+      <h3>🤖 Your Nanobot</h3>
+      <div class="bot-slots" id="bot-slots">
+        <div class="bot-slot" data-zone="head" ondragover="botDragOver(event)" ondrop="botDrop(event)" ondragleave="botDragLeave(event)">
+          <span>🎯<br>HEAD</span>
+        </div>
+        <div class="bot-slot" data-zone="arm" ondragover="botDragOver(event)" ondrop="botDrop(event)" ondragleave="botDragLeave(event)">
+          <span>💪<br>ARM L</span>
+        </div>
+        <div class="bot-slot" data-zone="body" ondragover="botDragOver(event)" ondrop="botDrop(event)" ondragleave="botDragLeave(event)">
+          <span>⚙️<br>BODY</span>
+        </div>
+        <div class="bot-slot" data-zone="arm2" ondragover="botDragOver(event)" ondrop="botDrop(event)" ondragleave="botDragLeave(event)">
+          <span>💪<br>ARM R</span>
+        </div>
+        <div class="bot-slot" data-zone="legs" ondragover="botDragOver(event)" ondrop="botDrop(event)" ondragleave="botDragLeave(event)">
+          <span>🦵<br>LEGS</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BADGE TOAST -->
+<div class="badge-toast" id="badge-toast">
+  <span class="badge-icon" id="badge-icon">🏅</span>
+  <div class="badge-text">
+    <h4 id="badge-title">Badge Earned!</h4>
+    <p id="badge-desc">Great work!</p>
+  </div>
+</div>
+
+<script>
+// ── SCORE SYSTEM ──────────────────────────────────
+let score = 0, stars = 0, badges = 0;
+function addScore(n) {
+  score += n;
+  document.getElementById('score-val').textContent = score;
+}
+function addStar() {
+  stars++;
+  document.getElementById('stars-val').textContent = stars;
+}
+function showBadge(icon, title, desc) {
+  badges++;
+  document.getElementById('badge-val').textContent = badges;
+  const t = document.getElementById('badge-toast');
+  document.getElementById('badge-icon').textContent = icon;
+  document.getElementById('badge-title').textContent = title;
+  document.getElementById('badge-desc').textContent = desc;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3500);
+}
+
+// ── TAB SWITCHING ─────────────────────────────────
+function showActivity(n, btn) {
+  document.querySelectorAll('.activity').forEach(a=>a.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('act'+n).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── ANIMATED STARFIELD ────────────────────────────
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, particles=[];
+function resizeCanvas(){
+  W=canvas.width=window.innerWidth;
+  H=canvas.height=window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize',resizeCanvas);
+
+for(let i=0;i<120;i++){
+  particles.push({
+    x:Math.random()*2000,y:Math.random()*2000,
+    r:Math.random()*1.5+.3,
+    a:Math.random(),
+    da:(Math.random()-.5)*.01,
+    dx:(Math.random()-.5)*.15,
+    dy:(Math.random()-.5)*.15,
+    hue: Math.floor(Math.random()*60)+180
+  });
+}
+
+function drawBg(){
+  ctx.clearRect(0,0,W,H);
+  // gradient bg
+  const grd=ctx.createRadialGradient(W*.3,H*.3,0,W*.5,H*.5,W*.8);
+  grd.addColorStop(0,'rgba(10,20,60,1)');
+  grd.addColorStop(.5,'rgba(7,9,26,1)');
+  grd.addColorStop(1,'rgba(3,4,12,1)');
+  ctx.fillStyle=grd; ctx.fillRect(0,0,W,H);
+
+  particles.forEach(p=>{
+    p.x+=p.dx; p.y+=p.dy; p.a+=p.da;
+    if(p.x<0)p.x=W; if(p.x>W)p.x=0;
+    if(p.y<0)p.y=H; if(p.y>H)p.y=0;
+    if(p.a<0||p.a>1)p.da*=-1;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle=`hsla(${p.hue},100%,85%,${p.a*.7})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(drawBg);
+}
+drawBg();
+
+// ══════════════════════════════════
+// ACTIVITY 1 — SIZE SORTER
+// ══════════════════════════════════
+const sortItems = [
+  {id:'dna',  label:'🧬 DNA (2nm)',    correct:'nano'},
+  {id:'gold', label:'🟡 Gold NP (20nm)',correct:'nano'},
+  {id:'virus',label:'🦠 Flu Virus (100nm)',correct:'nano'},
+  {id:'hair', label:'💇 Human Hair (80,000nm)',correct:'bigger'},
+  {id:'rbc',  label:'🔴 Red Blood Cell (7,000nm)',correct:'bigger'},
+  {id:'sand', label:'🏖️ Sand Grain (500,000nm)',correct:'bigger'},
+  {id:'carbon',label:'⬛ C60 (1nm)',   correct:'nano'},
+  {id:'cell', label:'🧫 Skin Cell (10,000nm)',correct:'bigger'},
+];
+
+let dragSrc = null;
+const sortState = {};
+
+function initSorter(){
+  const pool = document.getElementById('pool');
+  const existing = pool.querySelectorAll('.drag-item');
+  existing.forEach(e=>e.remove());
+
+  sortItems.forEach(item=>{
+    sortState[item.id]='pool';
+    const el=document.createElement('div');
+    el.className='drag-item';
+    el.draggable=true;
+    el.dataset.id=item.id;
+    el.textContent=item.label;
+    el.addEventListener('dragstart',e=>{
+      dragSrc=item.id;
+      el.classList.add('dragging');
+    });
+    el.addEventListener('dragend',()=>el.classList.remove('dragging'));
+    pool.appendChild(el);
+  });
+}
+initSorter();
+
+function onDragOver(e){ e.preventDefault(); e.currentTarget.classList.add('dragover'); }
+function onDragLeave(e){ e.currentTarget.classList.remove('dragover'); }
+function onDrop(e, zone){
+  e.preventDefault();
+  e.currentTarget.classList.remove('dragover');
+  if(!dragSrc)return;
+  const item=sortItems.find(i=>i.id===dragSrc);
+  if(!item)return;
+
+  // remove from wherever it was
+  document.querySelectorAll('.drag-item').forEach(el=>{
+    if(el.dataset.id===dragSrc) el.remove();
+  });
+
+  sortState[dragSrc]=zone;
+  const el=document.createElement('div');
+  el.className='drag-item';
+  el.draggable=true;
+  el.dataset.id=dragSrc;
+  el.textContent=item.label;
+  el.addEventListener('dragstart',ev=>{
+    dragSrc=dragSrc;
+    el.classList.add('dragging');
+    dragSrc=item.id;
+  });
+  el.addEventListener('dragend',()=>el.classList.remove('dragging'));
+
+  if(zone==='nano') document.getElementById('nano-items').appendChild(el);
+  else document.getElementById('bigger-items').appendChild(el);
+  dragSrc=null;
+}
+
+// also allow dropping back to pool
+document.getElementById('pool').addEventListener('dragover',e=>e.preventDefault());
+document.getElementById('pool').addEventListener('drop',e=>{
+  e.preventDefault();
+  if(!dragSrc)return;
+  const item=sortItems.find(i=>i.id===dragSrc);
+  document.querySelectorAll('.drag-item').forEach(el=>{
+    if(el.dataset.id===dragSrc)el.remove();
+  });
+  sortState[dragSrc]='pool';
+  const el=document.createElement('div');
+  el.className='drag-item'; el.draggable=true; el.dataset.id=dragSrc;
+  el.textContent=item.label;
+  el.addEventListener('dragstart',ev=>{dragSrc=item.id; el.classList.add('dragging');});
+  el.addEventListener('dragend',()=>el.classList.remove('dragging'));
+  document.getElementById('pool').appendChild(el);
+  dragSrc=null;
+});
+
+let act1Done=false;
+function checkSort(){
+  let correct=0,total=sortItems.length;
+  sortItems.forEach(item=>{
+    if(sortState[item.id]===item.correct)correct++;
+  });
+  const fb=document.getElementById('act1-feedback');
+  if(correct===total){
+    fb.className='feedback-correct';
+    fb.textContent=`🎉 Perfect! All ${total} objects sorted correctly!`;
+    if(!act1Done){
+      act1Done=true;
+      addScore(50); addStar();
+      showBadge('🏅','Nano Sorter!','You mastered the nanoscale sizes!');
+    }
+  } else {
+    fb.className='feedback-wrong';
+    fb.textContent=`🔄 ${correct}/${total} correct. Try again! Tip: Nano = 1–100 nm only.`;
+    addScore(correct*5);
+  }
+}
+
+// ══════════════════════════════════
+// ACTIVITY 2 — MICROSCOPE LAB
+// ══════════════════════════════════
+const scopeObjects = [
+  {
+    id:'dna', name:'DNA Molecule', emoji:'🧬', nm:'2 nm',
+    info:'DNA holds all the genetic instructions for living things. It is about 2 nanometers wide — so narrow that billions of atoms could stretch across it!',
+    property:'At nanoscale, DNA can be read, edited, and copied using molecular machines — the foundation of gene therapy!',
+    question:'Why is DNA important at the nanoscale?',
+    options:['It glows in the dark','It carries genetic code and can be engineered','It makes cells visible','It is used in sunscreen'],
+    answer:1
+  },
+  {
+    id:'gold',name:'Gold Nanoparticle',emoji:'🟡',nm:'20 nm',
+    info:'Gold at nanoscale is NOT gold-colored! A 20 nm gold particle appears red, purple, or blue depending on its size. This is due to a quantum effect called surface plasmon resonance.',
+    property:'Nano-gold conducts electricity and interacts with light differently — used in cancer treatment to heat and destroy tumor cells!',
+    question:'What color does gold appear at 20 nm?',
+    options:['Bright gold','Red, purple or blue','Transparent','Black'],
+    answer:1
+  },
+  {
+    id:'carbon',name:'Carbon Nanotube',emoji:'⚫',nm:'1–50 nm',
+    info:'Carbon nanotubes are rolled-up sheets of carbon atoms just 1–50 nm wide. Despite being almost invisible, they are among the strongest materials ever discovered.',
+    property:'100× stronger than steel but 6× lighter! Used to make super-strong lightweight materials for sports gear, aircraft, and space tech.',
+    question:'How strong are carbon nanotubes compared to steel?',
+    options:['Same strength','10× stronger','100× stronger','Weaker'],
+    answer:2
+  },
+  {
+    id:'sunscreen',name:'Sunscreen NPs',emoji:'🌞',nm:'10–100 nm',
+    info:'Sunscreens use zinc oxide or titanium dioxide nanoparticles (10–100 nm) to block UV rays. At nanoscale these particles become transparent — that is why modern sunscreen is invisible!',
+    property:'Nano-sized zinc oxide absorbs UV light without leaving a white cast on skin. The size determines which UV wavelengths are blocked.',
+    question:'Why are nanoparticles used in sunscreen?',
+    options:['They smell nice','They are transparent and block UV rays','They cool the skin','They are cheap'],
+    answer:1
+  },
+  {
+    id:'virus',name:'Flu Virus',emoji:'🦠',nm:'80–120 nm',
+    info:'Influenza virus particles are 80–120 nanometers wide. That is right at the upper boundary of the nanoscale! Special electron microscopes are needed to see them.',
+    property:'At 100 nm, the flu virus can travel through the air on tiny droplets and slip through gaps that larger particles cannot — which is why it spreads so easily.',
+    question:'Which microscope do scientists use to see viruses?',
+    options:['Magnifying glass','Light microscope','Electron microscope','X-ray scanner'],
+    answer:2
+  },
+];
+
+let currentObj=null;
+let act2Score=0;
+
+function initMicroscope(){
+  const tray=document.getElementById('objects-tray');
+  scopeObjects.forEach(obj=>{
+    const chip=document.createElement('div');
+    chip.className='obj-chip'; chip.dataset.id=obj.id;
+    chip.innerHTML=`${obj.emoji} ${obj.name}`;
+    chip.onclick=()=>selectObject(obj.id);
+    tray.appendChild(chip);
+  });
+}
+initMicroscope();
+
+function selectObject(id){
+  currentObj=scopeObjects.find(o=>o.id===id);
+  document.querySelectorAll('.obj-chip').forEach(c=>{
+    c.classList.toggle('selected', c.dataset.id===id);
+  });
+  document.getElementById('scope-object').innerHTML=
+    `<span class="obj-emoji">${currentObj.emoji}</span><span class="obj-label">${currentObj.name}</span>`;
+  document.getElementById('nm-display').textContent=currentObj.nm;
+  document.getElementById('info-text').textContent=currentObj.info;
+  document.getElementById('property-text').textContent=currentObj.property;
+  document.getElementById('zoom-slider').value=1;
+  updateZoom(1);
+  renderQuiz();
+}
+
+function updateZoom(val){
+  const el=document.getElementById('scope-object');
+  el.style.transform=`translate(-50%,-50%) scale(${val})`;
+  document.getElementById('zoom-level').textContent=parseFloat(val).toFixed(1)+'x';
+  // glow increases with zoom
+  document.getElementById('scope-viewport').style.boxShadow=
+    `0 0 ${val*12}px rgba(0,212,255,${val*.1}), inset 0 0 40px rgba(0,0,0,.6)`;
+}
+
+function renderQuiz(){
+  const q=document.getElementById('quiz-question');
+  const opts=document.getElementById('quiz-opts');
+  q.textContent=currentObj.question;
+  opts.innerHTML='';
+  currentObj.options.forEach((opt,i)=>{
+    const b=document.createElement('button');
+    b.className='quiz-opt'; b.textContent=opt;
+    b.onclick=()=>answerQuiz(i,b);
+    opts.appendChild(b);
+  });
+}
+
+let quizAnswered=false;
+let act2Done=false;
+function answerQuiz(i,btn){
+  if(quizAnswered)return;
+  quizAnswered=true;
+  if(i===currentObj.answer){
+    btn.classList.add('correct');
+    act2Score++;
+    addScore(20); addStar();
+    if(act2Score>=3 && !act2Done){
+      act2Done=true;
+      showBadge('🔬','Nano Scientist!','You answered 3+ microscope challenges!');
+    }
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('.quiz-opt')[currentObj.answer].classList.add('correct');
+  }
+  setTimeout(()=>{ quizAnswered=false; },2000);
+}
+
+// ══════════════════════════════════
+// ACTIVITY 3 — BUILD A NANOBOT
+// ══════════════════════════════════
+const missions = [
+  {
+    title:'🎯 Cancer Cell Hunter',
+    desc:'Build a nanobot that can navigate the bloodstream, detect cancer cells, and deliver medicine directly to them — leaving healthy cells untouched!',
+    required:{head:'sensor',body:'medicine',arm:'propeller',arm2:'camera',legs:'anchor'},
+  }
+];
+
+const nanoParts=[
+  {id:'sensor',  icon:'📡', name:'Nano Sensor',    desc:'Detects sick cells using chemical signals', fits:'head'},
+  {id:'medicine',icon:'💊', name:'Drug Capsule',   desc:'Stores medicine and releases it on target', fits:'body'},
+  {id:'propeller',icon:'🌀',name:'Nano Propeller', desc:'Propels bot through the bloodstream',       fits:'arm'},
+  {id:'camera',  icon:'📸', name:'Nano Camera',    desc:'Sees individual cells clearly',             fits:'arm2'},
+  {id:'anchor',  icon:'⚓', name:'Cell Anchor',    desc:'Locks onto the target cell wall',           fits:'legs'},
+  {id:'shield',  icon:'🛡️', name:'Nano Shield',    desc:'(Distractor) Bounces off all cells',       fits:null},
+  {id:'clock',   icon:'⏰', name:'Timer Chip',     desc:'(Distractor) Times your lunch break',      fits:null},
+];
+
+let botParts={head:null,body:null,arm:null,arm2:null,legs:null};
+let botDragSrc=null;
+let act3Done=false;
+
+function initBuilder(){
+  document.getElementById('current-mission').textContent=missions[0].desc;
+  const list=document.getElementById('parts-list');
+  nanoParts.forEach(p=>{
+    const el=document.createElement('div');
+    el.className='part-item'; el.draggable=true; el.dataset.pid=p.id;
+    el.innerHTML=`<span class="part-icon">${p.icon}</span><div><div class="part-name">${p.name}</div><div class="part-desc">${p.desc}</div></div>`;
+    el.addEventListener('dragstart',()=>{ botDragSrc=p.id; el.classList.add('dragging'); });
+    el.addEventListener('dragend',()=>el.classList.remove('dragging'));
+    list.appendChild(el);
+  });
+}
+initBuilder();
+
+function botDragOver(e){ e.preventDefault(); e.currentTarget.classList.add('dragover'); }
+function botDragLeave(e){ e.currentTarget.classList.remove('dragover'); }
+function botDrop(e){
+  e.preventDefault();
+  const slot=e.currentTarget;
+  slot.classList.remove('dragover');
+  if(!botDragSrc)return;
+  const part=nanoParts.find(p=>p.id===botDragSrc);
+  if(!part)return;
+  const zone=slot.dataset.zone;
+
+  botParts[zone]=botDragSrc;
+
+  slot.classList.add('has-part');
+  slot.innerHTML=`<span class="placed-icon">${part.icon}</span><span class="placed-name">${part.name}</span>`;
+
+  // mark part as used
+  document.querySelectorAll(`.part-item[data-pid="${botDragSrc}"]`).forEach(el=>el.classList.add('used'));
+  slot.classList.add('pop');
+
+  botDragSrc=null;
+  checkMission();
+}
+
+function checkMission(){
+  const req=missions[0].required;
+  let correct=0, total=Object.keys(req).length;
+  Object.entries(req).forEach(([zone,pid])=>{
+    if(botParts[zone]===pid)correct++;
+  });
+
+  const pct=Math.round(correct/total*100);
+  document.getElementById('progress-fill').style.width=pct+'%';
+
+  const ms=document.getElementById('mission-status');
+  if(correct===total){
+    ms.style.color='#00ff99';
+    ms.textContent='🎉 MISSION COMPLETE! Your nanobot is ready to save lives!';
+    addScore(80); addStar(); addStar();
+    if(!act3Done){
+      act3Done=true;
+      showBadge('🤖','Nanobot Engineer!','You built a fully functional nanobot!');
+    }
+  } else {
+    ms.style.color='rgba(200,215,255,.7)';
+    ms.textContent=`${correct}/${total} parts correctly placed. Keep building!`;
+  }
+}
+</script>
+</body>
+</html>

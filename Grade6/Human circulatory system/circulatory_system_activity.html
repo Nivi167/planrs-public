@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Human Circulatory System</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --v1:#12022e;--v2:#1e0a40;--v3:#3b0f8a;--v4:#5b1fd4;
+  --v5:#7c3aed;--v6:#a855f7;--v7:#c084fc;--v8:#e9d5ff;
+  --heart:#e11d48;--artery:#f43f5e;--vein:#3b82f6;
+  --ox:#10b981;--green:#22c55e;--gold:#f59e0b;
+  --teal:#06b6d4;--pink:#ec4899;--white:#fff;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Nunito',sans-serif;background:var(--v1);color:var(--white);}
+
+/* ── CHAIN BARS ── */
+.chain-top{position:fixed;top:0;left:0;right:0;height:5px;z-index:300;
+  background:linear-gradient(90deg,var(--v5),var(--heart),var(--gold),var(--teal),var(--pink),var(--ox),var(--v6),var(--v5));
+  background-size:400% 100%;animation:chainFlow 2s linear infinite;
+  box-shadow:0 0 18px 4px rgba(124,58,237,.85);}
+.chain-bottom{position:fixed;bottom:0;left:0;right:0;height:3px;z-index:300;
+  background:linear-gradient(90deg,var(--teal),var(--ox),var(--gold),var(--heart),var(--v6));
+  background-size:300% 100%;animation:chainFlow 2.5s linear infinite reverse;
+  box-shadow:0 0 12px rgba(6,182,212,.65);}
+@keyframes chainFlow{to{background-position:-400% 0}}
+
+/* ── CANVAS ── */
+#cosmos{position:fixed;inset:0;pointer-events:none;z-index:0}
+
+/* ── SHELL ── */
+.shell{position:relative;z-index:10;display:flex;flex-direction:column;height:100vh;padding:8px 14px 6px;gap:5px;}
+
+/* ── HEADING ── */
+.heading{text-align:center;flex-shrink:0;animation:hDrop .7s cubic-bezier(.34,1.56,.64,1) both}
+.heading h1{font-family:'Fredoka One',cursive;font-size:clamp(.9rem,2.2vw,1.55rem);line-height:1.15;
+  background:linear-gradient(135deg,#e9d5ff 0%,#fff 30%,#f43f5e 52%,#f59e0b 72%,#06b6d4 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 0 16px rgba(124,58,237,.55));}
+.hline{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:3px;}
+.hline hr{flex:1;max-width:70px;border:none;height:2px;background:linear-gradient(90deg,transparent,var(--v6));border-radius:2px}
+.hline hr:last-child{background:linear-gradient(90deg,var(--v6),transparent)}
+.hdot{width:9px;height:9px;border-radius:50%;display:inline-block;margin:0 2px;animation:hPulse 1.8s ease-in-out infinite}
+.hdot.h{background:var(--heart);box-shadow:0 0 7px var(--heart)}
+.hdot.a{background:var(--artery);box-shadow:0 0 7px var(--artery);animation-delay:.35s}
+.hdot.v{background:var(--vein);box-shadow:0 0 7px var(--vein);animation-delay:.7s}
+.hdot.o{background:var(--ox);box-shadow:0 0 7px var(--ox);animation-delay:1.05s}
+@keyframes hPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.4)}}
+@keyframes hDrop{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:none}}
+
+/* ── TABS ── */
+.tabs{display:flex;justify-content:center;gap:7px;flex-shrink:0;}
+.tab{font-family:'Fredoka One',cursive;font-size:.78rem;padding:6px 16px;border-radius:50px;cursor:pointer;
+  border:2px solid var(--v6);background:rgba(91,31,212,.18);color:var(--v7);
+  transition:all .25s cubic-bezier(.34,1.56,.64,1);position:relative;overflow:hidden;}
+.tab::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--v5),var(--v3));
+  transform:translateY(102%);transition:transform .25s ease;border-radius:50px;z-index:-1;}
+.tab:hover,.tab.on{color:#fff;transform:translateY(-2px);}
+.tab:hover::after,.tab.on::after{transform:translateY(0)}
+.tab.on{box-shadow:0 4px 18px rgba(124,58,237,.6)}
+
+/* ── PANELS ── */
+.panel{display:none;flex:1;min-height:0;animation:panelIn .4s cubic-bezier(.34,1.56,.64,1) both}
+.panel.on{display:flex;flex-direction:column;}
+@keyframes panelIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* ── CARD ── */
+.card{background:rgba(30,10,64,.55);border:1.5px solid rgba(168,85,247,.2);border-radius:16px;
+  padding:9px 13px;backdrop-filter:blur(14px);
+  box-shadow:0 6px 28px rgba(0,0,0,.45),inset 0 1px 0 rgba(192,132,252,.1);
+  position:relative;overflow:hidden;display:flex;flex-direction:column;flex:1;min-height:0;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--heart),var(--gold),var(--teal),var(--v6));border-radius:16px 16px 0 0;}
+.ct{font-family:'Fredoka One',cursive;font-size:.98rem;color:var(--v7);margin-bottom:3px;display:flex;align-items:center;gap:7px;flex-shrink:0;}
+.cd{font-size:.74rem;color:var(--v8);font-weight:600;margin-bottom:7px;line-height:1.35;flex-shrink:0;}
+
+/* ── BUTTON ── */
+.btn{font-family:'Fredoka One',cursive;font-size:.76rem;padding:6px 14px;border:none;border-radius:50px;cursor:pointer;
+  transition:all .22s;box-shadow:0 2px 8px rgba(0,0,0,.22);}
+.bv{background:linear-gradient(135deg,var(--v5),var(--v3));color:#fff}
+.bv:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(91,31,212,.45)}
+.bg{background:linear-gradient(135deg,var(--gold),var(--artery));color:#1e1b4b}
+.bg:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(245,158,11,.35)}
+.bt{background:linear-gradient(135deg,var(--teal),var(--ox));color:#fff}
+.bt:hover{transform:translateY(-2px);box-shadow:0 5px 14px rgba(6,182,212,.35)}
+
+/* ── RESULT BOX ── */
+.res{padding:6px 10px;border-radius:9px;font-weight:700;font-size:.77rem;
+  display:none;animation:fadeUp .3s ease;flex-shrink:0;margin-top:4px;line-height:1.4;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.res.good{background:rgba(16,185,129,.13);border:1.5px solid var(--ox);color:#6ee7b7}
+.res.med{background:rgba(245,158,11,.1);border:1.5px solid var(--gold);color:#fde68a}
+.res.bad{background:rgba(244,63,94,.1);border:1.5px solid var(--heart);color:#fda4af}
+
+/* ════════════ ACTIVITY 1 — LABEL THE HEART ════════════ */
+.act1-layout{display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:1;min-height:0;}
+@media(max-width:650px){.act1-layout{grid-template-columns:1fr}}
+
+/* Heart SVG diagram */
+.heart-map{position:relative;display:flex;align-items:center;justify-content:center;flex:1;min-height:0;}
+.heart-svg{width:100%;max-width:260px;height:auto;}
+
+/* Drop targets on the SVG zones */
+.h-drop{position:absolute;border-radius:50%;border:2.5px dashed rgba(192,132,252,.45);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.58rem;font-weight:800;color:rgba(255,255,255,.35);
+  transition:border-color .2s,background .2s;cursor:default;text-align:center;line-height:1.2;}
+.h-drop.hover-t{border-color:var(--gold);background:rgba(245,158,11,.15)}
+.h-drop.filled{border-style:solid;}
+.h-drop.filled.correct{border-color:var(--ox);background:rgba(16,185,129,.18);color:#6ee7b7;}
+.h-drop.filled.wrong{border-color:var(--heart);background:rgba(244,63,94,.15);color:#fda4af;}
+.h-drop .chip-in{font-family:'Fredoka One',cursive;font-size:.62rem;color:#fff;text-align:center;line-height:1.25;padding:2px;}
+
+/* Labels bank */
+.labels-bank{display:flex;flex-direction:column;gap:5px;justify-content:center;}
+.lbl-bank-title{font-family:'Fredoka One',cursive;font-size:.78rem;color:var(--gold);margin-bottom:4px;letter-spacing:.04em;}
+.lbl-chip{padding:7px 11px;border-radius:10px;cursor:grab;user-select:none;
+  font-family:'Fredoka One',cursive;font-size:.76rem;font-weight:700;
+  transition:transform .18s,opacity .18s;border:1.5px solid transparent;}
+.lbl-chip:hover{transform:scale(1.04) rotate(-.5deg)}
+.lbl-chip.dragging{opacity:.3;cursor:grabbing}
+.lbl-chip.used{opacity:.28;pointer-events:none}
+.lbl-chip.ra{background:rgba(244,63,94,.22);border-color:rgba(244,63,94,.5);color:#fda4af}
+.lbl-chip.rv{background:rgba(245,158,11,.18);border-color:rgba(245,158,11,.45);color:#fde68a}
+.lbl-chip.la{background:rgba(6,182,212,.16);border-color:rgba(6,182,212,.4);color:#a5f3fc}
+.lbl-chip.lv{background:rgba(16,185,129,.16);border-color:rgba(16,185,129,.4);color:#6ee7b7}
+.lbl-chip.val{background:rgba(168,85,247,.2);border-color:rgba(168,85,247,.5);color:#e9d5ff}
+
+/* ref mini info */
+.chamber-info{font-size:.68rem;color:var(--v8);font-weight:600;line-height:1.4;margin-top:auto;padding-top:5px;}
+
+/* ════════════ ACTIVITY 2 — DRAG & DROP SORT ════════════ */
+.act2-layout{display:flex;flex-direction:column;flex:1;min-height:0;gap:5px;}
+.sort-cols{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:7px;flex:1;min-height:0;}
+@media(max-width:700px){.sort-cols{grid-template-columns:1fr 1fr}}
+.sort-col-wrap{display:flex;flex-direction:column;min-height:0;}
+.sort-head{text-align:center;padding:4px 5px;border-radius:7px;font-family:'Fredoka One',cursive;font-size:.76rem;flex-shrink:0;margin-bottom:2px;}
+.sh-h{background:rgba(225,29,72,.22);color:#fda4af}
+.sh-a{background:rgba(244,63,94,.2);color:#fecaca}
+.sh-v{background:rgba(59,130,246,.2);color:#bfdbfe}
+.sh-b{background:rgba(16,185,129,.17);color:#6ee7b7}
+.sort-col{background:rgba(59,20,130,.18);border:2px dashed rgba(168,85,247,.28);border-radius:11px;
+  padding:5px 6px;display:flex;flex-direction:column;gap:4px;flex:1;min-height:0;
+  overflow-y:auto;transition:border-color .2s,background .2s;}
+.sort-col::-webkit-scrollbar{width:3px}
+.sort-col::-webkit-scrollbar-thumb{background:var(--v6);border-radius:2px}
+.sort-col.hover-over{border-color:var(--gold);background:rgba(245,158,11,.07)}
+.fc{background:rgba(30,10,64,.6);border:1.5px solid rgba(168,85,247,.22);border-radius:8px;
+  padding:5px 8px;font-size:.72rem;font-weight:700;color:var(--v8);cursor:grab;user-select:none;
+  transition:transform .15s,box-shadow .15s,opacity .15s;line-height:1.3;}
+.fc:hover{transform:scale(1.02);box-shadow:0 3px 10px rgba(124,58,237,.28)}
+.fc.dragging{opacity:.28;cursor:grabbing}
+.fc.sc{border-color:var(--ox)!important;background:rgba(16,185,129,.12)!important;color:#6ee7b7!important}
+.fc.sw{border-color:var(--heart)!important;background:rgba(244,63,94,.1)!important;color:#fda4af!important}
+.pool-wrap{background:rgba(59,20,130,.15);border-radius:11px;padding:6px 9px;flex-shrink:0;}
+.pool-lbl{font-family:'Fredoka One',cursive;font-size:.7rem;color:var(--gold);margin-bottom:4px;}
+#factPool2{display:flex;flex-wrap:wrap;gap:5px;}
+
+/* ════════════ ACTIVITY 3 — QUIZ ════════════ */
+.act3-layout{display:flex;flex-direction:column;flex:1;min-height:0;gap:5px;}
+.qprog{display:flex;align-items:center;gap:9px;padding:5px 9px;background:rgba(59,20,130,.22);border-radius:9px;flex-shrink:0;}
+.qctr{font-family:'Fredoka One',cursive;font-size:.76rem;color:var(--gold);white-space:nowrap}
+.ptk{flex:1;height:7px;background:rgba(168,85,247,.18);border-radius:4px;overflow:hidden}
+.pfil{height:100%;background:linear-gradient(90deg,var(--v5),var(--heart));border-radius:4px;transition:width .4s ease}
+.sdsp{font-family:'Fredoka One',cursive;font-size:.76rem;color:var(--v7);white-space:nowrap}
+.qbox{background:linear-gradient(135deg,rgba(59,20,130,.3),rgba(30,10,64,.48));
+  border:1.5px solid rgba(168,85,247,.24);border-radius:13px;padding:9px 12px;flex-shrink:0;}
+.qtxt{font-family:'Fredoka One',cursive;font-size:.88rem;color:var(--v8);margin-bottom:9px;line-height:1.4;}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.opt{padding:7px 10px;background:rgba(30,10,64,.58);border:1.5px solid rgba(168,85,247,.2);border-radius:9px;
+  font-family:'Nunito',sans-serif;font-size:.77rem;font-weight:700;color:#fff;cursor:pointer;text-align:left;transition:all .18s;}
+.opt:hover:not(:disabled){border-color:var(--v6);background:rgba(91,31,212,.3);transform:translateY(-1px)}
+.opt.correct{background:rgba(16,185,129,.17)!important;border-color:var(--ox)!important;color:#6ee7b7!important}
+.opt.wrong{background:rgba(244,63,94,.13)!important;border-color:var(--heart)!important;color:#fda4af!important}
+.qfb{padding:6px 10px;border-radius:9px;font-weight:700;font-size:.76rem;
+  display:none;animation:fadeUp .3s ease;margin-top:6px;line-height:1.35;}
+.qfb.correct{background:rgba(16,185,129,.13);border:1.5px solid var(--ox);color:#6ee7b7}
+.qfb.wrong{background:rgba(244,63,94,.1);border:1.5px solid var(--heart);color:#fda4af}
+.nqbtn{font-family:'Fredoka One',cursive;font-size:.76rem;padding:6px 17px;
+  background:linear-gradient(135deg,var(--teal),var(--ox));color:#fff;border:none;border-radius:50px;
+  cursor:pointer;display:none;margin-top:6px;flex-shrink:0;align-self:flex-start;
+  box-shadow:0 2px 10px rgba(6,182,212,.25);transition:all .22s;}
+.nqbtn:hover{transform:translateY(-2px);box-shadow:0 5px 16px rgba(6,182,212,.35)}
+.qres{text-align:center;padding:10px;display:none;flex-direction:column;align-items:center;gap:4px;}
+.rtro{font-size:2.4rem}
+.rsco{font-family:'Fredoka One',cursive;font-size:2.6rem;
+  background:linear-gradient(90deg,var(--gold),var(--heart),var(--teal));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.rmsg{font-size:.88rem;font-weight:700;color:var(--v7)}
+.rebtn{font-family:'Fredoka One',cursive;font-size:.84rem;padding:8px 22px;
+  background:linear-gradient(135deg,var(--v5),var(--v3));color:#fff;border:none;border-radius:50px;
+  cursor:pointer;box-shadow:0 3px 12px rgba(91,31,212,.38);transition:all .22s;margin-top:4px;}
+.rebtn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(91,31,212,.5)}
+
+/* ── CONFETTI ── */
+.cf{position:fixed;top:-12px;pointer-events:none;z-index:999;border-radius:3px;animation:cfFall linear forwards}
+@keyframes cfFall{to{transform:translateY(108vh) rotate(900deg);opacity:0}}
+</style>
+</head>
+<body>
+<div class="chain-top"></div>
+<div class="chain-bottom"></div>
+<canvas id="cosmos"></canvas>
+
+<div class="shell">
+
+  <!-- HEADING ONLY -->
+  <div class="heading">
+    <h1>The Human Circulatory System</h1>
+    <div class="hline">
+      <hr>
+      <span class="hdot h"></span>
+      <span class="hdot a"></span>
+      <span class="hdot v"></span>
+      <span class="hdot o"></span>
+      <hr>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab on" onclick="goTab(0,this)">❤️ Label the Heart</button>
+    <button class="tab"    onclick="goTab(1,this)">🩸 Sort the Facts</button>
+    <button class="tab"    onclick="goTab(2,this)">💡 Body Quiz</button>
+  </div>
+
+  <!-- ══ PANEL 0: LABEL THE HEART (DRAG & DROP) ══ -->
+  <div class="panel on" id="p0">
+    <div class="card">
+      <div class="ct">❤️ Label the Heart</div>
+      <div class="cd">Drag each label to the correct chamber or feature of the heart diagram!</div>
+      <div class="act1-layout">
+
+        <!-- SVG heart with drop zones -->
+        <div class="heart-map" id="heartMap">
+          <!-- Simple schematic heart SVG -->
+          <svg class="heart-svg" viewBox="0 0 240 220" xmlns="http://www.w3.org/2000/svg">
+            <!-- background heart shape -->
+            <ellipse cx="120" cy="130" rx="95" ry="80" fill="rgba(225,29,72,.12)" stroke="rgba(225,29,72,.35)" stroke-width="1.5"/>
+            <!-- Septum -->
+            <line x1="120" y1="60" x2="120" y2="185" stroke="rgba(255,255,255,.2)" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <!-- Top vessels -->
+            <rect x="100" y="30" width="16" height="32" rx="4" fill="rgba(244,63,94,.35)" stroke="rgba(244,63,94,.6)" stroke-width="1"/>
+            <rect x="124" y="30" width="16" height="32" rx="4" fill="rgba(59,130,246,.3)" stroke="rgba(59,130,246,.5)" stroke-width="1"/>
+            <!-- chamber outlines -->
+            <ellipse cx="85" cy="95" rx="32" ry="26" fill="rgba(244,63,94,.15)" stroke="rgba(244,63,94,.4)" stroke-width="1.2"/>
+            <ellipse cx="155" cy="95" rx="32" ry="26" fill="rgba(59,130,246,.12)" stroke="rgba(59,130,246,.35)" stroke-width="1.2"/>
+            <ellipse cx="85" cy="148" rx="34" ry="30" fill="rgba(245,158,11,.12)" stroke="rgba(245,158,11,.4)" stroke-width="1.2"/>
+            <ellipse cx="155" cy="148" rx="34" ry="30" fill="rgba(16,185,129,.12)" stroke="rgba(16,185,129,.4)" stroke-width="1.2"/>
+            <!-- valve line -->
+            <path d="M88 120 Q120 114 152 120" fill="none" stroke="rgba(192,132,252,.5)" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <!-- labels inside -->
+            <text x="85" y="97" text-anchor="middle" font-size="7" fill="rgba(255,255,255,.35)" font-family="Nunito">Right Atrium</text>
+            <text x="155" y="97" text-anchor="middle" font-size="7" fill="rgba(255,255,255,.35)" font-family="Nunito">Left Atrium</text>
+            <text x="85" y="150" text-anchor="middle" font-size="7" fill="rgba(255,255,255,.35)" font-family="Nunito">Right Ventricle</text>
+            <text x="155" y="150" text-anchor="middle" font-size="7" fill="rgba(255,255,255,.35)" font-family="Nunito">Left Ventricle</text>
+          </svg>
+
+          <!-- Drop zones absolutely positioned over heart -->
+          <div class="h-drop" id="dz_ra" data-accept="ra"
+               style="width:60px;height:44px;top:32%;left:9%;font-size:.55rem"
+               ondragover="event.preventDefault();this.classList.add('hover-t')"
+               ondragleave="this.classList.remove('hover-t')"
+               ondrop="dropLabel(event,'dz_ra');this.classList.remove('hover-t')">
+            <span id="dz_ra_hint" style="font-size:.55rem;opacity:.45;font-weight:700">Drop</span>
+          </div>
+          <div class="h-drop" id="dz_rv" data-accept="rv"
+               style="width:60px;height:50px;top:57%;left:8%;font-size:.55rem"
+               ondragover="event.preventDefault();this.classList.add('hover-t')"
+               ondragleave="this.classList.remove('hover-t')"
+               ondrop="dropLabel(event,'dz_rv');this.classList.remove('hover-t')">
+            <span id="dz_rv_hint" style="font-size:.55rem;opacity:.45;font-weight:700">Drop</span>
+          </div>
+          <div class="h-drop" id="dz_la" data-accept="la"
+               style="width:60px;height:44px;top:32%;right:9%;font-size:.55rem"
+               ondragover="event.preventDefault();this.classList.add('hover-t')"
+               ondragleave="this.classList.remove('hover-t')"
+               ondrop="dropLabel(event,'dz_la');this.classList.remove('hover-t')">
+            <span id="dz_la_hint" style="font-size:.55rem;opacity:.45;font-weight:700">Drop</span>
+          </div>
+          <div class="h-drop" id="dz_lv" data-accept="lv"
+               style="width:60px;height:50px;top:57%;right:8%;font-size:.55rem"
+               ondragover="event.preventDefault();this.classList.add('hover-t')"
+               ondragleave="this.classList.remove('hover-t')"
+               ondrop="dropLabel(event,'dz_lv');this.classList.remove('hover-t')">
+            <span id="dz_lv_hint" style="font-size:.55rem;opacity:.45;font-weight:700">Drop</span>
+          </div>
+          <div class="h-drop" id="dz_val" data-accept="val"
+               style="width:72px;height:26px;border-radius:13px;top:51%;left:50%;transform:translateX(-50%);font-size:.52rem"
+               ondragover="event.preventDefault();this.classList.add('hover-t')"
+               ondragleave="this.classList.remove('hover-t')"
+               ondrop="dropLabel(event,'dz_val');this.classList.remove('hover-t')">
+            <span id="dz_val_hint" style="font-size:.5rem;opacity:.45;font-weight:700">Drop</span>
+          </div>
+        </div>
+
+        <!-- Label chips -->
+        <div class="labels-bank">
+          <div class="lbl-bank-title">✦ Labels — Drag to Diagram</div>
+          <div class="lbl-chip ra" id="chip_ra" draggable="true" data-val="ra"
+               ondragstart="lblDragStart(event,'ra','chip_ra')">Right Atrium</div>
+          <div class="lbl-chip rv" id="chip_rv" draggable="true" data-val="rv"
+               ondragstart="lblDragStart(event,'rv','chip_rv')">Right Ventricle</div>
+          <div class="lbl-chip la" id="chip_la" draggable="true" data-val="la"
+               ondragstart="lblDragStart(event,'la','chip_la')">Left Atrium</div>
+          <div class="lbl-chip lv" id="chip_lv" draggable="true" data-val="lv"
+               ondragstart="lblDragStart(event,'lv','chip_lv')">Left Ventricle</div>
+          <div class="lbl-chip val" id="chip_val" draggable="true" data-val="val"
+               ondragstart="lblDragStart(event,'val','chip_val')">Heart Valves</div>
+
+          <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+            <button class="btn bg" onclick="checkLabels()">✅ Check</button>
+            <button class="btn bv" onclick="resetLabels()">🔄 Reset</button>
+          </div>
+          <div class="res" id="lblRes"></div>
+
+          <div class="chamber-info">
+            💡 Right side → lungs for O₂<br>
+            Left side → body delivery<br>
+            Valves prevent backflow
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PANEL 1: SORT THE FACTS ══ -->
+  <div class="panel" id="p1">
+    <div class="card">
+      <div class="ct">🩸 Sort the Facts!</div>
+      <div class="cd">Drag each fact card into the correct column — Heart, Arteries, Veins, or Blood.</div>
+      <div class="act2-layout">
+        <div class="sort-cols">
+          <div class="sort-col-wrap">
+            <div class="sort-head sh-h">❤️ Heart</div>
+            <div class="sort-col" id="col_heart"
+                 ondragover="event.preventDefault();this.classList.add('hover-over')"
+                 ondragleave="this.classList.remove('hover-over')"
+                 ondrop="dropFact2(event,'heart');this.classList.remove('hover-over')"></div>
+          </div>
+          <div class="sort-col-wrap">
+            <div class="sort-head sh-a">🔴 Arteries</div>
+            <div class="sort-col" id="col_art"
+                 ondragover="event.preventDefault();this.classList.add('hover-over')"
+                 ondragleave="this.classList.remove('hover-over')"
+                 ondrop="dropFact2(event,'art');this.classList.remove('hover-over')"></div>
+          </div>
+          <div class="sort-col-wrap">
+            <div class="sort-head sh-v">🔵 Veins</div>
+            <div class="sort-col" id="col_vein"
+                 ondragover="event.preventDefault();this.classList.add('hover-over')"
+                 ondragleave="this.classList.remove('hover-over')"
+                 ondrop="dropFact2(event,'vein');this.classList.remove('hover-over')"></div>
+          </div>
+          <div class="sort-col-wrap">
+            <div class="sort-head sh-b">💉 Blood</div>
+            <div class="sort-col" id="col_blood"
+                 ondragover="event.preventDefault();this.classList.add('hover-over')"
+                 ondragleave="this.classList.remove('hover-over')"
+                 ondrop="dropFact2(event,'blood');this.classList.remove('hover-over')"></div>
+          </div>
+        </div>
+        <div class="pool-wrap">
+          <div class="pool-lbl">📦 DRAG THESE INTO THE COLUMNS ABOVE</div>
+          <div id="factPool2"></div>
+        </div>
+        <div style="display:flex;gap:7px;flex-shrink:0">
+          <button class="btn bg" onclick="checkSort2()">✅ Check</button>
+          <button class="btn bv" onclick="resetSort2()">🔄 Reset</button>
+        </div>
+        <div class="res" id="sortRes2"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PANEL 2: QUIZ ══ -->
+  <div class="panel" id="p2">
+    <div class="card">
+      <div class="ct">💡 Circulatory System Quiz</div>
+      <div class="cd">Answer all 8 questions to test what you know!</div>
+      <div class="act3-layout">
+        <div class="qprog">
+          <span class="qctr" id="qCtr">Q 1/8</span>
+          <div class="ptk"><div class="pfil" id="pFil" style="width:0%"></div></div>
+          <span class="sdsp" id="sDsp">Score: 0</span>
+        </div>
+        <div id="quizBody" style="display:flex;flex-direction:column;gap:5px;flex:1;min-height:0;">
+          <div class="qbox">
+            <div class="qtxt" id="qTxt"></div>
+            <div class="opts" id="qOpts"></div>
+            <div class="qfb" id="qFb"></div>
+          </div>
+          <button class="nqbtn" id="nqBtn" onclick="nextQ()">Next →</button>
+        </div>
+        <div class="qres" id="qRes">
+          <div class="rtro" id="rTro"></div>
+          <div class="rsco" id="rSco"></div>
+          <div class="rmsg" id="rMsg"></div>
+          <button class="rebtn" onclick="resetQuiz()">🔄 Play Again</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /shell -->
+
+<script>
+/* ══ COSMOS ══ */
+const cvs=document.getElementById('cosmos'),ctx=cvs.getContext('2d');
+let W,H;function resize(){W=cvs.width=innerWidth;H=cvs.height=innerHeight}
+resize();addEventListener('resize',resize);
+const STARS=Array.from({length:24},(_,i)=>({
+  x:Math.random()*2000,y:Math.random()*1000,r:3+Math.random()*10,
+  spd:.15+Math.random()*.38,rot:Math.random()*Math.PI*2,rv:(Math.random()-.5)*.022,
+  dx:Math.sin(Math.random()*6)*.18,op:.25+Math.random()*.38,
+  pulse:Math.random()*Math.PI*2,pv:.013+Math.random()*.008,
+  hue:[270,285,255,310,250,295][i%6]
+}));
+function star5(x,y,r,rot){
+  ctx.beginPath();
+  for(let i=0;i<10;i++){const a=rot+(i*Math.PI/5)-Math.PI/2,rr=i%2===0?r:r*.4;
+    i===0?ctx.moveTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr):ctx.lineTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr);}
+  ctx.closePath();
+}
+const BIRDS=Array.from({length:5},()=>({x:-110,y:35+Math.random()*330,spd:.8+Math.random()*1.1,
+  wing:Math.random()*Math.PI*2,wv:.07+Math.random()*.05,sz:7+Math.random()*7,al:.26+Math.random()*.25}));
+function drawBird(b){
+  ctx.save();ctx.globalAlpha=b.al;ctx.strokeStyle='#a855f7';ctx.lineWidth=1.8;
+  const w=b.sz*Math.abs(Math.sin(b.wing));
+  ctx.beginPath();ctx.moveTo(b.x-b.sz,-w*.5);ctx.quadraticCurveTo(b.x-b.sz*.3,-w,b.x,0);
+  ctx.quadraticCurveTo(b.x+b.sz*.3,-w,b.x+b.sz,-w*.5);ctx.stroke();ctx.restore();
+}
+const ORBS=Array.from({length:5},(_,i)=>({angle:i*(Math.PI*2/5),spd:.01-i*.0006,
+  color:['#e11d48','#f43f5e','#f59e0b','#7c3aed','#06b6d4'][i],r:2.2+i*.35}));
+function animCosmos(){
+  ctx.clearRect(0,0,W,H);
+  STARS.forEach(s=>{
+    s.y-=s.spd;s.x+=s.dx;s.rot+=s.rv;s.pulse+=s.pv;
+    const p=.85+.15*Math.sin(s.pulse);
+    if(s.y<-s.r*2){s.y=H+s.r;s.x=Math.random()*W}
+    if(s.x<-40)s.x=W+40;if(s.x>W+40)s.x=-40;
+    ctx.save();star5(s.x,s.y,s.r*p,s.rot);
+    ctx.fillStyle=`hsla(${s.hue},75%,72%,${s.op})`;ctx.shadowBlur=s.r*2.4;
+    ctx.shadowColor=`hsla(${s.hue},90%,70%,.65)`;ctx.fill();ctx.restore();
+  });
+  BIRDS.forEach(b=>{b.x+=b.spd;b.wing+=b.wv;if(b.x>W+120){b.x=-110;b.y=35+Math.random()*340}drawBird(b);});
+  const cx=W-52,cy=46;
+  ORBS.forEach(o=>{o.angle+=o.spd;const ox=cx+Math.cos(o.angle)*34,oy=cy+Math.sin(o.angle)*20;
+    ctx.beginPath();ctx.arc(ox,oy,o.r,0,Math.PI*2);ctx.fillStyle=o.color;
+    ctx.shadowBlur=7;ctx.shadowColor=o.color;ctx.fill();ctx.shadowBlur=0;});
+  ctx.beginPath();ctx.arc(cx,cy,9,0,Math.PI*2);ctx.fillStyle='rgba(225,29,72,.55)';ctx.fill();
+  requestAnimationFrame(animCosmos);
+}
+animCosmos();
+
+function burst(n=55){
+  const cols=['#7c3aed','#f59e0b','#f43f5e','#ec4899','#06b6d4','#10b981','#e11d48','#e9d5ff'];
+  for(let i=0;i<n;i++){
+    const d=document.createElement('div');d.className='cf';const s=4+Math.random()*8;
+    d.style.cssText=`left:${Math.random()*100}vw;width:${s}px;height:${s}px;
+      background:${cols[~~(Math.random()*cols.length)]};
+      border-radius:${Math.random()>.5?'50%':'3px'};
+      animation-duration:${1.3+Math.random()*1.8}s;animation-delay:${Math.random()*.6}s;`;
+    document.body.appendChild(d);setTimeout(()=>d.remove(),3800);
+  }
+}
+function goTab(i,btn){
+  document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('on',j===i));
+  document.querySelectorAll('.tab').forEach((b,j)=>b.classList.toggle('on',j===i));
+}
+
+/* ══════════════════════════
+   ACTIVITY 1 — LABEL HEART
+══════════════════════════ */
+let lblDrag={val:null,chipId:null};
+const LABEL_MAP={ra:'Right Atrium',rv:'Right Ventricle',la:'Left Atrium',lv:'Left Ventricle',val:'Heart Valves'};
+const DZ_FILLED={};
+
+function lblDragStart(event,val,chipId){
+  lblDrag={val,chipId};
+  document.getElementById(chipId).classList.add('dragging');
+}
+document.querySelectorAll('.lbl-chip').forEach(chip=>{
+  chip.addEventListener('dragend',()=>chip.classList.remove('dragging'));
+  chip.addEventListener('touchstart',e=>{lblDrag={val:chip.dataset.val,chipId:chip.id}},{passive:true});
+  chip.addEventListener('touchend',e=>{
+    const el=document.elementFromPoint(e.changedTouches[0].clientX,e.changedTouches[0].clientY);
+    const dz=el?.closest('.h-drop');
+    if(dz) dropLabel(null,dz.id);
+    lblDrag={val:null,chipId:null};
+  });
+});
+
+function dropLabel(event,dzId){
+  if(event)event.preventDefault();
+  if(!lblDrag.val) return;
+  const dz=document.getElementById(dzId);
+  // remove previous if any
+  if(DZ_FILLED[dzId]){
+    const prev=DZ_FILLED[dzId];
+    document.getElementById('chip_'+prev)?.classList.remove('used');
+    delete DZ_FILLED[dzId];
+  }
+  // mark old chip used
+  if(lblDrag.chipId) document.getElementById(lblDrag.chipId)?.classList.add('used');
+  // place chip text
+  const hint=document.getElementById(dzId+'_hint');
+  if(hint) hint.remove();
+  dz.innerHTML=`<span class="chip-in">${LABEL_MAP[lblDrag.val]}</span>`;
+  dz.classList.add('filled');
+  dz.classList.remove('correct','wrong');
+  DZ_FILLED[dzId]=lblDrag.val;
+  lblDrag={val:null,chipId:null};
+}
+
+function checkLabels(){
+  let correct=0,total=0;
+  document.querySelectorAll('.h-drop').forEach(dz=>{
+    const placed=DZ_FILLED[dz.id];
+    if(!placed) return;
+    total++;
+    if(placed===dz.dataset.accept){dz.classList.add('correct');dz.classList.remove('wrong');correct++;}
+    else{dz.classList.add('wrong');dz.classList.remove('correct');}
+  });
+  const res=document.getElementById('lblRes');res.style.display='block';
+  if(correct===5){res.className='res good';res.innerHTML='🎉 Perfect! All 5 labels correct!';burst();}
+  else if(correct>=3){res.className='res med';res.innerHTML=`⭐ ${correct}/5 correct — check the red ones!`;}
+  else{res.className='res bad';res.innerHTML=`📚 ${correct}/5 — keep trying!`;}
+}
+
+function resetLabels(){
+  document.querySelectorAll('.h-drop').forEach(dz=>{
+    dz.classList.remove('filled','correct','wrong','hover-t');
+    const hintId=dz.id+'_hint';
+    dz.innerHTML=`<span id="${hintId}" style="font-size:.55rem;opacity:.45;font-weight:700">Drop</span>`;
+  });
+  Object.keys(DZ_FILLED).forEach(k=>delete DZ_FILLED[k]);
+  document.querySelectorAll('.lbl-chip').forEach(c=>c.classList.remove('used','dragging'));
+  document.getElementById('lblRes').style.display='none';
+}
+
+/* ══════════════════════════
+   ACTIVITY 2 — SORT FACTS
+══════════════════════════ */
+const FACTS2=[
+  {id:'cf1',text:'Pumps blood 100,000 times/day',ans:'heart'},
+  {id:'cf2',text:'Has four chambers',ans:'heart'},
+  {id:'cf3',text:'Makes the "lub-dub" sound',ans:'heart'},
+  {id:'cf4',text:'Carries blood AWAY from heart',ans:'art'},
+  {id:'cf5',text:'Thick, strong walls, pulse with beats',ans:'art'},
+  {id:'cf6',text:'Largest artery is the aorta',ans:'art'},
+  {id:'cf7',text:'Carries blood BACK to the heart',ans:'vein'},
+  {id:'cf8',text:'Contain valves to prevent backflow',ans:'vein'},
+  {id:'cf9',text:'Often visible as blue under skin',ans:'vein'},
+  {id:'cf10',text:'Red cells carry oxygen',ans:'blood'},
+  {id:'cf11',text:'Plasma is the watery yellow liquid',ans:'blood'},
+  {id:'cf12',text:'Platelets help clot cuts',ans:'blood'},
+];
+let factDrag2=null;
+
+function buildPool2(){
+  document.getElementById('factPool2').innerHTML='';
+  ['heart','art','vein','blood'].forEach(t=>{document.getElementById(`col_${t}`).innerHTML='';});
+  document.getElementById('sortRes2').style.display='none';
+  [...FACTS2].sort(()=>Math.random()-.5).forEach(f=>{
+    const div=document.createElement('div');div.className='fc';div.id=f.id;
+    div.draggable=true;div.dataset.ans=f.ans;div.textContent=f.text;
+    div.addEventListener('dragstart',e=>{factDrag2=f.id;div.classList.add('dragging');});
+    div.addEventListener('dragend',()=>div.classList.remove('dragging'));
+    div.addEventListener('touchstart',()=>{factDrag2=f.id;},{passive:true});
+    div.addEventListener('touchend',e=>{
+      const col=document.elementFromPoint(e.changedTouches[0].clientX,e.changedTouches[0].clientY)?.closest('.sort-col');
+      if(col)dropFact2(null,col.id.replace('col_',''));factDrag2=null;
+    });
+    document.getElementById('factPool2').appendChild(div);
+  });
+}
+
+function dropFact2(event,target){
+  if(event)event.preventDefault();if(!factDrag2)return;
+  const card=document.getElementById(factDrag2);if(!card){factDrag2=null;return}
+  card.classList.remove('sc','sw','dragging');
+  document.getElementById(`col_${target}`).appendChild(card);factDrag2=null;
+}
+
+function checkSort2(){
+  let correct=0;
+  document.querySelectorAll('.fc').forEach(card=>{
+    const pid=card.parentElement?.id;if(!pid)return;
+    const ok=pid==='col_'+card.dataset.ans;
+    card.classList.toggle('sc',ok);card.classList.toggle('sw',!ok);if(ok)correct++;
+  });
+  const res=document.getElementById('sortRes2');res.style.display='block';
+  if(correct===FACTS2.length){res.className='res good';res.innerHTML=`🏆 Perfect! All ${FACTS2.length}/12 correct!`;burst();}
+  else if(correct>=8){res.className='res med';res.innerHTML=`⭐ ${correct}/12 — almost!`;}
+  else{res.className='res bad';res.innerHTML=`📚 ${correct}/12 — keep going!`;}
+}
+function resetSort2(){buildPool2();}
+buildPool2();
+
+/* ══════════════════════════
+   ACTIVITY 3 — QUIZ
+══════════════════════════ */
+const QS=[
+  {q:'What is the main job of the heart?',opts:['Breathe air','Pump blood','Digest food','Clean blood'],ans:1,exp:'The heart pumps blood throughout your entire body!'},
+  {q:'How many chambers does the heart have?',opts:['2','3','4','6'],ans:2,exp:'The heart has 4 chambers: right atrium, right ventricle, left atrium, left ventricle!'},
+  {q:'Which blood vessel carries blood AWAY from the heart?',opts:['Vein','Capillary','Artery','Valve'],ans:2,exp:'Arteries carry blood away from the heart to the body!'},
+  {q:'What do red blood cells carry?',opts:['Nutrients only','Carbon dioxide','Oxygen','Waste'],ans:2,exp:'Red blood cells carry oxygen to every cell in your body!'},
+  {q:'Which circulation loop goes to the lungs?',opts:['Systemic','Portal','Pulmonary','Renal'],ans:2,exp:'Pulmonary circulation sends blood to the lungs to pick up fresh oxygen!'},
+  {q:'What is the largest artery in the body?',opts:['Vena cava','Aorta','Capillary','Femoral'],ans:1,exp:'The aorta is the body\'s biggest artery — it leaves the left side of the heart!'},
+  {q:'Heart valves are like...?',opts:['Windows','One-way doors','Pumps','Filters'],ans:1,exp:'Valves are like one-way doors — they keep blood flowing in the right direction!'},
+  {q:'About how many times does your heart beat per day?',opts:['1,000','10,000','100,000','1,000,000'],ans:2,exp:'Your amazing heart beats about 100,000 times every single day!'},
+];
+let qIdx=0,score=0,qAns=false;
+
+function loadQ(){
+  if(qIdx>=QS.length){showQRes();return}
+  qAns=false;const q=QS[qIdx];
+  document.getElementById('qTxt').textContent=q.q;
+  document.getElementById('qFb').style.display='none';
+  document.getElementById('nqBtn').style.display='none';
+  document.getElementById('qCtr').textContent=`Q ${qIdx+1}/${QS.length}`;
+  document.getElementById('pFil').style.width=`${(qIdx/QS.length)*100}%`;
+  document.getElementById('sDsp').textContent=`Score: ${score}`;
+  const opts=document.getElementById('qOpts');opts.innerHTML='';
+  q.opts.forEach((o,i)=>{const btn=document.createElement('button');btn.className='opt';
+    btn.textContent=o;btn.onclick=()=>pickOpt(i,btn);opts.appendChild(btn);});
+}
+function pickOpt(chosen,btn){
+  if(qAns)return;qAns=true;const q=QS[qIdx];
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  document.querySelectorAll('.opt')[q.ans].classList.add('correct');
+  const fb=document.getElementById('qFb');
+  if(chosen===q.ans){btn.classList.add('correct');score++;fb.className='qfb correct';fb.innerHTML=`✅ ${q.exp}`;burst(38);}
+  else{btn.classList.add('wrong');fb.className='qfb wrong';fb.innerHTML=`❌ ${q.exp}`;}
+  fb.style.display='block';document.getElementById('nqBtn').style.display='inline-block';
+}
+function nextQ(){qIdx++;loadQ();}
+function showQRes(){
+  document.getElementById('quizBody').style.display='none';
+  document.getElementById('pFil').style.width='100%';
+  document.getElementById('sDsp').textContent=`Score: ${score}`;
+  const res=document.getElementById('qRes');res.style.display='flex';
+  document.getElementById('rSco').textContent=`${score}/${QS.length}`;
+  document.getElementById('rTro').textContent=['😊','📚','⭐','🌟','🎯','🚀','🏆','🥇','🎉'][score]||'🎉';
+  document.getElementById('rMsg').textContent=['Keep studying!','Good effort!','Getting there!','Nice work!','Well done!','Great job!','Excellent!','Amazing!','Perfect!'][score]||'Brilliant!';
+  if(score>=6)burst(80);
+}
+function resetQuiz(){
+  qIdx=0;score=0;
+  document.getElementById('quizBody').style.display='flex';
+  document.getElementById('qRes').style.display='none';
+  loadQ();
+}
+loadQ();
+</script>
+</body>
+</html>

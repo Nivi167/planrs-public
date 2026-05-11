@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Alchemist's Ledger: Lemonade Economics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Quicksand:wght@500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --magic-gold: #ffd700;
+            --magic-purple: #4b0082;
+            --potion-green: #2ecc71;
+            --text-light: #f5f5f5;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: radial-gradient(circle at center, #1a0033 0%, #050010 100%);
+            color: var(--text-light);
+            font-family: 'Quicksand', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* --- Animated Background Elements --- */
+        .magic-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .floating {
+            position: absolute;
+            animation: float 6s ease-in-out infinite;
+            opacity: 0.6;
+            filter: drop-shadow(0 0 10px var(--magic-gold));
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(10deg); }
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* --- Layout --- */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            color: var(--magic-gold);
+            font-size: 2.5rem;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            margin-bottom: 30px;
+        }
+
+        .activity-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--magic-gold);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease;
+        }
+
+        .activity-card:hover { transform: scale(1.01); }
+
+        /* --- Interaction Elements --- */
+        .drop-zone {
+            width: 100px;
+            height: 100px;
+            border: 3px dashed var(--magic-gold);
+            border-radius: 15px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px;
+            background: rgba(0,0,0,0.3);
+            font-size: 2.5rem;
+        }
+
+        .draggable {
+            width: 80px;
+            height: 80px;
+            background: var(--magic-purple);
+            border: 2px solid var(--magic-gold);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            font-size: 1.5rem;
+            margin: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        input {
+            background: rgba(255,255,255,0.9);
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            width: 80px;
+            font-size: 1.1rem;
+            text-align: center;
+            color: #333;
+        }
+
+        button {
+            background: var(--magic-gold);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            font-family: 'Cinzel', serif;
+            transition: background 0.3s;
+        }
+
+        button:hover { background: #e6c200; }
+
+        .feedback {
+            margin-top: 15px;
+            font-weight: bold;
+            min-height: 24px;
+        }
+
+        .success { color: var(--potion-green); text-shadow: 0 0 5px #000; }
+        .error { color: #ff4757; }
+
+    </style>
+</head>
+<body>
+
+    <div class="magic-bg" id="magic-bg"></div>
+
+    <div class="container">
+        <h1>✨ Unit Economics ✨</h1>
+
+        <div class="activity-card" id="act1">
+            <h3>Activity 1: The Ingredient Cost Cauldron</h3>
+            <p>Drag the <b>Perfect Square</b> ingredients into the cauldron to calculate total cost, then find the Cost Per Unit.</p>
+            <p><i>Hint: We need to make 100 cups of lemonade!</i></p>
+            
+            <div id="ingredients">
+                <div class="draggable" draggable="true" data-val="16" id="drag1">🧪16</div>
+                <div class="draggable" draggable="true" data-val="25" id="drag2">📜25</div>
+                <div class="draggable" draggable="true" data-val="9" id="drag3">🦉9</div>
+            </div>
+
+            <div class="drop-zone" id="cauldron">🍯</div>
+            
+            <div style="margin-top: 20px;">
+                Total Ingredient Cost: $<span id="total-cost" style="color:var(--magic-gold); font-weight:bold;">0</span><br><br>
+                Cost Per Cup (100 units): $<input type="number" step="0.01" id="ans1" placeholder="0.00">
+                <button onclick="checkAct1()">Cast Spell</button>
+            </div>
+            <div class="feedback" id="feed1"></div>
+        </div>
+
+        <div class="activity-card" id="act2">
+            <h3>Activity 2: Gross Margin Alchemy</h3>
+            <p>Experiment with the Selling Price. If your unit cost is $0.50, what price yields a <b>75% Gross Margin</b>?</p>
+            <div style="font-size: 0.9rem; margin-bottom: 15px; opacity: 0.8;">
+                $\text{Margin \%} = \frac{\text{Price} - \text{Cost}}{\text{Price}} \times 100$
+            </div>
+            
+            Selling Price: $<input type="range" min="0.50" max="5.00" step="0.50" id="priceRange" oninput="updatePrice(this.value)">
+            <span id="priceDisplay" style="font-weight:bold; color:var(--magic-gold); font-size: 1.2rem;">$0.50</span><br><br>
+            
+            <button onclick="checkAct2()">Test Profitability</button>
+            <div class="feedback" id="feed2"></div>
+        </div>
+
+        <div class="activity-card" id="act3">
+            <h3>Activity 3: Break-Even Prophecy</h3>
+            <p>Your fixed stand rent is <b>$144</b> (The square of 12!). If your profit per cup is <b>$1.50</b>, how many cups must you sell to break even?</p>
+            
+            Cups to Sell: <input type="number" id="ans3" placeholder="???">
+            <button onclick="checkAct3()">See the Future</button>
+            <div class="feedback" id="feed3"></div>
+        </div>
+    </div>
+
+    <script>
+        // --- Setup Background Animations ---
+        const bg = document.getElementById('magic-bg');
+        const emojis = ['📖', '🪄', '🧪', '🦉', '⭐', '🧪'];
+        
+        // Add floating objects
+        for(let i=0; i<15; i++) {
+            let el = document.createElement('div');
+            el.className = 'floating';
+            el.innerHTML = emojis[Math.floor(Math.random()*emojis.length)];
+            el.style.left = Math.random() * 90 + 'vw';
+            el.style.top = Math.random() * 90 + 'vh';
+            el.style.fontSize = (Math.random() * 20 + 20) + 'px';
+            el.style.animationDelay = (Math.random() * 5) + 's';
+            el.style.animationDuration = (Math.random() * 4 + 4) + 's';
+            bg.appendChild(el);
+        }
+
+        // Add twinkling stars
+        for(let i=0; i<50; i++) {
+            let star = document.createElement('div');
+            star.className = 'star';
+            star.style.width = star.style.height = Math.random() * 3 + 'px';
+            star.style.left = Math.random() * 100 + 'vw';
+            star.style.top = Math.random() * 100 + 'vh';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            bg.appendChild(star);
+        }
+
+        // --- Activity 1 Logic ---
+        let currentTotal = 0;
+        const draggables = document.querySelectorAll('.draggable');
+        const cauldron = document.getElementById('cauldron');
+
+        draggables.forEach(d => {
+            d.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text', e.target.id);
+            });
+        });
+
+        cauldron.addEventListener('dragover', (e) => e.preventDefault());
+        cauldron.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const id = e.dataTransfer.getData('text');
+            const el = document.getElementById(id);
+            const val = parseInt(el.getAttribute('data-val'));
+            currentTotal += val;
+            document.getElementById('total-cost').innerText = currentTotal;
+            el.style.visibility = 'hidden'; // Keeps layout but hides item
+        });
+
+        function checkAct1() {
+            const ans = document.getElementById('ans1').value;
+            const feedback = document.getElementById('feed1');
+            // Calculation: 16+25+9 = 50. 50 / 100 = 0.50
+            if(parseFloat(ans) === 0.5) {
+                feedback.innerHTML = "✨ Correct! Each potion costs $0.50 to brew.";
+                feedback.className = "feedback success";
+            } else {
+                feedback.innerHTML = "❌ The potion is unstable. Divide Total Cost ($" + currentTotal + ") by 100 units!";
+                feedback.className = "feedback error";
+            }
+        }
+
+        // --- Activity 2 Logic ---
+        function updatePrice(val) {
+            document.getElementById('priceDisplay').innerText = '$' + parseFloat(val).toFixed(2);
+        }
+
+        function checkAct2() {
+            const price = parseFloat(document.getElementById('priceRange').value);
+            const feedback = document.getElementById('feed2');
+            // Logic: Margin = (Price - Cost) / Price. 
+            // If Price is 2.00 and Cost is 0.50, Margin is (1.50/2.00) = 0.75
+            const margin = (price - 0.5) / price;
+            
+            if(price === 2.00) {
+                feedback.innerHTML = "✨ Masterful! $2.00 gives you exactly a 75% Gross Margin!";
+                feedback.className = "feedback success";
+            } else {
+                feedback.innerHTML = `Current Margin: ${(margin*100).toFixed(0)}%. Keep adjusting the slider to find 75%!`;
+                feedback.className = "feedback error";
+            }
+        }
+
+        // --- Activity 3 Logic ---
+        function checkAct3() {
+            const ans = document.getElementById('ans3').value;
+            const feedback = document.getElementById('feed3');
+            // Calculation: 144 (Rent) / 1.50 (Profit per unit) = 96
+            if(parseInt(ans) === 96) {
+                feedback.innerHTML = "✨ The prophecy is fulfilled! Selling 96 cups covers your rent.";
+                feedback.className = "feedback success";
+            } else {
+                feedback.innerHTML = "❌ The crystal ball is cloudy. Try: Rent ($144) ÷ Profit per Cup ($1.50).";
+                feedback.className = "feedback error";
+            }
+        }
+    </script>
+</body>
+</html>

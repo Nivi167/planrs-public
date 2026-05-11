@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chemical Bonding: Ionic vs Covalent</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap');
+
+  :root {
+    --violet-deep: #2d0a4e;
+    --violet-dark: #4a0e8f;
+    --violet-mid: #7c3aed;
+    --violet-light: #a855f7;
+    --violet-pale: #e9d5ff;
+    --violet-glow: #c084fc;
+    --accent-gold: #fbbf24;
+    --accent-pink: #f472b6;
+    --accent-cyan: #22d3ee;
+    --accent-green: #34d399;
+    --ionic-color: #f87171;
+    --covalent-color: #60a5fa;
+    --white: #ffffff;
+    --success: #10b981;
+    --error: #ef4444;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--violet-deep);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* === ANIMATED BACKGROUND === */
+  .bg-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* Stars */
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: white;
+    animation: twinkle var(--dur, 3s) ease-in-out infinite;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.2; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.5); }
+  }
+
+  /* Flying birds */
+  .bird {
+    position: absolute;
+    font-size: 1.5rem;
+    animation: flyBird var(--fly-dur, 12s) linear infinite;
+    opacity: 0.7;
+  }
+  @keyframes flyBird {
+    from { transform: translateX(-80px) translateY(0); left: -5%; }
+    25% { transform: translateX(0) translateY(-30px); }
+    50% { transform: translateX(0) translateY(10px); }
+    75% { transform: translateX(0) translateY(-20px); }
+    to { transform: translateX(80px) translateY(0); left: 110%; }
+  }
+
+  /* Chain links floating */
+  .chain-link {
+    position: absolute;
+    font-size: 1.8rem;
+    animation: floatChain var(--chain-dur, 8s) ease-in-out infinite;
+    opacity: 0.3;
+    color: var(--violet-glow);
+  }
+  @keyframes floatChain {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    33% { transform: translateY(-25px) rotate(15deg); }
+    66% { transform: translateY(10px) rotate(-10deg); }
+  }
+
+  /* Electron orbit pulse */
+  .orbit-dot {
+    position: absolute;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent-gold);
+    animation: orbitMove var(--orbit-dur, 5s) linear infinite;
+  }
+  @keyframes orbitMove {
+    from { transform: rotate(0deg) translateX(40px); }
+    to { transform: rotate(360deg) translateX(40px); }
+  }
+
+  /* === LAYOUT === */
+  .container {
+    position: relative;
+    z-index: 10;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px 40px;
+  }
+
+  /* === TITLE === */
+  .title-section {
+    text-align: center;
+    padding: 30px 0 20px;
+  }
+  .title-section h1 {
+    font-family: 'Fredoka One', cursive;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    color: white;
+    text-shadow: 0 0 30px var(--violet-glow), 0 0 60px var(--violet-mid);
+    letter-spacing: 1px;
+    line-height: 1.2;
+    animation: titlePulse 3s ease-in-out infinite;
+  }
+  @keyframes titlePulse {
+    0%, 100% { text-shadow: 0 0 30px var(--violet-glow), 0 0 60px var(--violet-mid); }
+    50% { text-shadow: 0 0 50px var(--accent-pink), 0 0 90px var(--violet-light); }
+  }
+  .title-underline {
+    height: 4px;
+    background: linear-gradient(90deg, transparent, var(--violet-light), var(--accent-pink), var(--violet-light), transparent);
+    border-radius: 2px;
+    margin: 10px auto;
+    width: 60%;
+    animation: shimmer 2s ease-in-out infinite;
+  }
+  @keyframes shimmer {
+    0%, 100% { opacity: 0.6; width: 50%; }
+    50% { opacity: 1; width: 70%; }
+  }
+
+  /* === TAB NAV === */
+  .tab-nav {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1rem;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    letter-spacing: 0.5px;
+  }
+  .tab-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: white;
+    opacity: 0;
+    transition: opacity 0.3s;
+    border-radius: 50px;
+  }
+  .tab-btn:hover::before { opacity: 0.1; }
+  .tab-btn.active {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px currentColor;
+  }
+  .tab-btn:nth-child(1) { background: linear-gradient(135deg, #7c3aed, #a855f7); color: white; }
+  .tab-btn:nth-child(2) { background: linear-gradient(135deg, #db2777, #f472b6); color: white; }
+  .tab-btn:nth-child(3) { background: linear-gradient(135deg, #0891b2, #22d3ee); color: white; }
+  .tab-btn .tab-icon { margin-right: 6px; }
+
+  /* === ACTIVITY PANELS === */
+  .activity-panel {
+    display: none;
+    animation: fadeInUp 0.5s ease;
+  }
+  .activity-panel.active { display: block; }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* === CARD === */
+  .card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(168,85,247,0.3);
+    border-radius: 24px;
+    padding: 28px;
+    backdrop-filter: blur(12px);
+    margin-bottom: 20px;
+  }
+  .activity-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.5rem;
+    color: var(--accent-gold);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .activity-subtitle {
+    color: var(--violet-pale);
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+    opacity: 0.85;
+  }
+
+  /* === ACTIVITY 1: SORT BONDS === */
+  .items-pool {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    min-height: 70px;
+    padding: 14px;
+    border-radius: 16px;
+    background: rgba(0,0,0,0.25);
+    border: 2px dashed rgba(168,85,247,0.4);
+    margin-bottom: 24px;
+    transition: border-color 0.3s;
+  }
+  .items-pool.drag-over {
+    border-color: var(--accent-gold);
+    background: rgba(251,191,36,0.05);
+  }
+  .drag-item {
+    padding: 10px 18px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: grab;
+    transition: all 0.25s ease;
+    user-select: none;
+    border: 2px solid transparent;
+    position: relative;
+    animation: itemFloat 3s ease-in-out infinite;
+  }
+  .drag-item:nth-child(odd) { animation-delay: 0.5s; }
+  .drag-item:nth-child(even) { animation-delay: 1s; }
+  @keyframes itemFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+  .drag-item:active { cursor: grabbing; transform: scale(1.08) rotate(3deg); }
+  .drag-item.dragging { opacity: 0.4; }
+  .drag-item.ionic-item {
+    background: rgba(248,113,113,0.2);
+    border-color: var(--ionic-color);
+    color: #fca5a5;
+  }
+  .drag-item.covalent-item {
+    background: rgba(96,165,250,0.2);
+    border-color: var(--covalent-color);
+    color: #93c5fd;
+  }
+  .drag-item.neutral-item {
+    background: rgba(167,139,250,0.2);
+    border-color: var(--violet-light);
+    color: var(--violet-pale);
+  }
+
+  .drop-zones {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .drop-zone {
+    min-height: 160px;
+    border-radius: 20px;
+    padding: 16px;
+    border: 3px dashed;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+  .drop-zone.ionic-zone {
+    border-color: var(--ionic-color);
+    background: rgba(248,113,113,0.08);
+  }
+  .drop-zone.covalent-zone {
+    border-color: var(--covalent-color);
+    background: rgba(96,165,250,0.08);
+  }
+  .drop-zone.drag-over {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px currentColor;
+  }
+  .drop-zone.ionic-zone.drag-over { box-shadow: 0 0 20px var(--ionic-color); }
+  .drop-zone.covalent-zone.drag-over { box-shadow: 0 0 20px var(--covalent-color); }
+  .drop-zone-label {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.2rem;
+    text-align: center;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .ionic-zone .drop-zone-label { color: var(--ionic-color); }
+  .covalent-zone .drop-zone-label { color: var(--covalent-color); }
+  .drop-zone-hint {
+    font-size: 0.8rem;
+    text-align: center;
+    opacity: 0.5;
+    color: white;
+    margin-bottom: 10px;
+  }
+  .drop-zone .drag-item { margin: 4px; display: inline-block; }
+
+  /* === ACTIVITY 2: ELECTRON TRANSFER === */
+  .electron-game {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .bond-scenario {
+    background: rgba(0,0,0,0.3);
+    border-radius: 20px;
+    padding: 20px 28px;
+    width: 100%;
+    text-align: center;
+  }
+  .scenario-text {
+    color: var(--violet-pale);
+    font-size: 1.05rem;
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+  .atom-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .atom-box {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.4rem;
+    position: relative;
+    transition: all 0.5s ease;
+    cursor: default;
+    box-shadow: 0 0 20px currentColor;
+  }
+  .atom-box.sodium {
+    background: radial-gradient(circle, #f87171, #dc2626);
+    color: white;
+    border: 3px solid #fca5a5;
+  }
+  .atom-box.chlorine {
+    background: radial-gradient(circle, #60a5fa, #2563eb);
+    color: white;
+    border: 3px solid #93c5fd;
+  }
+  .atom-box.hydrogen {
+    background: radial-gradient(circle, #a78bfa, #7c3aed);
+    color: white;
+    border: 3px solid #c4b5fd;
+  }
+  .atom-box.oxygen {
+    background: radial-gradient(circle, #34d399, #059669);
+    color: white;
+    border: 3px solid #6ee7b7;
+  }
+  .atom-label {
+    font-size: 0.65rem;
+    opacity: 0.85;
+    letter-spacing: 0.5px;
+  }
+  .electron-dots {
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    margin-top: 2px;
+  }
+  .bond-arrow {
+    font-size: 2.5rem;
+    color: var(--accent-gold);
+    animation: arrowPulse 1.5s ease-in-out infinite;
+  }
+  @keyframes arrowPulse {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.2); opacity: 1; }
+  }
+
+  .bond-type-choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+  }
+  .bond-choice {
+    padding: 16px;
+    border-radius: 16px;
+    border: 3px solid;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.1rem;
+    background: rgba(0,0,0,0.2);
+    user-select: none;
+  }
+  .bond-choice.ionic-choice { border-color: var(--ionic-color); color: var(--ionic-color); }
+  .bond-choice.covalent-choice { border-color: var(--covalent-color); color: var(--covalent-color); }
+  .bond-choice:hover { transform: scale(1.03); }
+  .bond-choice.correct { background: rgba(52,211,153,0.2); border-color: var(--success); color: var(--success); }
+  .bond-choice.wrong { background: rgba(239,68,68,0.15); border-color: var(--error); color: var(--error); animation: shake 0.4s ease; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+
+  .scenario-nav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    justify-content: center;
+  }
+  .nav-btn {
+    padding: 10px 22px;
+    border-radius: 50px;
+    border: 2px solid var(--violet-light);
+    background: rgba(124,58,237,0.2);
+    color: var(--violet-pale);
+    font-family: 'Fredoka One', cursive;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .nav-btn:hover { background: var(--violet-mid); color: white; }
+  .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .scenario-counter {
+    color: var(--violet-pale);
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  /* === ACTIVITY 3: BUILD A MOLECULE === */
+  .molecule-builder {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .atom-palette {
+    flex: 0 0 auto;
+    width: 160px;
+  }
+  .palette-title {
+    font-family: 'Fredoka One', cursive;
+    color: var(--accent-gold);
+    font-size: 1rem;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .palette-atom {
+    width: 100%;
+    padding: 10px;
+    border-radius: 12px;
+    text-align: center;
+    margin-bottom: 8px;
+    cursor: grab;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1rem;
+    transition: all 0.25s;
+    border: 2px solid;
+    user-select: none;
+  }
+  .palette-atom:active { cursor: grabbing; transform: scale(0.95); }
+  .palette-atom.pa-H { background: rgba(167,139,250,0.2); border-color: #a78bfa; color: #c4b5fd; }
+  .palette-atom.pa-O { background: rgba(52,211,153,0.2); border-color: #34d399; color: #6ee7b7; }
+  .palette-atom.pa-Na { background: rgba(248,113,113,0.2); border-color: #f87171; color: #fca5a5; }
+  .palette-atom.pa-Cl { background: rgba(96,165,250,0.2); border-color: #60a5fa; color: #93c5fd; }
+  .palette-atom.pa-C { background: rgba(251,191,36,0.2); border-color: #fbbf24; color: #fde68a; }
+  .palette-atom:hover { transform: translateX(4px) scale(1.04); }
+
+  .molecule-workspace {
+    flex: 1;
+    min-height: 280px;
+    border-radius: 20px;
+    background: rgba(0,0,0,0.3);
+    border: 3px dashed rgba(168,85,247,0.4);
+    padding: 16px;
+    position: relative;
+    transition: border-color 0.3s;
+  }
+  .molecule-workspace.drag-over {
+    border-color: var(--accent-gold);
+    background: rgba(251,191,36,0.04);
+  }
+  .workspace-label {
+    font-family: 'Fredoka One', cursive;
+    color: rgba(167,139,250,0.5);
+    text-align: center;
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+  }
+
+  .placed-atom {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.2rem;
+    cursor: move;
+    border: 3px solid;
+    z-index: 5;
+    box-shadow: 0 0 15px currentColor;
+    transition: box-shadow 0.3s;
+    user-select: none;
+  }
+  .placed-atom.pa-H { background: rgba(167,139,250,0.6); border-color: #a78bfa; color: white; }
+  .placed-atom.pa-O { background: rgba(52,211,153,0.6); border-color: #34d399; color: white; }
+  .placed-atom.pa-Na { background: rgba(248,113,113,0.6); border-color: #f87171; color: white; }
+  .placed-atom.pa-Cl { background: rgba(96,165,250,0.6); border-color: #60a5fa; color: white; }
+  .placed-atom.pa-C { background: rgba(251,191,36,0.6); border-color: #fbbf24; color: white; }
+  .placed-atom:hover { box-shadow: 0 0 25px currentColor; }
+
+  .molecule-check-area {
+    flex: 0 0 auto;
+    width: 220px;
+  }
+  .molecule-targets {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .mol-target {
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 2px solid rgba(168,85,247,0.4);
+    background: rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+  .mol-target:hover { border-color: var(--accent-gold); background: rgba(251,191,36,0.05); }
+  .mol-target.matched { border-color: var(--success); background: rgba(52,211,153,0.1); }
+  .mol-name { color: var(--accent-gold); font-family: 'Fredoka One', cursive; font-size: 1rem; }
+  .mol-formula { color: var(--violet-pale); font-size: 0.85rem; }
+  .mol-type-badge {
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-top: 4px;
+    font-weight: 700;
+  }
+  .ionic-badge { background: rgba(248,113,113,0.2); color: var(--ionic-color); border: 1px solid var(--ionic-color); }
+  .covalent-badge { background: rgba(96,165,250,0.2); color: var(--covalent-color); border: 1px solid var(--covalent-color); }
+
+  .check-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, var(--violet-mid), var(--violet-light));
+    color: white;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 12px;
+  }
+  .check-btn:hover { transform: scale(1.03); box-shadow: 0 0 20px var(--violet-mid); }
+
+  /* === SCORE/FEEDBACK === */
+  .score-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(0,0,0,0.25);
+    border-radius: 50px;
+    padding: 10px 20px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(168,85,247,0.3);
+  }
+  .score-label { color: var(--violet-pale); font-weight: 700; font-size: 0.9rem; }
+  .score-value { 
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.3rem;
+    color: var(--accent-gold);
+    text-shadow: 0 0 10px var(--accent-gold);
+  }
+  .reset-btn {
+    padding: 8px 16px;
+    border-radius: 50px;
+    border: 1px solid var(--violet-light);
+    background: transparent;
+    color: var(--violet-pale);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .reset-btn:hover { background: var(--violet-mid); color: white; }
+
+  .feedback-toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.1rem;
+    z-index: 1000;
+    transition: transform 0.4s ease;
+    pointer-events: none;
+  }
+  .feedback-toast.show { transform: translateX(-50%) translateY(0); }
+  .feedback-toast.success { background: var(--success); color: white; box-shadow: 0 4px 20px rgba(16,185,129,0.5); }
+  .feedback-toast.error { background: var(--error); color: white; box-shadow: 0 4px 20px rgba(239,68,68,0.5); }
+
+  /* canvas for bonds */
+  #bondCanvas {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    border-radius: 20px;
+  }
+
+  /* responsive */
+  @media (max-width: 640px) {
+    .drop-zones { grid-template-columns: 1fr; }
+    .bond-type-choices { grid-template-columns: 1fr; }
+    .molecule-builder { flex-direction: column; }
+    .atom-palette, .molecule-check-area { width: 100%; }
+    .atom-palette { display: flex; gap: 8px; flex-wrap: wrap; }
+    .palette-atom { width: auto; flex: 1 1 60px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Animated Background -->
+<div class="bg-canvas" id="bgCanvas"></div>
+
+<div class="container">
+  <!-- Title -->
+  <div class="title-section">
+    <h1>⚡ Chemical Bonding: Ionic vs Covalent ⚡</h1>
+    <div class="title-underline"></div>
+  </div>
+
+  <!-- Score bar -->
+  <div class="score-bar">
+    <span class="score-label">⭐ Total Score</span>
+    <span class="score-value" id="totalScore">0 pts</span>
+    <button class="reset-btn" onclick="resetAll()">↺ Reset All</button>
+  </div>
+
+  <!-- Tab Nav -->
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab(0)"><span class="tab-icon">🎯</span>Sort the Bonds</button>
+    <button class="tab-btn" onclick="switchTab(1)"><span class="tab-icon">⚡</span>Identify the Bond</button>
+    <button class="tab-btn" onclick="switchTab(2)"><span class="tab-icon">🔬</span>Build a Molecule</button>
+  </div>
+
+  <!-- ─── ACTIVITY 1: Sort the Bonds ─── -->
+  <div class="activity-panel active" id="panel-0">
+    <div class="card">
+      <div class="activity-title">🎯 Activity 1: Sort the Bonds</div>
+      <div class="activity-subtitle">Drag each substance into the correct bucket — Ionic or Covalent!</div>
+
+      <div class="items-pool" id="itemsPool" 
+           ondragover="allowDrop(event)" 
+           ondrop="dropOnPool(event)"
+           ondragleave="removeDragOver(event)">
+      </div>
+
+      <div class="drop-zones">
+        <div class="drop-zone ionic-zone" id="ionicZone"
+             ondragover="allowDrop(event)"
+             ondrop="dropOnZone(event,'ionic')"
+             ondragleave="removeDragOver(event)">
+          <div class="drop-zone-label">🔴 Ionic Bond</div>
+          <div class="drop-zone-hint">Transfer of electrons · Metal + Non-metal</div>
+        </div>
+        <div class="drop-zone covalent-zone" id="covalentZone"
+             ondragover="allowDrop(event)"
+             ondrop="dropOnZone(event,'covalent')"
+             ondragleave="removeDragOver(event)">
+          <div class="drop-zone-label">🔵 Covalent Bond</div>
+          <div class="drop-zone-hint">Sharing electrons · Non-metals only</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── ACTIVITY 2: Identify the Bond ─── -->
+  <div class="activity-panel" id="panel-1">
+    <div class="card">
+      <div class="activity-title">⚡ Activity 2: Identify the Bond</div>
+      <div class="activity-subtitle">Look at the atoms and decide: Is this an Ionic or Covalent bond?</div>
+
+      <div class="electron-game">
+        <div class="bond-scenario" id="scenarioBox"></div>
+        <div class="bond-type-choices">
+          <div class="bond-choice ionic-choice" id="ionicChoice" onclick="chooseBond('ionic')">
+            🔴 Ionic Bond<br><small>Electrons Transferred</small>
+          </div>
+          <div class="bond-choice covalent-choice" id="covalentChoice" onclick="chooseBond('covalent')">
+            🔵 Covalent Bond<br><small>Electrons Shared</small>
+          </div>
+        </div>
+        <div class="scenario-nav">
+          <button class="nav-btn" id="prevBtn" onclick="prevScenario()" disabled>← Prev</button>
+          <span class="scenario-counter" id="scenCounter">1 / 6</span>
+          <button class="nav-btn" id="nextBtn" onclick="nextScenario()">Next →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── ACTIVITY 3: Build a Molecule ─── -->
+  <div class="activity-panel" id="panel-2">
+    <div class="card">
+      <div class="activity-title">🔬 Activity 3: Build a Molecule</div>
+      <div class="activity-subtitle">Drag atoms onto the workspace, then click a target molecule to check if you built it!</div>
+
+      <div class="molecule-builder">
+        <!-- Atom palette -->
+        <div class="atom-palette">
+          <div class="palette-title">Atoms 🧪</div>
+          <div class="palette-atom pa-H" draggable="true" ondragstart="startAtomDrag(event,'H')">H · Hydrogen</div>
+          <div class="palette-atom pa-O" draggable="true" ondragstart="startAtomDrag(event,'O')">O · Oxygen</div>
+          <div class="palette-atom pa-Na" draggable="true" ondragstart="startAtomDrag(event,'Na')">Na · Sodium</div>
+          <div class="palette-atom pa-Cl" draggable="true" ondragstart="startAtomDrag(event,'Cl')">Cl · Chlorine</div>
+          <div class="palette-atom pa-C" draggable="true" ondragstart="startAtomDrag(event,'C')">C · Carbon</div>
+          <button class="reset-btn" style="width:100%;margin-top:12px" onclick="clearWorkspace()">🗑 Clear</button>
+        </div>
+
+        <!-- Workspace -->
+        <div class="molecule-workspace" id="moleculeWS"
+             ondragover="allowDrop(event)"
+             ondrop="dropAtomOnWS(event)"
+             ondragleave="removeDragOver(event)">
+          <canvas id="bondCanvas"></canvas>
+          <div class="workspace-label">⬅ Drop atoms here · Drag to move</div>
+        </div>
+
+        <!-- Targets -->
+        <div class="molecule-check-area">
+          <div class="palette-title">Match it! 🎯</div>
+          <div class="molecule-targets" id="molTargets"></div>
+          <button class="check-btn" onclick="checkMolecule()">✓ Check My Molecule</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="feedback-toast" id="toast"></div>
+
+<script>
+// ──────────────────────────────────────
+// BACKGROUND ANIMATIONS
+// ──────────────────────────────────────
+function buildBackground() {
+  const bg = document.getElementById('bgCanvas');
+
+  // Stars
+  for (let i = 0; i < 60; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 4 + 1;
+    s.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--dur:${(Math.random()*4+2).toFixed(1)}s;animation-delay:${(Math.random()*4).toFixed(1)}s`;
+    bg.appendChild(s);
+  }
+
+  // Birds
+  const birdEmojis = ['🦋','✨','⚛️','💫','🌟'];
+  for (let i = 0; i < 6; i++) {
+    const b = document.createElement('div');
+    b.className = 'bird';
+    b.textContent = birdEmojis[i % birdEmojis.length];
+    b.style.cssText = `top:${Math.random()*70+5}%;--fly-dur:${(Math.random()*8+10).toFixed(1)}s;animation-delay:${(Math.random()*12).toFixed(1)}s`;
+    bg.appendChild(b);
+  }
+
+  // Chain links
+  for (let i = 0; i < 10; i++) {
+    const c = document.createElement('div');
+    c.className = 'chain-link';
+    c.textContent = '🔗';
+    c.style.cssText = `left:${Math.random()*90}%;top:${Math.random()*90}%;--chain-dur:${(Math.random()*6+5).toFixed(1)}s;animation-delay:${(Math.random()*5).toFixed(1)}s`;
+    bg.appendChild(c);
+  }
+}
+buildBackground();
+
+// ──────────────────────────────────────
+// TABS
+// ──────────────────────────────────────
+let totalScore = 0;
+function switchTab(idx) {
+  document.querySelectorAll('.activity-panel').forEach((p,i) => {
+    p.classList.toggle('active', i === idx);
+  });
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    b.classList.toggle('active', i === idx);
+  });
+  if (idx === 2) setTimeout(drawBonds, 100);
+}
+
+function updateScore(pts) {
+  totalScore += pts;
+  document.getElementById('totalScore').textContent = totalScore + ' pts';
+}
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `feedback-toast ${type} show`;
+  setTimeout(() => { t.classList.remove('show'); }, 2200);
+}
+
+function resetAll() {
+  totalScore = 0;
+  document.getElementById('totalScore').textContent = '0 pts';
+  initActivity1();
+  initActivity2();
+  clearWorkspace();
+  document.querySelectorAll('.mol-target').forEach(m => m.classList.remove('matched'));
+}
+
+// ──────────────────────────────────────
+// ACTIVITY 1 — SORT THE BONDS
+// ──────────────────────────────────────
+const sortItems = [
+  { label:'🧂 Table Salt (NaCl)', type:'ionic' },
+  { label:'💧 Water (H₂O)', type:'covalent' },
+  { label:'🧪 Baking Soda', type:'ionic' },
+  { label:'🍭 Sugar (C₁₂H₂₂O₁₁)', type:'covalent' },
+  { label:'⚡ Magnesium Oxide', type:'ionic' },
+  { label:'🌬 Carbon Dioxide (CO₂)', type:'covalent' },
+  { label:'💊 Calcium Chloride', type:'ionic' },
+  { label:'🔥 Methane (CH₄)', type:'covalent' },
+];
+
+let draggedItem = null;
+let act1Score = 0;
+
+function initActivity1() {
+  act1Score = 0;
+  const pool = document.getElementById('itemsPool');
+  const iz = document.getElementById('ionicZone');
+  const cz = document.getElementById('covalentZone');
+  pool.innerHTML = '';
+  // remove items from zones (keep label+hint)
+  iz.querySelectorAll('.drag-item').forEach(e => e.remove());
+  cz.querySelectorAll('.drag-item').forEach(e => e.remove());
+
+  shuffleArr([...sortItems]).forEach(item => {
+    const el = document.createElement('div');
+    el.className = `drag-item neutral-item`;
+    el.textContent = item.label;
+    el.dataset.type = item.type;
+    el.draggable = true;
+    el.addEventListener('dragstart', e => {
+      draggedItem = el;
+      setTimeout(() => el.classList.add('dragging'), 0);
+    });
+    el.addEventListener('dragend', () => el.classList.remove('dragging'));
+    pool.appendChild(el);
+  });
+}
+
+function allowDrop(e) {
+  e.preventDefault();
+  e.currentTarget.classList.add('drag-over');
+}
+function removeDragOver(e) {
+  e.currentTarget.classList.remove('drag-over');
+}
+function dropOnPool(e) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (draggedItem) {
+    draggedItem.className = 'drag-item neutral-item';
+    e.currentTarget.appendChild(draggedItem);
+  }
+}
+function dropOnZone(e, zoneType) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!draggedItem) return;
+  const itemType = draggedItem.dataset.type;
+  draggedItem.className = `drag-item ${itemType}-item`;
+  e.currentTarget.appendChild(draggedItem);
+  if (itemType === zoneType) {
+    showToast('✅ Correct! +10 pts', 'success');
+    updateScore(10);
+  } else {
+    showToast('❌ Oops! Try again!', 'error');
+  }
+}
+
+function shuffleArr(a) {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ──────────────────────────────────────
+// ACTIVITY 2 — IDENTIFY THE BOND
+// ──────────────────────────────────────
+const scenarios = [
+  {
+    title: 'Sodium + Chlorine → Table Salt',
+    atom1: { label:'Na', cls:'sodium', electrons:'•', name:'Sodium' },
+    atom2: { label:'Cl', cls:'chlorine', electrons:'• • •', name:'Chlorine' },
+    arrow: '→ gives e⁻ →',
+    desc: 'Sodium GIVES one electron to Chlorine.',
+    answer: 'ionic'
+  },
+  {
+    title: 'Hydrogen + Hydrogen → H₂',
+    atom1: { label:'H', cls:'hydrogen', electrons:'•', name:'Hydrogen' },
+    atom2: { label:'H', cls:'hydrogen', electrons:'•', name:'Hydrogen' },
+    arrow: '↔ share e⁻ ↔',
+    desc: 'Two Hydrogen atoms SHARE their electrons.',
+    answer: 'covalent'
+  },
+  {
+    title: 'Oxygen + 2 Hydrogen → Water',
+    atom1: { label:'O', cls:'oxygen', electrons:'• •', name:'Oxygen' },
+    atom2: { label:'H', cls:'hydrogen', electrons:'•', name:'Hydrogen' },
+    arrow: '↔ share ↔',
+    desc: 'Oxygen and Hydrogen SHARE electrons to make H₂O.',
+    answer: 'covalent'
+  },
+  {
+    title: 'Magnesium + Oxygen → MgO',
+    atom1: { label:'Mg', cls:'sodium', electrons:'• •', name:'Magnesium' },
+    atom2: { label:'O', cls:'oxygen', electrons:'• •', name:'Oxygen' },
+    arrow: '→ gives e⁻ →',
+    desc: 'Magnesium TRANSFERS electrons to Oxygen.',
+    answer: 'ionic'
+  },
+  {
+    title: 'Carbon + 4 Hydrogen → Methane',
+    atom1: { label:'C', cls:'hydrogen', electrons:'• • • •', name:'Carbon' },
+    atom2: { label:'H', cls:'hydrogen', electrons:'•', name:'Hydrogen ×4' },
+    arrow: '↔ share ↔',
+    desc: 'Carbon and Hydrogen atoms SHARE electrons.',
+    answer: 'covalent'
+  },
+  {
+    title: 'Calcium + Chlorine → CaCl₂',
+    atom1: { label:'Ca', cls:'sodium', electrons:'• •', name:'Calcium' },
+    atom2: { label:'Cl', cls:'chlorine', electrons:'• • •', name:'Chlorine' },
+    arrow: '→ gives e⁻ →',
+    desc: 'Calcium TRANSFERS 2 electrons to two Chlorine atoms.',
+    answer: 'ionic'
+  },
+];
+
+let currentScen = 0;
+let act2Score = 0;
+let scenAnswered = new Array(scenarios.length).fill(false);
+
+function initActivity2() {
+  currentScen = 0;
+  act2Score = 0;
+  scenAnswered = new Array(scenarios.length).fill(false);
+  renderScenario();
+}
+
+function renderScenario() {
+  const s = scenarios[currentScen];
+  const box = document.getElementById('scenarioBox');
+  box.innerHTML = `
+    <div style="font-family:'Fredoka One',cursive;font-size:1.2rem;color:var(--accent-gold);margin-bottom:14px">${s.title}</div>
+    <div class="atom-display">
+      <div class="atom-box ${s.atom1.cls}">
+        ${s.atom1.label}
+        <div class="atom-label">${s.atom1.name}</div>
+        <div class="electron-dots">${s.atom1.electrons}</div>
+      </div>
+      <div class="bond-arrow">${s.arrow}</div>
+      <div class="atom-box ${s.atom2.cls}">
+        ${s.atom2.label}
+        <div class="atom-label">${s.atom2.name}</div>
+        <div class="electron-dots">${s.atom2.electrons}</div>
+      </div>
+    </div>
+    <div style="color:var(--violet-pale);margin-top:14px;font-size:0.95rem;font-style:italic">${s.desc}</div>
+  `;
+  const ic = document.getElementById('ionicChoice');
+  const cc = document.getElementById('covalentChoice');
+  ic.className = 'bond-choice ionic-choice';
+  cc.className = 'bond-choice covalent-choice';
+  document.getElementById('prevBtn').disabled = currentScen === 0;
+  document.getElementById('nextBtn').disabled = currentScen === scenarios.length - 1;
+  document.getElementById('scenCounter').textContent = `${currentScen+1} / ${scenarios.length}`;
+}
+
+function chooseBond(choice) {
+  if (scenAnswered[currentScen]) return;
+  const correct = scenarios[currentScen].answer;
+  scenAnswered[currentScen] = true;
+  const ic = document.getElementById('ionicChoice');
+  const cc = document.getElementById('covalentChoice');
+  if (choice === correct) {
+    if (choice === 'ionic') ic.className = 'bond-choice correct';
+    else cc.className = 'bond-choice correct';
+    showToast('🎉 Correct! +15 pts', 'success');
+    updateScore(15);
+  } else {
+    if (choice === 'ionic') ic.className = 'bond-choice wrong';
+    else cc.className = 'bond-choice wrong';
+    if (correct === 'ionic') ic.className = 'bond-choice correct';
+    else cc.className = 'bond-choice correct';
+    showToast('❌ Not quite — see the answer!', 'error');
+  }
+}
+
+function nextScenario() { if (currentScen < scenarios.length-1) { currentScen++; renderScenario(); } }
+function prevScenario() { if (currentScen > 0) { currentScen--; renderScenario(); } }
+
+// ──────────────────────────────────────
+// ACTIVITY 3 — BUILD A MOLECULE
+// ──────────────────────────────────────
+const molecules = [
+  { name:'Water', formula:'H₂O', type:'covalent', atoms:['H','H','O'], badge:'covalent-badge' },
+  { name:'Table Salt', formula:'NaCl', type:'ionic', atoms:['Na','Cl'], badge:'ionic-badge' },
+  { name:'Carbon Dioxide', formula:'CO₂', type:'covalent', atoms:['C','O','O'], badge:'covalent-badge' },
+  { name:'Methane', formula:'CH₄', type:'covalent', atoms:['C','H','H','H','H'], badge:'covalent-badge' },
+  { name:'Calcium Chloride', formula:'CaCl₂', type:'ionic', atoms:['Ca','Cl','Cl'], badge:'ionic-badge' },
+];
+
+let placedAtoms = []; // {el, x, y, symbol}
+let dragAtomSymbol = null;
+let wsAtomDrag = null;
+let wsOffset = {x:0,y:0};
+
+function startAtomDrag(e, symbol) {
+  dragAtomSymbol = symbol;
+  e.dataTransfer.effectAllowed = 'copy';
+}
+
+function dropAtomOnWS(e) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!dragAtomSymbol) return;
+  const ws = document.getElementById('moleculeWS');
+  const rect = ws.getBoundingClientRect();
+  const x = e.clientX - rect.left - 30;
+  const y = e.clientY - rect.top - 30;
+  addAtomToWS(dragAtomSymbol, Math.max(0,x), Math.max(0,y));
+  dragAtomSymbol = null;
+  drawBonds();
+}
+
+function addAtomToWS(symbol, x, y) {
+  const ws = document.getElementById('moleculeWS');
+  const el = document.createElement('div');
+  el.className = `placed-atom pa-${symbol}`;
+  el.textContent = symbol;
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  el.style.zIndex = 5;
+
+  // make it draggable within workspace
+  let isDragging = false, startX, startY, origX, origY;
+  el.addEventListener('mousedown', ev => {
+    isDragging = true;
+    startX = ev.clientX; startY = ev.clientY;
+    origX = parseInt(el.style.left); origY = parseInt(el.style.top);
+    el.style.zIndex = 99;
+    ev.preventDefault();
+  });
+  document.addEventListener('mousemove', ev => {
+    if (!isDragging) return;
+    el.style.left = (origX + ev.clientX - startX) + 'px';
+    el.style.top = (origY + ev.clientY - startY) + 'px';
+    drawBonds();
+  });
+  document.addEventListener('mouseup', ev => {
+    if (isDragging) { isDragging = false; el.style.zIndex = 5; }
+  });
+
+  // double-click to remove
+  el.addEventListener('dblclick', () => {
+    placedAtoms = placedAtoms.filter(a => a.el !== el);
+    el.remove(); drawBonds();
+  });
+
+  ws.appendChild(el);
+  placedAtoms.push({ el, symbol });
+}
+
+function clearWorkspace() {
+  const ws = document.getElementById('moleculeWS');
+  placedAtoms.forEach(a => a.el.remove());
+  placedAtoms = [];
+  drawBonds();
+}
+
+function drawBonds() {
+  const canvas = document.getElementById('bondCanvas');
+  const ws = document.getElementById('moleculeWS');
+  canvas.width = ws.offsetWidth;
+  canvas.height = ws.offsetHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // draw lines between all placed atoms within 130px
+  ctx.lineWidth = 3;
+  ctx.setLineDash([6,4]);
+  const positions = placedAtoms.map(a => {
+    const r = a.el.getBoundingClientRect();
+    const wr = ws.getBoundingClientRect();
+    return { x: r.left - wr.left + 30, y: r.top - wr.top + 30 };
+  });
+  for (let i = 0; i < positions.length; i++) {
+    for (let j = i+1; j < positions.length; j++) {
+      const dx = positions[i].x - positions[j].x;
+      const dy = positions[i].y - positions[j].y;
+      const dist = Math.sqrt(dx*dx+dy*dy);
+      if (dist < 130) {
+        const alpha = 1 - dist/130;
+        ctx.strokeStyle = `rgba(196,181,253,${alpha * 0.8})`;
+        ctx.beginPath();
+        ctx.moveTo(positions[i].x, positions[i].y);
+        ctx.lineTo(positions[j].x, positions[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function checkMolecule() {
+  const symbols = placedAtoms.map(a => a.symbol).sort();
+  let matched = null;
+  molecules.forEach(mol => {
+    if (JSON.stringify(mol.atoms.slice().sort()) === JSON.stringify(symbols)) {
+      matched = mol;
+    }
+  });
+  if (matched) {
+    showToast(`🎉 ${matched.name}! That's a ${matched.type} bond! +20 pts`, 'success');
+    updateScore(20);
+    document.querySelectorAll('.mol-target').forEach(t => {
+      if (t.dataset.formula === matched.formula) t.classList.add('matched');
+    });
+  } else {
+    showToast('🤔 Hmm, try a different combination!', 'error');
+  }
+}
+
+function buildMolTargets() {
+  const container = document.getElementById('molTargets');
+  molecules.forEach(mol => {
+    const d = document.createElement('div');
+    d.className = 'mol-target';
+    d.dataset.formula = mol.formula;
+    d.innerHTML = `
+      <div class="mol-name">${mol.name}</div>
+      <div class="mol-formula">${mol.formula} · ${mol.atoms.join(' + ')}</div>
+      <span class="mol-type-badge ${mol.badge}">${mol.type}</span>
+    `;
+    d.onclick = () => {
+      // hint: add atoms for this molecule
+      clearWorkspace();
+      const ws = document.getElementById('moleculeWS');
+      const cols = mol.atoms.length;
+      mol.atoms.forEach((sym, i) => {
+        const col = (i % cols);
+        const row = Math.floor(i / 4);
+        const x = 50 + col * 80;
+        const y = 60 + row * 90;
+        addAtomToWS(sym === 'Ca' ? 'Na' : sym, x, y);
+      });
+      drawBonds();
+    };
+    container.appendChild(d);
+  });
+}
+
+// ──────────────────────────────────────
+// INIT
+// ──────────────────────────────────────
+initActivity1();
+initActivity2();
+buildMolTargets();
+</script>
+</body>
+</html>

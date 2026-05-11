@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algebraic Identities — Expand & Factorise</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & BASE ─────────────────────────────────────────────────── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --sky1:#7EC8E3;--sky2:#B8E4F5;--sun:#FFE135;
+  --mt1:#6B8E7A;--mt2:#8FAF86;--mt3:#A8C5A0;
+  --river:#29B6F6;--river2:#81D4FA;
+  --grass:#4CAF50;--grass2:#66BB6A;
+  --white:#fff;
+  --card:#fffffff2;
+  --teal:#00BCD4;--teal2:#0097A7;
+  --yellow:#FFD600;--orange:#FF6D00;
+  --dark:#1A1048;--red:#F44336;--green:#00C853;
+  --purple:#9C27B0;
+  --pink:#FF4081;--lime:#AEEA00;--sky:#03A9F4;
+  --shadow:0 8px 32px rgba(0,0,0,.18);
+  --radius:20px;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Nunito',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+  background:var(--sky1);
+}
+
+/* ── ANIMATED SCENE ──────────────────────────────────────────────── */
+#scene{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  z-index:0;pointer-events:none;overflow:hidden;
+}
+
+/* Sky gradient */
+.sky{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,#0288D1 0%,#29B6F6 30%,#81D4FA 58%,#C8F0C8 74%,#4CAF50 74%,#388E3C 100%);
+}
+
+/* Sun */
+.sun{
+  position:absolute;top:6%;right:12%;
+  width:70px;height:70px;
+  background:radial-gradient(circle,#FFF176,#FFD700 50%,#FFB300);
+  border-radius:50%;
+  box-shadow:0 0 40px 15px rgba(255,215,0,.5);
+  animation:sunPulse 4s ease-in-out infinite;
+}
+@keyframes sunPulse{0%,100%{box-shadow:0 0 40px 15px rgba(255,215,0,.5)}50%{box-shadow:0 0 60px 25px rgba(255,215,0,.7)}}
+
+/* Sun rays */
+.sun-ray{
+  position:absolute;top:50%;left:50%;
+  width:90px;height:2px;background:rgba(255,220,0,.4);
+  transform-origin:0 50%;border-radius:2px;
+  animation:rayRotate 8s linear infinite;
+}
+@keyframes rayRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* Clouds */
+.cloud{
+  position:absolute;
+  background:rgba(255,255,255,.9);
+  border-radius:50px;
+  animation:cloudDrift linear infinite;
+}
+.cloud::before,.cloud::after{
+  content:'';position:absolute;
+  background:rgba(255,255,255,.9);border-radius:50%;
+}
+.c1{width:110px;height:38px;top:8%;left:-130px;animation-duration:28s;animation-delay:0s;}
+.c1::before{width:55px;height:55px;top:-25px;left:15px;}
+.c1::after{width:40px;height:40px;top:-18px;left:50px;}
+.c2{width:80px;height:28px;top:14%;left:-100px;animation-duration:22s;animation-delay:-10s;opacity:.8;}
+.c2::before{width:38px;height:38px;top:-18px;left:10px;}
+.c2::after{width:30px;height:30px;top:-14px;left:35px;}
+.c3{width:130px;height:42px;top:5%;left:-150px;animation-duration:35s;animation-delay:-18s;opacity:.75;}
+.c3::before{width:60px;height:60px;top:-28px;left:18px;}
+.c3::after{width:45px;height:45px;top:-22px;left:60px;}
+@keyframes cloudDrift{from{left:-160px}to{left:110%}}
+
+/* Mountains — layered */
+.mountains{position:absolute;bottom:20%;left:0;width:100%;height:50%;}
+.mt{position:absolute;bottom:0;}
+/* back mountain */
+.mt-back{
+  left:-5%;width:55%;height:60%;
+  background:linear-gradient(160deg,#7BA08A 0%,#6B8E7A 100%);
+  clip-path:polygon(15% 100%,50% 0%,85% 100%);
+}
+.mt-back2{
+  left:30%;width:55%;height:50%;
+  background:linear-gradient(160deg,#8FAF86 0%,#7BA090 100%);
+  clip-path:polygon(10% 100%,52% 5%,90% 100%);
+}
+/* snow caps */
+.mt-snow{
+  position:absolute;
+  background:rgba(255,255,255,.85);
+}
+/* mid mountain */
+.mt-mid{
+  left:5%;width:40%;height:42%;
+  background:linear-gradient(155deg,#A8C5A0 0%,#8FAF86 100%);
+  clip-path:polygon(20% 100%,50% 8%,80% 100%);
+}
+.mt-mid2{
+  left:55%;width:50%;height:38%;
+  background:linear-gradient(150deg,#B2CCA8 0%,#97B890 100%);
+  clip-path:polygon(15% 100%,50% 10%,85% 100%);
+}
+
+/* River */
+.river-wrap{position:absolute;bottom:18%;left:0;width:100%;height:80px;overflow:hidden;}
+.river{
+  position:absolute;bottom:0;left:0;width:100%;height:60px;
+  background:linear-gradient(180deg,var(--river) 0%,var(--river2) 100%);
+  border-radius:40% 40% 0 0 / 30% 30% 0 0;
+  overflow:hidden;
+}
+.river-shine{
+  position:absolute;top:8px;left:-100%;width:200%;height:10px;
+  background:linear-gradient(90deg,transparent 20%,rgba(255,255,255,.5) 50%,transparent 80%);
+  animation:riverShine 3s linear infinite;
+  border-radius:5px;
+}
+.river-shine2{
+  position:absolute;top:25px;left:-100%;width:200%;height:6px;
+  background:linear-gradient(90deg,transparent 30%,rgba(255,255,255,.4) 60%,transparent 90%);
+  animation:riverShine 4.5s linear infinite reverse;
+  border-radius:5px;
+}
+@keyframes riverShine{from{left:-100%}to{left:0%}}
+
+/* Grass ground */
+.ground{
+  position:absolute;bottom:0;left:0;width:100%;height:20%;
+  background:linear-gradient(180deg,#5CB85C 0%,#4A9A4A 60%,#3D8040 100%);
+}
+/* Grass blades */
+.grass-blades{
+  position:absolute;bottom:18%;left:0;width:100%;
+  display:flex;gap:0;
+  align-items:flex-end;
+  height:40px;
+}
+.blade{
+  flex:1;
+  background:linear-gradient(180deg,#7CC47C,#5CB85C);
+  transform-origin:bottom center;
+  border-radius:50% 50% 0 0 / 80% 80% 0 0;
+  animation:sway 2.5s ease-in-out infinite alternate;
+}
+.blade:nth-child(even){animation-delay:.4s;animation-duration:3.2s;height:28px;}
+.blade:nth-child(3n){animation-delay:.8s;animation-duration:2.8s;height:22px;}
+.blade:nth-child(4n){animation-delay:1.2s;height:18px;}
+@keyframes sway{from{transform:rotate(-8deg)}to{transform:rotate(8deg)}}
+
+/* Trees */
+.tree{position:absolute;bottom:19%;display:flex;flex-direction:column;align-items:center;}
+.tree-crown{
+  border-left:solid transparent;border-right:solid transparent;
+  border-bottom:solid #3A8A3A;
+}
+.tree-trunk{background:#7A5C3A;border-radius:2px;}
+.t1{left:5%}  .t2{left:9%} .t3{right:8%} .t4{right:4%} .t5{left:50%}
+
+/* BIRDS ─────────────────────────────────────────────────────────────── */
+.bird{
+  position:absolute;
+  width:44px;height:16px;
+}
+.bird-wing{
+  position:absolute;
+  width:22px;height:8px;
+  background:none;
+  border-radius:50% 50% 0 0;
+  border:2.5px solid #2C2C2C;
+  border-bottom:none;
+  transform-origin:100% 100%;
+}
+.wing-l{left:0;transform-origin:100% 100%;}
+.wing-r{right:0;transform-origin:0% 100%;transform:scaleX(-1);}
+.bird{animation:birdFly linear infinite;}
+@keyframes birdFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-3px)}
+}
+.wing-l{animation:flapL .4s ease-in-out infinite alternate;}
+.wing-r{animation:flapR .4s ease-in-out infinite alternate;}
+@keyframes flapL{from{transform:rotate(-30deg)}to{transform:rotate(10deg)}}
+@keyframes flapR{from{transform:scaleX(-1) rotate(-30deg)}to{transform:scaleX(-1) rotate(10deg)}}
+@keyframes birdFly{from{left:-60px}to{left:110%}}
+.b1{top:12%;animation-duration:14s;animation-delay:0s;}
+.b2{top:9%;animation-duration:18s;animation-delay:-6s;}
+.b3{top:16%;animation-duration:12s;animation-delay:-3s;}
+.b4{top:7%;animation-duration:20s;animation-delay:-12s;}
+.b5{top:20%;animation-duration:16s;animation-delay:-8s;}
+
+/* Flowers */
+.flower{position:absolute;bottom:20%;}
+.fl-stem{width:3px;height:22px;background:#4A9A4A;margin:0 auto;}
+.fl-head{
+  width:16px;height:16px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;margin:0 auto;
+  animation:flowerBob 2s ease-in-out infinite alternate;
+}
+@keyframes flowerBob{from{transform:rotate(-6deg)}to{transform:rotate(6deg)}}
+
+/* ── CONTENT LAYER ───────────────────────────────────────────────── */
+#content{
+  position:relative;z-index:10;
+  min-height:100vh;
+  padding:0 0 60px;
+}
+
+/* ── HEADING ─────────────────────────────────────────────────────── */
+.main-heading{
+  text-align:center;
+  padding:28px 20px 20px;
+  font-family:'Baloo 2',cursive;
+  font-size:clamp(1.6rem,4vw,2.6rem);
+  font-weight:800;
+  color:#fff;
+  text-shadow:0 3px 12px rgba(0,0,0,.35),0 0 40px rgba(255,184,0,.4);
+  letter-spacing:.5px;
+  line-height:1.2;
+}
+.main-heading span{
+  color:var(--yellow);
+  text-shadow:0 3px 14px rgba(255,184,0,.5);
+}
+
+/* ── ACTIVITY TABS ───────────────────────────────────────────────── */
+.tabs{
+  display:flex;justify-content:center;gap:10px;
+  padding:0 16px 18px;
+  flex-wrap:wrap;
+}
+.tab-btn{
+  font-family:'Baloo 2',cursive;
+  font-size:1rem;font-weight:700;
+  padding:10px 24px;border-radius:50px;
+  border:3px solid rgba(255,255,255,.6);
+  background:rgba(255,255,255,.25);
+  color:#fff;
+  cursor:pointer;
+  transition:all .25s;
+  backdrop-filter:blur(6px);
+  text-shadow:0 1px 4px rgba(0,0,0,.25);
+}
+.tab-btn:hover{background:rgba(255,255,255,.4);transform:translateY(-2px);}
+.tab-btn.active{
+  background:linear-gradient(135deg,#FF4081,#9C27B0);color:#fff;
+  border-color:transparent;
+  box-shadow:0 4px 20px rgba(156,39,176,.4);
+  text-shadow:0 1px 4px rgba(0,0,0,.2);
+  transform:translateY(-3px);
+}
+
+/* ── ACTIVITY PANELS ─────────────────────────────────────────────── */
+.activity{display:none;}
+.activity.active{display:block;}
+
+/* ── SHARED CARD ─────────────────────────────────────────────────── */
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:24px 26px;
+  margin:0 auto 20px;
+  max-width:820px;
+  backdrop-filter:blur(8px);
+}
+.card-title{
+  font-family:'Baloo 2',cursive;
+  font-size:1.25rem;font-weight:800;
+  color:var(--teal2);
+  margin-bottom:14px;
+  display:flex;align-items:center;gap:8px;
+}
+.badge{
+  background:var(--teal);color:#fff;
+  border-radius:50px;padding:2px 12px;
+  font-size:.8rem;font-weight:700;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ACTIVITY 1 — FORMULA MATCHER (Drag & Drop)
+══════════════════════════════════════════════════════════════════ */
+#a1{padding:0 16px;}
+
+.formula-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-bottom:18px;
+}
+@media(max-width:600px){.formula-grid{grid-template-columns:1fr;}}
+
+.formula-box{
+  background:linear-gradient(135deg,#E3F2FD,#E8F5E9);
+  border:2.5px dashed var(--teal);
+  border-radius:14px;
+  padding:14px 16px;
+  min-height:80px;
+  display:flex;flex-direction:column;
+  gap:6px;
+}
+.formula-box .lhs{
+  font-family:'Baloo 2',cursive;
+  font-size:1.1rem;font-weight:700;color:var(--dark);
+}
+.formula-box .drop-zone{
+  min-height:40px;
+  background:rgba(255,255,255,.7);
+  border:2px dashed #aaa;
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;color:#aaa;
+  transition:all .2s;
+  cursor:pointer;
+}
+.formula-box .drop-zone.over{
+  background:rgba(26,190,190,.15);
+  border-color:var(--teal);
+}
+.formula-box .drop-zone.filled{
+  background:linear-gradient(135deg,#D0F8E8,#B8EED8);
+  border-color:var(--green);color:var(--dark);
+  font-weight:700;font-size:1rem;
+  cursor:default;
+}
+.formula-box .drop-zone.wrong{
+  background:#FFE0E0;border-color:var(--red);color:var(--red);
+}
+
+.drag-options{
+  display:flex;flex-wrap:wrap;gap:10px;
+  justify-content:center;
+  margin:16px 0 10px;
+}
+.drag-chip{
+  background:linear-gradient(135deg,#FF6D00,#FF4081);
+  color:#fff;
+  font-family:'Baloo 2',cursive;
+  font-size:.95rem;font-weight:700;
+  padding:8px 18px;
+  border-radius:50px;
+  cursor:grab;
+  user-select:none;
+  box-shadow:0 3px 10px rgba(255,64,129,.35);
+  transition:transform .15s,box-shadow .15s;
+  touch-action:none;
+  text-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.drag-chip:active{cursor:grabbing;transform:scale(1.08);box-shadow:0 6px 18px rgba(255,64,129,.5);}
+.drag-chip.used{opacity:.35;pointer-events:none;}
+
+.a1-check{
+  display:block;margin:0 auto;
+  font-family:'Baloo 2',cursive;
+  font-size:1.05rem;font-weight:800;
+  padding:12px 36px;
+  background:linear-gradient(135deg,var(--teal),var(--teal2));
+  color:#fff;border:none;border-radius:50px;
+  cursor:pointer;box-shadow:0 4px 16px rgba(26,190,190,.4);
+  transition:transform .2s,box-shadow .2s;
+}
+.a1-check:hover{transform:translateY(-2px);box-shadow:0 7px 22px rgba(26,190,190,.5);}
+
+.a1-result{
+  text-align:center;margin-top:12px;
+  font-family:'Baloo 2',cursive;font-size:1.1rem;font-weight:700;
+  min-height:28px;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ACTIVITY 2 — STEP BUILDER (fill in the blanks, step by step)
+══════════════════════════════════════════════════════════════════ */
+#a2{padding:0 16px;}
+
+.problem-selector{
+  display:flex;flex-wrap:wrap;gap:10px;justify-content:center;
+  margin-bottom:20px;
+}
+.prob-btn{
+  font-family:'Baloo 2',cursive;font-size:.95rem;font-weight:700;
+  padding:8px 20px;border-radius:50px;
+  border:2.5px solid var(--teal);
+  background:#fff;color:var(--teal2);
+  cursor:pointer;transition:all .2s;
+}
+.prob-btn:hover,.prob-btn.active{
+  background:var(--teal);color:#fff;
+  box-shadow:0 3px 12px rgba(26,190,190,.35);
+}
+
+.steps-container{display:flex;flex-direction:column;gap:12px;}
+
+.step-row{
+  display:flex;align-items:center;gap:10px;
+  background:linear-gradient(90deg,#F3E5F5,#E8F5E9);
+  border-left:4px solid var(--purple);
+  border-radius:0 12px 12px 0;
+  padding:12px 16px;
+  flex-wrap:wrap;
+}
+.step-num{
+  background:linear-gradient(135deg,var(--purple),var(--pink));color:#fff;
+  border-radius:50%;width:30px;height:30px;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:.9rem;flex-shrink:0;
+}
+.step-text{
+  font-size:1rem;color:var(--dark);font-weight:600;
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+}
+.blank-input{
+  border:2.5px solid var(--teal);
+  border-radius:10px;
+  padding:4px 10px;
+  font-family:'Nunito',sans-serif;
+  font-size:1rem;font-weight:700;
+  width:90px;text-align:center;
+  outline:none;
+  transition:border-color .2s,background .2s;
+  color:var(--dark);
+}
+.blank-input:focus{border-color:var(--yellow);background:#FFFDE7;}
+.blank-input.correct{border-color:var(--green);background:#E8F8E8;color:var(--green);}
+.blank-input.wrong{border-color:var(--red);background:#FFE8E8;color:var(--red);}
+.step-hint{font-size:.8rem;color:#888;font-style:italic;margin-left:4px;}
+
+.a2-controls{
+  display:flex;gap:12px;justify-content:center;
+  margin-top:16px;flex-wrap:wrap;
+}
+.btn-check2,.btn-reset2,.btn-next-prob{
+  font-family:'Baloo 2',cursive;
+  font-size:1rem;font-weight:800;
+  padding:10px 28px;
+  border:none;border-radius:50px;
+  cursor:pointer;transition:all .2s;
+}
+.btn-check2{background:linear-gradient(135deg,var(--teal),var(--teal2));color:#fff;box-shadow:0 4px 14px rgba(26,190,190,.4);}
+.btn-reset2{background:linear-gradient(135deg,#eee,#ddd);color:#555;}
+.btn-next-prob{background:linear-gradient(135deg,var(--yellow),var(--orange));color:var(--dark);}
+.btn-check2:hover,.btn-reset2:hover,.btn-next-prob:hover{transform:translateY(-2px);}
+
+.a2-score{
+  text-align:center;margin-top:14px;
+  font-family:'Baloo 2',cursive;font-size:1.05rem;font-weight:700;
+  color:var(--teal2);min-height:26px;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ACTIVITY 3 — QUIZ (MCQ with score & stars)
+══════════════════════════════════════════════════════════════════ */
+#a3{padding:0 16px;}
+
+.quiz-progress{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:18px;
+}
+.progress-bar{
+  flex:1;height:12px;
+  background:#E0F0F0;border-radius:6px;overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--teal),var(--yellow));
+  border-radius:6px;
+  transition:width .4s ease;
+}
+.progress-label{
+  font-family:'Baloo 2',cursive;font-weight:700;
+  font-size:.95rem;color:var(--dark);white-space:nowrap;
+}
+
+.quiz-q{
+  font-family:'Baloo 2',cursive;
+  font-size:1.2rem;font-weight:700;
+  color:var(--dark);
+  margin-bottom:18px;
+  line-height:1.4;
+}
+.quiz-options{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:12px;margin-bottom:16px;
+}
+@media(max-width:500px){.quiz-options{grid-template-columns:1fr;}}
+.opt-btn{
+  font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;
+  padding:14px 18px;
+  border:2.5px solid #ccc;border-radius:14px;
+  background:#fff;color:var(--dark);
+  cursor:pointer;text-align:left;
+  transition:all .2s;
+  position:relative;overflow:hidden;
+}
+.opt-btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,var(--teal),var(--teal2));
+  opacity:0;transition:opacity .2s;
+}
+.opt-btn:hover:not(:disabled)::before{opacity:.08;}
+.opt-btn:hover:not(:disabled){border-color:var(--teal);transform:translateY(-2px);box-shadow:0 4px 14px rgba(26,190,190,.2);}
+.opt-btn.correct{background:#E8F8E8;border-color:var(--green);color:#1A6E3A;}
+.opt-btn.wrong{background:#FFE8E8;border-color:var(--red);color:var(--red);}
+.opt-btn:disabled{cursor:default;}
+
+.quiz-feedback{
+  text-align:center;
+  font-family:'Baloo 2',cursive;font-size:1.05rem;font-weight:700;
+  min-height:28px;margin-bottom:10px;
+}
+.quiz-nav{
+  display:flex;justify-content:center;gap:14px;flex-wrap:wrap;
+}
+.btn-next-q,.btn-restart{
+  font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;
+  padding:10px 30px;border:none;border-radius:50px;
+  cursor:pointer;transition:all .2s;
+  display:none;
+}
+.btn-next-q{background:linear-gradient(135deg,#FF4081,#9C27B0);color:#fff;box-shadow:0 4px 14px rgba(156,39,176,.35);}
+.btn-restart{background:linear-gradient(135deg,var(--yellow),var(--orange));color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.15);}
+.btn-next-q:hover,.btn-restart:hover{transform:translateY(-2px);}
+.btn-next-q.show,.btn-restart.show{display:inline-block;}
+
+/* Score screen */
+.score-screen{
+  display:none;text-align:center;padding:20px 10px;
+}
+.score-screen.show{display:block;}
+.score-stars{font-size:2.5rem;letter-spacing:4px;margin-bottom:10px;}
+.score-num{
+  font-family:'Baloo 2',cursive;font-size:2.2rem;font-weight:800;
+  color:var(--teal2);margin-bottom:6px;
+}
+.score-msg{
+  font-family:'Baloo 2',cursive;font-size:1.15rem;font-weight:700;
+  color:var(--dark);margin-bottom:20px;
+}
+.confetti-emoji{font-size:1.8rem;}
+
+/* ── FOOTER ──────────────────────────────────────────────────────── */
+.footer{
+  text-align:center;
+  font-family:'Baloo 2',cursive;font-size:.9rem;
+  color:rgba(255,255,255,.75);
+  padding:10px 0 0;
+  max-width:820px;margin:0 auto;
+  text-shadow:0 1px 4px rgba(0,0,0,.2);
+}
+
+/* ── ANIMATIONS on load ──────────────────────────────────────────── */
+@keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.main-heading{animation:slideDown .7s ease both;}
+.tabs{animation:fadeUp .7s .2s ease both;}
+#a1 .card,#a2 .card,#a3 .card{animation:fadeUp .5s ease both;}
+
+/* ── SUPERSCRIPT helper ──────────────────────────────────────────── */
+sup{font-size:.7em;vertical-align:super;}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ ANIMATED SCENE ═══════════════════════════ -->
+<div id="scene">
+  <div class="sky"></div>
+
+  <!-- Sun -->
+  <div class="sun">
+    <div class="sun-ray" style="transform:rotate(0deg)"></div>
+    <div class="sun-ray" style="transform:rotate(45deg)"></div>
+    <div class="sun-ray" style="transform:rotate(90deg)"></div>
+    <div class="sun-ray" style="transform:rotate(135deg)"></div>
+    <div class="sun-ray" style="transform:rotate(180deg)"></div>
+    <div class="sun-ray" style="transform:rotate(225deg)"></div>
+    <div class="sun-ray" style="transform:rotate(270deg)"></div>
+    <div class="sun-ray" style="transform:rotate(315deg)"></div>
+  </div>
+
+  <!-- Clouds -->
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+  <div class="cloud c3"></div>
+
+  <!-- Birds -->
+  <div class="bird b1">
+    <div class="bird-wing wing-l"></div>
+    <div class="bird-wing wing-r"></div>
+  </div>
+  <div class="bird b2">
+    <div class="bird-wing wing-l"></div>
+    <div class="bird-wing wing-r"></div>
+  </div>
+  <div class="bird b3">
+    <div class="bird-wing wing-l"></div>
+    <div class="bird-wing wing-r"></div>
+  </div>
+  <div class="bird b4">
+    <div class="bird-wing wing-l"></div>
+    <div class="bird-wing wing-r"></div>
+  </div>
+  <div class="bird b5">
+    <div class="bird-wing wing-l"></div>
+    <div class="bird-wing wing-r"></div>
+  </div>
+
+  <!-- Mountains -->
+  <div class="mountains">
+    <div class="mt mt-back"></div>
+    <div class="mt mt-back2"></div>
+    <div class="mt mt-mid"></div>
+    <div class="mt mt-mid2"></div>
+  </div>
+
+  <!-- River -->
+  <div class="river-wrap">
+    <div class="river">
+      <div class="river-shine"></div>
+      <div class="river-shine2"></div>
+    </div>
+  </div>
+
+  <!-- Grass blades (generated by JS) -->
+  <div class="grass-blades" id="grassBlades"></div>
+
+  <!-- Ground -->
+  <div class="ground"></div>
+
+  <!-- Trees -->
+  <div class="tree t1">
+    <div class="tree-crown" style="border-left:16px solid transparent;border-right:16px solid transparent;border-bottom:28px solid #2E7A2E;"></div>
+    <div class="tree-crown" style="border-left:20px solid transparent;border-right:20px solid transparent;border-bottom:32px solid #3A8A3A;margin-top:-12px;"></div>
+    <div class="tree-trunk" style="width:8px;height:20px;"></div>
+  </div>
+  <div class="tree t2">
+    <div class="tree-crown" style="border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:22px solid #2A6E2A;"></div>
+    <div class="tree-crown" style="border-left:16px solid transparent;border-right:16px solid transparent;border-bottom:26px solid #368836;margin-top:-10px;"></div>
+    <div class="tree-trunk" style="width:6px;height:16px;"></div>
+  </div>
+  <div class="tree t3">
+    <div class="tree-crown" style="border-left:18px solid transparent;border-right:18px solid transparent;border-bottom:30px solid #2E7A2E;"></div>
+    <div class="tree-crown" style="border-left:22px solid transparent;border-right:22px solid transparent;border-bottom:34px solid #3A8A3A;margin-top:-14px;"></div>
+    <div class="tree-trunk" style="width:9px;height:22px;"></div>
+  </div>
+  <div class="tree t4">
+    <div class="tree-crown" style="border-left:13px solid transparent;border-right:13px solid transparent;border-bottom:24px solid #347034;"></div>
+    <div class="tree-crown" style="border-left:17px solid transparent;border-right:17px solid transparent;border-bottom:28px solid #3E8E3E;margin-top:-11px;"></div>
+    <div class="tree-trunk" style="width:7px;height:18px;"></div>
+  </div>
+
+  <!-- Flowers -->
+  <div class="flower" style="left:18%">
+    <div class="fl-head" style="background:#FF6B9D;">🌸</div>
+    <div class="fl-stem"></div>
+  </div>
+  <div class="flower" style="left:28%">
+    <div class="fl-head" style="background:#FFD700;">🌻</div>
+    <div class="fl-stem"></div>
+  </div>
+  <div class="flower" style="left:42%">
+    <div class="fl-head" style="background:#FF6B6B;">🌺</div>
+    <div class="fl-stem"></div>
+  </div>
+  <div class="flower" style="left:62%">
+    <div class="fl-head">🌼</div>
+    <div class="fl-stem"></div>
+  </div>
+  <div class="flower" style="left:74%">
+    <div class="fl-head">🌷</div>
+    <div class="fl-stem"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ CONTENT ═══════════════════════════ -->
+<div id="content">
+
+  <h1 class="main-heading">Algebraic Identities<br><span>Expand &amp; Factorise</span></h1>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab(1)">🎯 Activity 1 — Match It!</button>
+    <button class="tab-btn"        onclick="switchTab(2)">🔢 Activity 2 — Step Builder</button>
+    <button class="tab-btn"        onclick="switchTab(3)">⭐ Activity 3 — Quick Quiz</button>
+  </div>
+
+  <!-- ══════════════ ACTIVITY 1 ══════════════ -->
+  <div class="activity active" id="a1">
+    <div class="card">
+      <div class="card-title">
+        🎯 Formula Matcher
+        <span class="badge">Drag &amp; Drop</span>
+      </div>
+      <p style="margin-bottom:16px;color:#555;font-size:.95rem;">
+        Drag the correct expanded form and drop it under the matching identity. 
+        Click <b>Check Answers</b> when done!
+      </p>
+
+      <!-- Drop zones -->
+      <div class="formula-grid" id="dropGrid">
+        <div class="formula-box">
+          <div class="lhs">(a + b)<sup>2</sup> =</div>
+          <div class="drop-zone" data-answer="a²+2ab+b²" ondragover="event.preventDefault()" ondrop="dropChip(event,this)" onclick="touchDrop(this)">
+            Drop here…
+          </div>
+        </div>
+        <div class="formula-box">
+          <div class="lhs">(a − b)<sup>2</sup> =</div>
+          <div class="drop-zone" data-answer="a²−2ab+b²" ondragover="event.preventDefault()" ondrop="dropChip(event,this)" onclick="touchDrop(this)">
+            Drop here…
+          </div>
+        </div>
+        <div class="formula-box">
+          <div class="lhs">a<sup>2</sup> − b<sup>2</sup> =</div>
+          <div class="drop-zone" data-answer="(a+b)(a−b)" ondragover="event.preventDefault()" ondrop="dropChip(event,this)" onclick="touchDrop(this)">
+            Drop here…
+          </div>
+        </div>
+        <div class="formula-box">
+          <div class="lhs">(a+b)(a+c) =</div>
+          <div class="drop-zone" data-answer="a²+(b+c)a+bc" ondragover="event.preventDefault()" ondrop="dropChip(event,this)" onclick="touchDrop(this)">
+            Drop here…
+          </div>
+        </div>
+      </div>
+
+      <!-- Draggable chips -->
+      <div class="drag-options" id="chipArea">
+        <div class="drag-chip" draggable="true" data-val="a²+2ab+b²"    ondragstart="dragStart(event)" onclick="touchPick(this)">a²+2ab+b²</div>
+        <div class="drag-chip" draggable="true" data-val="a²−2ab+b²"    ondragstart="dragStart(event)" onclick="touchPick(this)">a²−2ab+b²</div>
+        <div class="drag-chip" draggable="true" data-val="(a+b)(a−b)"   ondragstart="dragStart(event)" onclick="touchPick(this)">(a+b)(a−b)</div>
+        <div class="drag-chip" draggable="true" data-val="a²+(b+c)a+bc" ondragstart="dragStart(event)" onclick="touchPick(this)">a²+(b+c)a+bc</div>
+        <div class="drag-chip" draggable="true" data-val="2a+2b"         ondragstart="dragStart(event)" onclick="touchPick(this)">2a+2b</div>
+        <div class="drag-chip" draggable="true" data-val="a²+b²"         ondragstart="dragStart(event)" onclick="touchPick(this)">a²+b²</div>
+      </div>
+
+      <button class="a1-check" onclick="checkA1()">Check Answers ✅</button>
+      <div class="a1-result" id="a1Result"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════ ACTIVITY 2 ══════════════ -->
+  <div class="activity" id="a2">
+    <div class="card">
+      <div class="card-title">
+        🔢 Step Builder
+        <span class="badge">Fill the Blanks</span>
+      </div>
+      <p style="margin-bottom:14px;color:#555;font-size:.95rem;">
+        Choose a problem and fill in the missing values in each step. Press <b>Check Steps</b> to see how you did!
+      </p>
+      <div class="problem-selector" id="probSel"></div>
+      <div class="steps-container" id="stepsContainer"></div>
+      <div class="a2-controls">
+        <button class="btn-check2" onclick="checkA2()">Check Steps ✅</button>
+        <button class="btn-reset2" onclick="resetA2()">Reset 🔄</button>
+      </div>
+      <div class="a2-score" id="a2Score"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════ ACTIVITY 3 ══════════════ -->
+  <div class="activity" id="a3">
+    <div class="card">
+      <div class="card-title">
+        ⭐ Quick Quiz
+        <span class="badge">10 Questions</span>
+      </div>
+
+      <!-- Quiz in progress -->
+      <div id="quizInProgress">
+        <div class="quiz-progress">
+          <div class="progress-bar"><div class="progress-fill" id="qProgress" style="width:0%"></div></div>
+          <div class="progress-label" id="qProgressLabel">1 / 10</div>
+        </div>
+        <div class="quiz-q" id="quizQ"></div>
+        <div class="quiz-options" id="quizOpts"></div>
+        <div class="quiz-feedback" id="quizFb"></div>
+        <div class="quiz-nav">
+          <button class="btn-next-q" id="btnNextQ" onclick="nextQuestion()">Next ➡</button>
+          <button class="btn-restart" id="btnRestart" onclick="restartQuiz()">Play Again 🔄</button>
+        </div>
+      </div>
+
+      <!-- Score screen -->
+      <div class="score-screen" id="scoreScreen">
+        <div class="score-stars" id="scoreStars"></div>
+        <div class="score-num" id="scoreNum"></div>
+        <div class="score-msg" id="scoreMsg"></div>
+        <button class="btn-restart show" onclick="restartQuiz()" style="margin-top:8px;">Play Again 🔄</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">🌿 Keep exploring maths — every identity is a superpower! 🌿</div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   SCENE — grass blades
+══════════════════════════════════════════════════════════════ */
+(function(){
+  const gb = document.getElementById('grassBlades');
+  for(let i=0;i<80;i++){
+    const b = document.createElement('div');
+    b.className='blade';
+    const h = 14+Math.random()*20;
+    b.style.height=h+'px';
+    b.style.animationDelay=(Math.random()*2)+'s';
+    b.style.animationDuration=(2+Math.random()*2)+'s';
+    gb.appendChild(b);
+  }
+})();
+
+/* ══════════════════════════════════════════════════════════════
+   TAB SWITCHING
+══════════════════════════════════════════════════════════════ */
+function switchTab(n){
+  document.querySelectorAll('.activity').forEach(a=>a.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('a'+n).classList.add('active');
+  document.querySelectorAll('.tab-btn')[n-1].classList.add('active');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ACTIVITY 1 — DRAG & DROP / TOUCH
+══════════════════════════════════════════════════════════════ */
+let dragging = null;
+let touchSelected = null;
+
+function dragStart(e){
+  dragging = e.currentTarget;
+  e.dataTransfer.setData('text/plain', e.currentTarget.dataset.val);
+}
+
+function dropChip(e, zone){
+  e.preventDefault();
+  if(zone.classList.contains('filled')) return;
+  const val = e.dataTransfer.getData('text/plain') || (dragging && dragging.dataset.val);
+  if(!val) return;
+  placeChip(zone, val);
+  dragging = null;
+}
+
+/* Touch fallback — click chip then click zone */
+function touchPick(chip){
+  if(chip.classList.contains('used')) return;
+  document.querySelectorAll('.drag-chip').forEach(c=>c.style.outline='');
+  touchSelected = chip;
+  chip.style.outline='3px solid var(--teal)';
+}
+function touchDrop(zone){
+  if(!touchSelected) return;
+  if(zone.classList.contains('filled')) return;
+  placeChip(zone, touchSelected.dataset.val);
+  touchSelected.style.outline='';
+  touchSelected = null;
+}
+
+function placeChip(zone, val){
+  // if zone had old val, unuse that chip
+  const oldVal = zone.dataset.placed;
+  if(oldVal){
+    document.querySelectorAll('.drag-chip').forEach(c=>{
+      if(c.dataset.val===oldVal) c.classList.remove('used');
+    });
+  }
+  zone.textContent = val;
+  zone.dataset.placed = val;
+  zone.classList.add('filled');
+  zone.classList.remove('over','wrong');
+  // mark chip as used
+  document.querySelectorAll('.drag-chip').forEach(c=>{
+    if(c.dataset.val===val) c.classList.add('used');
+  });
+}
+
+// Dragover highlight
+document.querySelectorAll('.drop-zone').forEach(z=>{
+  z.addEventListener('dragover', e=>{e.preventDefault(); z.classList.add('over');});
+  z.addEventListener('dragleave', ()=>z.classList.remove('over'));
+  z.addEventListener('drop', e=>dropChip(e,z));
+});
+
+function checkA1(){
+  const zones = document.querySelectorAll('.drop-zone');
+  let correct=0, filled=0;
+  zones.forEach(z=>{
+    const placed = z.dataset.placed;
+    const answer = z.dataset.answer;
+    if(placed){
+      filled++;
+      if(placed===answer){correct++; z.classList.add('filled'); z.classList.remove('wrong');}
+      else{z.classList.add('wrong'); z.classList.remove('filled');}
+    }
+  });
+  const res = document.getElementById('a1Result');
+  if(filled<4){res.style.color='#888'; res.textContent='⚠️ Please fill all 4 boxes first!'; return;}
+  if(correct===4){
+    res.style.color='var(--green)';
+    res.textContent='🎉 Perfect! All 4 identities matched correctly! You\'re a star! ⭐';
+  } else {
+    res.style.color='var(--red)';
+    res.textContent=`✏️ ${correct}/4 correct. The red boxes need fixing — try again!`;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ACTIVITY 2 — STEP BUILDER
+══════════════════════════════════════════════════════════════ */
+const problems = [
+  {
+    label:'Expand (x+3)²',
+    identity:'Identity 1: (a+b)² = a²+2ab+b²',
+    steps:[
+      {text:['Identify: a =', null,'3', ', b = ', null,'x'],  blanks:['x','3'],    hints:['what comes first?','the number']},
+      {text:['Apply formula: a² + 2ab + b²'],                  blanks:[],           hints:[]},
+      {text:['Substitute: x² + 2 × x ×', null, '+', null,'²'], blanks:['3','3'],    hints:['b value','b value']},
+      {text:['Simplify: x² +', null, 'x + 9'],                  blanks:['6'],        hints:['2×x×3 = ?']},
+    ]
+  },
+  {
+    label:'Expand (y−4)²',
+    identity:'Identity 2: (a−b)² = a²−2ab+b²',
+    steps:[
+      {text:['Identify: a =', null, ', b =', null],            blanks:['y','4'],    hints:['variable','number']},
+      {text:['a² =', null],                                    blanks:['y²'],       hints:['square of y']},
+      {text:['2ab = 2 × y × 4 =', null, '(minus sign → −', null, ')'], blanks:['8y','8y'], hints:['multiply','middle term']},
+      {text:['b² = 4² =', null],                               blanks:['16'],       hints:['4 × 4']},
+      {text:['Final answer: y² −', null, '+', null],           blanks:['8y','16'],  hints:['middle term','last term']},
+    ]
+  },
+  {
+    label:'Factorise 9x²−16',
+    identity:'Identity 3: a²−b² = (a+b)(a−b)',
+    steps:[
+      {text:['Spot perfect squares: 9x² = (', null, ')²'],     blanks:['3x'],       hints:['√9x²']},
+      {text:['And: 16 = (', null, ')²'],                       blanks:['4'],        hints:['√16']},
+      {text:['Apply: a² − b² = (a+b)(a−b), a=', null, ', b=', null], blanks:['3x','4'], hints:['first square root','second square root']},
+      {text:['Answer: (', null, '+', null, ')(', null, '−', null, ')'], blanks:['3x','4','3x','4'], hints:['a','b','a','b']},
+    ]
+  },
+  {
+    label:'Expand (x+2)(x+5)',
+    identity:'Identity 4: (a+b)(a+c) = a²+(b+c)a+bc',
+    steps:[
+      {text:['Identify: a=', null, ', b=', null, ', c=', null], blanks:['x','2','5'], hints:['shared variable','first constant','second constant']},
+      {text:['a² =', null],                                     blanks:['x²'],       hints:['x×x']},
+      {text:['(b+c)a = (2+5) × x =', null],                    blanks:['7x'],       hints:['7×x']},
+      {text:['bc = 2 × 5 =', null],                            blanks:['10'],       hints:['multiply the constants']},
+      {text:['Final answer: x² +', null, '+', null],           blanks:['7x','10'],  hints:['middle term','last term']},
+    ]
+  },
+];
+
+let currentProb = 0;
+
+function buildProblems(){
+  const sel = document.getElementById('probSel');
+  sel.innerHTML = '';
+  problems.forEach((p,i)=>{
+    const b=document.createElement('button');
+    b.className='prob-btn'+(i===0?' active':'');
+    b.textContent=p.label;
+    b.onclick=()=>{currentProb=i; loadProblem(); document.querySelectorAll('.prob-btn').forEach((x,j)=>x.classList.toggle('active',j===i));};
+    sel.appendChild(b);
+  });
+  loadProblem();
+}
+
+function loadProblem(){
+  const p = problems[currentProb];
+  const con = document.getElementById('stepsContainer');
+  con.innerHTML='';
+  document.getElementById('a2Score').textContent='';
+  p.steps.forEach((step,si)=>{
+    const row=document.createElement('div');
+    row.className='step-row';
+    const num=document.createElement('div');
+    num.className='step-num'; num.textContent=si+1;
+    const txt=document.createElement('div');
+    txt.className='step-text';
+    let bi=0;
+    step.text.forEach(part=>{
+      if(part===null){
+        const inp=document.createElement('input');
+        inp.type='text'; inp.className='blank-input';
+        inp.placeholder='?';
+        inp.dataset.answer=step.blanks[bi];
+        inp.dataset.hint=step.hints[bi]||'';
+        bi++;
+        txt.appendChild(inp);
+      } else {
+        const sp=document.createElement('span');
+        sp.innerHTML=part.replace(/²/g,'<sup>2</sup>');
+        txt.appendChild(sp);
+      }
+    });
+    row.appendChild(num); row.appendChild(txt);
+    con.appendChild(row);
+  });
+}
+
+function checkA2(){
+  const inputs=document.querySelectorAll('#stepsContainer .blank-input');
+  let correct=0;
+  inputs.forEach(inp=>{
+    const ans=inp.dataset.answer.toLowerCase().replace(/\s/g,'');
+    const val=inp.value.toLowerCase().replace(/\s/g,'');
+    if(val===ans){inp.classList.add('correct');inp.classList.remove('wrong');correct++;}
+    else{inp.classList.add('wrong');inp.classList.remove('correct');}
+  });
+  const sc=document.getElementById('a2Score');
+  if(correct===inputs.length && inputs.length>0){
+    sc.style.color='var(--green)';
+    sc.textContent='🎉 Perfect! All steps correct! Great work!';
+  } else {
+    sc.style.color='var(--red)';
+    sc.textContent=`✏️ ${correct}/${inputs.length} correct — check the red boxes!`;
+  }
+}
+
+function resetA2(){
+  document.querySelectorAll('#stepsContainer .blank-input').forEach(i=>{
+    i.value=''; i.classList.remove('correct','wrong');
+  });
+  document.getElementById('a2Score').textContent='';
+}
+
+buildProblems();
+
+/* ══════════════════════════════════════════════════════════════
+   ACTIVITY 3 — QUIZ
+══════════════════════════════════════════════════════════════ */
+const quizData = [
+  {q:'What is (a + b)² equal to?',           opts:['a²+2ab+b²','a²+b²','a²−2ab+b²','2a+2b'],         ans:0},
+  {q:'What is (a − b)² equal to?',           opts:['a²+2ab+b²','a²−2ab−b²','a²−2ab+b²','a²+b²'],     ans:2},
+  {q:'Expand (x + 5)²',                      opts:['x²+10x+25','x²+5x+25','x²+25','x²+10x+5'],        ans:0},
+  {q:'Factorise x² − 9',                     opts:['(x+9)(x−9)','(x+3)(x−3)','(x−3)²','(x+3)²'],      ans:1},
+  {q:'Expand (y − 6)²',                      opts:['y²−12y+36','y²+12y+36','y²−36','y²−6y+36'],        ans:0},
+  {q:'What is a² − b² equal to?',            opts:['(a−b)²','(a+b)(a+b)','(a+b)(a−b)','a²+b²'],       ans:2},
+  {q:'Expand (x + 3)(x + 4)',                opts:['x²+7x+12','x²+12x+7','x²+7x+7','x²+12'],          ans:0},
+  {q:'Factorise 4x² − 25',                   opts:['(2x+5)(2x−5)','(4x+5)(x−5)','(2x−5)²','(2x+5)²'],ans:0},
+  {q:'Expand (2a + 3)²',                     opts:['4a²+9','4a²+6a+9','4a²+12a+9','4a²+9a+6'],         ans:2},
+  {q:'Which identity is used to factorise 49m² − 16?', opts:['(a+b)²','(a−b)²','a²−b²=(a+b)(a−b)','(a+b)(a+c)'], ans:2},
+];
+
+let qOrder=[], qIdx=0, qScore=0;
+
+function shuffle(arr){return arr.map((v,i)=>({v,r:Math.random()})).sort((a,b)=>a.r-b.r).map(x=>x.v);}
+
+function restartQuiz(){
+  qOrder=shuffle([...Array(quizData.length).keys()]);
+  qIdx=0; qScore=0;
+  document.getElementById('scoreScreen').classList.remove('show');
+  document.getElementById('quizInProgress').style.display='';
+  document.getElementById('btnNextQ').classList.remove('show');
+  document.getElementById('btnRestart').classList.remove('show');
+  loadQuestion();
+}
+
+function loadQuestion(){
+  const qi=qOrder[qIdx];
+  const q=quizData[qi];
+  document.getElementById('qProgress').style.width=((qIdx/quizData.length)*100)+'%';
+  document.getElementById('qProgressLabel').textContent=(qIdx+1)+' / '+quizData.length;
+  document.getElementById('quizQ').textContent=q.q;
+  document.getElementById('quizFb').textContent='';
+  document.getElementById('btnNextQ').classList.remove('show');
+  document.getElementById('btnRestart').classList.remove('show');
+  const opts=document.getElementById('quizOpts');
+  opts.innerHTML='';
+  // shuffle options keeping track of correct
+  const indices=shuffle([0,1,2,3]);
+  const correctOpt=q.opts[q.ans];
+  indices.forEach(i=>{
+    const btn=document.createElement('button');
+    btn.className='opt-btn';
+    btn.textContent=q.opts[i];
+    btn.onclick=()=>answerQ(btn, q.opts[i]===correctOpt, correctOpt, opts);
+    opts.appendChild(btn);
+  });
+}
+
+function answerQ(btn, isCorrect, correctOpt, opts){
+  opts.querySelectorAll('.opt-btn').forEach(b=>{
+    b.disabled=true;
+    if(b.textContent===correctOpt) b.classList.add('correct');
+  });
+  const fb=document.getElementById('quizFb');
+  if(isCorrect){
+    btn.classList.add('correct');
+    qScore++;
+    fb.style.color='var(--green)';
+    fb.textContent='✅ Correct! Well done!';
+  } else {
+    btn.classList.add('wrong');
+    fb.style.color='var(--red)';
+    fb.textContent='❌ Not quite! The correct answer is highlighted.';
+  }
+  qIdx++;
+  if(qIdx<quizData.length){
+    document.getElementById('btnNextQ').classList.add('show');
+  } else {
+    document.getElementById('btnNextQ').classList.remove('show');
+    setTimeout(showScore, 900);
+  }
+}
+
+function nextQuestion(){
+  document.getElementById('btnNextQ').classList.remove('show');
+  loadQuestion();
+}
+
+function showScore(){
+  document.getElementById('quizInProgress').style.display='none';
+  const ss=document.getElementById('scoreScreen');
+  ss.classList.add('show');
+  document.getElementById('qProgress').style.width='100%';
+  const pct=qScore/quizData.length;
+  let stars='',msg='';
+  if(pct===1){stars='⭐⭐⭐⭐⭐';msg='Outstanding! You nailed every question! 🎉🏆';}
+  else if(pct>=.8){stars='⭐⭐⭐⭐';msg='Excellent! Almost perfect! 🎊';}
+  else if(pct>=.6){stars='⭐⭐⭐';msg='Great effort! Keep practising! 💪';}
+  else if(pct>=.4){stars='⭐⭐';msg='Good start! Review the identities and try again! 📖';}
+  else{stars='⭐';msg='Don\'t give up — every expert was once a beginner! 🌱';}
+  document.getElementById('scoreStars').textContent=stars;
+  document.getElementById('scoreNum').textContent=`${qScore} / ${quizData.length}`;
+  document.getElementById('scoreMsg').textContent=msg;
+}
+
+restartQuiz();
+</script>
+</body>
+</html>

@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ratio & Proportion — Direct & Inverse</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --v1:#6A0DAD;--v2:#8B2FC9;--v3:#A855F7;--v4:#C084FC;--v5:#E9D5FF;
+  --pink:#FF6EDF;--yellow:#FFE135;--mint:#00E5C4;--sky:#60C8FF;--orange:#FF8C42;
+  --dark:#1A0033;--white:#fff;
+  --card:rgba(255,255,255,0.92);
+  --shadow:0 8px 40px rgba(106,13,173,0.25);
+  --r:22px;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Nunito',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+  background:var(--dark);
+  color:var(--dark);
+}
+
+/* ══════ ANIMATED BG SCENE ══════ */
+#scene{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.bg-grad{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse at 20% 20%,#3D0070 0%,transparent 55%),
+             radial-gradient(ellipse at 80% 80%,#1A004A 0%,transparent 55%),
+             radial-gradient(ellipse at 60% 10%,#5A0099 0%,transparent 45%),
+             linear-gradient(160deg,#0D001A 0%,#2A0050 50%,#0D001A 100%);
+}
+
+/* Stars */
+.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle ease-in-out infinite;}
+@keyframes twinkle{0%,100%{opacity:.15;transform:scale(1)}50%{opacity:.9;transform:scale(1.3)}}
+
+/* Floating shapes */
+.orb{
+  position:absolute;border-radius:50%;filter:blur(60px);
+  animation:orbFloat ease-in-out infinite alternate;
+}
+@keyframes orbFloat{from{transform:translateY(0) scale(1)}to{transform:translateY(-30px) scale(1.05)}}
+
+.o1{width:320px;height:320px;background:rgba(168,85,247,.22);top:-60px;left:-80px;animation-duration:7s;}
+.o2{width:250px;height:250px;background:rgba(255,110,223,.18);bottom:10%;right:-60px;animation-duration:9s;animation-delay:-3s;}
+.o3{width:200px;height:200px;background:rgba(96,200,255,.15);top:40%;left:60%;animation-duration:6s;animation-delay:-1s;}
+.o4{width:180px;height:180px;background:rgba(0,229,196,.12);bottom:20%;left:5%;animation-duration:8s;animation-delay:-4s;}
+
+/* Bubbles */
+.bubble{
+  position:absolute;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,rgba(255,255,255,.3),transparent 70%);
+  border:1.5px solid rgba(255,255,255,.15);
+  animation:bubbleRise linear infinite;
+}
+@keyframes bubbleRise{
+  0%{transform:translateY(100vh) scale(0);opacity:0}
+  10%{opacity:.6}
+  90%{opacity:.3}
+  100%{transform:translateY(-120px) scale(1);opacity:0}
+}
+
+/* Flying ✨ particles */
+.spark{
+  position:absolute;font-size:1.1rem;
+  animation:sparkFly linear infinite;
+  pointer-events:none;
+}
+@keyframes sparkFly{
+  0%{transform:translateX(-80px) translateY(0) rotate(0deg);opacity:0}
+  10%{opacity:1}
+  90%{opacity:.8}
+  100%{transform:translateX(110vw) translateY(-60px) rotate(360deg);opacity:0}
+}
+
+/* ══════ CONTENT ══════ */
+#content{position:relative;z-index:10;padding:0 0 70px;}
+
+/* ══════ HEADING ══════ */
+.hero{
+  text-align:center;
+  padding:36px 20px 28px;
+}
+.hero h1{
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(2rem,5.5vw,3.4rem);
+  line-height:1.15;
+  background:linear-gradient(135deg,#fff 0%,var(--v4) 40%,var(--pink) 70%,var(--yellow) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 4px 16px rgba(168,85,247,.5));
+  letter-spacing:.5px;
+}
+.hero-sub{
+  margin-top:10px;
+  font-size:1.05rem;font-weight:700;
+  color:rgba(255,255,255,.65);
+  letter-spacing:.5px;
+}
+
+/* ══════ TABS ══════ */
+.tabs{
+  display:flex;justify-content:center;gap:12px;
+  padding:0 16px 24px;flex-wrap:wrap;
+}
+.tab-btn{
+  font-family:'Fredoka One',cursive;
+  font-size:1rem;
+  padding:11px 26px;
+  border-radius:50px;
+  border:2.5px solid rgba(255,255,255,.25);
+  background:rgba(255,255,255,.08);
+  color:rgba(255,255,255,.8);
+  cursor:pointer;
+  transition:all .25s;
+  backdrop-filter:blur(10px);
+  letter-spacing:.3px;
+}
+.tab-btn:hover{background:rgba(255,255,255,.18);transform:translateY(-2px);}
+.tab-btn.active{
+  background:linear-gradient(135deg,var(--v2),var(--pink));
+  color:#fff;border-color:transparent;
+  box-shadow:0 5px 22px rgba(255,110,223,.45);
+  transform:translateY(-3px);
+}
+
+/* ══════ ACTIVITY PANELS ══════ */
+.activity{display:none;}
+.activity.active{display:block;animation:panelIn .4s ease both;}
+@keyframes panelIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══════ CARD ══════ */
+.card{
+  background:var(--card);
+  border-radius:var(--r);
+  box-shadow:var(--shadow);
+  padding:26px 28px;
+  margin:0 auto 22px;
+  max-width:840px;
+  backdrop-filter:blur(14px);
+  border:1.5px solid rgba(168,85,247,.2);
+}
+.card-title{
+  font-family:'Fredoka One',cursive;
+  font-size:1.35rem;
+  color:var(--v1);
+  margin-bottom:16px;
+  display:flex;align-items:center;gap:10px;
+}
+.badge{
+  font-family:'Nunito',sans-serif;
+  font-size:.78rem;font-weight:800;
+  background:linear-gradient(135deg,var(--v3),var(--pink));
+  color:#fff;
+  border-radius:50px;padding:3px 13px;
+  text-transform:uppercase;letter-spacing:.5px;
+}
+
+/* ══════ ACTIVITY 1 — RATIO RECIPE BUILDER ══════ */
+#a1{padding:0 16px;}
+
+.recipe-scene{
+  background:linear-gradient(135deg,#FFF0FF,#F0E8FF);
+  border-radius:18px;
+  padding:22px;
+  margin-bottom:20px;
+  border:2px solid rgba(168,85,247,.2);
+}
+.recipe-title{
+  font-family:'Fredoka One',cursive;
+  font-size:1.1rem;color:var(--v1);
+  margin-bottom:12px;
+}
+.ratio-display{
+  display:flex;align-items:center;justify-content:center;
+  gap:14px;flex-wrap:wrap;
+  margin-bottom:18px;
+}
+.ratio-item{
+  display:flex;flex-direction:column;align-items:center;
+  gap:6px;
+}
+.item-emoji{font-size:2.5rem;filter:drop-shadow(0 3px 6px rgba(0,0,0,.15));}
+.item-count{
+  font-family:'Fredoka One',cursive;
+  font-size:1.5rem;
+  background:linear-gradient(135deg,var(--v2),var(--pink));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.item-label{font-size:.8rem;font-weight:700;color:#666;}
+.ratio-colon{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--v3);}
+
+.slider-wrap{
+  display:flex;flex-direction:column;gap:14px;margin-bottom:18px;
+}
+.slider-row{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.slider-row label{
+  font-weight:800;color:var(--v1);
+  min-width:120px;font-size:.95rem;
+}
+input[type=range]{
+  flex:1;min-width:120px;
+  -webkit-appearance:none;height:8px;
+  background:linear-gradient(90deg,var(--v3),var(--pink));
+  border-radius:4px;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:22px;height:22px;
+  background:linear-gradient(135deg,var(--v2),var(--pink));
+  border-radius:50%;border:3px solid #fff;
+  box-shadow:0 2px 8px rgba(106,13,173,.4);
+  cursor:pointer;
+}
+.slider-val{
+  font-family:'Fredoka One',cursive;
+  font-size:1.2rem;color:var(--v2);
+  min-width:36px;text-align:center;
+}
+
+.ratio-equation{
+  text-align:center;padding:14px;
+  background:linear-gradient(135deg,var(--v1),var(--v2));
+  border-radius:14px;color:#fff;
+  font-family:'Fredoka One',cursive;font-size:1.15rem;
+  box-shadow:0 4px 16px rgba(106,13,173,.35);
+}
+
+.scale-question{
+  background:linear-gradient(135deg,#FFF8E1,#FFF3CD);
+  border:2px dashed var(--yellow);
+  border-radius:14px;padding:16px;margin-top:16px;
+}
+.scale-question p{font-weight:700;color:#5A4000;margin-bottom:10px;}
+.scale-inputs{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.scale-inputs span{font-weight:800;color:var(--v1);}
+.ans-input{
+  border:2.5px solid var(--v3);
+  border-radius:10px;
+  padding:6px 12px;
+  font-family:'Nunito',sans-serif;
+  font-size:1rem;font-weight:700;
+  width:80px;text-align:center;
+  outline:none;
+  transition:all .2s;
+  color:var(--dark);
+  background:#fff;
+}
+.ans-input:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(255,110,223,.2);}
+.ans-input.correct{border-color:#00C853;background:#E8F5E9;color:#1B5E20;}
+.ans-input.wrong{border-color:#F44336;background:#FFEBEE;color:#B71C1C;}
+
+.btn-primary{
+  font-family:'Fredoka One',cursive;
+  font-size:1rem;
+  padding:11px 30px;
+  border:none;border-radius:50px;
+  background:linear-gradient(135deg,var(--v2),var(--pink));
+  color:#fff;
+  cursor:pointer;
+  box-shadow:0 4px 16px rgba(255,110,223,.4);
+  transition:all .2s;
+  margin-top:12px;
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 7px 22px rgba(255,110,223,.5);}
+.btn-secondary{
+  font-family:'Fredoka One',cursive;
+  font-size:1rem;
+  padding:11px 26px;
+  border:none;border-radius:50px;
+  background:linear-gradient(135deg,#e0d0ff,#f0e8ff);
+  color:var(--v1);
+  cursor:pointer;
+  transition:all .2s;
+  margin-top:12px;
+  margin-left:10px;
+}
+.btn-secondary:hover{transform:translateY(-2px);}
+
+.result-msg{
+  text-align:center;margin-top:12px;
+  font-family:'Fredoka One',cursive;font-size:1.1rem;
+  min-height:28px;
+}
+
+/* Proportion checker */
+.prop-checker{
+  background:linear-gradient(135deg,#F0F8FF,#E8F0FF);
+  border-radius:16px;padding:20px;margin-top:4px;
+  border:2px solid rgba(96,200,255,.3);
+}
+.prop-checker h3{
+  font-family:'Fredoka One',cursive;
+  color:var(--v2);margin-bottom:14px;font-size:1.05rem;
+}
+.prop-row{
+  display:flex;align-items:center;justify-content:center;
+  gap:10px;flex-wrap:wrap;margin-bottom:12px;
+}
+.prop-input{
+  border:2.5px solid var(--v4);
+  border-radius:10px;
+  padding:8px 12px;
+  font-family:'Fredoka One',cursive;
+  font-size:1.1rem;
+  width:70px;text-align:center;
+  color:var(--dark);
+  outline:none;
+  transition:all .2s;
+}
+.prop-input:focus{border-color:var(--v2);box-shadow:0 0 0 3px rgba(168,85,247,.2);}
+.prop-sep{font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--v3);}
+.prop-result{
+  text-align:center;
+  font-family:'Fredoka One',cursive;font-size:1.05rem;
+  padding:10px;border-radius:10px;
+  min-height:42px;
+}
+.prop-result.yes{background:#E8F5E9;color:#1B5E20;}
+.prop-result.no{background:#FFEBEE;color:#B71C1C;}
+
+/* ══════ ACTIVITY 2 — DIRECT vs INVERSE SORTER ══════ */
+#a2{padding:0 16px;}
+
+.scenario-pool{
+  display:flex;flex-wrap:wrap;gap:10px;
+  justify-content:center;
+  margin-bottom:22px;
+}
+.scenario-chip{
+  background:linear-gradient(135deg,var(--v2),var(--v3));
+  color:#fff;
+  font-weight:700;font-size:.88rem;
+  padding:9px 16px;
+  border-radius:50px;
+  cursor:pointer;
+  user-select:none;
+  box-shadow:0 3px 10px rgba(106,13,173,.3);
+  transition:all .2s;
+  text-align:center;
+  max-width:220px;
+  line-height:1.3;
+  border:2px solid transparent;
+}
+.scenario-chip:hover{transform:translateY(-2px) scale(1.03);}
+.scenario-chip.selected{outline:3px solid var(--yellow);outline-offset:2px;transform:scale(1.05);}
+.scenario-chip.placed{opacity:.35;pointer-events:none;}
+
+.drop-arena{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:16px;margin-bottom:18px;
+}
+@media(max-width:600px){.drop-arena{grid-template-columns:1fr;}}
+
+.drop-col{
+  border-radius:18px;
+  padding:16px;
+  min-height:160px;
+  border:2.5px dashed;
+}
+.drop-col.direct{
+  background:linear-gradient(135deg,#E8F8F0,#D0F5E0);
+  border-color:#00C853;
+}
+.drop-col.inverse{
+  background:linear-gradient(135deg,#FFF0E8,#FFE0D0);
+  border-color:var(--orange);
+}
+.col-head{
+  font-family:'Fredoka One',cursive;
+  font-size:1rem;
+  margin-bottom:10px;
+  display:flex;align-items:center;gap:6px;
+}
+.direct .col-head{color:#00701A;}
+.inverse .col-head{color:#A04000;}
+
+.placed-chip{
+  background:#fff;
+  font-size:.82rem;font-weight:700;
+  padding:7px 12px;
+  border-radius:50px;
+  margin:4px 0;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:6px;
+  cursor:pointer;
+  border:1.5px solid rgba(0,0,0,.1);
+}
+.placed-chip.wrong-spot{border-color:#F44336;background:#FFEBEE;}
+.placed-chip.right-spot{border-color:#00C853;background:#E8F5E9;}
+.remove-x{color:#999;font-size:.85rem;cursor:pointer;}
+
+.col-placeholder{
+  color:#bbb;font-size:.85rem;font-style:italic;
+  text-align:center;padding:20px 10px;
+}
+
+.a2-controls{
+  display:flex;justify-content:center;gap:12px;flex-wrap:wrap;
+}
+.a2-score{
+  text-align:center;margin-top:14px;
+  font-family:'Fredoka One',cursive;font-size:1.1rem;min-height:28px;
+}
+
+/* Theory box */
+.theory-box{
+  background:linear-gradient(135deg,#F5EEFF,#EDE0FF);
+  border-radius:14px;
+  padding:16px 20px;
+  margin-bottom:18px;
+  border-left:5px solid var(--v2);
+  font-size:.93rem;color:#333;line-height:1.7;
+}
+.theory-box strong{color:var(--v1);}
+
+/* ══════ ACTIVITY 3 — WORD PROBLEM QUIZ ══════ */
+#a3{padding:0 16px;}
+
+.quiz-progress{
+  display:flex;align-items:center;gap:12px;margin-bottom:20px;
+}
+.prog-bar{flex:1;height:14px;background:#E9D5FF;border-radius:7px;overflow:hidden;}
+.prog-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--v2),var(--pink));
+  border-radius:7px;
+  transition:width .5s cubic-bezier(.4,0,.2,1);
+}
+.prog-label{
+  font-family:'Fredoka One',cursive;font-size:.95rem;color:var(--v2);white-space:nowrap;
+}
+
+.quiz-card{
+  background:linear-gradient(135deg,#FAF5FF,#F3E8FF);
+  border-radius:18px;padding:22px;
+  border:2px solid rgba(168,85,247,.2);
+  margin-bottom:16px;
+  font-family:'Fredoka One',cursive;font-size:1.2rem;
+  color:var(--dark);line-height:1.4;
+}
+.quiz-card .q-tag{
+  font-size:.75rem;
+  background:linear-gradient(135deg,var(--v2),var(--pink));
+  color:#fff;
+  padding:2px 12px;border-radius:50px;
+  display:inline-block;margin-bottom:10px;
+  font-family:'Nunito',sans-serif;font-weight:800;
+  text-transform:uppercase;letter-spacing:.5px;
+}
+
+.work-area{
+  background:#fff;
+  border-radius:14px;padding:16px;
+  margin-bottom:16px;
+  border:2px solid var(--v5);
+}
+.work-area label{
+  font-weight:800;color:var(--v2);font-size:.9rem;
+  display:block;margin-bottom:8px;
+}
+.work-steps{
+  display:flex;flex-direction:column;gap:10px;
+}
+.work-step{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  background:linear-gradient(90deg,#F5EEFF,#FDF8FF);
+  border-left:4px solid var(--v3);
+  border-radius:0 10px 10px 0;
+  padding:10px 14px;
+  font-weight:700;font-size:.95rem;color:var(--dark);
+}
+.work-step-num{
+  background:linear-gradient(135deg,var(--v2),var(--pink));
+  color:#fff;border-radius:50%;
+  width:26px;height:26px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fredoka One',cursive;font-size:.85rem;flex-shrink:0;
+}
+
+.quiz-options{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:10px;margin-bottom:14px;
+}
+@media(max-width:500px){.quiz-options{grid-template-columns:1fr;}}
+.opt-btn{
+  font-family:'Fredoka One',cursive;font-size:1rem;
+  padding:14px 16px;
+  border:2.5px solid var(--v5);border-radius:14px;
+  background:#fff;color:var(--dark);
+  cursor:pointer;text-align:left;
+  transition:all .2s;position:relative;overflow:hidden;
+}
+.opt-btn:hover:not(:disabled){
+  border-color:var(--v3);
+  background:linear-gradient(135deg,#F5EEFF,#fff);
+  transform:translateY(-2px);
+  box-shadow:0 4px 14px rgba(168,85,247,.2);
+}
+.opt-btn.correct{background:#E8F5E9;border-color:#00C853;color:#1B5E20;}
+.opt-btn.wrong{background:#FFEBEE;border-color:#F44336;color:#B71C1C;}
+.opt-btn:disabled{cursor:default;}
+
+.quiz-feedback{
+  text-align:center;
+  font-family:'Fredoka One',cursive;font-size:1.05rem;
+  min-height:30px;margin-bottom:10px;
+}
+.quiz-nav{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;}
+.btn-next{
+  font-family:'Fredoka One',cursive;font-size:1rem;
+  padding:11px 30px;border:none;border-radius:50px;
+  background:linear-gradient(135deg,var(--v2),var(--pink));
+  color:#fff;cursor:pointer;
+  box-shadow:0 4px 14px rgba(255,110,223,.4);
+  transition:all .2s;display:none;
+}
+.btn-next.show{display:inline-block;}
+.btn-next:hover{transform:translateY(-2px);}
+.btn-replay{
+  font-family:'Fredoka One',cursive;font-size:1rem;
+  padding:11px 26px;border:none;border-radius:50px;
+  background:linear-gradient(135deg,var(--yellow),var(--orange));
+  color:#fff;cursor:pointer;transition:all .2s;display:none;
+}
+.btn-replay.show{display:inline-block;}
+
+/* Score screen */
+.score-screen{
+  display:none;text-align:center;padding:30px 16px;
+}
+.score-screen.show{display:block;animation:panelIn .5s ease both;}
+.score-trophy{font-size:4rem;margin-bottom:10px;animation:bounce .8s ease infinite alternate;}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-12px)}}
+.score-num{
+  font-family:'Fredoka One',cursive;font-size:3rem;
+  background:linear-gradient(135deg,var(--v2),var(--pink));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:8px;
+}
+.score-msg{
+  font-family:'Fredoka One',cursive;font-size:1.25rem;
+  color:var(--v1);margin-bottom:24px;
+}
+
+/* ══════ FOOTER ══════ */
+.footer{
+  text-align:center;
+  font-family:'Fredoka One',cursive;
+  font-size:.95rem;color:rgba(255,255,255,.5);
+  padding:16px 0 0;
+}
+
+/* ══════ CONFETTI burst ══════ */
+.confetti-piece{
+  position:fixed;width:10px;height:10px;
+  border-radius:2px;pointer-events:none;
+  animation:confettiFall 1.2s ease-in forwards;
+  z-index:9999;
+}
+@keyframes confettiFall{
+  0%{transform:translate(0,0) rotate(0deg);opacity:1}
+  100%{transform:translate(var(--dx),var(--dy)) rotate(720deg);opacity:0}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ SCENE ═══ -->
+<div id="scene">
+  <div class="bg-grad"></div>
+  <!-- Orbs -->
+  <div class="orb o1"></div><div class="orb o2"></div>
+  <div class="orb o3"></div><div class="orb o4"></div>
+</div>
+
+<!-- ═══ CONTENT ═══ -->
+<div id="content">
+
+  <!-- HERO -->
+  <div class="hero">
+    <h1>Ratio &amp; Proportion<br>Direct &amp; Inverse</h1>
+    <p class="hero-sub">3 Fun Activities · Explore · Sort · Solve</p>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab(1)">🍹 Activity 1 — Recipe Ratios</button>
+    <button class="tab-btn"        onclick="switchTab(2)">⚡ Activity 2 — Sort It Out!</button>
+    <button class="tab-btn"        onclick="switchTab(3)">🧩 Activity 3 — Word Problems</button>
+  </div>
+
+  <!-- ════════════════ ACTIVITY 1 ════════════════ -->
+  <div class="activity active" id="a1">
+    <!-- Recipe Ratio Builder -->
+    <div class="card" style="padding:22px 28px;max-width:840px;">
+      <div class="card-title">🍹 Recipe Ratio Builder <span class="badge">Interactive</span></div>
+      <p style="color:#555;font-size:.93rem;margin-bottom:18px;">
+        Adjust the sliders to set your recipe ingredients. Watch the ratio update live — then scale it up!
+      </p>
+      <div class="recipe-scene">
+        <div class="recipe-title">🧪 Juice Mix Recipe</div>
+        <div class="ratio-display" id="ratioDisplay">
+          <div class="ratio-item">
+            <div class="item-emoji">🍊</div>
+            <div class="item-count" id="orangeCount">3</div>
+            <div class="item-label">Orange Juice (cups)</div>
+          </div>
+          <div class="ratio-colon">:</div>
+          <div class="ratio-item">
+            <div class="item-emoji">💧</div>
+            <div class="item-count" id="waterCount">2</div>
+            <div class="item-label">Water (cups)</div>
+          </div>
+          <div class="ratio-colon">:</div>
+          <div class="ratio-item">
+            <div class="item-emoji">🍋</div>
+            <div class="item-count" id="lemonCount">1</div>
+            <div class="item-label">Lemon Juice (cups)</div>
+          </div>
+        </div>
+        <div class="slider-wrap">
+          <div class="slider-row">
+            <label>🍊 Orange Juice</label>
+            <input type="range" id="slOrange" min="1" max="10" value="3" oninput="updateRatio()">
+            <div class="slider-val" id="valOrange">3</div>
+          </div>
+          <div class="slider-row">
+            <label>💧 Water</label>
+            <input type="range" id="slWater" min="1" max="10" value="2" oninput="updateRatio()">
+            <div class="slider-val" id="valWater">2</div>
+          </div>
+          <div class="slider-row">
+            <label>🍋 Lemon Juice</label>
+            <input type="range" id="slLemon" min="1" max="10" value="1" oninput="updateRatio()">
+            <div class="slider-val" id="valLemon">1</div>
+          </div>
+        </div>
+        <div class="ratio-equation" id="ratioEq">
+          Ratio = 3 : 2 : 1 &nbsp;|&nbsp; Simplified = 3 : 2 : 1
+        </div>
+      </div>
+
+      <!-- Scale Challenge -->
+      <div class="scale-question" id="scaleQ">
+        <p id="scaleQText">🔮 If you use <strong>9 cups of Orange Juice</strong>, keeping the same ratio, how many cups of Water do you need?</p>
+        <div class="scale-inputs">
+          <span>Water = </span>
+          <input type="text" class="ans-input" id="scaleAns" placeholder="?">
+          <span>cups</span>
+        </div>
+        <button class="btn-primary" onclick="checkScale()">Check Answer ✅</button>
+        <button class="btn-secondary" onclick="newScaleQ()">New Question 🔄</button>
+        <div class="result-msg" id="scaleResult"></div>
+      </div>
+    </div>
+
+    <!-- Proportion Checker -->
+    <div class="card">
+      <div class="card-title">⚖️ Are These Ratios Proportional? <span class="badge">Checker</span></div>
+      <p style="color:#555;font-size:.93rem;margin-bottom:16px;">
+        Enter two ratios (a:b and c:d). The checker tells you if they are in proportion!
+      </p>
+      <div class="prop-checker">
+        <h3>Enter two ratios to compare:</h3>
+        <div class="prop-row">
+          <input type="number" class="prop-input" id="pa" placeholder="a" min="1">
+          <span class="prop-sep">:</span>
+          <input type="number" class="prop-input" id="pb" placeholder="b" min="1">
+          <span class="prop-sep" style="font-size:1.5rem;color:#888">=</span>
+          <input type="number" class="prop-input" id="pc" placeholder="c" min="1">
+          <span class="prop-sep">:</span>
+          <input type="number" class="prop-input" id="pd" placeholder="d" min="1">
+        </div>
+        <div style="text-align:center;margin-bottom:12px;">
+          <button class="btn-primary" onclick="checkProp()">Check Proportion 🔍</button>
+        </div>
+        <div class="prop-result" id="propResult"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ ACTIVITY 2 ════════════════ -->
+  <div class="activity" id="a2">
+    <div class="card">
+      <div class="card-title">⚡ Sort It Out! <span class="badge">Drag &amp; Click</span></div>
+
+      <div class="theory-box">
+        <strong>📌 Direct Proportion:</strong> Both quantities change in the <em>same</em> direction. More ↑ → More ↑. Formula: x₁/y₁ = x₂/y₂<br>
+        <strong>📌 Inverse Proportion:</strong> Quantities change in <em>opposite</em> directions. More ↑ → Less ↓. Formula: x₁ × y₁ = x₂ × y₂
+      </div>
+
+      <p style="color:#555;font-size:.93rem;margin-bottom:14px;font-weight:700;">
+        👇 Click a scenario, then click the correct box below to sort it!
+      </p>
+
+      <div class="scenario-pool" id="chipPool"></div>
+
+      <div class="drop-arena">
+        <div class="drop-col direct" id="directCol">
+          <div class="col-head">📈 Direct Proportion</div>
+          <div class="col-placeholder" id="directPlaceholder">Click a scenario above then click here!</div>
+        </div>
+        <div class="drop-col inverse" id="inverseCol">
+          <div class="col-head">📉 Inverse Proportion</div>
+          <div class="col-placeholder" id="inversePlaceholder">Click a scenario above then click here!</div>
+        </div>
+      </div>
+
+      <div class="a2-controls">
+        <button class="btn-primary" onclick="checkA2()">Check Answers ✅</button>
+        <button class="btn-secondary" onclick="resetA2()">Reset 🔄</button>
+      </div>
+      <div class="a2-score" id="a2Score"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════ ACTIVITY 3 ════════════════ -->
+  <div class="activity" id="a3">
+    <div class="card">
+      <div class="card-title">🧩 Word Problem Quiz <span class="badge">8 Questions</span></div>
+
+      <div id="quizInProgress">
+        <div class="quiz-progress">
+          <div class="prog-bar"><div class="prog-fill" id="qProg" style="width:0%"></div></div>
+          <div class="prog-label" id="qLabel">1 / 8</div>
+        </div>
+        <div class="quiz-card" id="quizQ"></div>
+        <div class="work-area" id="workArea" style="display:none">
+          <label>📝 Step-by-step working:</label>
+          <div class="work-steps" id="workSteps"></div>
+        </div>
+        <div class="quiz-options" id="quizOpts"></div>
+        <div class="quiz-feedback" id="quizFb"></div>
+        <div class="quiz-nav">
+          <button class="btn-next" id="btnNext" onclick="nextQ()">Next ➡</button>
+          <button class="btn-replay" id="btnReplay" onclick="restartQuiz()">Play Again 🔄</button>
+        </div>
+      </div>
+
+      <div class="score-screen" id="scoreScreen">
+        <div class="score-trophy" id="scoreTrophy">🏆</div>
+        <div class="score-num" id="scoreNum"></div>
+        <div class="score-msg" id="scoreMsg"></div>
+        <button class="btn-primary" onclick="restartQuiz()">Play Again 🔄</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">✨ Keep exploring maths — every ratio is a superpower! ✨</div>
+</div>
+
+<script>
+/* ── SCENE GENERATOR ── */
+(function(){
+  const scene = document.getElementById('scene');
+  // Stars
+  for(let i=0;i<120;i++){
+    const s = document.createElement('div');
+    s.className='star';
+    const sz = Math.random()*2.5+.5;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;animation-duration:${2+Math.random()*4}s;animation-delay:${-Math.random()*4}s`;
+    scene.appendChild(s);
+  }
+  // Bubbles
+  const bubbleColors=['rgba(168,85,247,.25)','rgba(255,110,223,.25)','rgba(96,200,255,.2)','rgba(0,229,196,.2)'];
+  for(let i=0;i<18;i++){
+    const b = document.createElement('div');
+    b.className='bubble';
+    const sz=20+Math.random()*50;
+    b.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;animation-duration:${10+Math.random()*15}s;animation-delay:${-Math.random()*15}s;background:${bubbleColors[Math.floor(Math.random()*bubbleColors.length)]}`;
+    scene.appendChild(b);
+  }
+  // Sparks
+  const emojis=['✨','⭐','💜','🔮','💫','🌟','🪄'];
+  for(let i=0;i<10;i++){
+    const sp=document.createElement('div');
+    sp.className='spark';
+    sp.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    sp.style.cssText=`top:${5+Math.random()*80}%;animation-duration:${18+Math.random()*20}s;animation-delay:${-Math.random()*20}s;font-size:${0.8+Math.random()*.8}rem`;
+    scene.appendChild(sp);
+  }
+})();
+
+/* ── TAB SWITCHER ── */
+function switchTab(n){
+  document.querySelectorAll('.activity').forEach(a=>a.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('a'+n).classList.add('active');
+  document.querySelectorAll('.tab-btn')[n-1].classList.add('active');
+}
+
+/* ════════════════════════════════
+   ACTIVITY 1 — RECIPE RATIOS
+════════════════════════════════ */
+function gcd(a,b){return b===0?a:gcd(b,a%b);}
+function gcd3(a,b,c){return gcd(gcd(a,b),c);}
+
+function updateRatio(){
+  const o=+document.getElementById('slOrange').value;
+  const w=+document.getElementById('slWater').value;
+  const l=+document.getElementById('slLemon').value;
+  document.getElementById('valOrange').textContent=o;
+  document.getElementById('valWater').textContent=w;
+  document.getElementById('valLemon').textContent=l;
+  document.getElementById('orangeCount').textContent=o;
+  document.getElementById('waterCount').textContent=w;
+  document.getElementById('lemonCount').textContent=l;
+  const g=gcd3(o,w,l);
+  document.getElementById('ratioEq').innerHTML=
+    `Ratio = ${o} : ${w} : ${l} &nbsp;|&nbsp; Simplified = ${o/g} : ${w/g} : ${l/g}`;
+  generateScaleQ();
+}
+
+let scaleData = {};
+function generateScaleQ(){
+  const o=+document.getElementById('slOrange').value;
+  const w=+document.getElementById('slWater').value;
+  const l=+document.getElementById('slLemon').value;
+  const items=[
+    {name:'Orange Juice',emoji:'🍊',val:o},
+    {name:'Water',emoji:'💧',val:w},
+    {name:'Lemon Juice',emoji:'🍋',val:l}
+  ];
+  const known=items[Math.floor(Math.random()*3)];
+  const unknown=items.filter(i=>i.name!==known.name)[Math.floor(Math.random()*2)];
+  const mult=Math.floor(Math.random()*4)+2;
+  const knownNew=known.val*mult;
+  const unknownNew=unknown.val*mult;
+  scaleData={knownName:known.name,knownEmoji:known.emoji,knownNew,unknownName:unknown.name,unknownNew};
+  document.getElementById('scaleQText').innerHTML=
+    `🔮 If you use <strong>${knownNew} cups of ${known.emoji} ${known.name}</strong>, keeping the same ratio, how many cups of ${unknown.emoji} ${unknown.name} do you need?`;
+  const inp=document.getElementById('scaleAns');
+  inp.value='';inp.classList.remove('correct','wrong');
+  document.getElementById('scaleResult').textContent='';
+}
+
+function newScaleQ(){generateScaleQ();}
+
+function checkScale(){
+  const ans=+document.getElementById('scaleAns').value;
+  const inp=document.getElementById('scaleAns');
+  const res=document.getElementById('scaleResult');
+  if(!ans){res.textContent='⚠️ Please enter a number first!';res.style.color='#888';return;}
+  if(ans===scaleData.unknownNew){
+    inp.classList.add('correct');inp.classList.remove('wrong');
+    res.style.color='#00C853';res.textContent='🎉 Correct! Great work!';
+    confettiBurst();
+  } else {
+    inp.classList.add('wrong');inp.classList.remove('correct');
+    res.style.color='#F44336';res.textContent=`❌ Not quite! The answer is ${scaleData.unknownNew}. Try again!`;
+  }
+}
+
+function checkProp(){
+  const a=+document.getElementById('pa').value;
+  const b=+document.getElementById('pb').value;
+  const c=+document.getElementById('pc').value;
+  const d=+document.getElementById('pd').value;
+  const res=document.getElementById('propResult');
+  if(!a||!b||!c||!d){res.className='prop-result';res.textContent='⚠️ Please fill in all four values!';return;}
+  // Cross multiply: a/b == c/d ↔ a*d == b*c
+  if(a*d===b*c){
+    res.className='prop-result yes';
+    res.innerHTML=`✅ YES! They are proportional! <br><small>${a}×${d} = ${b}×${c} = ${a*d}</small>`;
+    confettiBurst();
+  } else {
+    res.className='prop-result no';
+    res.innerHTML=`❌ NO, they are NOT proportional. <br><small>${a}×${d} = ${a*d} but ${b}×${c} = ${b*c}</small>`;
+  }
+}
+
+/* ════════════════════════════════
+   ACTIVITY 2 — SORT IT OUT
+════════════════════════════════ */
+const scenarios=[
+  {text:'More pencils bought → higher total cost',type:'direct'},
+  {text:'More workers on a job → less time to finish',type:'inverse'},
+  {text:'Cycling faster → reach school in less time',type:'inverse'},
+  {text:'More hours worked → more salary earned',type:'direct'},
+  {text:'More taps filling a tank → less time to fill',type:'inverse'},
+  {text:'More pages read → more chapters completed',type:'direct'},
+  {text:'More passengers in a cab → less fare per person (shared)',type:'inverse'},
+  {text:'More km driven → more fuel consumed',type:'direct'},
+  {text:'Higher speed → less travel time for same distance',type:'inverse'},
+  {text:'More flour used → more loaves of bread baked',type:'direct'},
+];
+
+let selectedChip=null;
+let placedItems={direct:[],inverse:[]};
+
+function buildA2(){
+  const pool=document.getElementById('chipPool');
+  pool.innerHTML='';
+  placedItems={direct:[],inverse:[]};
+  selectedChip=null;
+  renderColumns();
+  scenarios.forEach((s,i)=>{
+    const chip=document.createElement('div');
+    chip.className='scenario-chip';
+    chip.textContent=s.text;
+    chip.dataset.idx=i;
+    chip.onclick=()=>pickChip(chip,i);
+    pool.appendChild(chip);
+  });
+  document.getElementById('a2Score').textContent='';
+}
+
+function pickChip(chip,idx){
+  if(chip.classList.contains('placed'))return;
+  document.querySelectorAll('.scenario-chip').forEach(c=>c.classList.remove('selected'));
+  chip.classList.add('selected');
+  selectedChip={chip,idx};
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('directCol').addEventListener('click',()=>dropTo('direct'));
+  document.getElementById('inverseCol').addEventListener('click',()=>dropTo('inverse'));
+});
+
+function dropTo(type){
+  if(!selectedChip)return;
+  const {chip,idx}=selectedChip;
+  chip.classList.remove('selected');
+  chip.classList.add('placed');
+  placedItems[type].push({idx,text:scenarios[idx].text,correct:scenarios[idx].type===type});
+  renderColumns();
+  selectedChip=null;
+}
+
+function renderColumns(){
+  ['direct','inverse'].forEach(type=>{
+    const col=document.getElementById(type+'Col');
+    // Remove old placed chips
+    col.querySelectorAll('.placed-chip').forEach(e=>e.remove());
+    const ph=document.getElementById(type+'Placeholder');
+    if(placedItems[type].length===0){ph.style.display='block';}
+    else{
+      ph.style.display='none';
+      placedItems[type].forEach((item,i)=>{
+        const div=document.createElement('div');
+        div.className='placed-chip';
+        div.innerHTML=`<span>${item.text}</span><span class="remove-x" onclick="removeFromCol('${type}',${i})">✕</span>`;
+        col.appendChild(div);
+      });
+    }
+  });
+}
+
+function removeFromCol(type,i){
+  const item=placedItems[type][i];
+  placedItems[type].splice(i,1);
+  // unplace chip
+  document.querySelectorAll('.scenario-chip').forEach(c=>{
+    if(+c.dataset.idx===item.idx)c.classList.remove('placed');
+  });
+  renderColumns();
+}
+
+function checkA2(){
+  let correct=0,total=placedItems.direct.length+placedItems.inverse.length;
+  if(total<scenarios.length){
+    document.getElementById('a2Score').style.color='#888';
+    document.getElementById('a2Score').textContent=`⚠️ Please sort all ${scenarios.length} scenarios first!`;return;
+  }
+  ['direct','inverse'].forEach(type=>{
+    const col=document.getElementById(type+'Col');
+    const chips=col.querySelectorAll('.placed-chip');
+    placedItems[type].forEach((item,i)=>{
+      chips[i].classList.remove('wrong-spot','right-spot');
+      if(item.correct){correct++;chips[i].classList.add('right-spot');}
+      else chips[i].classList.add('wrong-spot');
+    });
+  });
+  const sc=document.getElementById('a2Score');
+  if(correct===scenarios.length){
+    sc.style.color='#00C853';sc.textContent=`🎉 Perfect! All ${scenarios.length} sorted correctly!`;confettiBurst();
+  } else {
+    sc.style.color='#F44336';sc.textContent=`✏️ ${correct}/${scenarios.length} correct — red ones need fixing!`;
+  }
+}
+
+function resetA2(){buildA2();}
+
+/* ════════════════════════════════
+   ACTIVITY 3 — WORD PROBLEMS
+════════════════════════════════ */
+const quizData=[
+  {
+    q:'If 5 notebooks cost ₹150, how much will 8 notebooks cost?',
+    tag:'Direct Proportion',
+    steps:['Cost of 1 notebook = ₹150 ÷ 5 = ₹30','Cost of 8 notebooks = ₹30 × 8 = ₹240'],
+    opts:['₹180','₹200','₹240','₹270'],ans:2
+  },
+  {
+    q:'3 machines finish a job in 10 hours. How long will 5 machines take?',
+    tag:'Inverse Proportion',
+    steps:['Total work = 3 × 10 = 30 machine-hours','Time for 5 machines = 30 ÷ 5 = 6 hours'],
+    opts:['8 hours','6 hours','4 hours','12 hours'],ans:1
+  },
+  {
+    q:'The ratio of water to juice in a drink is 2:3. If you have 10 L of juice, how much water is needed?',
+    tag:'Ratio',
+    steps:['Water : Juice = 2 : 3','If juice = 10 L, water = (2/3) × 10 = 6.67 L'],
+    opts:['8 L','15 L','6.67 L','5 L'],ans:2
+  },
+  {
+    q:'4 pencils cost ₹20. How much do 6 pencils cost?',
+    tag:'Direct Proportion',
+    steps:['Set up: 4/20 = 6/x','Cross multiply: 4x = 120','x = 120 ÷ 4 = ₹30'],
+    opts:['₹25','₹30','₹35','₹24'],ans:1
+  },
+  {
+    q:'4 workers can finish a job in 12 hours. How long will 6 workers take?',
+    tag:'Inverse Proportion',
+    steps:['4 × 12 = 48 worker-hours','6 × ? = 48','Hours = 48 ÷ 6 = 8 hours'],
+    opts:['10 hours','6 hours','8 hours','9 hours'],ans:2
+  },
+  {
+    q:'A recipe needs 2 cups of flour for every 1 cup of sugar. How many cups of sugar are needed for 8 cups of flour?',
+    tag:'Direct Proportion',
+    steps:['Ratio flour:sugar = 2:1','For 8 cups flour: 8 ÷ 2 = 4 cups sugar'],
+    opts:['2 cups','4 cups','6 cups','8 cups'],ans:1
+  },
+  {
+    q:'A map has scale 1:1000. A road is 5 cm on the map. What is its real length?',
+    tag:'Ratio & Scale',
+    steps:['Scale 1:1000 means 1 cm = 1000 cm real','5 cm on map = 5 × 1000 = 5000 cm = 50 m'],
+    opts:['500 m','5 m','50 m','5000 m'],ans:2
+  },
+  {
+    q:'Three friends share ₹600 in the ratio 1:2:3. How much does the friend with the largest share get?',
+    tag:'Ratio',
+    steps:['Total parts = 1+2+3 = 6','Each part = ₹600 ÷ 6 = ₹100','Largest share = 3 × ₹100 = ₹300'],
+    opts:['₹200','₹100','₹300','₹250'],ans:2
+  },
+];
+
+let qOrder=[],qIdx=0,qScore=0;
+function shuffle(arr){return arr.map((v)=>({v,r:Math.random()})).sort((a,b)=>a.r-b.r).map(x=>x.v);}
+
+function restartQuiz(){
+  qOrder=shuffle([...Array(quizData.length).keys()]);
+  qIdx=0;qScore=0;
+  document.getElementById('scoreScreen').classList.remove('show');
+  document.getElementById('quizInProgress').style.display='';
+  document.getElementById('btnNext').classList.remove('show');
+  loadQ();
+}
+
+function loadQ(){
+  const qi=qOrder[qIdx];
+  const q=quizData[qi];
+  document.getElementById('qProg').style.width=((qIdx/quizData.length)*100)+'%';
+  document.getElementById('qLabel').textContent=(qIdx+1)+' / '+quizData.length;
+  document.getElementById('quizQ').innerHTML=`<div class="q-tag">${q.tag}</div>${q.q}`;
+  document.getElementById('quizFb').textContent='';
+  document.getElementById('btnNext').classList.remove('show');
+  document.getElementById('btnReplay').classList.remove('show');
+
+  // Work steps
+  const wa=document.getElementById('workArea');
+  const ws=document.getElementById('workSteps');
+  if(q.steps&&q.steps.length){
+    wa.style.display='';ws.innerHTML='';
+    q.steps.forEach((s,i)=>{
+      ws.innerHTML+=`<div class="work-step"><div class="work-step-num">${i+1}</div><span>${s}</span></div>`;
+    });
+  } else wa.style.display='none';
+
+  // Options
+  const opts=document.getElementById('quizOpts');
+  opts.innerHTML='';
+  const correctOpt=q.opts[q.ans];
+  shuffle([0,1,2,3]).forEach(i=>{
+    const btn=document.createElement('button');
+    btn.className='opt-btn';
+    btn.textContent=q.opts[i];
+    btn.onclick=()=>answerQ(btn,q.opts[i]===correctOpt,correctOpt,opts);
+    opts.appendChild(btn);
+  });
+}
+
+function answerQ(btn,isCorrect,correctOpt,opts){
+  opts.querySelectorAll('.opt-btn').forEach(b=>{
+    b.disabled=true;
+    if(b.textContent===correctOpt)b.classList.add('correct');
+  });
+  const fb=document.getElementById('quizFb');
+  if(isCorrect){
+    btn.classList.add('correct');qScore++;
+    fb.style.color='#00C853';fb.textContent='✅ Brilliant! Correct!';
+    confettiBurst();
+  } else {
+    btn.classList.add('wrong');
+    fb.style.color='#F44336';fb.textContent='❌ Not quite! The correct answer is highlighted in green.';
+  }
+  qIdx++;
+  if(qIdx<quizData.length){document.getElementById('btnNext').classList.add('show');}
+  else{setTimeout(showScore,900);}
+}
+
+function nextQ(){document.getElementById('btnNext').classList.remove('show');loadQ();}
+
+function showScore(){
+  document.getElementById('quizInProgress').style.display='none';
+  const ss=document.getElementById('scoreScreen');
+  ss.classList.add('show');
+  document.getElementById('qProg').style.width='100%';
+  const pct=qScore/quizData.length;
+  let trophy,msg;
+  if(pct===1){trophy='🏆';msg='Outstanding! Perfect score! You\'re a maths superstar! 🌟';}
+  else if(pct>=.75){trophy='🥇';msg='Excellent! Almost perfect! Keep it up! 🎊';}
+  else if(pct>=.5){trophy='🥈';msg='Good effort! Review the concepts and try again! 💪';}
+  else{trophy='🌱';msg='Every expert was once a beginner! Keep practising! 📖';}
+  document.getElementById('scoreTrophy').textContent=trophy;
+  document.getElementById('scoreNum').textContent=`${qScore} / ${quizData.length}`;
+  document.getElementById('scoreMsg').textContent=msg;
+}
+
+/* ── CONFETTI BURST ── */
+function confettiBurst(){
+  const colors=['#A855F7','#FF6EDF','#FFE135','#00E5C4','#60C8FF','#FF8C42'];
+  for(let i=0;i<28;i++){
+    const piece=document.createElement('div');
+    piece.className='confetti-piece';
+    const x=(Math.random()-0.5)*400;
+    const y=-(100+Math.random()*250);
+    piece.style.cssText=`
+      left:50%;top:50%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      --dx:${x}px;--dy:${y}px;
+      width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;
+      border-radius:${Math.random()>0.5?'50%':'2px'};
+      animation-duration:${0.9+Math.random()*.5}s;
+      animation-delay:${Math.random()*.1}s;
+    `;
+    document.body.appendChild(piece);
+    setTimeout(()=>piece.remove(),1500);
+  }
+}
+
+/* ── INIT ── */
+updateRatio();
+generateScaleQ();
+buildA2();
+restartQuiz();
+</script>
+</body>
+</html>

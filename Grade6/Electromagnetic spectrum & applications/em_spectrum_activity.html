@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Electromagnetic Spectrum & Applications</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --radio:    #ff6b35;
+  --micro:    #ff9f1c;
+  --ir:       #e63946;
+  --visible:  #06d6a0;
+  --uv:       #7209b7;
+  --xray:     #4361ee;
+  --gamma:    #3a0ca3;
+  --bg-deep:  #03010a;
+  --bg-mid:   #07031a;
+  --neon-cyan:#00f5ff;
+  --neon-lime:#b0ff00;
+  --neon-pink:#ff00aa;
+  --gold:     #ffd60a;
+  --text:     #e8e8ff;
+  --glass:    rgba(255,255,255,0.06);
+  --glass-b:  rgba(255,255,255,0.12);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  font-family:'Exo 2',sans-serif;
+  background:var(--bg-deep);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* ═══════════════ ANIMATED BACKGROUND ═══════════════ */
+.bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+
+.nebula{
+  position:absolute;border-radius:50%;filter:blur(80px);opacity:.18;
+  animation:nebulaDrift ease-in-out infinite alternate;
+}
+@keyframes nebulaDrift{0%{transform:translate(0,0) scale(1);}100%{transform:translate(30px,20px) scale(1.08);}}
+
+.star-field{position:absolute;inset:0;}
+.star{position:absolute;border-radius:50%;background:#fff;animation:starTwinkle ease-in-out infinite;}
+@keyframes starTwinkle{0%,100%{opacity:.08;transform:scale(1);}50%{opacity:.9;transform:scale(1.6);}}
+
+/* Floating whimsical objects */
+.floater{
+  position:fixed;font-size:1.8rem;opacity:.22;pointer-events:none;z-index:1;
+  animation:floatObj ease-in-out infinite;
+  filter:drop-shadow(0 0 8px rgba(0,245,255,.5));
+}
+@keyframes floatObj{
+  0%{transform:translateY(0) rotate(0deg);}
+  33%{transform:translateY(-22px) rotate(6deg);}
+  66%{transform:translateY(-10px) rotate(-4deg);}
+  100%{transform:translateY(0) rotate(0deg);}
+}
+
+/* Spectrum wave across top */
+.spectrum-bar{
+  position:fixed;top:0;left:0;right:0;height:4px;z-index:100;
+  background:linear-gradient(90deg,
+    var(--radio) 0%,
+    var(--micro) 14%,
+    var(--ir) 28%,
+    #ff4500 35%,
+    #ff8c00 40%,
+    #ffd700 44%,
+    #7fff00 48%,
+    #00ff7f 52%,
+    #00bfff 56%,
+    #0000ff 60%,
+    var(--uv) 65%,
+    var(--xray) 80%,
+    var(--gamma) 100%);
+  animation:spectrumShimmer 3s linear infinite;
+  background-size:200% 100%;
+}
+@keyframes spectrumShimmer{0%{background-position:0% 0;}100%{background-position:200% 0;}}
+
+/* ═══════════════ LAYOUT ═══════════════ */
+.page-wrap{position:relative;z-index:2;max-width:1000px;margin:0 auto;padding:0 18px 60px;}
+
+/* ═══════════════ HEADER ═══════════════ */
+.main-header{text-align:center;padding:50px 20px 28px;}
+.main-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(1.2rem,4vw,2rem);
+  font-weight:900;
+  letter-spacing:2px;
+  line-height:1.25;
+  background:linear-gradient(135deg,var(--neon-cyan),var(--neon-lime),var(--neon-pink));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:titlePulse 4s ease-in-out infinite;
+  text-shadow:none;
+}
+@keyframes titlePulse{0%,100%{filter:drop-shadow(0 0 10px rgba(0,245,255,.4));}50%{filter:drop-shadow(0 0 25px rgba(0,245,255,.8));}}
+
+.subtitle{margin-top:8px;font-size:.88rem;color:rgba(232,232,255,.5);letter-spacing:3px;text-transform:uppercase;}
+
+/* ═══════════════ TAB NAV ═══════════════ */
+.tab-nav{display:flex;gap:8px;justify-content:center;margin:20px 0 0;flex-wrap:wrap;}
+.tab-btn{
+  background:var(--glass);border:1px solid var(--glass-b);
+  color:rgba(232,232,255,.65);padding:9px 18px;border-radius:30px;
+  cursor:pointer;font-family:'Exo 2',sans-serif;font-size:.82rem;font-weight:600;
+  letter-spacing:.5px;transition:all .3s;display:flex;align-items:center;gap:6px;
+}
+.tab-btn.active,.tab-btn:hover{
+  background:rgba(0,245,255,.12);border-color:var(--neon-cyan);
+  color:#fff;box-shadow:0 0 18px rgba(0,245,255,.25);transform:translateY(-2px);
+}
+
+/* ═══════════════ PANELS ═══════════════ */
+.activity-panel{display:none;animation:panelIn .45s ease;}
+.activity-panel.active{display:block;}
+@keyframes panelIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+.panel-card{
+  background:rgba(7,3,26,.7);border:1px solid rgba(0,245,255,.15);
+  border-radius:20px;padding:26px;margin-top:22px;
+  backdrop-filter:blur(12px);position:relative;overflow:hidden;
+}
+.panel-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--neon-cyan),var(--neon-lime),transparent);
+}
+
+.section-title{
+  font-family:'Orbitron',sans-serif;font-size:1rem;
+  color:var(--neon-cyan);margin-bottom:6px;
+  display:flex;align-items:center;gap:8px;letter-spacing:1px;
+}
+.section-desc{font-size:.86rem;color:rgba(232,232,255,.6);margin-bottom:18px;line-height:1.55;}
+
+/* ═══════════════ ACTIVITY 1 – SPECTRUM BUILDER ═══════════════ */
+/* Drop zones along the spectrum ruler */
+.spectrum-ruler{
+  position:relative;height:72px;margin:18px 0;
+  background:linear-gradient(90deg,rgba(0,0,0,.5),rgba(0,0,0,.3));
+  border:1px solid rgba(255,255,255,.1);border-radius:12px;overflow:hidden;
+}
+.ruler-slots{display:grid;grid-template-columns:repeat(7,1fr);height:100%;gap:0;}
+.ruler-slot{
+  border-right:1px dashed rgba(255,255,255,.12);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:.62rem;font-weight:700;letter-spacing:.4px;
+  transition:all .25s;position:relative;cursor:default;
+  padding:4px 2px;
+}
+.ruler-slot:last-child{border-right:none;}
+.ruler-slot.has-card{opacity:1;}
+.ruler-slot.drag-over{background:rgba(255,255,255,.1);transform:scaleY(1.04);}
+
+.slot-label{font-size:.58rem;opacity:.5;margin-top:2px;text-align:center;}
+.slot-chip{
+  font-size:.65rem;font-weight:700;padding:3px 6px;border-radius:6px;
+  pointer-events:none;text-align:center;width:90%;
+}
+
+/* Draggable application cards */
+.apps-pool{
+  display:flex;flex-wrap:wrap;gap:9px;padding:14px;
+  background:rgba(0,0,0,.3);border-radius:12px;
+  border:1px dashed rgba(255,255,255,.1);min-height:70px;
+  margin-bottom:14px;
+}
+.app-card{
+  background:linear-gradient(135deg,rgba(0,245,255,.12),rgba(114,9,183,.12));
+  border:1px solid rgba(0,245,255,.25);border-radius:12px;
+  padding:7px 13px;font-size:.78rem;font-weight:600;
+  cursor:grab;user-select:none;transition:all .2s;
+  display:flex;align-items:center;gap:6px;
+}
+.app-card:hover{border-color:var(--neon-cyan);transform:scale(1.04);
+  box-shadow:0 0 14px rgba(0,245,255,.3);}
+.app-card.dragging{opacity:.35;cursor:grabbing;}
+
+.wavelength-legend{
+  display:grid;grid-template-columns:repeat(7,1fr);gap:4px;
+  margin-bottom:14px;font-size:.68rem;text-align:center;
+}
+.wl-item{padding:5px 3px;border-radius:8px;opacity:.75;font-weight:600;}
+
+.check-strip{
+  display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap;
+}
+.glow-btn{
+  background:linear-gradient(135deg,rgba(0,245,255,.2),rgba(176,255,0,.2));
+  border:1px solid var(--neon-cyan);color:#fff;
+  border-radius:20px;padding:9px 24px;font-family:'Exo 2',sans-serif;
+  font-size:.85rem;font-weight:700;cursor:pointer;letter-spacing:.5px;
+  transition:all .2s;display:flex;align-items:center;gap:7px;
+}
+.glow-btn:hover{box-shadow:0 0 22px rgba(0,245,255,.5);transform:translateY(-2px);}
+.ghost-btn{
+  background:transparent;border:1px solid rgba(255,255,255,.2);
+  color:rgba(255,255,255,.55);border-radius:20px;padding:8px 18px;
+  font-family:'Exo 2',sans-serif;font-size:.82rem;font-weight:600;
+  cursor:pointer;transition:all .2s;
+}
+.ghost-btn:hover{border-color:var(--gold);color:var(--gold);}
+
+.feedback-bar{
+  margin-top:11px;padding:10px 15px;border-radius:12px;font-size:.84rem;
+  font-weight:600;display:none;
+}
+.feedback-bar.show{display:block;}
+.feedback-bar.ok{background:rgba(6,214,160,.15);color:#06d6a0;border:1px solid rgba(6,214,160,.3);}
+.feedback-bar.fail{background:rgba(255,0,170,.15);color:#ff6bcf;border:1px solid rgba(255,0,170,.3);}
+
+/* Dropped badge inside slot */
+.dropped-badge{
+  font-size:.6rem;font-weight:700;padding:3px 7px;border-radius:8px;
+  cursor:pointer;text-align:center;max-width:95%;overflow:hidden;
+  white-space:nowrap;text-overflow:ellipsis;
+  transition:opacity .2s;
+}
+.dropped-badge:hover{opacity:.5;}
+
+/* ═══════════════ ACTIVITY 2 – WAVE LAB ═══════════════ */
+.wave-lab{background:rgba(0,0,0,.35);border-radius:16px;padding:20px;margin-bottom:16px;}
+
+.wave-canvas-wrap{
+  position:relative;background:rgba(0,0,0,.5);border-radius:14px;
+  overflow:hidden;height:200px;border:1px solid rgba(0,245,255,.15);
+  margin-bottom:16px;
+}
+#waveCanvas{width:100%;height:100%;display:block;}
+
+.wave-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:14px;}
+.ctrl-group{display:flex;flex-direction:column;gap:5px;}
+.ctrl-group label{font-size:.76rem;font-weight:700;letter-spacing:.5px;}
+
+.styled-range{
+  -webkit-appearance:none;appearance:none;
+  height:5px;background:rgba(255,255,255,.15);border-radius:3px;outline:none;
+}
+.styled-range::-webkit-slider-thumb{
+  -webkit-appearance:none;width:18px;height:18px;border-radius:50%;
+  cursor:pointer;border:2px solid var(--bg-deep);
+  box-shadow:0 0 8px currentColor;
+}
+
+.wave-readout{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;
+  margin-top:14px;
+}
+.readout-card{
+  background:rgba(0,0,0,.35);border-radius:12px;padding:12px 14px;
+  text-align:center;border:1px solid rgba(255,255,255,.07);
+}
+.readout-card .rc-label{font-size:.68rem;color:rgba(255,255,255,.42);text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px;}
+.readout-card .rc-val{font-size:1.2rem;font-weight:800;font-family:'Orbitron',sans-serif;}
+.readout-card .rc-unit{font-size:.68rem;color:rgba(255,255,255,.38);margin-top:1px;}
+
+.em-zone{
+  margin-top:14px;padding:14px;border-radius:12px;
+  font-size:.84rem;font-weight:700;text-align:center;
+  border:1px solid rgba(255,255,255,.12);transition:all .4s;
+}
+
+/* EM Type selector chips */
+.type-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.type-chip{
+  padding:6px 14px;border-radius:20px;font-size:.75rem;font-weight:700;
+  cursor:pointer;border:2px solid transparent;transition:all .2s;opacity:.55;
+}
+.type-chip.active{opacity:1;transform:scale(1.06);
+  box-shadow:0 0 14px currentColor;}
+
+/* ═══════════════ ACTIVITY 3 – MISSION BUILDER ═══════════════ */
+.mission-board{background:rgba(0,0,0,.35);border-radius:16px;padding:20px;margin-bottom:14px;}
+
+.scenario-card{
+  background:rgba(255,255,255,.04);border-radius:14px;padding:18px;
+  border:1px solid rgba(255,255,255,.08);margin-bottom:14px;
+}
+.scenario-title{
+  font-family:'Orbitron',sans-serif;font-size:.9rem;color:var(--gold);
+  margin-bottom:6px;display:flex;align-items:center;gap:7px;
+}
+.scenario-body{font-size:.84rem;color:rgba(255,255,255,.72);line-height:1.55;margin-bottom:12px;}
+
+.tool-shelf{
+  display:flex;gap:8px;flex-wrap:wrap;padding:12px;
+  background:rgba(0,0,0,.3);border-radius:12px;
+  border:1px dashed rgba(255,255,255,.1);min-height:60px;
+  margin-bottom:12px;
+}
+.tool-item{
+  padding:7px 14px;border-radius:12px;font-size:.78rem;font-weight:700;
+  cursor:grab;user-select:none;transition:all .2s;
+  display:flex;align-items:center;gap:6px;border:1px solid;
+}
+.tool-item:hover{transform:scale(1.05);box-shadow:0 0 12px currentColor;}
+.tool-item.dragging{opacity:.35;}
+
+.mission-slots{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:14px;}
+.mission-slot{
+  min-height:90px;border-radius:14px;border:2px dashed;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:10px;text-align:center;transition:all .3s;position:relative;
+}
+.mission-slot.drag-over{transform:scale(1.03);}
+.mission-slot .ms-label{font-size:.72rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.7px;margin-bottom:6px;opacity:.65;}
+.mission-slot .ms-hint{font-size:.68rem;opacity:.38;font-style:italic;}
+.mission-slot .ms-filled{
+  font-size:.8rem;font-weight:700;padding:5px 10px;border-radius:10px;
+  cursor:pointer;transition:opacity .2s;
+}
+.mission-slot .ms-filled:hover{opacity:.55;}
+
+.scenario-nav{display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap;}
+.scenario-dots{display:flex;gap:6px;align-items:center;}
+.sdot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.2);
+  cursor:pointer;transition:all .2s;}
+.sdot.active{background:var(--neon-cyan);box-shadow:0 0 8px var(--neon-cyan);}
+
+.score-bar{
+  display:flex;align-items:center;gap:10px;margin-top:14px;
+  font-size:.82rem;color:rgba(255,255,255,.5);
+}
+.stars-row{color:var(--gold);letter-spacing:2px;font-size:1.1rem;}
+
+/* ═══════════════ CONFETTI ═══════════════ */
+.conf-piece{
+  position:fixed;pointer-events:none;z-index:9999;
+  animation:confFall linear forwards;border-radius:2px;
+}
+@keyframes confFall{
+  0%{transform:translateY(-20px) rotate(0);opacity:1;}
+  100%{transform:translateY(100vh) rotate(540deg);opacity:0;}
+}
+
+/* ═══════════════ RESPONSIVE ═══════════════ */
+@media(max-width:600px){
+  .panel-card{padding:16px 12px;}
+  .ruler-slots{grid-template-columns:repeat(7,1fr);}
+  .ruler-slot{font-size:.5rem;}
+  .mission-slots{grid-template-columns:1fr 1fr;}
+}
+
+/* ═══════════════ SCROLL ═══════════════ */
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(0,245,255,.3);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<div class="spectrum-bar"></div>
+
+<!-- ANIMATED BACKGROUND -->
+<div class="bg-layer">
+  <!-- Nebula blobs -->
+  <div class="nebula" style="width:600px;height:600px;background:#3a0ca3;top:-180px;left:-100px;animation-duration:12s;"></div>
+  <div class="nebula" style="width:500px;height:500px;background:#7209b7;bottom:-150px;right:-80px;animation-duration:15s;animation-delay:3s;"></div>
+  <div class="nebula" style="width:350px;height:350px;background:#06d6a0;top:40%;left:40%;animation-duration:10s;animation-delay:6s;opacity:.09;"></div>
+  <div class="nebula" style="width:280px;height:280px;background:#ff6b35;top:20%;right:10%;animation-duration:9s;animation-delay:2s;opacity:.1;"></div>
+  <!-- Star field populated via JS -->
+  <div class="star-field" id="starField"></div>
+</div>
+
+<!-- FLOATING OBJECTS (fixed) -->
+<div id="floaters"></div>
+
+<div class="page-wrap">
+
+  <!-- HEADER -->
+  <header class="main-header">
+    <h1 class="main-title">Electromagnetic Spectrum<br>&amp; Applications</h1>
+    <p class="subtitle">✦ STEM Exploration Lab ✦</p>
+
+    <nav class="tab-nav">
+      <button class="tab-btn active" onclick="switchTab(0)">
+        📡 Spectrum Sorter
+      </button>
+      <button class="tab-btn" onclick="switchTab(1)">
+        〰️ Wave Lab
+      </button>
+      <button class="tab-btn" onclick="switchTab(2)">
+        🚀 Mission Builder
+      </button>
+    </nav>
+  </header>
+
+  <!-- ═══════════════ ACTIVITY 1: SPECTRUM SORTER ═══════════════ -->
+  <section class="activity-panel active" id="panel-0">
+    <div class="panel-card">
+      <h2 class="section-title">📡 Spectrum Sorter — Where Does Each Wave Belong?</h2>
+      <p class="section-desc">
+        Scientists discovered that different waves have completely different energies and wavelengths — making each perfect for a specific job.
+        <strong>Drag each application</strong> onto the correct region of the EM spectrum below. Think about the energy needed for each task!
+      </p>
+
+      <!-- Wavelength legend -->
+      <div class="wavelength-legend">
+        <div class="wl-item" style="background:rgba(255,107,53,.2);color:#ff6b35;">Radio<br><span style="font-size:.55rem;opacity:.7">&gt;1 mm</span></div>
+        <div class="wl-item" style="background:rgba(255,159,28,.2);color:#ff9f1c;">Micro-<br>wave</div>
+        <div class="wl-item" style="background:rgba(230,57,70,.2);color:#e63946;">Infra-<br>red</div>
+        <div class="wl-item" style="background:rgba(6,214,160,.2);color:#06d6a0;">Visible<br>Light</div>
+        <div class="wl-item" style="background:rgba(114,9,183,.2);color:#9b5de5;">Ultra-<br>violet</div>
+        <div class="wl-item" style="background:rgba(67,97,238,.2);color:#4361ee;">X-Ray</div>
+        <div class="wl-item" style="background:rgba(58,12,163,.2);color:#a0c4ff;">Gamma<br>Ray</div>
+      </div>
+
+      <!-- Ruler Drop Zones -->
+      <div class="spectrum-ruler">
+        <div class="ruler-slots">
+          <div class="ruler-slot" id="slot-radio" data-slot="radio"
+               ondragover="slotDragOver(event)" ondragleave="slotDragLeave(event)" ondrop="slotDrop(event,'radio')"
+               style="background:rgba(255,107,53,.08);">
+            <div class="slot-label" style="color:#ff6b35;">RADIO</div>
+            <div class="dropped-items" id="drop-radio"></div>
+          </div>
+          <div class="ruler-slot" id="slot-micro" data-slot="micro"
+               ondragover="slotDragOver(event)" ondragleave="slotDragLeave(event)" ondrop="slotDrop(event,'micro')"
+               style="background:rgba(255,159,28,.08);">
+            <div class="slot-label" style="color:#ff9f1c;">MICRO</div>
+            <div class="dropped-items" id="drop-micro"></div>
+          </div>
+          <div class="ruler-slot" id="slot-ir" data-slot="ir"
+               ondragover="slotDragOver(event)" ondragleave="slotDragLeave(event)" ondrop="slotDrop(event,'ir')"
+               style="background:rgba(230,57,70,.08);">
+            <div class="slot-label" style="color:#e63946;">IR</div>
+            <div class="dropped-items" id="drop-ir"></div>
+          </div>
+          <div class="ruler-slot" id="slot-visible" data-slot="visible"
+               ondragover="slotDragOver(event)" ondragleave="slotDragLeave(event)" ondrop="slotDrop(event,'visible')"
+               style="background:rgba(6,214,160,.08);">
+            <div class="slot-label" style="color:#06d6a0;">VISIBLE</div>
+            <div class="dropped-items" id="drop-visible"></div>
+          </div>
+          <div class="ruler-slot" id="slot-uv" data-slot="uv"
+               ondragover="slotDragOver(event)" ondragleave="slotDragLeave(event)" ondrop="slotDrop(event,'uv')"
+               style="background:rgba(114,9,183,.08);">
+            <div class="slot-label" style="color:#9b5de5;">UV</div>
+            <div class="dropped-items" id="drop-uv"></div>
+          </div>
+          <div class="ruler-slot" id="slot-xray" data-slot="xray"
+               ondragover="slotDragOver(event)" ondragleave="slotDragLeave(event)" ondrop="slotDrop(event,'xray')"
+               style="background:rgba(67,97,238,.08);">
+            <div class="slot-label" style="color:#4361ee;">X-RAY</div>
+            <div class="dropped-items" id="drop-xray"></div>
+          </div>
+          <div class="ruler-slot" id="slot-gamma" data-slot="gamma"
+               ondragover="slotDragOver(event)" ondragleave="slotDragLeave(event)" ondrop="slotDrop(event,'gamma')"
+               style="background:rgba(58,12,163,.08);">
+            <div class="slot-label" style="color:#a0c4ff;">GAMMA</div>
+            <div class="dropped-items" id="drop-gamma"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- App Cards Pool -->
+      <div class="apps-pool" id="apps-pool">
+        <!-- Populated by JS -->
+      </div>
+
+      <div class="check-strip">
+        <button class="glow-btn" onclick="checkSpectrum()">⚡ Check Placement</button>
+        <button class="ghost-btn" onclick="resetSpectrum()">↺ Reset</button>
+        <span id="sort-score" style="font-size:.82rem;color:rgba(255,255,255,.45);"></span>
+      </div>
+      <div class="feedback-bar" id="sort-feedback"></div>
+
+      <!-- Info panel shown after check -->
+      <div id="sort-explain" style="display:none;margin-top:14px;">
+        <div style="background:rgba(0,245,255,.06);border:1px solid rgba(0,245,255,.15);border-radius:12px;padding:14px;font-size:.82rem;line-height:1.7;color:rgba(255,255,255,.75);">
+          <strong style="color:var(--neon-cyan);">Why each wavelength is used:</strong><br>
+          <strong style="color:#ff6b35;">Radio:</strong> Long wavelength → passes through walls &amp; atmosphere → perfect for broadcasting &amp; WiFi.<br>
+          <strong style="color:#ff9f1c;">Microwave:</strong> Absorbed by water molecules → heats food; also used in radar &amp; satellite comms.<br>
+          <strong style="color:#e63946;">Infrared:</strong> All warm objects emit IR → thermal cameras detect body heat; TV remotes use near-IR.<br>
+          <strong style="color:#06d6a0;">Visible:</strong> The narrow band our eyes evolved to detect → photography, traffic lights, fibre optics.<br>
+          <strong style="color:#9b5de5;">Ultraviolet:</strong> High energy → kills bacteria (sterilisation), causes tanning; bees can see UV patterns on flowers.<br>
+          <strong style="color:#4361ee;">X-Ray:</strong> Very short wavelength → penetrates soft tissue but blocked by bone → medical imaging, airport security.<br>
+          <strong style="color:#a0c4ff;">Gamma:</strong> Highest energy → kills cancer cells (radiotherapy); emitted by radioactive decay.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ ACTIVITY 2: WAVE LAB ═══════════════ -->
+  <section class="activity-panel" id="panel-1">
+    <div class="panel-card">
+      <h2 class="section-title">〰️ Wave Lab — Tune the Frequency</h2>
+      <p class="section-desc">
+        Every EM wave travels at the <em>speed of light</em> (3×10⁸ m/s).
+        Use the controls below to change the <strong>frequency</strong> and <strong>amplitude</strong>.
+        Watch how the wave changes and discover which part of the spectrum you've tuned into!
+        Try to tune to each region and complete the challenge below.
+      </p>
+
+      <div class="wave-lab">
+        <!-- Type selector -->
+        <div class="type-chips" id="typeChips">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="wave-canvas-wrap">
+          <canvas id="waveCanvas"></canvas>
+        </div>
+
+        <div class="wave-controls">
+          <div class="ctrl-group">
+            <label style="color:var(--neon-cyan);">Frequency</label>
+            <input type="range" class="styled-range" id="freqSlider" min="1" max="700" value="100"
+                   oninput="updateWave()" style="--thumb-color:var(--neon-cyan);">
+            <span style="font-size:.75rem;color:rgba(255,255,255,.4);">Low ← → High</span>
+          </div>
+          <div class="ctrl-group">
+            <label style="color:var(--neon-lime);">Amplitude</label>
+            <input type="range" class="styled-range" id="ampSlider" min="10" max="80" value="40"
+                   oninput="updateWave()" style="--thumb-color:var(--neon-lime);">
+            <span style="font-size:.75rem;color:rgba(255,255,255,.4);">Small ← → Large</span>
+          </div>
+        </div>
+
+        <div class="wave-readout">
+          <div class="readout-card">
+            <div class="rc-label">Frequency</div>
+            <div class="rc-val" id="freq-display" style="color:var(--neon-cyan);">—</div>
+            <div class="rc-unit">Relative Units</div>
+          </div>
+          <div class="readout-card">
+            <div class="rc-label">Wavelength</div>
+            <div class="rc-val" id="wave-display" style="color:var(--neon-lime);">—</div>
+            <div class="rc-unit">Relative Units</div>
+          </div>
+          <div class="readout-card">
+            <div class="rc-label">Energy Level</div>
+            <div class="rc-val" id="energy-display" style="color:var(--neon-pink);">—</div>
+            <div class="rc-unit">Relative (E ∝ f)</div>
+          </div>
+          <div class="readout-card">
+            <div class="rc-label">EM Region</div>
+            <div class="rc-val" id="region-display" style="font-size:.9rem;">—</div>
+            <div class="rc-unit">Current zone</div>
+          </div>
+        </div>
+
+        <div class="em-zone" id="em-zone-banner">
+          Adjust the frequency to identify the EM region
+        </div>
+      </div>
+
+      <!-- Challenge checkboxes -->
+      <div style="background:rgba(0,0,0,.3);border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,.07);">
+        <p style="font-size:.82rem;font-weight:700;color:var(--gold);margin-bottom:10px;">🎯 Challenge: Tune to each region to unlock it!</p>
+        <div id="zone-checklist" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Application reveal when zone hit -->
+      <div id="zone-info-box" style="display:none;margin-top:14px;padding:14px;border-radius:12px;
+           border:1px solid rgba(0,245,255,.2);background:rgba(0,0,0,.3);font-size:.84rem;line-height:1.6;">
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ ACTIVITY 3: MISSION BUILDER ═══════════════ -->
+  <section class="activity-panel" id="panel-2">
+    <div class="panel-card">
+      <h2 class="section-title">🚀 Mission Builder — Pick the Right Wave</h2>
+      <p class="section-desc">
+        You are the lead scientist! Each mission below has a real-world problem.
+        <strong>Drag the correct EM wave type</strong> onto the mission slot —
+        then drag the <strong>reason</strong> that explains WHY that wave works best.
+        Think like a scientist!
+      </p>
+
+      <div class="mission-board">
+        <!-- Tool shelf -->
+        <p style="font-size:.76rem;font-weight:700;color:var(--neon-cyan);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px;">🔧 Wave Toolbox — Drag from here:</p>
+        <div class="tool-shelf" id="tool-shelf">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Active scenario -->
+        <div id="scenario-display"><!-- Populated by JS --></div>
+
+        <div class="scenario-nav">
+          <button class="glow-btn" onclick="checkMission()">✅ Submit Answer</button>
+          <button class="ghost-btn" onclick="nextScenario()">Next →</button>
+          <div class="scenario-dots" id="scenario-dots"></div>
+        </div>
+
+        <div class="feedback-bar" id="mission-feedback"></div>
+
+        <div class="score-bar">
+          <span>Mission Score:</span>
+          <span class="stars-row" id="mission-stars">☆ ☆ ☆ ☆ ☆</span>
+          <span id="mission-score-txt"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /page-wrap -->
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  BACKGROUND STARS & FLOATERS
+// ═══════════════════════════════════════════════════════
+(function createBg(){
+  // Stars
+  const sf = document.getElementById('starField');
+  for(let i=0;i<110;i++){
+    const s=document.createElement('div');
+    s.className='star';
+    const sz = Math.random()>0.85 ? 3 : Math.random()>0.6 ? 2 : 1;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;
+      animation-duration:${1.5+Math.random()*3.5}s;animation-delay:${Math.random()*4}s;
+      ${Math.random()>0.8?'background:#00f5ff;':''}${Math.random()>0.9?'background:#ff00aa;':''}`;
+    sf.appendChild(s);
+  }
+
+  // Floaters
+  const icons = ['📚','🦉','🪄','🔮','⭐','✨','🌟','🧪','📡','🌈','🌊','💫','🛸','🔭'];
+  const fc = document.getElementById('floaters');
+  icons.forEach((ic,i)=>{
+    const el=document.createElement('div');
+    el.className='floater';
+    el.textContent=ic;
+    el.style.cssText=`
+      left:${Math.random()*92}%;top:${5+Math.random()*85}%;
+      animation-duration:${5+Math.random()*6}s;
+      animation-delay:${Math.random()*4}s;
+      font-size:${1.4+Math.random()*1.2}rem;
+      opacity:${0.12+Math.random()*0.15};
+    `;
+    fc.appendChild(el);
+  });
+})();
+
+// ═══════════════════════════════════════════════════════
+//  TAB SWITCH
+// ═══════════════════════════════════════════════════════
+function switchTab(idx){
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));
+  document.querySelectorAll('.activity-panel').forEach((p,i)=>p.classList.toggle('active',i===idx));
+  if(idx===1) startWaveAnim();
+}
+
+// ═══════════════════════════════════════════════════════
+//  ACTIVITY 1 – SPECTRUM SORTER
+// ═══════════════════════════════════════════════════════
+const appCards = [
+  {id:'wifi',   label:'📶 WiFi / FM Radio',     correct:'radio',   color:'#ff6b35', icon:'📶'},
+  {id:'radar',  label:'🛩️ Weather Radar',        correct:'micro',   color:'#ff9f1c', icon:'🛩️'},
+  {id:'mwoven', label:'🍕 Microwave Oven',       correct:'micro',   color:'#ff9f1c', icon:'🍕'},
+  {id:'tv-rem', label:'📺 TV Remote',            correct:'ir',      color:'#e63946', icon:'📺'},
+  {id:'thermal',label:'🌡️ Thermal Camera',       correct:'ir',      color:'#e63946', icon:'🌡️'},
+  {id:'photo',  label:'📷 Photography',          correct:'visible', color:'#06d6a0', icon:'📷'},
+  {id:'fibre',  label:'💡 Fibre Optics',         correct:'visible', color:'#06d6a0', icon:'💡'},
+  {id:'steril', label:'🦠 Sterilisation (UV)',   correct:'uv',      color:'#9b5de5', icon:'🦠'},
+  {id:'suntan', label:'☀️ Sun Tanning / Sunburn',correct:'uv',      color:'#9b5de5', icon:'☀️'},
+  {id:'xbone',  label:'🦴 Bone X-Ray',           correct:'xray',    color:'#4361ee', icon:'🦴'},
+  {id:'xsec',   label:'🔍 Airport Security',     correct:'xray',    color:'#4361ee', icon:'🔍'},
+  {id:'chemo',  label:'💊 Cancer Radiotherapy',  correct:'gamma',   color:'#a0c4ff', icon:'💊'},
+  {id:'sat',    label:'🛰️ Satellite Comms',       correct:'micro',   color:'#ff9f1c', icon:'🛰️'},
+  {id:'phone',  label:'📱 Mobile Phone Signal',  correct:'radio',   color:'#ff6b35', icon:'📱'},
+];
+
+const dropState = {};  // slotId -> [{cardId}]
+appCards.forEach(c=>{
+  const key = c.correct;
+  if(!dropState[key]) dropState[key] = [];
+});
+
+let draggingCardId = null;
+let draggingFromSlot = null;  // null = from pool
+
+function buildPool(){
+  const pool = document.getElementById('apps-pool');
+  pool.innerHTML='';
+  appCards.forEach(card=>{
+    // Check if already placed
+    const placed = Object.values(dropState).flat().includes(card.id);
+    if(placed) return;
+    const el = document.createElement('div');
+    el.className='app-card';
+    el.draggable=true;
+    el.id='acard-'+card.id;
+    el.dataset.cardId=card.id;
+    el.textContent=card.label;
+    el.style.borderColor=card.color+'55';
+    el.style.color=card.color;
+    el.addEventListener('dragstart',e=>{
+      draggingCardId=card.id;
+      draggingFromSlot=null;
+      el.classList.add('dragging');
+    });
+    el.addEventListener('dragend',()=>el.classList.remove('dragging'));
+    pool.appendChild(el);
+  });
+}
+
+function renderSlots(){
+  const slotIds=['radio','micro','ir','visible','uv','xray','gamma'];
+  slotIds.forEach(sid=>{
+    const container = document.getElementById('drop-'+sid);
+    container.innerHTML='';
+    (dropState[sid]||[]).forEach(cid=>{
+      const card = appCards.find(c=>c.id===cid);
+      if(!card) return;
+      const badge = document.createElement('div');
+      badge.className='dropped-badge';
+      badge.style.background=card.color+'22';
+      badge.style.color=card.color;
+      badge.style.border=`1px solid ${card.color}55`;
+      badge.textContent=card.label;
+      badge.title='Click to return to pool';
+      badge.onclick=()=>{
+        dropState[sid]=dropState[sid].filter(x=>x!==cid);
+        buildPool();
+        renderSlots();
+        hideFeedback('sort-feedback');
+        document.getElementById('sort-explain').style.display='none';
+      };
+      container.appendChild(badge);
+    });
+  });
+}
+
+function slotDragOver(e){
+  e.preventDefault();
+  e.currentTarget.classList.add('drag-over');
+}
+function slotDragLeave(e){e.currentTarget.classList.remove('drag-over');}
+function slotDrop(e, slotId){
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if(!draggingCardId) return;
+  // Remove from all slots first
+  Object.keys(dropState).forEach(k=>{
+    dropState[k]=dropState[k].filter(x=>x!==draggingCardId);
+  });
+  if(!dropState[slotId]) dropState[slotId]=[];
+  dropState[slotId].push(draggingCardId);
+  draggingCardId=null;
+  buildPool();
+  renderSlots();
+  hideFeedback('sort-feedback');
+}
+
+function checkSpectrum(){
+  const placed = Object.values(dropState).flat();
+  if(placed.length===0){
+    showFeedback('sort-feedback','fail','⚠️ Place at least one application card first!');
+    return;
+  }
+  let correct=0, wrong=0, wrongList=[];
+  Object.entries(dropState).forEach(([slot,cards])=>{
+    cards.forEach(cid=>{
+      const card=appCards.find(c=>c.id===cid);
+      if(card.correct===slot){ correct++; }
+      else{ wrong++; wrongList.push(card.label); }
+    });
+  });
+  const total = placed.length;
+  const pct = Math.round((correct/total)*100);
+  document.getElementById('sort-score').textContent=`${correct}/${total} correct`;
+
+  if(wrong===0 && correct===appCards.length){
+    showFeedback('sort-feedback','ok','🎉 Perfect! Every application is correctly placed! You understand the EM Spectrum brilliantly!');
+    spawnConfetti();
+  } else if(pct>=70){
+    showFeedback('sort-feedback','ok',`✨ ${correct}/${total} correct! Almost there. Hint: ${wrongList.slice(0,2).join(', ')} ${wrong>2?'& more are ':' is '}in the wrong region.`);
+  } else {
+    showFeedback('sort-feedback','fail',`💡 ${correct}/${total} correct. Think about energy levels — higher energy waves are on the right side of the spectrum.`);
+  }
+  document.getElementById('sort-explain').style.display='block';
+}
+
+function resetSpectrum(){
+  Object.keys(dropState).forEach(k=>dropState[k]=[]);
+  buildPool();
+  renderSlots();
+  hideFeedback('sort-feedback');
+  document.getElementById('sort-explain').style.display='none';
+  document.getElementById('sort-score').textContent='';
+}
+
+buildPool();
+renderSlots();
+
+// ═══════════════════════════════════════════════════════
+//  ACTIVITY 2 – WAVE LAB
+// ═══════════════════════════════════════════════════════
+const emRegions = [
+  {id:'radio',  label:'Radio',      min:1,   max:60,  color:'#ff6b35',
+   app:'Used for radio broadcasting, WiFi, TV signals — long wavelength passes through buildings.'},
+  {id:'micro',  label:'Microwave',  min:61,  max:150, color:'#ff9f1c',
+   app:'Absorbed by water → microwave ovens! Also used in radar, GPS and satellite communication.'},
+  {id:'ir',     label:'Infrared',   min:151, max:280, color:'#e63946',
+   app:'All warm objects emit IR. Used in night-vision cameras, TV remotes, and heat sensors.'},
+  {id:'visible',label:'Visible',    min:281, max:400, color:'#06d6a0',
+   app:'The only range our eyes can detect! Used in photography, fibre optics, and lasers.'},
+  {id:'uv',     label:'Ultraviolet',min:401, max:520, color:'#9b5de5',
+   app:'Kills bacteria (sterilisation), causes sunburn. Bees see UV patterns on flowers.'},
+  {id:'xray',   label:'X-Ray',      min:521, max:640, color:'#4361ee',
+   app:'Passes through soft tissue but not bone → medical imaging. Also used at airport security.'},
+  {id:'gamma',  label:'Gamma Ray',  min:641, max:700, color:'#a0c4ff',
+   app:'Highest energy. Used in cancer radiotherapy (kills tumour cells), and to sterilise medical equipment.'},
+];
+
+const unlockedZones = new Set();
+let waveAnimId = null;
+let wavePhase = 0;
+
+function buildTypeChips(){
+  const container = document.getElementById('typeChips');
+  emRegions.forEach(r=>{
+    const chip = document.createElement('div');
+    chip.className='type-chip';
+    chip.id='chip-'+r.id;
+    chip.textContent=r.label;
+    chip.style.background=r.color+'20';
+    chip.style.color=r.color;
+    chip.style.borderColor=r.color+'44';
+    chip.onclick=()=>{
+      // Jump slider to middle of that region
+      const mid = Math.round((r.min+r.max)/2);
+      document.getElementById('freqSlider').value=mid;
+      updateWave();
+    };
+    container.appendChild(chip);
+  });
+}
+
+function buildChecklist(){
+  const container = document.getElementById('zone-checklist');
+  emRegions.forEach(r=>{
+    const item = document.createElement('div');
+    item.id='check-'+r.id;
+    item.style.cssText=`background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);
+      border-radius:10px;padding:7px 10px;font-size:.74rem;font-weight:600;
+      display:flex;align-items:center;gap:6px;transition:all .3s;`;
+    item.innerHTML=`<span id="ck-ic-${r.id}">⬜</span><span style="color:${r.color}">${r.label}</span>`;
+    container.appendChild(item);
+  });
+}
+
+function getCurrentRegion(freq){
+  return emRegions.find(r=>freq>=r.min && freq<=r.max) || null;
+}
+
+function updateWave(){
+  const freq = parseInt(document.getElementById('freqSlider').value);
+  const amp  = parseInt(document.getElementById('ampSlider').value);
+  const region = getCurrentRegion(freq);
+  const waveLen = Math.round(700/freq*100)/100;
+  const energy = Math.round(freq*1.4)/10;
+
+  document.getElementById('freq-display').textContent  = freq;
+  document.getElementById('wave-display').textContent  = waveLen.toFixed(2);
+  document.getElementById('energy-display').textContent= energy.toFixed(1);
+
+  if(region){
+    document.getElementById('region-display').textContent = region.label;
+    document.getElementById('region-display').style.color = region.color;
+    const banner = document.getElementById('em-zone-banner');
+    banner.textContent = '📡 EM Region: '+region.label+' — '+region.app.substring(0,60)+'…';
+    banner.style.background = region.color+'18';
+    banner.style.borderColor = region.color+'55';
+    banner.style.color = region.color;
+
+    // Update chips
+    document.querySelectorAll('.type-chip').forEach(c=>c.classList.remove('active'));
+    const chip = document.getElementById('chip-'+region.id);
+    if(chip) chip.classList.add('active');
+
+    // Unlock zone
+    if(!unlockedZones.has(region.id)){
+      unlockedZones.add(region.id);
+      const ck = document.getElementById('ck-ic-'+region.id);
+      if(ck) ck.textContent='✅';
+      const ckWrap = document.getElementById('check-'+region.id);
+      if(ckWrap){
+        ckWrap.style.borderColor=region.color+'66';
+        ckWrap.style.background=region.color+'12';
+      }
+      // Show info
+      const infoBox = document.getElementById('zone-info-box');
+      infoBox.style.display='block';
+      infoBox.style.borderColor=region.color+'44';
+      infoBox.style.background=region.color+'0c';
+      infoBox.innerHTML=`<strong style="color:${region.color}">🔓 Unlocked: ${region.label}</strong><br>${region.app}`;
+
+      if(unlockedZones.size===emRegions.length) spawnConfetti();
+    }
+  }
+
+  // Store for canvas
+  window._waveFreq = freq;
+  window._waveAmp  = amp;
+  window._waveColor = region ? region.color : '#00f5ff';
+}
+
+function startWaveAnim(){
+  const canvas = document.getElementById('waveCanvas');
+  const ctx = canvas.getContext('2d');
+
+  function resize(){
+    canvas.width  = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  updateWave();
+
+  function frame(){
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0,0,W,H);
+
+    const freq  = (window._waveFreq || 100) / 40;
+    const amp   = (window._waveAmp  || 40);
+    const color = window._waveColor || '#00f5ff';
+
+    wavePhase += 0.04;
+
+    // Glow
+    ctx.shadowBlur = 14;
+    ctx.shadowColor = color;
+
+    // Main wave
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.5;
+    for(let x=0;x<=W;x+=1){
+      const y = H/2 + amp * Math.sin(freq * x * 0.02 + wavePhase);
+      x===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+
+    // Secondary faint wave (energy envelope)
+    ctx.globalAlpha=0.22;
+    ctx.beginPath();
+    ctx.strokeStyle=color;
+    ctx.lineWidth=1;
+    for(let x=0;x<=W;x+=1){
+      const y = H/2 + amp*0.5 * Math.sin(freq*1.3 * x * 0.02 + wavePhase*0.8);
+      x===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    ctx.globalAlpha=1;
+    ctx.shadowBlur=0;
+
+    // Axis
+    ctx.strokeStyle='rgba(255,255,255,0.08)';
+    ctx.lineWidth=1;
+    ctx.beginPath();
+    ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);
+    ctx.stroke();
+
+    // Moving photon particle
+    const px = ((wavePhase*30)%W);
+    const py = H/2 + amp * Math.sin(freq * px * 0.02 + wavePhase);
+    ctx.beginPath();
+    ctx.arc(px,py,5,0,Math.PI*2);
+    ctx.fillStyle=color;
+    ctx.shadowBlur=16;
+    ctx.shadowColor=color;
+    ctx.fill();
+    ctx.shadowBlur=0;
+
+    waveAnimId = requestAnimationFrame(frame);
+  }
+  if(waveAnimId) cancelAnimationFrame(waveAnimId);
+  frame();
+}
+
+buildTypeChips();
+buildChecklist();
+
+// ═══════════════════════════════════════════════════════
+//  ACTIVITY 3 – MISSION BUILDER
+// ═══════════════════════════════════════════════════════
+const missions = [
+  {
+    id:'m1',
+    title:'🏥 Hospital Emergency',
+    problem:'A patient has fallen and may have broken their arm. The doctor needs to see the bone structure inside the arm without performing surgery. Which wave will help?',
+    waveSlot:{label:'Wave Type', hint:'Which EM wave?', correct:'xray', correctLabel:'X-Ray'},
+    reasonSlot:{label:'Why?', hint:'What property?', correct:'r-xray', correctLabel:'Passes through soft tissue, blocked by bone'},
+    icon:'🦴'
+  },
+  {
+    id:'m2',
+    title:'🍕 Kitchen Science',
+    problem:'You want to heat a bowl of soup quickly. The machine must transfer energy directly to water molecules in the food without heating the container. What wave type is used?',
+    waveSlot:{label:'Wave Type', hint:'Which EM wave?', correct:'micro', correctLabel:'Microwave'},
+    reasonSlot:{label:'Why?', hint:'What property?', correct:'r-micro', correctLabel:'Absorbed by water molecules, generating heat'},
+    icon:'💧'
+  },
+  {
+    id:'m3',
+    title:'🛸 Deep Space Contact',
+    problem:'A spacecraft 500 million km away needs to send data back to Earth. The signal must travel through the vacuum of space and penetrate Earth\'s atmosphere without being absorbed. What wave should engineers use?',
+    waveSlot:{label:'Wave Type', hint:'Which EM wave?', correct:'radio', correctLabel:'Radio Wave'},
+    reasonSlot:{label:'Why?', hint:'What property?', correct:'r-radio', correctLabel:'Long wavelength passes through atmosphere easily'},
+    icon:'📡'
+  },
+  {
+    id:'m4',
+    title:'🔬 Lab Sterilisation',
+    problem:'A medical lab needs to kill all bacteria and viruses on surgical instruments without using chemicals that might leave residue. Which invisible radiation should they use?',
+    waveSlot:{label:'Wave Type', hint:'Which EM wave?', correct:'uv', correctLabel:'Ultraviolet (UV)'},
+    reasonSlot:{label:'Why?', hint:'What property?', correct:'r-uv', correctLabel:'High energy damages DNA of microorganisms'},
+    icon:'🦠'
+  },
+  {
+    id:'m5',
+    title:'🌙 Night-Vision Rescue',
+    problem:'A search-and-rescue team is looking for survivors in the dark after an earthquake. They need to detect human body heat through smoke and darkness. What type of camera should they use?',
+    waveSlot:{label:'Wave Type', hint:'Which EM wave?', correct:'ir', correctLabel:'Infrared (IR)'},
+    reasonSlot:{label:'Why?', hint:'What property?', correct:'r-ir', correctLabel:'All warm bodies emit IR radiation naturally'},
+    icon:'🌡️'
+  },
+];
+
+const toolItems = [
+  {id:'radio', label:'📻 Radio Wave',    color:'#ff6b35'},
+  {id:'micro', label:'📡 Microwave',     color:'#ff9f1c'},
+  {id:'ir',    label:'🌡️ Infrared',      color:'#e63946'},
+  {id:'visible',label:'🌈 Visible Light',color:'#06d6a0'},
+  {id:'uv',    label:'☀️ UV',            color:'#9b5de5'},
+  {id:'xray',  label:'🔬 X-Ray',         color:'#4361ee'},
+  {id:'gamma', label:'⚡ Gamma Ray',     color:'#a0c4ff'},
+  // Reason cards
+  {id:'r-radio', label:'Long λ passes atmosphere',color:'#ff6b35', isReason:true},
+  {id:'r-micro', label:'Absorbed by water molecules',color:'#ff9f1c', isReason:true},
+  {id:'r-ir',    label:'Warm bodies emit IR',color:'#e63946', isReason:true},
+  {id:'r-visible',label:'Eyes detect this range',color:'#06d6a0', isReason:true},
+  {id:'r-uv',    label:'Damages DNA of microbes',color:'#9b5de5', isReason:true},
+  {id:'r-xray',  label:'Passes through soft tissue',color:'#4361ee', isReason:true},
+  {id:'r-gamma', label:'Kills cancer cells',color:'#a0c4ff', isReason:true},
+];
+
+let currentMission = 0;
+let missionScore = 0;
+let missionAnswered = new Array(missions.length).fill(false);
+let missionDrop = {};   // {waveSlot: id, reasonSlot: id}
+let mDraggingId = null;
+
+function buildToolShelf(){
+  const shelf = document.getElementById('tool-shelf');
+  shelf.innerHTML='';
+  toolItems.forEach(t=>{
+    const el = document.createElement('div');
+    el.className='tool-item';
+    el.id='tool-'+t.id;
+    el.dataset.toolId=t.id;
+    el.textContent=t.label;
+    el.style.color=t.color;
+    el.style.borderColor=t.color+'44';
+    el.style.background=t.color+'12';
+    el.draggable=true;
+    el.addEventListener('dragstart',e=>{
+      mDraggingId=t.id;
+      el.classList.add('dragging');
+    });
+    el.addEventListener('dragend',()=>el.classList.remove('dragging'));
+    shelf.appendChild(el);
+  });
+}
+
+function buildScenarioDots(){
+  const dotsEl = document.getElementById('scenario-dots');
+  dotsEl.innerHTML='';
+  missions.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='sdot'+(i===currentMission?' active':'');
+    d.onclick=()=>{currentMission=i;loadMission();};
+    dotsEl.appendChild(d);
+  });
+}
+
+function loadMission(){
+  const m = missions[currentMission];
+  missionDrop = {waveSlot:null, reasonSlot:null};
+  hideFeedback('mission-feedback');
+
+  // Build dots
+  buildScenarioDots();
+
+  const disp = document.getElementById('scenario-display');
+  disp.innerHTML=`
+    <div class="scenario-card">
+      <div class="scenario-title">${m.title}</div>
+      <div class="scenario-body">${m.problem}</div>
+      <div class="mission-slots">
+        <div class="mission-slot" id="ms-wave"
+             style="border-color:rgba(0,245,255,.3);color:#00f5ff;"
+             ondragover="mDragOver(event)" ondragleave="mDragLeave(event)" ondrop="mDrop(event,'waveSlot')">
+          <div class="ms-label" style="color:#00f5ff;">${m.waveSlot.label}</div>
+          <div class="ms-hint" id="ms-wave-hint">${m.waveSlot.hint}</div>
+        </div>
+        <div class="mission-slot" id="ms-reason"
+             style="border-color:rgba(176,255,0,.3);color:#b0ff00;"
+             ondragover="mDragOver(event)" ondragleave="mDragLeave(event)" ondrop="mDrop(event,'reasonSlot')">
+          <div class="ms-label" style="color:#b0ff00;">${m.reasonSlot.label}</div>
+          <div class="ms-hint" id="ms-reason-hint">${m.reasonSlot.hint}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function mDragOver(e){e.preventDefault();e.currentTarget.classList.add('drag-over');}
+function mDragLeave(e){e.currentTarget.classList.remove('drag-over');}
+function mDrop(e, slotKey){
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if(!mDraggingId) return;
+
+  const tool = toolItems.find(t=>t.id===mDraggingId);
+  if(!tool) return;
+
+  // Only allow reason cards in reason slot, wave cards in wave slot
+  const isReason = !!tool.isReason;
+  if(slotKey==='reasonSlot' && !isReason){
+    showFeedback('mission-feedback','fail','⚠️ Drop a REASON card (italic description) into the Why? slot.');
+    mDraggingId=null; return;
+  }
+  if(slotKey==='waveSlot' && isReason){
+    showFeedback('mission-feedback','fail','⚠️ Drop a WAVE TYPE card into the Wave Type slot.');
+    mDraggingId=null; return;
+  }
+
+  missionDrop[slotKey]=mDraggingId;
+  hideFeedback('mission-feedback');
+
+  // Update slot visually
+  const slotEl = document.getElementById(slotKey==='waveSlot'?'ms-wave':'ms-reason');
+  const hintEl = document.getElementById(slotKey==='waveSlot'?'ms-wave-hint':'ms-reason-hint');
+  const existing = slotEl.querySelector('.ms-filled');
+  if(existing) existing.remove();
+  const badge = document.createElement('div');
+  badge.className='ms-filled';
+  badge.style.background=tool.color+'22';
+  badge.style.color=tool.color;
+  badge.style.border=`1px solid ${tool.color}55`;
+  badge.textContent=tool.label;
+  badge.title='Click to remove';
+  badge.onclick=()=>{
+    missionDrop[slotKey]=null;
+    badge.remove();
+    hintEl.style.display='';
+  };
+  hintEl.style.display='none';
+  slotEl.appendChild(badge);
+  mDraggingId=null;
+}
+
+function checkMission(){
+  const m = missions[currentMission];
+  const wv = missionDrop.waveSlot;
+  const rs = missionDrop.reasonSlot;
+
+  if(!wv && !rs){
+    showFeedback('mission-feedback','fail','⚠️ Fill both slots before submitting!');
+    return;
+  }
+  if(!wv){
+    showFeedback('mission-feedback','fail','⚠️ Please also drag a Wave Type into the first slot.');
+    return;
+  }
+  if(!rs){
+    showFeedback('mission-feedback','fail','⚠️ Please also drag a Reason into the second slot.');
+    return;
+  }
+
+  const waveOk  = wv === m.waveSlot.correct;
+  const reasonOk= rs === m.reasonSlot.correct;
+
+  if(waveOk && reasonOk){
+    showFeedback('mission-feedback','ok',
+      `🎉 Excellent! ${m.waveSlot.correctLabel} is correct! Reason: "${m.reasonSlot.correctLabel}" — perfectly explained!`);
+    if(!missionAnswered[currentMission]){
+      missionAnswered[currentMission]=true;
+      missionScore++;
+      updateMissionScore();
+    }
+    spawnConfetti();
+  } else if(waveOk && !reasonOk){
+    showFeedback('mission-feedback','fail',
+      `✅ Wave type is correct! But the reason needs work. Hint: think about what property of ${m.waveSlot.correctLabel} makes it useful here.`);
+  } else if(!waveOk && reasonOk){
+    showFeedback('mission-feedback','fail',
+      `💡 Good reasoning! But that reason belongs to a different wave. The correct wave for this mission is: <strong>${m.waveSlot.correctLabel}</strong>`);
+  } else {
+    showFeedback('mission-feedback','fail',
+      `🔭 Not quite. Think: what does this mission need — high energy, heat detection, or long range? Try again!`);
+  }
+}
+
+function nextScenario(){
+  currentMission=(currentMission+1)%missions.length;
+  loadMission();
+  hideFeedback('mission-feedback');
+}
+
+function updateMissionScore(){
+  const total=missions.length;
+  const stars=Math.round((missionScore/total)*5);
+  document.getElementById('mission-stars').textContent=
+    '★'.repeat(stars)+'☆'.repeat(5-stars);
+  document.getElementById('mission-score-txt').textContent=
+    missionScore+'/'+total+' missions solved';
+}
+
+buildToolShelf();
+loadMission();
+
+// ═══════════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════════
+function showFeedback(id, type, msg){
+  const el=document.getElementById(id);
+  el.className='feedback-bar show '+(type==='ok'?'ok':'fail');
+  el.innerHTML=msg;
+}
+function hideFeedback(id){
+  const el=document.getElementById(id);
+  el.className='feedback-bar';
+}
+
+function spawnConfetti(){
+  const colors=['#00f5ff','#ff00aa','#b0ff00','#ffd60a','#7209b7','#ff6b35','#06d6a0'];
+  for(let i=0;i<55;i++){
+    const c=document.createElement('div');
+    c.className='conf-piece';
+    const col=colors[Math.floor(Math.random()*colors.length)];
+    const sz=4+Math.random()*8;
+    c.style.cssText=`
+      left:${Math.random()*100}vw;
+      background:${col};
+      width:${sz}px;height:${sz}px;
+      border-radius:${Math.random()>0.5?'50%':'2px'};
+      animation-duration:${1.4+Math.random()*2}s;
+      animation-delay:${Math.random()*0.4}s;
+    `;
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(), 3800);
+  }
+}
+
+// Styled range thumb color via CSS variable trick
+document.querySelectorAll('.styled-range').forEach(r=>{
+  const col = r.style.getPropertyValue('--thumb-color') || '#00f5ff';
+  const styleId='range-style-'+Math.random().toString(36).substr(2,5);
+  r.setAttribute('data-style',styleId);
+  const st=document.createElement('style');
+  st.textContent=`
+    [data-style="${styleId}"]::-webkit-slider-thumb{background:${col};}
+    [data-style="${styleId}"]::-moz-range-thumb{background:${col};border:none;width:18px;height:18px;border-radius:50%;}
+  `;
+  document.head.appendChild(st);
+});
+</script>
+</body>
+</html>

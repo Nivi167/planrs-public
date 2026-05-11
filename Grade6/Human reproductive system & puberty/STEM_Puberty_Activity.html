@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Science Spellbook – Human Body & Puberty</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap');
+
+  :root {
+    --deep: #0d0a1f;
+    --mid:  #1a1040;
+    --glow: #7c3aed;
+    --gold: #f59e0b;
+    --teal: #06b6d4;
+    --rose: #f43f5e;
+    --mint: #10b981;
+    --star: #fde68a;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: radial-gradient(ellipse at 20% 50%, #1e0a4a 0%, #0d0a1f 50%, #0a1628 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: #e2d9f3;
+  }
+
+  /* ── FLOATING BACKGROUND OBJECTS ─────────────────────────── */
+  .bg-stage {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    overflow: hidden;
+  }
+  .float-obj {
+    position: absolute;
+    animation: floatUp linear infinite;
+    opacity: 0.18;
+    font-size: 2rem;
+    user-select: none;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(110vh) rotate(0deg);   opacity: 0; }
+    10%  { opacity: 0.18; }
+    90%  { opacity: 0.18; }
+    100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+  }
+  .glow-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    animation: pulse 6s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { transform: scale(1);   opacity: 0.3; }
+    50%      { transform: scale(1.2); opacity: 0.5; }
+  }
+  .star-sparkle {
+    position: absolute;
+    width: 4px; height: 4px;
+    background: var(--star);
+    border-radius: 50%;
+    animation: twinkle 2s ease-in-out infinite;
+  }
+  @keyframes twinkle {
+    0%,100% { opacity: 0; transform: scale(0); }
+    50%      { opacity: 1; transform: scale(1); }
+  }
+
+  /* ── LAYOUT ─────────────────────────────────────────────── */
+  .wrapper {
+    position: relative; z-index: 1;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+  }
+
+  /* ── HEADER ─────────────────────────────────────────────── */
+  .main-header {
+    text-align: center;
+    padding: 30px 20px 10px;
+  }
+  .main-header .owl-icon { font-size: 3.5rem; animation: bobOwl 3s ease-in-out infinite; display: inline-block; }
+  @keyframes bobOwl { 0%,100%{transform:translateY(0) rotate(-5deg)} 50%{transform:translateY(-12px) rotate(5deg)} }
+  .main-header h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.3rem, 4vw, 2rem);
+    background: linear-gradient(135deg, var(--gold), var(--star), var(--teal));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 8px 0 4px;
+    text-shadow: none;
+  }
+  .main-header .subtitle {
+    font-size: 1rem; color: #a78bfa; letter-spacing: 2px; text-transform: uppercase;
+  }
+  .progress-track {
+    display: flex; justify-content: center; gap: 12px; margin-top: 20px; flex-wrap: wrap;
+  }
+  .prog-pip {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(124,58,237,0.4);
+    border-radius: 50px; padding: 6px 14px;
+    font-size: 0.8rem; color: #c4b5fd; cursor: pointer;
+    transition: all .3s;
+  }
+  .prog-pip.active, .prog-pip:hover {
+    background: rgba(124,58,237,0.3); border-color: var(--glow);
+    color: var(--star); box-shadow: 0 0 12px rgba(124,58,237,0.5);
+  }
+  .prog-pip.done { background: rgba(16,185,129,0.2); border-color: var(--mint); color: var(--mint); }
+
+  /* ── ACTIVITY PANELS ────────────────────────────────────── */
+  .activity-panel {
+    display: none;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(124,58,237,0.3);
+    border-radius: 20px;
+    padding: 28px 24px;
+    margin-top: 24px;
+    backdrop-filter: blur(10px);
+    animation: panelIn .4s ease;
+  }
+  .activity-panel.active { display: block; }
+  @keyframes panelIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .act-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 6px;
+  }
+  .act-desc { color: #c4b5fd; font-size: 0.93rem; line-height: 1.6; margin-bottom: 20px; }
+
+  /* ── ACTIVITY 1: POTION LAB ──────────────────────────────── */
+  .potion-lab {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  @media(max-width:600px){ .potion-lab { grid-template-columns: 1fr; } }
+
+  .ingredient-shelf {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(124,58,237,0.3);
+    border-radius: 16px;
+    padding: 16px;
+  }
+  .ingredient-shelf h3 { color: var(--teal); font-size: 0.9rem; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+
+  .ingredient-item {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(124,58,237,0.15);
+    border: 1.5px solid rgba(124,58,237,0.4);
+    border-radius: 12px;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    cursor: grab;
+    transition: all .2s;
+    font-size: 0.88rem;
+    user-select: none;
+  }
+  .ingredient-item:hover { background: rgba(124,58,237,0.3); transform: scale(1.03); box-shadow: 0 0 12px rgba(124,58,237,0.4); }
+  .ingredient-item.dragging { opacity: 0.4; transform: scale(0.95); }
+  .ingredient-item .ing-icon { font-size: 1.4rem; }
+
+  .cauldron-area {
+    display: flex; flex-direction: column; align-items: center;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(6,182,212,0.3);
+    border-radius: 16px;
+    padding: 16px;
+  }
+  .cauldron-area h3 { color: var(--teal); font-size: 0.9rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+  .cauldron-drop {
+    width: 160px; height: 160px;
+    background: radial-gradient(circle at 50% 60%, #1e0a4a, #0a0820);
+    border: 3px dashed rgba(6,182,212,0.5);
+    border-radius: 50% 50% 40% 40%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    position: relative;
+    transition: all .3s;
+    margin: 8px 0;
+  }
+  .cauldron-drop.drag-over {
+    border-color: var(--gold);
+    box-shadow: 0 0 30px rgba(245,158,11,0.5);
+    background: radial-gradient(circle at 50% 60%, #2d1860, #0a0820);
+  }
+  .cauldron-drop .cauldron-emoji { font-size: 3rem; }
+  .cauldron-drop .drop-hint { font-size: 0.7rem; color: #7c3aed; text-align: center; margin-top: 4px; }
+  .cauldron-ingredients { width: 100%; margin-top: 8px; min-height: 40px; }
+  .added-ing {
+    display: inline-block;
+    background: rgba(124,58,237,0.3);
+    border: 1px solid var(--glow);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 0.75rem;
+    margin: 3px;
+    animation: popIn .3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes popIn { from{transform:scale(0)} to{transform:scale(1)} }
+
+  .cauldron-controls { width: 100%; margin-top: 12px; }
+  .brew-btn {
+    width: 100%;
+    padding: 10px;
+    background: linear-gradient(135deg, var(--glow), var(--teal));
+    border: none; border-radius: 12px;
+    color: #fff; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.95rem;
+    cursor: pointer; transition: all .3s;
+    box-shadow: 0 4px 20px rgba(124,58,237,0.4);
+  }
+  .brew-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(124,58,237,0.6); }
+
+  .result-box {
+    margin-top: 14px;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    display: none;
+    animation: panelIn .4s ease;
+  }
+  .result-box.success { background: rgba(16,185,129,0.15); border: 1px solid var(--mint); color: #6ee7b7; display: block; }
+  .result-box.error   { background: rgba(244,63,94,0.12); border: 1px solid var(--rose); color: #fda4af; display: block; }
+  .result-box.info    { background: rgba(245,158,11,0.12); border: 1px solid var(--gold); color: #fde68a; display: block; }
+
+  /* ── ACTIVITY 2: BODY TIMELINE SORT ─────────────────────── */
+  .timeline-board {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  }
+  @media(max-width:600px){ .timeline-board { grid-template-columns: 1fr; } }
+
+  .event-bank {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(245,158,11,0.3);
+    border-radius: 16px; padding: 16px;
+  }
+  .event-bank h3 { color: var(--gold); font-size: 0.9rem; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+
+  .event-card {
+    background: rgba(245,158,11,0.12);
+    border: 1.5px solid rgba(245,158,11,0.4);
+    border-radius: 12px; padding: 8px 12px;
+    margin-bottom: 8px; cursor: grab;
+    font-size: 0.85rem; line-height: 1.5;
+    transition: all .2s; user-select: none;
+  }
+  .event-card:hover { background: rgba(245,158,11,0.25); transform: translateX(4px); }
+  .event-card.dragging { opacity: 0.4; }
+  .event-card .ev-tag { font-size: 0.7rem; color: var(--gold); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+
+  .timeline-slots {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(245,158,11,0.3);
+    border-radius: 16px; padding: 16px;
+  }
+  .timeline-slots h3 { color: var(--gold); font-size: 0.9rem; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+
+  .timeline-slot {
+    position: relative;
+    min-height: 54px;
+    background: rgba(255,255,255,0.03);
+    border: 2px dashed rgba(245,158,11,0.3);
+    border-radius: 12px;
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    display: flex; align-items: center; gap: 10px;
+    transition: all .3s;
+  }
+  .timeline-slot.drag-over { border-color: var(--gold); background: rgba(245,158,11,0.15); box-shadow: 0 0 16px rgba(245,158,11,0.3); }
+  .timeline-slot.filled { border-style: solid; border-color: rgba(245,158,11,0.6); }
+  .slot-label { font-size: 0.75rem; color: var(--gold); font-weight: 700; white-space: nowrap; }
+  .slot-content { flex: 1; font-size: 0.83rem; color: #e2d9f3; }
+  .slot-empty-hint { flex: 1; font-size: 0.75rem; color: rgba(245,158,11,0.4); font-style: italic; }
+
+  .tl-controls { margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .check-btn {
+    flex: 1; min-width: 120px;
+    padding: 10px 16px;
+    border: none; border-radius: 12px;
+    font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.9rem;
+    cursor: pointer; transition: all .3s;
+  }
+  .check-btn.primary { background: linear-gradient(135deg, var(--gold), #f97316); color: #1a1040; }
+  .check-btn.secondary { background: rgba(255,255,255,0.08); color: #c4b5fd; border: 1px solid rgba(124,58,237,0.4); }
+  .check-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+  /* ── ACTIVITY 3: EXPERIMENT BUILDER ─────────────────────── */
+  .experiment-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media(max-width:600px){ .experiment-grid { grid-template-columns: 1fr; } }
+
+  .body-silhouette {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(244,63,94,0.3);
+    border-radius: 16px; padding: 16px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .body-silhouette h3 { color: var(--rose); font-size: 0.9rem; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+
+  .body-zones {
+    position: relative; width: 220px; height: 320px;
+    background: rgba(244,63,94,0.05);
+    border: 2px solid rgba(244,63,94,0.2);
+    border-radius: 30px;
+  }
+  .body-zone {
+    position: absolute;
+    background: rgba(124,58,237,0.15);
+    border: 2px dashed rgba(124,58,237,0.4);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; font-size: 0.65rem; color: #a78bfa;
+    padding: 4px; cursor: pointer;
+    transition: all .3s;
+  }
+  .body-zone:hover { background: rgba(124,58,237,0.3); border-color: var(--glow); }
+  .body-zone.has-item { background: rgba(16,185,129,0.2); border: 2px solid var(--mint); color: #6ee7b7; }
+  .body-zone.drag-over { background: rgba(245,158,11,0.2); border-color: var(--gold); box-shadow: 0 0 16px rgba(245,158,11,0.4); }
+  /* Zone positions */
+  #zone-brain  { top: 8px;  left: 50%; transform: translateX(-50%); width: 70px; height: 44px; border-radius: 50%; }
+  #zone-heart  { top: 90px; left: 30px; width: 60px; height: 50px; }
+  #zone-repro  { top: 180px; left: 50%; transform: translateX(-50%); width: 90px; height: 56px; }
+  #zone-legs   { bottom: 8px; left: 50%; transform: translateX(-50%); width: 120px; height: 50px; border-radius: 0 0 20px 20px; }
+
+  .organ-cards {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(244,63,94,0.3);
+    border-radius: 16px; padding: 16px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .organ-cards h3 { color: var(--rose); font-size: 0.9rem; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
+
+  .organ-card {
+    background: rgba(244,63,94,0.1);
+    border: 1.5px solid rgba(244,63,94,0.4);
+    border-radius: 12px; padding: 8px 12px;
+    cursor: grab; font-size: 0.83rem; line-height: 1.5;
+    transition: all .2s; user-select: none;
+  }
+  .organ-card:hover { background: rgba(244,63,94,0.25); transform: translateX(-4px); }
+  .organ-card.dragging { opacity: 0.3; }
+  .organ-card.placed { opacity: 0.4; cursor: default; text-decoration: line-through; }
+  .organ-name { font-weight: 800; color: var(--rose); font-size: 0.8rem; }
+
+  .organ-info-box {
+    grid-column: 1 / -1;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(244,63,94,0.3);
+    border-radius: 14px; padding: 14px;
+    font-size: 0.85rem; color: #e2d9f3; line-height: 1.7;
+    min-height: 80px;
+  }
+  .organ-info-box .hint { color: #7c3aed; font-style: italic; }
+
+  /* ── QUIZ BANNER ─────────────────────────────────────────── */
+  .quiz-banner {
+    text-align: center;
+    margin-top: 16px;
+    padding: 14px;
+    background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(6,182,212,0.1));
+    border: 1px solid rgba(124,58,237,0.4);
+    border-radius: 14px;
+    font-size: 0.9rem; color: #c4b5fd;
+    display: none;
+  }
+  .quiz-banner.show { display: block; animation: panelIn .4s ease; }
+  .quiz-banner .score { font-size: 1.5rem; font-weight: 800; color: var(--gold); }
+
+  /* ── NAVIGATION ─────────────────────────────────────────── */
+  .nav-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 24px; flex-wrap: wrap; gap: 10px;
+  }
+  .nav-btn {
+    padding: 10px 22px;
+    background: rgba(124,58,237,0.2);
+    border: 1px solid rgba(124,58,237,0.5);
+    border-radius: 50px;
+    color: #c4b5fd; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.9rem;
+    cursor: pointer; transition: all .3s;
+  }
+  .nav-btn:hover { background: rgba(124,58,237,0.4); color: #fff; box-shadow: 0 0 16px rgba(124,58,237,0.4); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+  /* ── SCROLL BUBBLE ───────────────────────────────────────── */
+  .bubble-feedback {
+    position: fixed; bottom: 24px; right: 24px;
+    background: linear-gradient(135deg, var(--glow), var(--teal));
+    border-radius: 20px; padding: 12px 18px;
+    font-size: 0.85rem; font-weight: 700; color: #fff;
+    box-shadow: 0 8px 32px rgba(124,58,237,0.5);
+    transform: translateY(100px); opacity: 0;
+    transition: all .4s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 100; max-width: 260px;
+  }
+  .bubble-feedback.show { transform: translateY(0); opacity: 1; }
+
+  /* ── LEGEND / INFO STRIP ─────────────────────────────────── */
+  .info-strip {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px; padding: 10px 16px;
+    font-size: 0.8rem; color: #a78bfa; text-align: center;
+    margin-top: 14px;
+  }
+
+  /* ── ACTIVITY BADGES ─────────────────────────────────────── */
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(16,185,129,0.2); border: 1px solid var(--mint);
+    border-radius: 50px; padding: 3px 10px;
+    font-size: 0.75rem; color: var(--mint); font-weight: 700;
+    margin-left: 8px;
+  }
+
+  /* Confetti burst */
+  @keyframes confettiFly {
+    0%   { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+    100% { transform: translateY(-80px) rotate(720deg) scale(0); opacity: 0; }
+  }
+  .confetti-dot {
+    position: absolute; width: 8px; height: 8px;
+    border-radius: 2px;
+    animation: confettiFly 1s ease-out forwards;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- ── ANIMATED BACKGROUND ─────────────────────────────────── -->
+<div class="bg-stage" id="bgStage">
+  <div class="glow-orb" style="width:400px;height:400px;background:rgba(124,58,237,0.3);top:10%;left:5%;animation-delay:0s"></div>
+  <div class="glow-orb" style="width:300px;height:300px;background:rgba(6,182,212,0.2);bottom:20%;right:5%;animation-delay:2s"></div>
+  <div class="glow-orb" style="width:250px;height:250px;background:rgba(244,63,94,0.15);top:60%;left:40%;animation-delay:4s"></div>
+</div>
+
+<!-- ── BUBBLE FEEDBACK ────────────────────────────────────── -->
+<div class="bubble-feedback" id="bubbleFb">🌟 Great work!</div>
+
+<!-- ── MAIN WRAPPER ───────────────────────────────────────── -->
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <div class="main-header">
+    <div class="owl-icon">🦉</div>
+    <h1>The Science Spellbook</h1>
+    <div class="subtitle">Human Reproductive System &amp; Puberty • STEM Lab</div>
+    <div class="progress-track">
+      <div class="prog-pip active" id="pip1" onclick="goTo(1)">🧪 Activity 1: Potion Lab</div>
+      <div class="prog-pip" id="pip2" onclick="goTo(2)">📅 Activity 2: Body Timeline</div>
+      <div class="prog-pip" id="pip3" onclick="goTo(3)">🔬 Activity 3: Organ Map</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       ACTIVITY 1 – POTION LAB (Hormone Discovery)
+       Drag hormones into the cauldron to see their effect
+  ════════════════════════════════════════════════════════════ -->
+  <div class="activity-panel active" id="act1">
+    <div class="act-title">🧪 Activity 1: The Hormone Potion Lab</div>
+    <div class="act-desc">
+      You are a science wizard! 🧙 Drag hormones from the shelf into the cauldron to discover what changes they cause in the body during puberty. Try different combinations and hit <strong>Brew Potion</strong> to see what happens!
+    </div>
+
+    <div class="potion-lab">
+      <!-- INGREDIENT SHELF -->
+      <div>
+        <div class="ingredient-shelf">
+          <h3>🧴 Hormone Ingredients</h3>
+          <div class="ingredient-item" draggable="true" id="ing-testosterone" data-id="testosterone">
+            <span class="ing-icon">🔴</span>
+            <div><div style="font-weight:800;color:#f87171">Testosterone</div><div style="font-size:0.75rem;color:#a78bfa">Male hormone (boys)</div></div>
+          </div>
+          <div class="ingredient-item" draggable="true" id="ing-oestrogen" data-id="oestrogen">
+            <span class="ing-icon">🟣</span>
+            <div><div style="font-weight:800;color:#c084fc">Oestrogen</div><div style="font-size:0.75rem;color:#a78bfa">Female hormone (girls)</div></div>
+          </div>
+          <div class="ingredient-item" draggable="true" id="ing-progesterone" data-id="progesterone">
+            <span class="ing-icon">🔵</span>
+            <div><div style="font-weight:800;color:#60a5fa">Progesterone</div><div style="font-size:0.75rem;color:#a78bfa">Menstrual cycle support</div></div>
+          </div>
+          <div class="ingredient-item" draggable="true" id="ing-gh" data-id="gh">
+            <span class="ing-icon">🟢</span>
+            <div><div style="font-weight:800;color:#4ade80">Growth Hormone</div><div style="font-size:0.75rem;color:#a78bfa">Released by pituitary gland</div></div>
+          </div>
+          <div class="ingredient-item" draggable="true" id="ing-fsh" data-id="fsh">
+            <span class="ing-icon">🟡</span>
+            <div><div style="font-weight:800;color:#facc15">FSH</div><div style="font-size:0.75rem;color:#a78bfa">Follicle stimulating hormone</div></div>
+          </div>
+        </div>
+        <div class="info-strip">💡 Drag up to <strong>2 ingredients</strong> at a time. Hit Brew to see their combined effect!</div>
+      </div>
+
+      <!-- CAULDRON -->
+      <div>
+        <div class="cauldron-area">
+          <h3>🫧 Magic Cauldron</h3>
+          <div class="cauldron-drop" id="cauldronDrop"
+               ondragover="event.preventDefault();this.classList.add('drag-over')"
+               ondragleave="this.classList.remove('drag-over')"
+               ondrop="dropIngredient(event)">
+            <div class="cauldron-emoji">🔮</div>
+            <div class="drop-hint">Drop hormone here</div>
+          </div>
+          <div class="cauldron-ingredients" id="cauldronIngredients"></div>
+          <div class="cauldron-controls">
+            <button class="brew-btn" onclick="brewPotion()">✨ Brew Potion!</button>
+            <div class="result-box" id="brewResult"></div>
+            <button class="check-btn secondary" style="width:100%;margin-top:8px" onclick="clearCauldron()">🗑️ Clear Cauldron</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="quiz-banner" id="q1done">
+      <span class="score">🧪 Lab Complete!</span><br>
+      You've discovered how hormones drive puberty changes. Keep going — next challenge awaits!
+    </div>
+    <div class="nav-bar">
+      <button class="nav-btn" disabled>← Previous</button>
+      <span style="color:#7c3aed;font-size:0.85rem">Activity 1 of 3</span>
+      <button class="nav-btn" onclick="goTo(2)">Next Activity →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       ACTIVITY 2 – BODY CHANGE TIMELINE SORT
+       Drag puberty events into the correct age-slot order
+  ════════════════════════════════════════════════════════════ -->
+  <div class="activity-panel" id="act2">
+    <div class="act-title">📅 Activity 2: The Puberty Timeline Spell</div>
+    <div class="act-desc">
+      Cast the right order! 🌟 Drag each puberty event onto the correct age group slot. Events happen at different ages for different people — use your science knowledge to sort them correctly!
+    </div>
+
+    <div class="timeline-board">
+      <!-- EVENT BANK -->
+      <div class="event-bank">
+        <h3>🃏 Puberty Events</h3>
+        <div class="event-card" draggable="true" data-id="ev1" data-slot="early" id="ev1">
+          <div class="ev-tag">Physical</div>
+          Growth spurt begins — getting taller quickly
+        </div>
+        <div class="event-card" draggable="true" data-id="ev2" data-slot="early" id="ev2">
+          <div class="ev-tag">Hormonal</div>
+          Pituitary gland starts releasing hormones
+        </div>
+        <div class="event-card" draggable="true" data-id="ev3" data-slot="mid" id="ev3">
+          <div class="ev-tag">Physical</div>
+          Body hair begins to grow in new places
+        </div>
+        <div class="event-card" draggable="true" data-id="ev4" data-slot="mid" id="ev4">
+          <div class="ev-tag">Girls only</div>
+          Menstruation (periods) begins
+        </div>
+        <div class="event-card" draggable="true" data-id="ev5" data-slot="mid" id="ev5">
+          <div class="ev-tag">Boys only</div>
+          Voice deepens / voice breaking
+        </div>
+        <div class="event-card" draggable="true" data-id="ev6" data-slot="late" id="ev6">
+          <div class="ev-tag">Reproductive</div>
+          Reproductive organs are fully mature
+        </div>
+        <div class="event-card" draggable="true" data-id="ev7" data-slot="late" id="ev7">
+          <div class="ev-tag">Emotional</div>
+          Identity and independence fully forming
+        </div>
+        <div class="event-card" draggable="true" data-id="ev8" data-slot="early" id="ev8">
+          <div class="ev-tag">Skin</div>
+          Skin becomes oilier — acne may appear
+        </div>
+      </div>
+
+      <!-- TIMELINE SLOTS -->
+      <div class="timeline-slots">
+        <h3>📋 Age Group Slots</h3>
+        <div class="timeline-slot" id="slot-early" data-slot="early"
+             ondragover="event.preventDefault();this.classList.add('drag-over')"
+             ondragleave="this.classList.remove('drag-over')"
+             ondrop="dropToSlot(event,'early')">
+          <div class="slot-label">⚡ Early<br>(8–11)</div>
+          <div class="slot-content" id="slot-early-content">
+            <span class="slot-empty-hint">Drop early puberty events here…</span>
+          </div>
+        </div>
+        <div class="timeline-slot" id="slot-mid" data-slot="mid"
+             ondragover="event.preventDefault();this.classList.add('drag-over')"
+             ondragleave="this.classList.remove('drag-over')"
+             ondrop="dropToSlot(event,'mid')">
+          <div class="slot-label">🌙 Mid<br>(11–14)</div>
+          <div class="slot-content" id="slot-mid-content">
+            <span class="slot-empty-hint">Drop mid puberty events here…</span>
+          </div>
+        </div>
+        <div class="timeline-slot" id="slot-late" data-slot="late"
+             ondragover="event.preventDefault();this.classList.add('drag-over')"
+             ondragleave="this.classList.remove('drag-over')"
+             ondrop="dropToSlot(event,'late')">
+          <div class="slot-label">🌟 Late<br>(14–18)</div>
+          <div class="slot-content" id="slot-late-content">
+            <span class="slot-empty-hint">Drop late puberty events here…</span>
+          </div>
+        </div>
+
+        <div class="tl-controls">
+          <button class="check-btn primary" onclick="checkTimeline()">✨ Check My Spell!</button>
+          <button class="check-btn secondary" onclick="resetTimeline()">🔄 Reset</button>
+        </div>
+        <div class="result-box" id="tlResult"></div>
+      </div>
+    </div>
+
+    <div class="quiz-banner" id="q2done">
+      <span class="score">📅 Timeline Mastered!</span><br>
+      Brilliant! You understand the stages of puberty. On to the final challenge!
+    </div>
+    <div class="nav-bar">
+      <button class="nav-btn" onclick="goTo(1)">← Previous</button>
+      <span style="color:#7c3aed;font-size:0.85rem">Activity 2 of 3</span>
+      <button class="nav-btn" onclick="goTo(3)">Next Activity →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       ACTIVITY 3 – ORGAN PLACEMENT MAP
+       Drag organs to correct body zones and learn their functions
+  ════════════════════════════════════════════════════════════ -->
+  <div class="activity-panel" id="act3">
+    <div class="act-title">🔬 Activity 3: The Body Blueprint Lab</div>
+    <div class="act-desc">
+      Build the human body system! 🏗️ Drag each organ or gland to the correct zone on the body diagram. When you drop one, you'll learn exactly what it does during puberty and reproduction!
+    </div>
+
+    <div class="experiment-grid">
+      <!-- BODY DIAGRAM -->
+      <div class="body-silhouette">
+        <h3>🧍 Body Zones</h3>
+        <div class="body-zones">
+          <div class="body-zone" id="zone-brain" data-zone="brain"
+               ondragover="event.preventDefault();this.classList.add('drag-over')"
+               ondragleave="this.classList.remove('drag-over')"
+               ondrop="dropOrgan(event,'brain')">🧠<br>Brain Zone</div>
+
+          <div class="body-zone" id="zone-heart" data-zone="glands"
+               ondragover="event.preventDefault();this.classList.add('drag-over')"
+               ondragleave="this.classList.remove('drag-over')"
+               ondrop="dropOrgan(event,'glands')">🫁<br>Gland Zone</div>
+
+          <div class="body-zone" id="zone-repro" data-zone="repro"
+               ondragover="event.preventDefault();this.classList.add('drag-over')"
+               ondragleave="this.classList.remove('drag-over')"
+               ondrop="dropOrgan(event,'repro')">🔬<br>Repro Zone</div>
+
+          <div class="body-zone" id="zone-legs" data-zone="other"
+               ondragover="event.preventDefault();this.classList.add('drag-over')"
+               ondragleave="this.classList.remove('drag-over')"
+               ondrop="dropOrgan(event,'other')">💪<br>Other Zone</div>
+        </div>
+        <div style="font-size:0.72rem;color:#7c3aed;margin-top:10px;text-align:center">
+          Drop organs into the matching zone
+        </div>
+        <div id="organFeedback" style="margin-top:10px;min-height:30px;font-size:0.78rem;text-align:center;color:#facc15;font-weight:700"></div>
+      </div>
+
+      <!-- ORGAN CARDS -->
+      <div class="organ-cards">
+        <h3>🧬 Organs &amp; Glands</h3>
+        <div class="organ-card" draggable="true" data-id="hypothalamus" data-zone="brain" id="oc-hypothalamus">
+          <div class="organ-name">🧠 Hypothalamus</div>
+          Controls the start of puberty by signalling the pituitary gland
+        </div>
+        <div class="organ-card" draggable="true" data-id="pituitary" data-zone="brain" id="oc-pituitary">
+          <div class="organ-name">💡 Pituitary Gland</div>
+          "Master gland" — releases LH and FSH to trigger gonads
+        </div>
+        <div class="organ-card" draggable="true" data-id="ovaries" data-zone="repro" id="oc-ovaries">
+          <div class="organ-name">🌸 Ovaries</div>
+          Produce eggs (ova) and release oestrogen hormone
+        </div>
+        <div class="organ-card" draggable="true" data-id="testes" data-zone="repro" id="oc-testes">
+          <div class="organ-name">🔵 Testes</div>
+          Produce sperm and release testosterone hormone
+        </div>
+        <div class="organ-card" draggable="true" data-id="uterus" data-zone="repro" id="oc-uterus">
+          <div class="organ-name">🌺 Uterus</div>
+          Womb — where a baby develops during pregnancy
+        </div>
+        <div class="organ-card" draggable="true" data-id="adrenal" data-zone="glands" id="oc-adrenal">
+          <div class="organ-name">⚡ Adrenal Glands</div>
+          Release androgens — trigger early puberty body hair growth
+        </div>
+        <div class="organ-card" draggable="true" data-id="sweat" data-zone="other" id="oc-sweat">
+          <div class="organ-name">💧 Sweat Glands</div>
+          Become more active during puberty — daily hygiene needed!
+        </div>
+      </div>
+
+      <!-- INFO BOX -->
+      <div class="organ-info-box" id="organInfoBox">
+        <span class="hint">💡 Drop an organ onto the body to learn what it does during puberty and reproduction…</span>
+      </div>
+    </div>
+
+    <div id="organScoreBar" style="margin-top:12px;display:none">
+      <div style="background:rgba(255,255,255,0.07);border-radius:50px;height:10px;overflow:hidden">
+        <div id="organBar" style="background:linear-gradient(90deg,var(--glow),var(--teal));height:100%;width:0%;transition:width .5s;border-radius:50px"></div>
+      </div>
+      <div style="text-align:center;margin-top:6px;font-size:0.8rem;color:#a78bfa" id="organScoreText">0 / 7 placed</div>
+    </div>
+
+    <div class="quiz-banner" id="q3done">
+      <span class="score">🏆 All Activities Complete!</span><br>
+      Incredible wizard! You've mastered the science of puberty and reproduction. 
+      <br><br>
+      <span style="color:#facc15;font-weight:800">🎯 Your Final Spell Score:</span>
+      <span id="finalScore" style="color:#fff"></span>
+    </div>
+    <div class="nav-bar">
+      <button class="nav-btn" onclick="goTo(2)">← Previous</button>
+      <span style="color:#7c3aed;font-size:0.85rem">Activity 3 of 3</span>
+      <button class="nav-btn" onclick="finishAll()">🏆 Finish!</button>
+    </div>
+  </div>
+
+</div><!-- /wrapper -->
+
+<script>
+// ── FLOATING BACKGROUND OBJECTS ─────────────────────────────
+const bgObjs = ['📚','✨','🌟','🦉','⭐','🧪','📖','💫','🌙','🔮','🪄','🍵','⚗️','🌿','💎'];
+const stage = document.getElementById('bgStage');
+
+function spawnFloat() {
+  const el = document.createElement('div');
+  el.className = 'float-obj';
+  el.textContent = bgObjs[Math.floor(Math.random() * bgObjs.length)];
+  el.style.left = Math.random() * 100 + 'vw';
+  el.style.fontSize = (1.2 + Math.random() * 1.8) + 'rem';
+  const dur = 12 + Math.random() * 20;
+  el.style.animationDuration = dur + 's';
+  el.style.animationDelay = -Math.random() * dur + 's';
+  stage.appendChild(el);
+  setTimeout(() => el.remove(), dur * 1000);
+}
+for (let i = 0; i < 18; i++) spawnFloat();
+setInterval(spawnFloat, 2500);
+
+// Sparkle stars
+for (let i = 0; i < 60; i++) {
+  const s = document.createElement('div');
+  s.className = 'star-sparkle';
+  s.style.left  = Math.random() * 100 + 'vw';
+  s.style.top   = Math.random() * 100 + 'vh';
+  s.style.animationDelay = (Math.random() * 4) + 's';
+  s.style.animationDuration = (1.5 + Math.random() * 3) + 's';
+  stage.appendChild(s);
+}
+
+// ── NAVIGATION ───────────────────────────────────────────────
+let currentAct = 1;
+const scores = {1: false, 2: false, 3: false};
+
+function goTo(n) {
+  document.querySelectorAll('.activity-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.prog-pip').forEach((p,i) => {
+    p.classList.remove('active');
+    if (scores[i+1]) p.classList.add('done'); else p.classList.remove('done');
+  });
+  document.getElementById('act' + n).classList.add('active');
+  document.getElementById('pip' + n).classList.add('active');
+  currentAct = n;
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+// ── BUBBLE FEEDBACK ──────────────────────────────────────────
+let bubbleTimer;
+function showBubble(msg) {
+  const b = document.getElementById('bubbleFb');
+  b.textContent = msg;
+  b.classList.add('show');
+  clearTimeout(bubbleTimer);
+  bubbleTimer = setTimeout(() => b.classList.remove('show'), 3500);
+}
+
+// ── CONFETTI ─────────────────────────────────────────────────
+function confettiBurst(el) {
+  const rect = el.getBoundingClientRect();
+  const colors = ['#7c3aed','#f59e0b','#06b6d4','#f43f5e','#10b981'];
+  for (let i = 0; i < 12; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'confetti-dot';
+    dot.style.left = (rect.left + rect.width/2 + (Math.random()-0.5)*60) + 'px';
+    dot.style.top  = (rect.top + rect.height/2 + (Math.random()-0.5)*40 + window.scrollY) + 'px';
+    dot.style.background = colors[i % colors.length];
+    dot.style.animationDelay = (Math.random() * 0.3) + 's';
+    document.body.appendChild(dot);
+    setTimeout(() => dot.remove(), 1200);
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// ACTIVITY 1 — POTION LAB
+// ════════════════════════════════════════════════════════════
+const cauldronItems = [];
+const maxIngredients = 2;
+
+// Drag events for ingredients
+document.querySelectorAll('.ingredient-item').forEach(item => {
+  item.addEventListener('dragstart', e => {
+    e.dataTransfer.setData('text/plain', item.dataset.id);
+    item.classList.add('dragging');
+  });
+  item.addEventListener('dragend', () => item.classList.remove('dragging'));
+});
+
+function dropIngredient(e) {
+  e.preventDefault();
+  const cauldron = document.getElementById('cauldronDrop');
+  cauldron.classList.remove('drag-over');
+  const id = e.dataTransfer.getData('text/plain');
+  if (cauldronItems.includes(id)) { showBubble('⚠️ Already in the cauldron!'); return; }
+  if (cauldronItems.length >= maxIngredients) { showBubble('⚠️ Max 2 ingredients! Clear first.'); return; }
+  cauldronItems.push(id);
+  renderCauldron();
+  document.getElementById('brewResult').style.display = 'none';
+  document.getElementById('brewResult').className = 'result-box';
+  showBubble('✨ Added to the cauldron!');
+}
+
+function renderCauldron() {
+  const ing = document.getElementById('cauldronIngredients');
+  ing.innerHTML = cauldronItems.map(id => {
+    const names = {testosterone:'🔴 Testosterone', oestrogen:'🟣 Oestrogen',
+                   progesterone:'🔵 Progesterone', gh:'🟢 Growth Hormone', fsh:'🟡 FSH'};
+    return `<span class="added-ing">${names[id]||id}</span>`;
+  }).join('');
+}
+
+function clearCauldron() {
+  cauldronItems.length = 0;
+  renderCauldron();
+  const rb = document.getElementById('brewResult');
+  rb.style.display = 'none'; rb.className = 'result-box';
+  showBubble('🧹 Cauldron cleared!');
+}
+
+const potionResults = {
+  'testosterone': {
+    type: 'success',
+    text: '🔴 <strong>Testosterone alone:</strong> This hormone (made in the testes) causes voice deepening, facial and body hair growth, and muscle development in boys during puberty. It also increases height and bone density!'
+  },
+  'oestrogen': {
+    type: 'success',
+    text: '🟣 <strong>Oestrogen alone:</strong> This hormone (made in the ovaries) causes breast development, widening of the hips, and prepares the uterus for menstruation. It also helps regulate the menstrual cycle in girls.'
+  },
+  'progesterone': {
+    type: 'info',
+    text: '🔵 <strong>Progesterone alone:</strong> This hormone works with oestrogen to control the menstrual cycle. It prepares the uterine lining each month. If no pregnancy occurs, progesterone drops and a period begins.'
+  },
+  'gh': {
+    type: 'success',
+    text: '🟢 <strong>Growth Hormone alone:</strong> Released by the pituitary gland during sleep! It causes the famous "growth spurt" — helping bones and muscles grow quickly during puberty. Getting enough sleep is vital!'
+  },
+  'fsh': {
+    type: 'info',
+    text: '🟡 <strong>FSH (Follicle Stimulating Hormone) alone:</strong> Released by the pituitary gland, FSH triggers the ovaries (in girls) to develop egg follicles, and the testes (in boys) to produce sperm.'
+  },
+  'testosterone+oestrogen': {
+    type: 'info',
+    text: '🔴🟣 <strong>Testosterone + Oestrogen:</strong> Interesting! Both are present in all bodies — just in different amounts. Testosterone is higher in males; oestrogen is higher in females. The balance determines many physical characteristics of puberty!'
+  },
+  'oestrogen+progesterone': {
+    type: 'success',
+    text: '🟣🔵 <strong>Oestrogen + Progesterone:</strong> These two hormones work together as a TEAM in girls! Oestrogen builds the uterine lining while progesterone maintains it. Together they regulate the entire 28-day menstrual cycle. A powerful combination!'
+  },
+  'testosterone+gh': {
+    type: 'success',
+    text: '🔴🟢 <strong>Testosterone + Growth Hormone:</strong> WOW — peak puberty combo for boys! Testosterone drives voice breaking and hair growth, while Growth Hormone accelerates height increase. This is why boys often have dramatic growth spurts around ages 12–15!'
+  },
+  'oestrogen+fsh': {
+    type: 'success',
+    text: '🟣🟡 <strong>Oestrogen + FSH:</strong> FSH stimulates egg follicles in the ovaries to grow. As they grow, they produce oestrogen. This oestrogen then signals the pituitary to release LH — triggering ovulation. A brilliantly designed feedback loop!'
+  },
+  'gh+fsh': {
+    type: 'info',
+    text: '🟢🟡 <strong>Growth Hormone + FSH:</strong> Both are released by the pituitary gland — the "master control centre" of puberty! GH makes you taller while FSH activates the gonads. The brain really is in charge of growing up!'
+  },
+  'progesterone+fsh': {
+    type: 'info',
+    text: '🔵🟡 <strong>Progesterone + FSH:</strong> Progesterone and FSH work in opposition during the menstrual cycle. FSH rises at the start of the cycle to grow an egg follicle; progesterone rises after ovulation to prepare for possible pregnancy. A careful hormonal balance!'
+  },
+  'testosterone+fsh': {
+    type: 'success',
+    text: '🔴🟡 <strong>Testosterone + FSH:</strong> In males, these two hormones together drive sperm production (spermatogenesis) inside the testes. FSH stimulates sperm cells to develop, while testosterone supports their maturation. Essential for the male reproductive system!'
+  },
+  'progesterone+testosterone': {
+    type: 'info',
+    text: '🔵🔴 <strong>Progesterone + Testosterone:</strong> An unusual combo! Small amounts of progesterone are present in male bodies too. Together with testosterone, they play roles in mood regulation and sperm health. Hormones are far more complex than just "male" or "female"!'
+  },
+  'gh+oestrogen': {
+    type: 'success',
+    text: '🟢🟣 <strong>Growth Hormone + Oestrogen:</strong> In girls, this combination is especially important! Oestrogen makes bones more sensitive to Growth Hormone, which is why girls often start their growth spurt earlier than boys. Eventually, oestrogen also signals bones to stop growing.'
+  }
+};
+
+let brewCount = 0;
+function brewPotion() {
+  if (cauldronItems.length === 0) { showBubble('⚠️ Add at least one ingredient first!'); return; }
+  const key = [...cauldronItems].sort().join('+');
+  const result = potionResults[key] || {type:'info', text:'🔮 An interesting combination! These hormones interact in complex ways. Try individual hormones or well-known pairs to see the clearest effects.'};
+  const rb = document.getElementById('brewResult');
+  rb.innerHTML = result.text;
+  rb.className = 'result-box ' + result.type;
+  confettiBurst(rb);
+  brewCount++;
+  if (brewCount >= 3 && !scores[1]) {
+    scores[1] = true;
+    document.getElementById('q1done').classList.add('show');
+    document.getElementById('pip1').classList.add('done');
+    showBubble('🏆 Potion Lab complete! Move to Activity 2!');
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// ACTIVITY 2 — BODY TIMELINE SORT
+// ════════════════════════════════════════════════════════════
+let draggedEvent = null;
+const slotContents = {early: [], mid: [], late: []};
+
+document.querySelectorAll('.event-card').forEach(card => {
+  card.addEventListener('dragstart', e => {
+    draggedEvent = card;
+    e.dataTransfer.setData('text/plain', card.dataset.id);
+    card.classList.add('dragging');
+  });
+  card.addEventListener('dragend', () => card.classList.remove('dragging'));
+});
+
+function dropToSlot(e, slot) {
+  e.preventDefault();
+  const slotEl = document.getElementById('slot-' + slot);
+  slotEl.classList.remove('drag-over');
+  if (!draggedEvent) return;
+  const id = draggedEvent.dataset.id;
+  // Remove from previous slot if any
+  for (const s in slotContents) slotContents[s] = slotContents[s].filter(x => x !== id);
+  slotContents[slot].push(id);
+  draggedEvent = null;
+  renderSlots();
+}
+
+function renderSlots() {
+  const evData = {
+    ev1: 'Growth spurt begins',
+    ev2: 'Pituitary starts releasing hormones',
+    ev3: 'Body hair grows in new places',
+    ev4: 'Menstruation begins (girls)',
+    ev5: 'Voice deepens (boys)',
+    ev6: 'Reproductive organs fully mature',
+    ev7: 'Identity & independence forming',
+    ev8: 'Skin becomes oilier / acne'
+  };
+  ['early','mid','late'].forEach(slot => {
+    const c = document.getElementById('slot-' + slot + '-content');
+    const sl = document.getElementById('slot-' + slot);
+    if (slotContents[slot].length === 0) {
+      c.innerHTML = `<span class="slot-empty-hint">Drop events here…</span>`;
+      sl.classList.remove('filled');
+    } else {
+      c.innerHTML = slotContents[slot].map(id =>
+        `<div style="font-size:0.8rem;margin-bottom:4px;padding:3px 8px;background:rgba(245,158,11,0.15);border-radius:8px">• ${evData[id]||id}</div>`
+      ).join('');
+      sl.classList.add('filled');
+    }
+  });
+}
+
+function checkTimeline() {
+  const correctSlot = {ev1:'early', ev2:'early', ev3:'mid', ev4:'mid', ev5:'mid', ev6:'late', ev7:'late', ev8:'early'};
+  let correct = 0, total = 0;
+  const misplaced = [];
+  for (const slot in slotContents) {
+    slotContents[slot].forEach(id => {
+      total++;
+      if (correctSlot[id] === slot) correct++;
+      else misplaced.push(id);
+    });
+  }
+  if (total === 0) { showBubble('⚠️ Drag some events into the slots first!'); return; }
+
+  const rb = document.getElementById('tlResult');
+  if (correct === total && total >= 6) {
+    rb.className = 'result-box success';
+    rb.innerHTML = `🌟 <strong>Excellent! ${correct}/${total} correct!</strong><br>You've correctly sorted puberty events into their age groups. Early puberty (8-11) begins with hormonal signals and early growth. Mid puberty (11-14) brings the most visible changes. Late puberty (14-18) completes the process!`;
+    if (!scores[2]) {
+      scores[2] = true;
+      document.getElementById('q2done').classList.add('show');
+      document.getElementById('pip2').classList.add('done');
+      showBubble('🏆 Timeline mastered! Move to Activity 3!');
+    }
+    confettiBurst(rb);
+  } else {
+    rb.className = 'result-box error';
+    rb.innerHTML = `🔮 <strong>${correct}/${total} correct so far.</strong><br>Remember: Brain/hormonal changes come first (early), visible physical changes are mid-puberty, and full maturity is late puberty. Keep adjusting!`;
+  }
+}
+
+function resetTimeline() {
+  ['early','mid','late'].forEach(s => slotContents[s] = []);
+  renderSlots();
+  const rb = document.getElementById('tlResult');
+  rb.className = 'result-box'; rb.style.display = 'none';
+  setTimeout(() => rb.style.display = '', 10);
+  showBubble('🔄 Timeline reset!');
+}
+
+// ════════════════════════════════════════════════════════════
+// ACTIVITY 3 — ORGAN PLACEMENT MAP
+// ════════════════════════════════════════════════════════════
+let organDragged = null;
+let placedCount = 0;
+const totalOrgans = 7;
+const organInfos = {
+  hypothalamus: {
+    zone: 'brain',
+    info: '🧠 <strong>Hypothalamus</strong> sits deep in the brain. It is the master switch for puberty! Around age 8-10, it begins releasing GnRH (Gonadotropin-Releasing Hormone), which signals the pituitary gland to start the whole puberty process.'
+  },
+  pituitary: {
+    zone: 'brain',
+    info: '💡 <strong>Pituitary Gland</strong> is the "Master Gland" located at the base of the brain. It receives signals from the hypothalamus and releases LH (Luteinising Hormone) and FSH (Follicle Stimulating Hormone) to activate the reproductive organs.'
+  },
+  ovaries: {
+    zone: 'repro',
+    info: '🌸 <strong>Ovaries</strong> are two almond-sized organs in the female pelvis. They store hundreds of thousands of egg cells (ova) from birth! During puberty, they begin releasing one egg each month (ovulation) and produce oestrogen and progesterone.'
+  },
+  testes: {
+    zone: 'repro',
+    info: '🔵 <strong>Testes</strong> are two glands in the scrotum. From puberty, they produce millions of sperm cells every day and release testosterone — the main male sex hormone that drives voice changes, hair growth, and muscle development.'
+  },
+  uterus: {
+    zone: 'repro',
+    info: '🌺 <strong>Uterus</strong> (womb) is a muscular, pear-shaped organ in the female pelvis. Its lining (endometrium) thickens each month under hormonal control. If no pregnancy occurs, the lining sheds as a menstrual period.'
+  },
+  adrenal: {
+    zone: 'glands',
+    info: '⚡ <strong>Adrenal Glands</strong> sit on top of each kidney. They are the FIRST to fire during puberty! They release androgens (like DHEA) as early as age 6-8 — causing early signs like body odour and sparse pubic hair, before the main puberty hormones kick in.'
+  },
+  sweat: {
+    zone: 'other',
+    info: '💧 <strong>Sweat Glands (Apocrine)</strong> become activated by puberty hormones. New sweat glands in the armpits and groin begin working during puberty, producing sweat that can smell stronger. This is why daily washing and deodorant become important hygiene habits!'
+  }
+};
+
+document.querySelectorAll('.organ-card').forEach(card => {
+  card.addEventListener('dragstart', e => {
+    if (card.classList.contains('placed')) { e.preventDefault(); return; }
+    organDragged = card;
+    e.dataTransfer.setData('text/plain', card.dataset.id);
+    card.classList.add('dragging');
+  });
+  card.addEventListener('dragend', () => card.classList.remove('dragging'));
+});
+
+function dropOrgan(e, zone) {
+  e.preventDefault();
+  const zoneEl = document.getElementById('zone-' + zone) || e.currentTarget;
+  zoneEl.classList.remove('drag-over');
+  if (!organDragged) return;
+  const id = organDragged.dataset.id;
+  const info = organInfos[id];
+  if (!info) return;
+
+  const fb = document.getElementById('organFeedback');
+  const infoBox = document.getElementById('organInfoBox');
+
+  if (info.zone === zone) {
+    // Correct placement
+    organDragged.classList.add('placed');
+    organDragged.setAttribute('draggable', 'false');
+    zoneEl.classList.add('has-item');
+    zoneEl.innerHTML += ` <span style="font-size:0.7rem">${organDragged.querySelector('.organ-name').textContent.split(' ')[0]}</span>`;
+    infoBox.innerHTML = info.info;
+    fb.textContent = '✅ Correct placement!';
+    placedCount++;
+    updateOrganScore();
+    confettiBurst(zoneEl);
+    showBubble(`✅ ${organDragged.querySelector('.organ-name').textContent} placed correctly!`);
+  } else {
+    fb.textContent = '❌ Wrong zone — think about where that organ is in the body!';
+    infoBox.innerHTML = `<span style="color:#f87171">Hmm, not quite right for ${organDragged.querySelector('.organ-name').textContent}. Think about: Brain/hormonal signals = Brain Zone; Hormone-making glands = Gland Zone; Reproductive organs = Repro Zone; Skin/other = Other Zone.</span>`;
+    showBubble(`❌ Wrong zone! Try again.`);
+  }
+  organDragged = null;
+}
+
+function updateOrganScore() {
+  const bar = document.getElementById('organBar');
+  const text = document.getElementById('organScoreText');
+  const scoreBar = document.getElementById('organScoreBar');
+  scoreBar.style.display = 'block';
+  bar.style.width = (placedCount / totalOrgans * 100) + '%';
+  text.textContent = `${placedCount} / ${totalOrgans} organs placed`;
+
+  if (placedCount === totalOrgans && !scores[3]) {
+    scores[3] = true;
+    document.getElementById('pip3').classList.add('done');
+    const allDone = scores[1] && scores[2] && scores[3];
+    const scoreCount = Object.values(scores).filter(Boolean).length;
+    document.getElementById('finalScore').textContent = ` ${scoreCount}/3 activities mastered! ⭐`.repeat(scoreCount);
+    document.getElementById('q3done').classList.add('show');
+    showBubble('🏆 All 7 organs placed! You are a Science Wizard!');
+    confettiBurst(document.getElementById('q3done'));
+  }
+}
+
+function finishAll() {
+  scores[3] = true;
+  const scoreCount = Object.values(scores).filter(Boolean).length;
+  document.getElementById('finalScore').textContent = ` ${scoreCount}/3 activities mastered!`;
+  document.getElementById('q3done').classList.add('show');
+  showBubble('🎉 Well done, Science Wizard! You finished the Spellbook!');
+}
+</script>
+</body>
+</html>

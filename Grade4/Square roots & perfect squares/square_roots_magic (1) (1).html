@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Square Roots & Perfect Squares – Magic Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;700;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #f5c842;
+    --deep-purple: #1a0a2e;
+    --mid-purple: #2d1458;
+    --light-purple: #6b3fa0;
+    --magenta: #c0329b;
+    --cyan: #38d9f5;
+    --green: #39e97b;
+    --red: #ff4f6e;
+    --white: #f0e8ff;
+    --star: #ffe566;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--deep-purple);
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ── ANIMATED BACKGROUND ── */
+  .bg-layer {
+    position: fixed; inset: 0; z-index: 0;
+    background: radial-gradient(ellipse at 20% 30%, #2d0b6e 0%, #1a0a2e 55%),
+                radial-gradient(ellipse at 80% 70%, #1b0050 0%, transparent 60%);
+    overflow: hidden;
+  }
+  /* Stars */
+  .bg-layer::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 30% 40%, #fff 0%, transparent 100%),
+      radial-gradient(2px 2px at 55% 20%, #ffe566 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 65%, #fff 0%, transparent 100%),
+      radial-gradient(2px 2px at 85% 10%, #ffe566 0%, transparent 100%),
+      radial-gradient(1px 1px at 45% 80%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 20% 90%, #fff 0%, transparent 100%),
+      radial-gradient(2px 2px at 60% 50%, #ffe566 0%, transparent 100%),
+      radial-gradient(1px 1px at 92% 35%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 5% 55%, #fff 0%, transparent 100%);
+    animation: twinkle 4s ease-in-out infinite alternate;
+  }
+  @keyframes twinkle { from { opacity: 0.5; } to { opacity: 1; } }
+
+  /* Floating objects */
+  .floater {
+    position: fixed; z-index: 1; pointer-events: none; user-select: none;
+    font-size: 2rem; opacity: 0.55;
+    animation: floatUp linear infinite;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(110vh) rotate(0deg) scale(1);   opacity: 0; }
+    10%  { opacity: 0.55; }
+    90%  { opacity: 0.55; }
+    100% { transform: translateY(-10vh)  rotate(360deg) scale(1.1); opacity: 0; }
+  }
+
+  /* Glow orbs */
+  .orb {
+    position: fixed; border-radius: 50%; filter: blur(70px);
+    z-index: 0; pointer-events: none; animation: orbDrift ease-in-out infinite alternate;
+  }
+  @keyframes orbDrift {
+    from { transform: translate(0,0); }
+    to   { transform: translate(40px, 30px); }
+  }
+
+  /* ── LAYOUT ── */
+  .wrapper {
+    position: relative; z-index: 2;
+    max-width: 940px; margin: 0 auto; padding: 0 16px 60px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    text-align: center; padding: 36px 0 10px;
+  }
+  .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #6b3fa0, #c0329b);
+    border-radius: 50px; padding: 4px 18px; font-size: .78rem;
+    letter-spacing: .12em; text-transform: uppercase; font-weight: 700;
+    margin-bottom: 10px; color: #ffe;
+    box-shadow: 0 0 16px #c0329b88;
+  }
+  h1 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.7rem, 5vw, 3rem);
+    font-weight: 900;
+    background: linear-gradient(90deg, var(--gold), #ff9fef, var(--cyan));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    text-shadow: none;
+    line-height: 1.15;
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    font-size: .95rem; opacity: .75; margin-bottom: 8px; font-weight: 600;
+  }
+  .divider {
+    margin: 18px auto; width: 200px; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), var(--magenta), transparent);
+    border-radius: 4px;
+  }
+
+  /* ── ACTIVITY CARDS ── */
+  .activity-card {
+    background: linear-gradient(135deg, rgba(45,20,88,.9), rgba(26,10,46,.95));
+    border: 1.5px solid rgba(245,200,66,.25);
+    border-radius: 22px;
+    padding: 28px 26px 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 40px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.04) inset;
+    position: relative; overflow: hidden;
+  }
+  .activity-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    border-radius: 22px 22px 0 0;
+  }
+  .card-1::before { background: linear-gradient(90deg, var(--gold), var(--magenta)); }
+  .card-2::before { background: linear-gradient(90deg, var(--cyan), var(--green)); }
+  .card-3::before { background: linear-gradient(90deg, var(--magenta), var(--gold)); }
+
+  .act-label {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'Cinzel', serif; font-size: .75rem; font-weight: 700;
+    letter-spacing: .18em; text-transform: uppercase;
+    background: rgba(255,255,255,.07); border-radius: 50px;
+    padding: 4px 14px; margin-bottom: 14px;
+    border: 1px solid rgba(255,255,255,.12);
+  }
+  .act-icon { font-size: 1.1rem; }
+  .act-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.1rem, 3vw, 1.45rem);
+    font-weight: 700; margin-bottom: 8px;
+    color: var(--gold);
+    text-shadow: 0 0 20px rgba(245,200,66,.4);
+  }
+  .act-desc { font-size: .92rem; opacity: .8; margin-bottom: 20px; line-height: 1.6; }
+
+  /* ── ACTIVITY 1 – POTION BREWER (drag tiles onto cauldron) ── */
+  .potion-area { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+  .tiles-pool {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    flex: 1 1 200px;
+  }
+  .num-tile {
+    width: 58px; height: 58px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; font-weight: 800; cursor: grab;
+    background: linear-gradient(135deg, #3d1f70, #5e2d9e);
+    border: 2px solid rgba(245,200,66,.4);
+    box-shadow: 0 4px 16px rgba(0,0,0,.4), 0 0 8px rgba(192,50,155,.3);
+    user-select: none; transition: transform .15s, box-shadow .15s;
+    position: relative;
+  }
+  .num-tile:active { cursor: grabbing; transform: scale(1.1) rotate(-3deg); }
+  .num-tile.used { opacity: .3; pointer-events: none; }
+  .num-tile.dragging { opacity: .5; }
+
+  .cauldron-zone {
+    flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 10px;
+  }
+  .cauldron-wrap {
+    position: relative; width: 130px; height: 130px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .cauldron-svg { width: 130px; height: 130px; }
+  .drop-zone {
+    position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+    width: 80px; height: 60px; border-radius: 50%;
+    border: 2.5px dashed rgba(56,217,245,.6);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; font-weight: 900; color: var(--cyan);
+    transition: background .2s, border-color .2s;
+    cursor: default;
+    background: rgba(56,217,245,.05);
+  }
+  .drop-zone.over { background: rgba(56,217,245,.2); border-color: var(--cyan); }
+  .drop-zone.correct { border-color: var(--green); color: var(--green); background: rgba(57,233,123,.15); animation: popGlow .4s; }
+  .drop-zone.wrong   { border-color: var(--red);   color: var(--red);   background: rgba(255,79,110,.15);  animation: shake .35s; }
+  @keyframes popGlow { 0%,100%{transform:translateX(-50%) scale(1)} 50%{transform:translateX(-50%) scale(1.15)} }
+  @keyframes shake   { 0%,100%{transform:translateX(-50%)} 25%{transform:translateX(calc(-50% - 6px))} 75%{transform:translateX(calc(-50% + 6px))} }
+
+  .potion-question {
+    font-size: 1.05rem; font-weight: 700; margin-bottom: 10px;
+    color: var(--cyan); text-align: center; min-height: 48px;
+    background: rgba(0,0,0,.3); border-radius: 10px; padding: 8px 12px;
+  }
+  .potion-feedback {
+    text-align: center; font-weight: 800; font-size: 1rem;
+    min-height: 28px; margin-top: 4px;
+    transition: color .3s;
+  }
+  .potion-controls { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .btn {
+    padding: 9px 22px; border: none; border-radius: 50px; cursor: pointer;
+    font-family: 'Nunito', sans-serif; font-weight: 800; font-size: .9rem;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.4); }
+  .btn-gold  { background: linear-gradient(135deg, var(--gold), #e0a020); color: #1a0a2e; }
+  .btn-cyan  { background: linear-gradient(135deg, var(--cyan), #1ab4d8); color: #0a0020; }
+  .btn-magenta { background: linear-gradient(135deg, var(--magenta), #8f1870); color: #fff; }
+  .score-bar {
+    display: flex; gap: 5px; flex-wrap: wrap; margin-top: 10px;
+  }
+  .star-dot {
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 2px solid var(--gold); font-size: .9rem; display: flex; align-items: center; justify-content: center;
+    transition: background .3s;
+  }
+  .star-dot.earned { background: var(--gold); }
+
+  /* ── ACTIVITY 2 – SPELL GRID (click correct perfect squares) ── */
+  .spell-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    gap: 10px; margin-bottom: 18px;
+  }
+  .spell-cell {
+    height: 64px; border-radius: 14px; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: 1.2rem; font-weight: 800;
+    background: linear-gradient(135deg, #2a1050, #4a1a80);
+    border: 2px solid rgba(255,255,255,.12);
+    transition: transform .15s, background .2s, border-color .2s;
+    user-select: none; position: relative;
+    box-shadow: 0 3px 12px rgba(0,0,0,.35);
+  }
+  .spell-cell:hover:not(.revealed) { transform: scale(1.07); border-color: rgba(245,200,66,.5); }
+  .spell-cell .cell-num { font-size: 1.15rem; }
+  .spell-cell .cell-hint { font-size: .6rem; opacity: 0; margin-top: 2px; transition: opacity .3s; }
+  .spell-cell.correct-pick { background: linear-gradient(135deg,#1a6e3e,#28a55e); border-color: var(--green); }
+  .spell-cell.wrong-pick   { background: linear-gradient(135deg,#6e1a2a,#a52838); border-color: var(--red); animation: shake2 .3s; }
+  .spell-cell.revealed     { pointer-events: none; }
+  .spell-cell.correct-pick .cell-hint { opacity: 1; }
+  @keyframes shake2 { 0%,100%{transform:none} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+  .spell-question { font-size: 1rem; font-weight: 700; color: var(--cyan); margin-bottom: 14px; }
+  .spell-result { font-weight: 800; font-size: 1.05rem; min-height: 28px; }
+
+  /* ── ACTIVITY 3 – WAND BUILDER (type answer, animate wand) ── */
+  .wand-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px; margin-bottom: 18px;
+  }
+  .wand-card {
+    background: rgba(0,0,0,.35); border: 1.5px solid rgba(245,200,66,.2);
+    border-radius: 16px; padding: 16px 14px; text-align: center;
+    position: relative; transition: border-color .3s;
+  }
+  .wand-card.solved { border-color: var(--green); background: rgba(57,233,123,.08); }
+  .wand-card.wrong-anim { animation: shake2 .35s; }
+  .wand-prompt { font-size: 1rem; font-weight: 700; margin-bottom: 10px; color: var(--gold); }
+  .wand-input {
+    width: 100%; padding: 8px 12px; border-radius: 10px;
+    border: 2px solid rgba(192,50,155,.4); background: rgba(255,255,255,.07);
+    color: var(--white); font-family: 'Nunito', sans-serif; font-weight: 700;
+    font-size: 1.1rem; text-align: center; outline: none;
+    transition: border-color .25s;
+  }
+  .wand-input:focus { border-color: var(--magenta); }
+  .wand-input:disabled { opacity: .5; }
+  .wand-status { font-size: .85rem; margin-top: 8px; font-weight: 700; min-height: 20px; }
+  .wand-wand { font-size: 1.8rem; margin-bottom: 6px; display: inline-block; transition: transform .3s; }
+  .wand-card.solved .wand-wand { animation: wandSpin .5s ease-out; }
+  @keyframes wandSpin { 0%{transform:rotate(0)} 50%{transform:rotate(-20deg) scale(1.2)} 100%{transform:rotate(10deg) scale(1)} }
+  .wand-card.solved .wand-input { border-color: var(--green); }
+
+  /* Progress stars row */
+  .progress-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 16px; flex-wrap: wrap;
+  }
+  .progress-label { font-size: .85rem; opacity: .7; }
+  .star-pip { font-size: 1.2rem; transition: transform .3s; }
+  .star-pip.lit { animation: popStar .4s; }
+  @keyframes popStar { 0%{transform:scale(0) rotate(-30deg)} 70%{transform:scale(1.3) rotate(10deg)} 100%{transform:scale(1) rotate(0)} }
+
+  /* ── Confetti burst ── */
+  .confetti-container { position: fixed; inset: 0; pointer-events: none; z-index: 999; }
+  .conf-piece {
+    position: absolute; width: 8px; height: 8px; border-radius: 2px;
+    animation: confFall 1.4s ease-in forwards;
+  }
+  @keyframes confFall {
+    0%   { transform: translateY(-20px) rotate(0deg);   opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* Cauldron bubble animation */
+  .bubble {
+    position: absolute; border-radius: 50%; background: rgba(56,217,245,.35);
+    animation: bubbleRise 2s ease-in infinite;
+  }
+  @keyframes bubbleRise {
+    0%   { opacity: 0; transform: translateY(0) scale(.5); }
+    50%  { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-50px) scale(1.3); }
+  }
+
+  /* Scroll hint */
+  .scroll-hint { text-align: center; opacity: .35; font-size: .8rem; margin-top: -10px; margin-bottom: 24px; }
+
+  @media (max-width: 520px) {
+    .potion-area { flex-direction: column; align-items: center; }
+    .wand-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── BACKGROUND LAYER ── -->
+<div class="bg-layer">
+  <!-- Glow orbs -->
+  <div class="orb" style="width:320px;height:320px;background:rgba(107,63,160,.3);top:10%;left:5%;animation-duration:7s;"></div>
+  <div class="orb" style="width:200px;height:200px;background:rgba(192,50,155,.25);top:60%;left:75%;animation-duration:9s;"></div>
+  <div class="orb" style="width:150px;height:150px;background:rgba(56,217,245,.15);top:35%;left:50%;animation-duration:11s;"></div>
+</div>
+
+<!-- Floating emoji objects -->
+<div id="floaters"></div>
+
+<!-- Confetti container -->
+<div class="confetti-container" id="confettiContainer"></div>
+
+<div class="wrapper">
+
+  <!-- ── HEADER ── -->
+  <header>
+    <h1>Square Roots &amp;<br>Perfect Squares</h1>
+    <div class="divider"></div>
+    <p class="scroll-hint">↓ Scroll to explore all activities ↓</p>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════
+       ACTIVITY 1 – POTION BREWER
+       Drag the correct square root into the cauldron
+  ═══════════════════════════════════════════════════ -->
+  <section class="activity-card card-1">
+    <div class="act-label"><span class="act-icon">🧪</span>Activity 1</div>
+    <h2 class="act-title">🔮 Potion Brewer — Feed the Cauldron!</h2>
+    <p class="act-desc">
+      The magic cauldron needs the <strong>square root</strong> of the glowing number.
+      Drag the correct number tile and drop it into the cauldron's mouth to brew the potion!
+    </p>
+
+    <div class="potion-question" id="potionQ">Loading spell…</div>
+
+    <div class="potion-area">
+      <div class="tiles-pool" id="tilesPool"></div>
+      <div class="cauldron-zone">
+        <div class="cauldron-wrap">
+          <!-- Cauldron SVG -->
+          <svg class="cauldron-svg" viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Legs -->
+            <rect x="42" y="102" width="8" height="20" rx="3" fill="#5a2e8a"/>
+            <rect x="80" y="102" width="8" height="20" rx="3" fill="#5a2e8a"/>
+            <!-- Body -->
+            <ellipse cx="65" cy="80" rx="52" ry="38" fill="#2a0e55"/>
+            <ellipse cx="65" cy="80" rx="52" ry="38" fill="url(#cauldronGrad)"/>
+            <!-- Rim -->
+            <ellipse cx="65" cy="45" rx="46" ry="14" fill="#4a1a80"/>
+            <ellipse cx="65" cy="45" rx="46" ry="14" fill="url(#rimGrad)" opacity=".7"/>
+            <!-- Liquid -->
+            <ellipse cx="65" cy="47" rx="38" ry="9" fill="#1f9e7f" opacity=".7"/>
+            <ellipse cx="65" cy="47" rx="38" ry="9" fill="url(#liquidGrad)"/>
+            <!-- Glow ring -->
+            <ellipse cx="65" cy="45" rx="47" ry="15" fill="none" stroke="#38d9f5" stroke-width="2" opacity=".5"/>
+            <!-- Handle left -->
+            <path d="M18 70 Q12 60 18 50" stroke="#7030b0" stroke-width="5" stroke-linecap="round" fill="none"/>
+            <!-- Handle right -->
+            <path d="M112 70 Q118 60 112 50" stroke="#7030b0" stroke-width="5" stroke-linecap="round" fill="none"/>
+            <!-- Stars on cauldron -->
+            <text x="30" y="90" font-size="12" fill="#f5c842" opacity=".6">✦</text>
+            <text x="95" y="95" font-size="10" fill="#f5c842" opacity=".5">★</text>
+            <defs>
+              <radialGradient id="cauldronGrad" cx="40%" cy="35%">
+                <stop offset="0%" stop-color="#6b3fa0"/>
+                <stop offset="100%" stop-color="#1a0840"/>
+              </radialGradient>
+              <radialGradient id="rimGrad" cx="50%" cy="30%">
+                <stop offset="0%" stop-color="#9860d0"/>
+                <stop offset="100%" stop-color="#4a1a80"/>
+              </radialGradient>
+              <radialGradient id="liquidGrad" cx="40%" cy="40%">
+                <stop offset="0%" stop-color="#38d9f5" stop-opacity=".8"/>
+                <stop offset="100%" stop-color="#1a6e5e" stop-opacity=".4"/>
+              </radialGradient>
+            </defs>
+          </svg>
+          <!-- Bubbles -->
+          <div class="bubble" style="width:12px;height:12px;left:54px;top:30px;animation-delay:0s;animation-duration:2.2s;"></div>
+          <div class="bubble" style="width:8px;height:8px;left:70px;top:34px;animation-delay:.7s;animation-duration:1.8s;"></div>
+          <div class="bubble" style="width:10px;height:10px;left:44px;top:36px;animation-delay:1.3s;animation-duration:2.5s;"></div>
+          <!-- Drop zone -->
+          <div class="drop-zone" id="cauldronDrop"
+               ondragover="event.preventDefault();this.classList.add('over')"
+               ondragleave="this.classList.remove('over')"
+               ondrop="handlePotionDrop(event)">?</div>
+        </div>
+        <div class="potion-feedback" id="potionFeedback"></div>
+        <div class="score-bar" id="potionStars"></div>
+      </div>
+    </div>
+
+    <div class="potion-controls">
+      <button class="btn btn-gold" onclick="nextPotionQ()">⚡ New Spell</button>
+      <button class="btn btn-cyan" onclick="resetPotion()">🔄 Reset Cauldron</button>
+    </div>
+    <p style="margin-top:10px;font-size:.82rem;opacity:.6;">Rounds completed: <span id="potionRound">0</span> / 6</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════
+       ACTIVITY 2 – SPELL DETECTOR
+       Click all perfect squares hidden in the grid
+  ═══════════════════════════════════════════════════ -->
+  <section class="activity-card card-2">
+    <div class="act-label"><span class="act-icon">🌟</span>Activity 2</div>
+    <h2 class="act-title">🌙 Spell Detector — Unmask the Perfect Squares!</h2>
+    <p class="act-desc">
+      A dark wizard has hidden <strong>perfect squares</strong> among ordinary numbers.
+      Cast your spell — click every perfect square to reveal it!
+      Each grid is freshly conjured; spot them all to earn your stars.
+    </p>
+
+    <div class="spell-question" id="spellQ"></div>
+    <div class="spell-grid" id="spellGrid"></div>
+    <div class="progress-row">
+      <span class="progress-label">Stars earned:</span>
+      <div id="spellStarRow"></div>
+    </div>
+    <div class="spell-result" id="spellResult"></div>
+    <div class="potion-controls" style="margin-top:14px;">
+      <button class="btn btn-gold" onclick="buildSpellGrid()">🪄 New Grid</button>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════
+       ACTIVITY 3 – WAND BUILDER
+       Type the missing value to complete the square spell
+  ═══════════════════════════════════════════════════ -->
+  <section class="activity-card card-3">
+    <div class="act-label"><span class="act-icon">🪄</span>Activity 3</div>
+    <h2 class="act-title">📚 Wand Builder — Complete the Square Spell!</h2>
+    <p class="act-desc">
+      Every wand needs a magic number to work. Each card shows a broken spell — 
+      fill in the missing number to make the square equation whole. 
+      Type your answer and press <strong>Enter</strong> or click <strong>Cast!</strong>
+    </p>
+
+    <div class="wand-grid" id="wandGrid"></div>
+    <div class="progress-row">
+      <span class="progress-label">Wands charged:</span>
+      <div id="wandStarRow" style="display:flex;gap:6px;"></div>
+    </div>
+    <div class="potion-controls" style="margin-top:16px;">
+      <button class="btn btn-magenta" onclick="buildWandGrid()">🔮 New Spells</button>
+    </div>
+  </section>
+
+</div><!-- /wrapper -->
+
+<script>
+/* ─────────────────────────────────────────────
+   FLOATING OBJECTS SETUP
+───────────────────────────────────────────── */
+const floaterEmojis = ['📚','🪄','🧪','🦉','⭐','✨','🌟','💫','🔮','🧙','🌙'];
+const floaterContainer = document.getElementById('floaters');
+for (let i = 0; i < 22; i++) {
+  const el = document.createElement('div');
+  el.className = 'floater';
+  el.textContent = floaterEmojis[Math.floor(Math.random() * floaterEmojis.length)];
+  el.style.left = Math.random() * 100 + 'vw';
+  el.style.fontSize = (1.2 + Math.random() * 1.6) + 'rem';
+  el.style.animationDuration = (14 + Math.random() * 18) + 's';
+  el.style.animationDelay = '-' + (Math.random() * 20) + 's';
+  el.style.opacity = (0.25 + Math.random() * 0.35).toString();
+  floaterContainer.appendChild(el);
+}
+
+/* ─────────────────────────────────────────────
+   CONFETTI
+───────────────────────────────────────────── */
+function burstConfetti(cx, cy) {
+  const colors = ['#f5c842','#c0329b','#38d9f5','#39e97b','#ff4f6e','#ffffff'];
+  const container = document.getElementById('confettiContainer');
+  for (let i = 0; i < 40; i++) {
+    const p = document.createElement('div');
+    p.className = 'conf-piece';
+    p.style.left = (cx ?? 50) + '%';
+    p.style.top  = (cy ?? 30) + 'px';
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    p.style.transform = `translateX(${(Math.random()-0.5)*220}px) rotate(${Math.random()*360}deg)`;
+    p.style.animationDelay = (Math.random() * .4) + 's';
+    p.style.animationDuration = (1 + Math.random() * .6) + 's';
+    container.appendChild(p);
+    setTimeout(() => p.remove(), 2200);
+  }
+}
+
+/* ─────────────────────────────────────────────
+   ACTIVITY 1 – POTION BREWER
+───────────────────────────────────────────── */
+const potionQuestions = [
+  { q: '🔮 The cauldron needs √4. Drop the answer!',   answer: 2,  choices: [1,2,3,4,5,6,8,9] },
+  { q: '🔮 Find √9 to unlock the green flame!',        answer: 3,  choices: [2,3,4,5,6,7,8,9] },
+  { q: '🔮 What is √16? Drop it to brew the potion!', answer: 4,  choices: [2,3,4,5,6,7,8,10] },
+  { q: '🔮 Solve √25 and fill the cauldron!',         answer: 5,  choices: [3,4,5,6,7,8,10,12] },
+  { q: '🔮 The dragons want √36 — feed them!',        answer: 6,  choices: [4,5,6,7,8,9,10,11] },
+  { q: '🔮 Brew √49 to reveal the hidden owl!',       answer: 7,  choices: [4,5,6,7,8,9,10,12] },
+  { q: '🔮 √64 awakens the ancient spell!',           answer: 8,  choices: [5,6,7,8,9,10,11,13] },
+  { q: '🔮 Summon √81 into the potion!',              answer: 9,  choices: [6,7,8,9,10,11,12,15] },
+  { q: '🔮 √100 — the grand master brew!',            answer: 10, choices: [7,8,9,10,11,12,13,14] },
+];
+
+let potionIdx = 0;
+let potionScore = 0;
+let potionRounds = 0;
+let currentPotionAnswer = 0;
+let draggedValue = null;
+
+function buildTiles(choices) {
+  const pool = document.getElementById('tilesPool');
+  pool.innerHTML = '';
+  choices.sort(() => Math.random() - 0.5).forEach(n => {
+    const t = document.createElement('div');
+    t.className = 'num-tile';
+    t.textContent = n;
+    t.draggable = true;
+    t.dataset.val = n;
+    t.addEventListener('dragstart', e => {
+      draggedValue = n;
+      t.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    t.addEventListener('dragend', () => t.classList.remove('dragging'));
+    pool.appendChild(t);
+  });
+}
+
+function loadPotionQ(idx) {
+  const q = potionQuestions[idx % potionQuestions.length];
+  currentPotionAnswer = q.answer;
+  document.getElementById('potionQ').textContent = q.q;
+  buildTiles(q.choices);
+  const dz = document.getElementById('cauldronDrop');
+  dz.textContent = '?';
+  dz.className = 'drop-zone';
+  document.getElementById('potionFeedback').textContent = '';
+}
+
+function handlePotionDrop(e) {
+  e.preventDefault();
+  const dz = document.getElementById('cauldronDrop');
+  dz.classList.remove('over');
+  const val = draggedValue;
+  if (val === null) return;
+
+  dz.textContent = val;
+  const fb = document.getElementById('potionFeedback');
+
+  if (Number(val) === currentPotionAnswer) {
+    dz.classList.add('correct');
+    fb.style.color = '#39e97b';
+    fb.textContent = '✅ Brilliant! Potion brewed! +⭐';
+    potionScore++;
+    potionRounds++;
+    updatePotionStars();
+    burstConfetti(70, 400);
+    // mark tile as used
+    document.querySelectorAll('.num-tile').forEach(t => {
+      if (Number(t.dataset.val) === val) t.classList.add('used');
+    });
+    setTimeout(() => nextPotionQ(), 1600);
+  } else {
+    dz.classList.add('wrong');
+    fb.style.color = '#ff4f6e';
+    fb.textContent = `❌ Oops! ${val} isn't right. Try again!`;
+    potionRounds++;
+    updatePotionStars();
+    setTimeout(() => {
+      dz.textContent = '?';
+      dz.className = 'drop-zone';
+    }, 800);
+  }
+  document.getElementById('potionRound').textContent = potionRounds;
+  draggedValue = null;
+}
+
+function nextPotionQ() {
+  potionIdx = (potionIdx + 1) % potionQuestions.length;
+  loadPotionQ(potionIdx);
+}
+
+function resetPotion() {
+  potionScore = 0; potionRounds = 0; potionIdx = 0;
+  updatePotionStars();
+  document.getElementById('potionRound').textContent = 0;
+  loadPotionQ(0);
+}
+
+function updatePotionStars() {
+  const bar = document.getElementById('potionStars');
+  bar.innerHTML = '';
+  for (let i = 0; i < 6; i++) {
+    const d = document.createElement('div');
+    d.className = 'star-dot' + (i < potionScore ? ' earned' : '');
+    d.textContent = i < potionScore ? '⭐' : '';
+    bar.appendChild(d);
+  }
+}
+
+// Touch support for drag
+let touchTile = null;
+document.addEventListener('touchstart', e => {
+  const t = e.target.closest('.num-tile');
+  if (t) { touchTile = t; draggedValue = Number(t.dataset.val); }
+}, {passive:true});
+document.addEventListener('touchend', e => {
+  const dz = document.getElementById('cauldronDrop');
+  if (!touchTile || !draggedValue) return;
+  const touch = e.changedTouches[0];
+  const el = document.elementFromPoint(touch.clientX, touch.clientY);
+  if (el && (el.id === 'cauldronDrop' || el.closest('#cauldronDrop'))) {
+    handlePotionDrop({ preventDefault:()=>{} });
+  }
+  touchTile = null; draggedValue = null;
+}, {passive:true});
+
+/* ─────────────────────────────────────────────
+   ACTIVITY 2 – SPELL DETECTOR
+───────────────────────────────────────────── */
+const perfectSquares = new Set([1,4,9,16,25,36,49,64,81,100,121,144]);
+
+let spellScore = 0;
+let spellTotal = 0;
+let spellRevealed = 0;
+let currentPSinGrid = [];
+
+function buildSpellGrid() {
+  spellScore = 0; spellRevealed = 0;
+  const grid = document.getElementById('spellGrid');
+  grid.innerHTML = '';
+  document.getElementById('spellResult').textContent = '';
+
+  // Generate 15 numbers: 4-5 perfect squares, rest random
+  const ps = [4,9,16,25,36,49,64,81,100].sort(()=>Math.random()-.5).slice(0,4);
+  const nonPS = [];
+  while (nonPS.length < 11) {
+    const n = Math.floor(Math.random()*140)+2;
+    if (!perfectSquares.has(n) && !nonPS.includes(n)) nonPS.push(n);
+  }
+  currentPSinGrid = ps;
+  spellTotal = ps.length;
+
+  const all = [...ps, ...nonPS].sort(()=>Math.random()-.5);
+
+  all.forEach(n => {
+    const cell = document.createElement('div');
+    cell.className = 'spell-cell';
+    cell.dataset.val = n;
+    cell.dataset.isPS = perfectSquares.has(n) ? '1' : '0';
+    const num = document.createElement('div');
+    num.className = 'cell-num'; num.textContent = n;
+    const hint = document.createElement('div');
+    hint.className = 'cell-hint';
+    if (perfectSquares.has(n)) {
+      const root = Math.round(Math.sqrt(n));
+      hint.textContent = `= ${root}²`;
+    }
+    cell.appendChild(num); cell.appendChild(hint);
+    cell.addEventListener('click', () => onSpellCellClick(cell, n));
+    grid.appendChild(cell);
+  });
+
+  document.getElementById('spellQ').textContent =
+    `🌟 There are ${spellTotal} perfect squares hidden in this grid. Find them all!`;
+  buildSpellStars(spellTotal);
+}
+
+function onSpellCellClick(cell, n) {
+  if (cell.classList.contains('revealed')) return;
+  cell.classList.add('revealed');
+  if (cell.dataset.isPS === '1') {
+    cell.classList.add('correct-pick');
+    spellScore++;
+    spellRevealed++;
+    const pip = document.querySelectorAll('#spellStarRow .star-pip')[spellScore - 1];
+    if (pip) { pip.textContent = '⭐'; pip.classList.add('lit'); }
+    if (spellScore === spellTotal) {
+      document.getElementById('spellResult').innerHTML =
+        `<span style="color:var(--green)">🎉 All ${spellTotal} perfect squares found! You're a true spell-caster! 🧙</span>`;
+      burstConfetti(50, 500);
+    }
+  } else {
+    cell.classList.add('wrong-pick');
+    setTimeout(()=>cell.classList.remove('wrong-pick'), 400);
+    const fb = document.getElementById('spellResult');
+    fb.innerHTML = `<span style="color:var(--red)">❌ ${n} is not a perfect square — try another!</span>`;
+    setTimeout(()=>{ if(!fb.innerHTML.includes('All')) fb.textContent=''; },1000);
+  }
+}
+
+function buildSpellStars(count) {
+  const row = document.getElementById('spellStarRow');
+  row.innerHTML = '';
+  for (let i = 0; i < count; i++) {
+    const s = document.createElement('span');
+    s.className = 'star-pip'; s.textContent = '☆';
+    row.appendChild(s);
+  }
+}
+
+/* ─────────────────────────────────────────────
+   ACTIVITY 3 – WAND BUILDER
+───────────────────────────────────────────── */
+const wandTemplates = [
+  // type A: _² = N  (fill in root)
+  { make:(n,r)=>({ prompt:`🪄 If _² = ${n}, what is _?`, answer:r, hint:`${r} × ${r} = ${n}` }) },
+  // type B: r² = _  (fill in square)
+  { make:(n,r)=>({ prompt:`🪄 What is ${r}² = ?`, answer:n, hint:`${r} × ${r} = ${n}` }) },
+  // type C: √N = _
+  { make:(n,r)=>({ prompt:`🪄 √${n} = ?`, answer:r, hint:`${r} is the root of ${n}` }) },
+];
+
+let wandSolved = 0;
+let wandTotal  = 0;
+
+function buildWandGrid() {
+  wandSolved = 0;
+  const roots = [2,3,4,5,6,7,8,9,10,11,12];
+  const chosen = roots.sort(()=>Math.random()-.5).slice(0,6);
+  wandTotal = chosen.length;
+
+  const grid = document.getElementById('wandGrid');
+  grid.innerHTML = '';
+  updateWandStars();
+
+  chosen.forEach(r => {
+    const n = r * r;
+    const tpl = wandTemplates[Math.floor(Math.random() * wandTemplates.length)];
+    const data = tpl.make(n, r);
+
+    const card = document.createElement('div');
+    card.className = 'wand-card';
+    card.innerHTML = `
+      <div class="wand-wand">🪄</div>
+      <div class="wand-prompt">${data.prompt}</div>
+      <input class="wand-input" type="number" min="1" max="200" placeholder="Your answer…">
+      <button class="btn btn-magenta" style="margin-top:10px;padding:7px 18px;font-size:.85rem;" onclick="checkWand(this, ${data.answer}, '${data.hint}')">Cast! ✨</button>
+      <div class="wand-status"></div>
+    `;
+    const inp = card.querySelector('input');
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Enter') checkWand(card.querySelector('button'), data.answer, data.hint);
+    });
+    grid.appendChild(card);
+  });
+}
+
+function checkWand(btn, answer, hint) {
+  const card = btn.closest('.wand-card');
+  if (card.classList.contains('solved')) return;
+  const inp = card.querySelector('input');
+  const status = card.querySelector('.wand-status');
+  const val = parseInt(inp.value, 10);
+
+  if (isNaN(val)) { status.style.color='var(--gold)'; status.textContent='🔢 Enter a number!'; return; }
+
+  if (val === answer) {
+    card.classList.add('solved');
+    inp.disabled = true; btn.disabled = true;
+    status.style.color = 'var(--green)';
+    status.textContent = `✅ ${hint} — Wand charged!`;
+    wandSolved++;
+    updateWandStars();
+    if (wandSolved === wandTotal) {
+      burstConfetti(50, 700);
+      document.getElementById('wandStarRow').insertAdjacentHTML('afterend',
+        `<p style="color:var(--gold);font-weight:800;margin-top:12px;font-size:1rem;">
+          🎉 All wands charged! You are a Square Root Sorcerer! 🧙‍♀️✨</p>`);
+    }
+  } else {
+    card.classList.add('wrong-anim');
+    setTimeout(()=>card.classList.remove('wrong-anim'), 400);
+    status.style.color = 'var(--red)';
+    status.textContent = `❌ Not quite! Hint: ${hint.split('=')[0].trim()} ...`;
+    inp.value = '';
+    inp.focus();
+  }
+}
+
+function updateWandStars() {
+  const row = document.getElementById('wandStarRow');
+  row.innerHTML = '';
+  for (let i = 0; i < wandTotal; i++) {
+    const s = document.createElement('span');
+    s.className = 'star-pip' + (i < wandSolved ? ' lit' : '');
+    s.textContent = i < wandSolved ? '⭐' : '☆';
+    row.appendChild(s);
+  }
+}
+
+/* ─────────────────────────────────────────────
+   INIT
+───────────────────────────────────────────── */
+loadPotionQ(0);
+updatePotionStars();
+buildSpellGrid();
+buildWandGrid();
+</script>
+</body>
+</html>
